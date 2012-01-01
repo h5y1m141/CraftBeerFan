@@ -273,9 +273,8 @@ class shopDataDetail
       backgroundColor:"#f3f3f3"
       separatorColor: '#cccccc'
       borderRadius:5
-
-    @tableView.hide()
-
+      
+    return
   show: () ->
     return @tableView.show()
     

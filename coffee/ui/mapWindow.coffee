@@ -99,8 +99,16 @@ class mapWindow
 
       )
     )
-    mapWindow.rightNavButton =  refreshButton
-    
+    refreshLabel = Ti.UI.createLabel
+      backgroundColor:"#3261AB"
+      font:
+        fontSize: 32
+        fontFamily:'LigatureSymbols'
+      text:String.fromCharCode("0xe103")
+      
+    # mapWindow.rightNavButton =  refreshButton
+
+    mapWindow.rightNavButton = refreshLabel
     if Ti.Platform.osname is 'iphone'  
       mapWindow.setTitleControl mapWindowTitle
     
@@ -121,44 +129,72 @@ class mapWindow
     return mapWindow
     
   _nearBy:(latitude,longitude) ->
-    Ti.API.info "nearBy start.latitude is#{latitude}"
     that = @
-    Cloud.Places.query
-      page: 1
-      per_page: 20
-      where:
-        lnglat:
-          # $nearSphere: [139.672004, 35.658839] # longitude, latitude
-          $nearSphere:[longitude,latitude] 
-          $maxDistance: 0.01
-    , (e) ->
-      if e.success
-        i = 0
-        while i < e.places.length
-          place = e.places[i]
-          tumblrImage = Titanium.UI.createImageView
-            width :20
-            height :40
-            image : "ui/image/tumblr.png"
-  
-          annotation = Titanium.Map.createAnnotation(
-            latitude: place.latitude
-            longitude: place.longitude
-            title: place.name
-            phoneNumber: place.phone_number
-            shopAddress: place.address
-            subtitle: ""
-            image:"ui/image/tumblrIcon.png"
-            animate: false
-            leftButton: ""
-            rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
-          )
-  
-          that.mapView.addAnnotation annotation
-          i++
-      else
-        Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
+    ACS =require("model/acs")
+    acs =new ACS()
+    acs.placesQuery(latitude,longitude,(data) ->
+      that.addAnnotations(data)
+    )
+    
+  addAnnotations:(array) ->
+    for data in array
+      tumblrImage = Titanium.UI.createImageView
+        width :20
+        height :40
+        image : "ui/image/tumblr.png"    
+      annotation = Titanium.Map.createAnnotation(
+        latitude: data.latitude
+        longitude: data.longitude
+        title: data.name
+        phoneNumber: data.phone_number
+        shopAddress: data.address
+        subtitle: ""
+        image:"ui/image/tumblrIcon.png"
+        animate: false
+        leftButton: ""
+        rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
+      )
 
-    return    
+      @mapView.addAnnotation annotation
+
+    return
+        
+    # Cloud.Places.query
+    #   page: 1
+    #   per_page: 20
+    #   where:
+    #     lnglat:
+    #       # $nearSphere: [139.672004, 35.658839] # longitude, latitude
+    #       $nearSphere:[longitude,latitude] 
+    #       $maxDistance: 0.01
+    # , (e) ->
+    #   if e.success
+    #     i = 0
+    #     while i < e.places.length
+    #       place = e.places[i]
+    #       tumblrImage = Titanium.UI.createImageView
+    #         width :20
+    #         height :40
+    #         image : "ui/image/tumblr.png"
+  
+    #       annotation = Titanium.Map.createAnnotation(
+    #         latitude: place.latitude
+    #         longitude: place.longitude
+    #         title: place.name
+    #         phoneNumber: place.phone_number
+    #         shopAddress: place.address
+    #         subtitle: ""
+    #         image:"ui/image/tumblrIcon.png"
+    #         animate: false
+    #         leftButton: ""
+    #         rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
+    #       )
+  
+    #       that.mapView.addAnnotation annotation
+    #       i++
+    #   else
+    #     Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
+
+
 
 module.exports = mapWindow  

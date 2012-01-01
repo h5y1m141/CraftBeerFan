@@ -1,8 +1,14 @@
-var ActivityIndicator, Cloud, FavoriteWindow, ListWindow, MapWindow, MypageWindow, activityIndicator, favoriteTab, favoriteWindow, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, shopDataTableView, tabGroup;
+var ActivityIndicator, Cloud, FavoriteWindow, ListWindow, MainController, MapWindow, MypageWindow, ShopDataDetailWindow, activityIndicator, favoriteTab, favoriteWindow, listTab, listWindow, mainController, mapTab, mapWindow, mypageTab, mypageWindow, shopDataDetailWindow, tabGroup;
 
 Cloud = require('ti.cloud');
 
-shopDataTableView = require('ui/shopDataTableView');
+MainController = require("controller/mainController");
+
+mainController = new MainController();
+
+ShopDataDetailWindow = require("ui/shopDataDetailWindow");
+
+shopDataDetailWindow = new ShopDataDetailWindow();
 
 ActivityIndicator = require('ui/activityIndicator');
 

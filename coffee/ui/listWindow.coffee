@@ -4,6 +4,7 @@ class listWindow
       barColor:"#f9f9f9"
       backgroundColor:"#f3f3f3"
       keyColor:"#EDAD0B"
+      
     listWindow = Ti.UI.createWindow
       title:"リストから探す"
       barColor:@baseColor.barColor
@@ -37,17 +38,30 @@ class listWindow
       "近畿":"#FFFBD5"
       "中国・四国":"#FEF7D5"
       "九州・沖縄":"#F9DFD5"
+    @arrowImage = Ti.UI.createImageView
+      width:50
+      height:50
+      left:150
+      top:35
+      borderRadius:5
+      transform:Ti.UI.create2DMatrix().rotate(45)
+      borderColor:"#f3f3f3"
+      borderWidth:1
+      backgroundColor:"#007FB1"
       
+    ShopDataTableView = require('ui/shopDataTableView')
+    shopDataTableView = new ShopDataTableView()
+    shopData = shopDataTableView.getTable()
     @subMenu.addEventListener('click',(e)=>
       categoryName = e.row.categoryName
       selectedColor = @prefectureColorSet.name[categoryName]
       selectedSubColor = @prefectureSubColorSet.name[categoryName]
       curretRowIndex　= e.index
-      # cbFan.shopData.animateした後のコールバック関数内では@rowHeightが
+      # shopData.animateした後のコールバック関数内では@rowHeightが
       # 参照できないために以下変数に格納する
       rowHeight = @rowHeight
-      cbFan.arrowImage.hide()
-      cbFan.shopData.animate({
+      @arrowImage.hide()
+      shopData.animate({
         duration:400
         left:300
       },() ->
@@ -55,14 +69,14 @@ class listWindow
         # arrowImageの高さの50ずらづだけだとrowの真ん中に位置しないため
         # 55ずらすことで丁度真ん中に位置する
         arrowImagePosition = (curretRowIndex+1) * rowHeight - 55
-        cbFan.arrowImage.backgroundColor = selectedColor
-        cbFan.arrowImage.top = arrowImagePosition
+        @arrowImage.backgroundColor = selectedColor
+        @arrowImage.top = arrowImagePosition
 
-        cbFan.shopData.animate({
+        shopData.animate({
           duration:400
           left:150
         },() ->
-          cbFan.arrowImage.show()
+          arrowImage.show()
         )
       )
     )

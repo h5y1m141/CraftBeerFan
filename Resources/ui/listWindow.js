@@ -3,7 +3,7 @@ var listWindow;
 listWindow = (function() {
 
   function listWindow() {
-    var PrefectureCategory, categoryName, headerLabel, headerPoint, index, listWindowTitle, subMenuRow, subMenuRows,
+    var PrefectureCategory, ShopDataTableView, categoryName, headerLabel, headerPoint, index, listWindowTitle, shopData, shopDataTableView, subMenuRow, subMenuRows,
       _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
@@ -48,6 +48,20 @@ listWindow = (function() {
         "九州・沖縄": "#F9DFD5"
       }
     };
+    this.arrowImage = Ti.UI.createImageView({
+      width: 50,
+      height: 50,
+      left: 150,
+      top: 35,
+      borderRadius: 5,
+      transform: Ti.UI.create2DMatrix().rotate(45),
+      borderColor: "#f3f3f3",
+      borderWidth: 1,
+      backgroundColor: "#007FB1"
+    });
+    ShopDataTableView = require('ui/shopDataTableView');
+    shopDataTableView = new ShopDataTableView();
+    shopData = shopDataTableView.getTable();
     this.subMenu.addEventListener('click', function(e) {
       var categoryName, curretRowIndex　, rowHeight, selectedColor, selectedSubColor;
       categoryName = e.row.categoryName;
@@ -55,21 +69,21 @@ listWindow = (function() {
       selectedSubColor = _this.prefectureSubColorSet.name[categoryName];
       curretRowIndex　 = e.index;
       rowHeight = _this.rowHeight;
-      cbFan.arrowImage.hide();
-      return cbFan.shopData.animate({
+      _this.arrowImage.hide();
+      return shopData.animate({
         duration: 400,
         left: 300
       }, function() {
         var arrowImagePosition;
         shopData.refreshTableData(categoryName, selectedColor, selectedSubColor);
         arrowImagePosition = (curretRowIndex + 1) * rowHeight - 55;
-        cbFan.arrowImage.backgroundColor = selectedColor;
-        cbFan.arrowImage.top = arrowImagePosition;
-        return cbFan.shopData.animate({
+        this.arrowImage.backgroundColor = selectedColor;
+        this.arrowImage.top = arrowImagePosition;
+        return shopData.animate({
           duration: 400,
           left: 150
         }, function() {
-          return cbFan.arrowImage.show();
+          return arrowImage.show();
         });
       });
     });

@@ -277,7 +277,7 @@ shopDataDetail = (function() {
       separatorColor: '#cccccc',
       borderRadius: 5
     });
-    this.tableView.hide();
+    return;
   }
 
   shopDataDetail.prototype.show = function() {

@@ -3,7 +3,7 @@ var mapWindow;
 mapWindow = (function() {
 
   function mapWindow() {
-    var Config, ad, adView, config, mapWindowTitle, nend, platform, refreshButton,
+    var Config, ad, adView, config, mapWindowTitle, nend, platform, refreshButton, refreshLabel,
       _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
@@ -99,7 +99,15 @@ mapWindow = (function() {
         return that._nearBy(latitude, longitude);
       });
     });
-    mapWindow.rightNavButton = refreshButton;
+    refreshLabel = Ti.UI.createLabel({
+      backgroundColor: "#3261AB",
+      font: {
+        fontSize: 32,
+        fontFamily: 'LigatureSymbols'
+      },
+      text: String.fromCharCode("0xe103")
+    });
+    mapWindow.rightNavButton = refreshLabel;
     if (Ti.Platform.osname === 'iphone') {
       mapWindow.setTitleControl(mapWindowTitle);
     }
@@ -113,50 +121,38 @@ mapWindow = (function() {
   }
 
   mapWindow.prototype._nearBy = function(latitude, longitude) {
-    var that;
-    Ti.API.info("nearBy start.latitude is" + latitude);
+    var ACS, acs, that;
     that = this;
-    Cloud.Places.query({
-      page: 1,
-      per_page: 20,
-      where: {
-        lnglat: {
-          $nearSphere: [longitude, latitude],
-          $maxDistance: 0.01
-        }
-      }
-    }, function(e) {
-      var annotation, i, place, tumblrImage, _results;
-      if (e.success) {
-        i = 0;
-        _results = [];
-        while (i < e.places.length) {
-          place = e.places[i];
-          tumblrImage = Titanium.UI.createImageView({
-            width: 20,
-            height: 40,
-            image: "ui/image/tumblr.png"
-          });
-          annotation = Titanium.Map.createAnnotation({
-            latitude: place.latitude,
-            longitude: place.longitude,
-            title: place.name,
-            phoneNumber: place.phone_number,
-            shopAddress: place.address,
-            subtitle: "",
-            image: "ui/image/tumblrIcon.png",
-            animate: false,
-            leftButton: "",
-            rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
-          });
-          that.mapView.addAnnotation(annotation);
-          _results.push(i++);
-        }
-        return _results;
-      } else {
-        return Ti.API.info("Error:\n" + ((e.error && e.message) || JSON.stringify(e)));
-      }
+    ACS = require("model/acs");
+    acs = new ACS();
+    return acs.placesQuery(latitude, longitude, function(data) {
+      return that.addAnnotations(data);
     });
+  };
+
+  mapWindow.prototype.addAnnotations = function(array) {
+    var annotation, data, tumblrImage, _i, _len;
+    for (_i = 0, _len = array.length; _i < _len; _i++) {
+      data = array[_i];
+      tumblrImage = Titanium.UI.createImageView({
+        width: 20,
+        height: 40,
+        image: "ui/image/tumblr.png"
+      });
+      annotation = Titanium.Map.createAnnotation({
+        latitude: data.latitude,
+        longitude: data.longitude,
+        title: data.name,
+        phoneNumber: data.phone_number,
+        shopAddress: data.address,
+        subtitle: "",
+        image: "ui/image/tumblrIcon.png",
+        animate: false,
+        leftButton: "",
+        rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
+      });
+      this.mapView.addAnnotation(annotation);
+    }
   };
 
   return mapWindow;

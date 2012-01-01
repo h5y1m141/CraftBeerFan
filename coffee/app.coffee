@@ -1,5 +1,11 @@
 Cloud = require('ti.cloud')
-shopDataTableView = require('ui/shopDataTableView')
+MainController = require("controller/mainController")
+mainController = new MainController()
+
+ShopDataDetailWindow = require("ui/shopDataDetailWindow")
+shopDataDetailWindow = new ShopDataDetailWindow()
+
+
 ActivityIndicator = require('ui/activityIndicator')
 activityIndicator = new ActivityIndicator()
 
