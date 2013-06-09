@@ -1,4 +1,6 @@
 Cloud = require('ti.cloud')
+shopDataTableView = require('ui/shopDataTableView')
+
 
 mapWindow = Ti.UI.createWindow
   title: "お店の情報"
@@ -157,7 +159,21 @@ tab = Ti.UI.createTab
   title:'探す'
   icon:"ui/image/marker.png"
 
+shopData = new shopDataTableView()
+shopDataWindow = Ti.UI.createWindow
+  title: "お店のリスト"
+  barColor:"#DD9F00"
+  backgroundColor: "#343434"
+  
+shopDataWindow.add shopData
+
+shopDataTab = Ti.UI.createTab
+  window:shopDataWindow
+  title:'リスト'
+  icon:"ui/image/marker.png"
+  
 tabGroup.addTab tab
+tabGroup.addTab shopDataTab
 tabGroup.open()
 
 
