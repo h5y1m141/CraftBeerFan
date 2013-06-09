@@ -3,7 +3,7 @@ var shopDataTableView;
 shopDataTableView = (function() {
 
   function shopDataTableView() {
-    var colorSet, prefecture, prefectures, row, rows, textLabel, view, _i, _len,
+    var PrefectureCategory, categoryName, colorSet, prefectures, row, rows, textLabel, view,
       _this = this;
     prefectures = [
       {
@@ -171,8 +171,8 @@ shopDataTableView = (function() {
     ];
     this.table.addEventListener('click', function(e) {});
     rows = [];
-    for (_i = 0, _len = prefectures.length; _i < _len; _i++) {
-      prefecture = prefectures[_i];
+    PrefectureCategory = this._makePrefectureCategory(prefectures);
+    for (categoryName in PrefectureCategory) {
       textLabel = Ti.UI.createLabel({
         width: 240,
         height: 20,
@@ -183,7 +183,7 @@ shopDataTableView = (function() {
           fontSize: 16,
           fontWeight: 'bold'
         },
-        text: prefecture.name
+        text: categoryName
       });
       if (Titanium.Platform.osname === "iphone") {
         row = Ti.UI.createTableViewRow({
@@ -237,6 +237,15 @@ shopDataTableView = (function() {
     this.table.setData(rows);
     return this.table;
   }
+
+  shopDataTableView.prototype._makePrefectureCategory = function(data) {
+    var result, _;
+    _ = require("lib/underscore-1.4.3.min");
+    result = _.groupBy(data, function(row) {
+      return row.area;
+    });
+    return result;
+  };
 
   return shopDataTableView;
 

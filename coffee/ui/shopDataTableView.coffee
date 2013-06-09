@@ -73,8 +73,14 @@ class shopDataTableView
 
     )
     rows = []
+    PrefectureCategory = @_makePrefectureCategory prefectures
+
     
-    for prefecture in prefectures
+    # for categoryName of PrefectureCategory
+    #   alert categoryName
+    #   Ti.API.info PrefectureCategory[categoryName].length
+      
+    for categoryName of PrefectureCategory
       textLabel = Ti.UI.createLabel
         width:240
         height:20
@@ -84,7 +90,7 @@ class shopDataTableView
         font:
           fontSize:16
           fontWeight:'bold'
-        text:prefecture.name
+        text:categoryName
 
       if Titanium.Platform.osname is "iphone"
         row = Ti.UI.createTableViewRow
@@ -135,7 +141,18 @@ class shopDataTableView
     
     return @table
 
-      
+  # 都道府県のリスト情報から日本の地域ｘ都道府県名の以下の様なリストを作成する
+  # "北海道・東北":[ {},{} ],
+  # "関東":[{},]
+  # :
+
+  _makePrefectureCategory: (data) ->
+    _ =  require("lib/underscore-1.4.3.min")
+    result = _.groupBy(data,(row) ->
+      return row.area
+    )
+    return result
+    
 module.exports = shopDataTableView
 
 
