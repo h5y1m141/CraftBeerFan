@@ -1,9 +1,12 @@
-var shopDataTableView;
+var shopDataTableView,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 shopDataTableView = (function() {
 
   function shopDataTableView() {
-    var PrefectureCategory, categoryName, colorSet, prefectures, row, rows, textLabel, view,
+    this._hideSubMenu = __bind(this._hideSubMenu, this);
+
+    var PrefectureCategory, categoryName, numberOfPrefecture, prefectureNameList, prefectures, row, rows, textLabel, view,
       _this = this;
     prefectures = [
       {
@@ -157,7 +160,7 @@ shopDataTableView = (function() {
       left: 0,
       top: 0
     });
-    colorSet = [
+    this.colorSet = [
       {
         color: "#fff",
         position: 0.0
@@ -169,10 +172,25 @@ shopDataTableView = (function() {
         position: 1.0
       }
     ];
-    this.table.addEventListener('click', function(e) {});
+    this.table.addEventListener('click', function(e) {
+      var curretRowIndex, opendFlg, prefectureNameList;
+      opendFlg = e.row.opendFlg;
+      prefectureNameList = e.row.prefectureNameList;
+      curretRowIndex = e.index;
+      if (opendFlg === false) {
+        _this._showSubMenu(prefectureNameList, curretRowIndex);
+        return e.row.opendFlg = true;
+      } else {
+        Ti.API.info("hideSubMenu " + curretRowIndex + " and " + prefectureNameList.length);
+        _this._hideSubMenu(curretRowIndex, prefectureNameList.length);
+        return e.row.opendFlg = false;
+      }
+    });
     rows = [];
     PrefectureCategory = this._makePrefectureCategory(prefectures);
     for (categoryName in PrefectureCategory) {
+      numberOfPrefecture = PrefectureCategory[categoryName].length;
+      prefectureNameList = PrefectureCategory[categoryName];
       textLabel = Ti.UI.createLabel({
         width: 240,
         height: 20,
@@ -183,7 +201,7 @@ shopDataTableView = (function() {
           fontSize: 16,
           fontWeight: 'bold'
         },
-        text: categoryName
+        text: "" + categoryName
       });
       if (Titanium.Platform.osname === "iphone") {
         row = Ti.UI.createTableViewRow({
@@ -191,6 +209,9 @@ shopDataTableView = (function() {
           height: 40,
           borderWidth: 0,
           className: 'shopData',
+          numberOfPrefecture: numberOfPrefecture,
+          prefectureNameList: prefectureNameList,
+          opendFlg: false,
           backgroundGradient: {
             type: 'linear',
             startPoint: {
@@ -201,7 +222,7 @@ shopDataTableView = (function() {
               x: '0%',
               y: '100%'
             },
-            colors: colorSet
+            colors: this.colorSet
           }
         });
         row.add(textLabel);
@@ -209,7 +230,10 @@ shopDataTableView = (function() {
         row = Ti.UI.createTableViewRow({
           width: 'auto',
           height: 40,
-          className: 'shopData'
+          className: 'shopData',
+          numberOfPrefecture: numberOfPrefecture,
+          prefectureNameList: prefectureNameList,
+          opendFlg: false
         });
         view = Ti.UI.createView({
           width: 'auto',
@@ -224,7 +248,7 @@ shopDataTableView = (function() {
               x: '0%',
               y: '100%'
             },
-            colors: colorSet
+            colors: this.colorSet
           }
         });
         view.add(textLabel);
@@ -245,6 +269,76 @@ shopDataTableView = (function() {
       return row.area;
     });
     return result;
+  };
+
+  shopDataTableView.prototype._showSubMenu = function(prefectureNameList, curretRowIndex) {
+    var index, item, subMenu, subMenuLabel, _i, _len;
+    index = curretRowIndex;
+    Ti.API.info("curretRowIndex is " + curretRowIndex + " and " + prefectureNameList.length);
+    for (_i = 0, _len = prefectureNameList.length; _i < _len; _i++) {
+      item = prefectureNameList[_i];
+      subMenu = Ti.UI.createTableViewRow({
+        width: 'auto',
+        height: 40,
+        borderWidth: 0,
+        className: 'subMenu',
+        backgroundGradient: {
+          type: 'linear',
+          startPoint: {
+            x: '0%',
+            y: '0%'
+          },
+          endPoint: {
+            x: '0%',
+            y: '100%'
+          },
+          colors: this.colorSet
+        }
+      });
+      subMenuLabel = Ti.UI.createLabel({
+        width: 240,
+        height: 20,
+        top: 5,
+        left: 30,
+        color: '#222',
+        font: {
+          fontSize: 16,
+          fontWeight: 'bold'
+        },
+        text: item.name
+      });
+      subMenu.add(subMenuLabel);
+      this.table.insertRowAfter(index, subMenu, {
+        animated: false
+      });
+      this._sleep(100);
+      index++;
+      Ti.API.info("index is " + index);
+    }
+  };
+
+  shopDataTableView.prototype._hideSubMenu = function(curretRowIndex, numberOfPrefecture) {
+    var counter, endPosition, startPosition, _i;
+    if (curretRowIndex === 0) {
+      startPosition = numberOfPrefecture;
+    } else {
+      startPosition = numberOfPrefecture + curretRowIndex;
+    }
+    endPosition = curretRowIndex + 1;
+    Ti.API.info("start is " + startPosition + " and end is  " + endPosition);
+    for (counter = _i = startPosition; startPosition <= endPosition ? _i <= endPosition : _i >= endPosition; counter = startPosition <= endPosition ? ++_i : --_i) {
+      this.table.deleteRow(counter);
+      this._sleep(100);
+    }
+  };
+
+  shopDataTableView.prototype._sleep = function(time) {
+    var d1, d2;
+    d1 = new Date().getTime();
+    d2 = new Date().getTime();
+    while (d2 < d1 + time) {
+      d2 = new Date().getTime();
+    }
   };
 
   return shopDataTableView;
