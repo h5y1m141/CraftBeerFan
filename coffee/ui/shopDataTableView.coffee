@@ -1,6 +1,6 @@
 class shopDataTableView
   constructor: () ->
-
+    
     prefectures = [
       {"name":"北海道","area":"北海道・東北"},
       {"name":"青森県","area":"北海道・東北"},
@@ -53,7 +53,7 @@ class shopDataTableView
     @table = Ti.UI.createTableView
       backgroundColor:'#fff'
       separatorColor: '#ccc'
-      width:320
+      width:'auto'
       height:'auto'
       left:0
       top:0
@@ -78,10 +78,32 @@ class shopDataTableView
         @_showSubMenu(prefectureNameList,curretRowIndex)
           
         e.row.opendFlg = true          
-      else
-        Ti.API.info "hideSubMenu #{curretRowIndex} and #{prefectureNameList.length}"
+      else if opendFlg is true
         @_hideSubMenu(curretRowIndex,prefectureNameList.length)
         e.row.opendFlg = false
+      else
+        Ti.API.info e.row.prefectureName
+        Cloud.Places.query
+          page: 1
+          per_page: 200
+          where: {"state":e.row.prefectureName}
+        , (e) ->
+          if e.success
+            i = 0
+            while i < e.places.length
+              place = e.places[i]
+              Ti.API.info place.name
+              i++
+              
+
+          else
+            Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
+        return
+
+            
+            
+
+
       
 
     )
@@ -100,19 +122,19 @@ class shopDataTableView
       
       textLabel = Ti.UI.createLabel
         width:240
-        height:20
+        height:40
         top:5
         left:5
         color:'#222'
         font:
-          fontSize:16
+          fontSize:24
           fontWeight:'bold'
         text:"#{categoryName}"
 
       if Titanium.Platform.osname is "iphone"
         row = Ti.UI.createTableViewRow
           width:'auto'
-          height:40
+          height:80
           borderWidth:0
           className:'shopData'
           numberOfPrefecture:numberOfPrefecture
@@ -133,7 +155,7 @@ class shopDataTableView
       else if Titanium.Platform.osname is "android"
         row = Ti.UI.createTableViewRow
           width:'auto'
-          height:40
+          height:80
           className:'shopData'
           numberOfPrefecture:numberOfPrefecture
           prefectureNameList:prefectureNameList
@@ -141,7 +163,7 @@ class shopDataTableView
           
         view = Ti.UI.createView
           width:'auto'
-          height:40
+          height:80
           backgroundGradient: 
             type: 'linear'
             startPoint: 
@@ -185,9 +207,10 @@ class shopDataTableView
     for item in prefectureNameList
       subMenu = Ti.UI.createTableViewRow
         width:'auto'
-        height:40
+        height:60
         borderWidth:0
         className:'subMenu'
+        prefectureName:item.name
         backgroundGradient: 
           type: 'linear'
           startPoint: 
@@ -199,14 +222,18 @@ class shopDataTableView
             y: '100%'
           ,
           colors: @colorSet
+
+      # subMenu.addEventListener('click',(e) ->
+      #   alert e.row.className
+      # )    
       subMenuLabel = Ti.UI.createLabel
         width:240
-        height:20
+        height:40
         top:5
         left:30
         color:'#222'
         font:
-          fontSize:16
+          fontSize:24
           fontWeight:'bold'
         text:item.name
       subMenu.add subMenuLabel

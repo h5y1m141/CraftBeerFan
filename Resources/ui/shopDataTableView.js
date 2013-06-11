@@ -155,7 +155,7 @@ shopDataTableView = (function() {
     this.table = Ti.UI.createTableView({
       backgroundColor: '#fff',
       separatorColor: '#ccc',
-      width: 320,
+      width: 'auto',
       height: 'auto',
       left: 0,
       top: 0
@@ -180,10 +180,32 @@ shopDataTableView = (function() {
       if (opendFlg === false) {
         _this._showSubMenu(prefectureNameList, curretRowIndex);
         return e.row.opendFlg = true;
-      } else {
-        Ti.API.info("hideSubMenu " + curretRowIndex + " and " + prefectureNameList.length);
+      } else if (opendFlg === true) {
         _this._hideSubMenu(curretRowIndex, prefectureNameList.length);
         return e.row.opendFlg = false;
+      } else {
+        Ti.API.info(e.row.prefectureName);
+        Cloud.Places.query({
+          page: 1,
+          per_page: 200,
+          where: {
+            "state": e.row.prefectureName
+          }
+        }, function(e) {
+          var i, place, _results;
+          if (e.success) {
+            i = 0;
+            _results = [];
+            while (i < e.places.length) {
+              place = e.places[i];
+              Ti.API.info(place.name);
+              _results.push(i++);
+            }
+            return _results;
+          } else {
+            return Ti.API.info("Error:\n" + ((e.error && e.message) || JSON.stringify(e)));
+          }
+        });
       }
     });
     rows = [];
@@ -193,12 +215,12 @@ shopDataTableView = (function() {
       prefectureNameList = PrefectureCategory[categoryName];
       textLabel = Ti.UI.createLabel({
         width: 240,
-        height: 20,
+        height: 40,
         top: 5,
         left: 5,
         color: '#222',
         font: {
-          fontSize: 16,
+          fontSize: 24,
           fontWeight: 'bold'
         },
         text: "" + categoryName
@@ -206,7 +228,7 @@ shopDataTableView = (function() {
       if (Titanium.Platform.osname === "iphone") {
         row = Ti.UI.createTableViewRow({
           width: 'auto',
-          height: 40,
+          height: 80,
           borderWidth: 0,
           className: 'shopData',
           numberOfPrefecture: numberOfPrefecture,
@@ -229,7 +251,7 @@ shopDataTableView = (function() {
       } else if (Titanium.Platform.osname === "android") {
         row = Ti.UI.createTableViewRow({
           width: 'auto',
-          height: 40,
+          height: 80,
           className: 'shopData',
           numberOfPrefecture: numberOfPrefecture,
           prefectureNameList: prefectureNameList,
@@ -237,7 +259,7 @@ shopDataTableView = (function() {
         });
         view = Ti.UI.createView({
           width: 'auto',
-          height: 40,
+          height: 80,
           backgroundGradient: {
             type: 'linear',
             startPoint: {
@@ -279,9 +301,10 @@ shopDataTableView = (function() {
       item = prefectureNameList[_i];
       subMenu = Ti.UI.createTableViewRow({
         width: 'auto',
-        height: 40,
+        height: 60,
         borderWidth: 0,
         className: 'subMenu',
+        prefectureName: item.name,
         backgroundGradient: {
           type: 'linear',
           startPoint: {
@@ -297,12 +320,12 @@ shopDataTableView = (function() {
       });
       subMenuLabel = Ti.UI.createLabel({
         width: 240,
-        height: 20,
+        height: 40,
         top: 5,
         left: 30,
         color: '#222',
         font: {
-          fontSize: 16,
+          fontSize: 24,
           fontWeight: 'bold'
         },
         text: item.name
