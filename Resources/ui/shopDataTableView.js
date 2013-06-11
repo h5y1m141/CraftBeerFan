@@ -173,7 +173,8 @@ shopDataTableView = (function() {
       }
     ];
     this.table.addEventListener('click', function(e) {
-      var curretRowIndex, opendFlg, prefectureNameList;
+      var curretRowIndex, opendFlg, prefectureNameList, that;
+      that = _this;
       opendFlg = e.row.opendFlg;
       prefectureNameList = e.row.prefectureNameList;
       curretRowIndex = e.index;
@@ -192,16 +193,33 @@ shopDataTableView = (function() {
             "state": e.row.prefectureName
           }
         }, function(e) {
-          var i, place, _results;
+          var activeTab, i, placeData, shopDataRow, shopDataRowTable, shopDataRows, shopWindow;
           if (e.success) {
             i = 0;
-            _results = [];
+            shopDataRows = [];
+            shopDataRowTable = Ti.UI.createTableView({
+              width: 'auto',
+              height: 'auto'
+            });
+            shopDataRowTable.addEventListener('click', function(e) {
+              return Ti.API.info("start. data is " + e.row.shopData);
+            });
             while (i < e.places.length) {
-              place = e.places[i];
-              Ti.API.info(place.name);
-              _results.push(i++);
+              placeData = e.places[i];
+              Ti.API.info(placeData.name);
+              shopDataRow = that._createShopDataRow(placeData);
+              shopDataRows.push(shopDataRow);
+              i++;
             }
-            return _results;
+            activeTab = Ti.API._activeTab;
+            shopDataRowTable.setData(shopDataRows);
+            shopWindow = Ti.UI.createWindow({
+              title: "地域別のお店情報",
+              barColor: "#DD9F00",
+              backgroundColor: "#343434"
+            });
+            shopWindow.add(shopDataRowTable);
+            return activeTab.open(shopWindow);
           } else {
             return Ti.API.info("Error:\n" + ((e.error && e.message) || JSON.stringify(e)));
           }
@@ -220,7 +238,7 @@ shopDataTableView = (function() {
         left: 5,
         color: '#222',
         font: {
-          fontSize: 24,
+          fontSize: 18,
           fontWeight: 'bold'
         },
         text: "" + categoryName
@@ -228,7 +246,7 @@ shopDataTableView = (function() {
       if (Titanium.Platform.osname === "iphone") {
         row = Ti.UI.createTableViewRow({
           width: 'auto',
-          height: 80,
+          height: 40,
           borderWidth: 0,
           className: 'shopData',
           numberOfPrefecture: numberOfPrefecture,
@@ -301,7 +319,7 @@ shopDataTableView = (function() {
       item = prefectureNameList[_i];
       subMenu = Ti.UI.createTableViewRow({
         width: 'auto',
-        height: 60,
+        height: 40,
         borderWidth: 0,
         className: 'subMenu',
         prefectureName: item.name,
@@ -325,7 +343,7 @@ shopDataTableView = (function() {
         left: 30,
         color: '#222',
         font: {
-          fontSize: 24,
+          fontSize: 14,
           fontWeight: 'bold'
         },
         text: item.name
@@ -362,6 +380,85 @@ shopDataTableView = (function() {
     while (d2 < d1 + time) {
       d2 = new Date().getTime();
     }
+  };
+
+  shopDataTableView.prototype._createShopDataRow = function(placeData) {
+    var addressLabel, row, titleLabel, view;
+    titleLabel = Ti.UI.createLabel({
+      width: 240,
+      height: 20,
+      top: 5,
+      left: 5,
+      color: '#222',
+      font: {
+        fontSize: 16,
+        fontWeight: 'bold'
+      },
+      text: "" + placeData.name
+    });
+    addressLabel = Ti.UI.createLabel({
+      width: 240,
+      height: 20,
+      top: 25,
+      left: 20,
+      color: '#444',
+      font: {
+        fontSize: 12
+      },
+      text: "" + placeData.address
+    });
+    if (Titanium.Platform.osname === "iphone") {
+      row = Ti.UI.createTableViewRow({
+        width: 'auto',
+        height: 45,
+        borderWidth: 0,
+        hasChild: true,
+        placeData: placeData,
+        className: 'shopData',
+        backgroundGradient: {
+          type: 'linear',
+          startPoint: {
+            x: '0%',
+            y: '0%'
+          },
+          endPoint: {
+            x: '0%',
+            y: '100%'
+          },
+          colors: this.colorSet
+        }
+      });
+      row.add(titleLabel);
+      row.add(addressLabel);
+    } else if (Titanium.Platform.osname === "android") {
+      row = Ti.UI.createTableViewRow({
+        width: 'auto',
+        height: 80,
+        className: 'shopData',
+        hasDetail: true
+      });
+      view = Ti.UI.createView({
+        width: 'auto',
+        height: 80,
+        backgroundGradient: {
+          type: 'linear',
+          startPoint: {
+            x: '0%',
+            y: '0%'
+          },
+          endPoint: {
+            x: '0%',
+            y: '100%'
+          },
+          colors: this.colorSet
+        }
+      });
+      view.add(textLabel);
+      row.add(view);
+    } else {
+      Ti.API.info('no platform');
+    }
+    return row;
   };
 
   return shopDataTableView;

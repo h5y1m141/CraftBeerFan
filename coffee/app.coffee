@@ -7,15 +7,16 @@ mapWindow = Ti.UI.createWindow
   barColor:"#DD9F00"
   backgroundColor: "#343434"
   
+# 1.0から0.001の間で縮尺尺度を示している。
+# 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
+  
 mapView = Titanium.Map.createView
   mapType: Titanium.Map.STANDARD_TYPE
   region: 
     latitude:35.676564
     longitude:139.765076
-    # 1.0から0.001の間で縮尺尺度を示している。
-    # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
-    latitudeDelta:0.1
-    longitudeDelta:0.1
+    latitudeDelta:1.0
+    longitudeDelta:1.0
   animate:true
   regionFit:true
   userLocation:true
@@ -102,8 +103,8 @@ Ti.Geolocation.addEventListener("location", (e) ->
   mapView.setLocation # 現在地まで地図をスクロールする
     latitude: latitude
     longitude: longitude
-    latitudeDelta: 0.1
-    longitudeDelta: 0.1
+    latitudeDelta: 0.05
+    longitudeDelta: 0.05
 
   Cloud.Places.query
     page: 1
@@ -112,7 +113,7 @@ Ti.Geolocation.addEventListener("location", (e) ->
       lnglat:
         # $nearSphere: [139.672004, 35.658839] # longitude, latitude
         $nearSphere:[longitude,latitude] 
-        $maxDistance: 0.00126
+        $maxDistance: 0.01
   , (e) ->
     if e.success
       i = 0
@@ -156,8 +157,7 @@ tabGroup.addEventListener('focus',(e) ->
 )
 tab = Ti.UI.createTab
   window:mapWindow
-  title:'探す'
-  icon:"ui/image/marker.png"
+  icon:"ui/image/dark_pin@2x.png"
 
 shopData = new shopDataTableView()
 shopDataWindow = Ti.UI.createWindow
@@ -169,8 +169,7 @@ shopDataWindow.add shopData
 
 shopDataTab = Ti.UI.createTab
   window:shopDataWindow
-  title:'リスト'
-  icon:"ui/image/marker.png"
+  icon:"ui/image/dark_list@2x.png"
   
 tabGroup.addTab tab
 tabGroup.addTab shopDataTab

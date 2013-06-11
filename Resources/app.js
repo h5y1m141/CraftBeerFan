@@ -15,8 +15,8 @@ mapView = Titanium.Map.createView({
   region: {
     latitude: 35.676564,
     longitude: 139.765076,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1
+    latitudeDelta: 1.0,
+    longitudeDelta: 1.0
   },
   animate: true,
   regionFit: true,
@@ -107,8 +107,8 @@ Ti.Geolocation.addEventListener("location", function(e) {
   mapView.setLocation({
     latitude: latitude,
     longitude: longitude,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05
   });
   return Cloud.Places.query({
     page: 1,
@@ -116,7 +116,7 @@ Ti.Geolocation.addEventListener("location", function(e) {
     where: {
       lnglat: {
         $nearSphere: [longitude, latitude],
-        $maxDistance: 0.00126
+        $maxDistance: 0.01
       }
     }
   }, function(e) {
@@ -164,8 +164,7 @@ tabGroup.addEventListener('focus', function(e) {
 
 tab = Ti.UI.createTab({
   window: mapWindow,
-  title: '探す',
-  icon: "ui/image/marker.png"
+  icon: "ui/image/dark_pin@2x.png"
 });
 
 shopData = new shopDataTableView();
@@ -180,8 +179,7 @@ shopDataWindow.add(shopData);
 
 shopDataTab = Ti.UI.createTab({
   window: shopDataWindow,
-  title: 'リスト',
-  icon: "ui/image/marker.png"
+  icon: "ui/image/dark_list@2x.png"
 });
 
 tabGroup.addTab(tab);
