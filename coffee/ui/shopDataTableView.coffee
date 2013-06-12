@@ -67,8 +67,7 @@ class shopDataTableView
     ,
       color: "#ededed"
       position: 1.0
-    ]      
-    
+    ]
     
     @table.addEventListener('click',(e) =>
       that = @
@@ -126,22 +125,10 @@ class shopDataTableView
             Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
         return
 
-            
-            
-
-
-      
-
     )
+    
     rows = []
     PrefectureCategory = @_makePrefectureCategory prefectures
-
-    
-    # for categoryName of PrefectureCategory
-    #   alert categoryName
-    #   Ti.API.info PrefectureCategory[categoryName].length
-    #
-     
     for categoryName of PrefectureCategory
       numberOfPrefecture = PrefectureCategory[categoryName].length
       prefectureNameList = PrefectureCategory[categoryName]  
@@ -153,7 +140,7 @@ class shopDataTableView
         left:5
         color:'#222'
         font:
-          fontSize:18
+          fontSize:'18sp'
           fontWeight:'bold'
         text:"#{categoryName}"
 
@@ -259,8 +246,7 @@ class shopDataTableView
         left:30
         color:'#222'
         font:
-          fontSize:14
-          fontWeight:'bold'
+          fontSize:'18sp'
         text:item.name
       subMenu.add subMenuLabel
       @table.insertRowAfter(index,subMenu,{animated:false})
@@ -302,7 +288,7 @@ class shopDataTableView
       left:5
       color:'#222'
       font:
-        fontSize:16
+        fontSize:'16sp'
         fontWeight:'bold'
       text:"#{placeData.name}"
       
@@ -313,7 +299,7 @@ class shopDataTableView
       left:20
       color:'#444'
       font:
-        fontSize:12
+        fontSize:'12sp'
       text:"#{placeData.address}"
 
     if Titanium.Platform.osname is "iphone"

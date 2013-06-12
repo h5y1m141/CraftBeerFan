@@ -120,12 +120,17 @@ Ti.Geolocation.addEventListener("location", function(e) {
       }
     }
   }, function(e) {
-    var annotation, i, place, _results;
+    var annotation, i, place, tumblrImage, _results;
     if (e.success) {
       i = 0;
       _results = [];
       while (i < e.places.length) {
         place = e.places[i];
+        tumblrImage = Titanium.UI.createImageView({
+          width: "26dip",
+          height: "40dip",
+          image: "ui/image/tumblr.png"
+        });
         annotation = Titanium.Map.createAnnotation({
           latitude: place.latitude,
           longitude: place.longitude,
@@ -133,10 +138,10 @@ Ti.Geolocation.addEventListener("location", function(e) {
           phoneNumber: place.phone_number,
           shopAddress: place.address,
           subtitle: "",
-          pincolor: Titanium.Map.ANNOTATION_PURPLE,
+          image: "ui/image/tumblrIcon.png",
           animate: false,
-          leftButton: "images/atlanta.jpg",
-          rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
+          leftButton: "",
+          rightButton: "ui/image/tumblrIcon.png"
         });
         mapView.addAnnotation(annotation);
         _results.push(i++);

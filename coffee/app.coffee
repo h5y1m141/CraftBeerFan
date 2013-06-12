@@ -121,6 +121,11 @@ Ti.Geolocation.addEventListener("location", (e) ->
         place = e.places[i]
 
         # Ti.API.info "id: " + place.id + "\n" + "name: " + place.name + "\n" + "longitude: " + place.longitude + "\n" + "latitude: " + place.latitude + "\n" + "updated_at: " + place.updated_at
+        tumblrImage = Titanium.UI.createImageView
+          width : "26dip"
+          height : "40dip"
+          image : "ui/image/tumblr.png"
+          
         annotation = Titanium.Map.createAnnotation(
           latitude: place.latitude
           longitude: place.longitude
@@ -128,10 +133,10 @@ Ti.Geolocation.addEventListener("location", (e) ->
           phoneNumber: place.phone_number
           shopAddress: place.address
           subtitle: ""
-          pincolor: Titanium.Map.ANNOTATION_PURPLE
+          image:"ui/image/tumblrIcon.png"
           animate: false
-          leftButton: "images/atlanta.jpg"
-          rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
+          leftButton: ""
+          rightButton: "ui/image/tumblrIcon.png"
         )
         # annotation.addEventListener('click',(e)->
         #   Ti.API.info "id: #{place.id} and state is #{place.name} and phone_number is #{place.phone_number}"
@@ -164,7 +169,7 @@ shopDataWindow = Ti.UI.createWindow
   title: "お店のリスト"
   barColor:"#DD9F00"
   backgroundColor: "#343434"
-  
+
 shopDataWindow.add shopData
 
 shopDataTab = Ti.UI.createTab
