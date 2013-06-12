@@ -238,7 +238,7 @@ shopDataTableView = (function() {
         left: 5,
         color: '#222',
         font: {
-          fontSize: '18dip',
+          fontSize: '18sp',
           fontWeight: 'bold'
         },
         text: "" + categoryName
@@ -343,7 +343,7 @@ shopDataTableView = (function() {
         left: 30,
         color: '#222',
         font: {
-          fontSize: '18dip'
+          fontSize: '18sp'
         },
         text: item.name
       });
@@ -390,7 +390,7 @@ shopDataTableView = (function() {
       left: 5,
       color: '#222',
       font: {
-        fontSize: '16dip',
+        fontSize: '16sp',
         fontWeight: 'bold'
       },
       text: "" + placeData.name
@@ -402,7 +402,7 @@ shopDataTableView = (function() {
       left: 20,
       color: '#444',
       font: {
-        fontSize: '12dip'
+        fontSize: '12sp'
       },
       text: "" + placeData.address
     });
