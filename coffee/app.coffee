@@ -121,6 +121,11 @@ Ti.Geolocation.addEventListener("location", (e) ->
         place = e.places[i]
 
         # Ti.API.info "id: " + place.id + "\n" + "name: " + place.name + "\n" + "longitude: " + place.longitude + "\n" + "latitude: " + place.latitude + "\n" + "updated_at: " + place.updated_at
+        tumblrImage = Titanium.UI.createImageView
+          width : "26dip"
+          height : "40dip"
+          image : "ui/image/tumblr.png"
+          
         annotation = Titanium.Map.createAnnotation(
           latitude: place.latitude
           longitude: place.longitude
@@ -128,7 +133,7 @@ Ti.Geolocation.addEventListener("location", (e) ->
           phoneNumber: place.phone_number
           shopAddress: place.address
           subtitle: ""
-          pincolor: Titanium.Map.ANNOTATION_PURPLE
+          image:"ui/image/tumblrIcon.png"
           animate: false
           leftButton: ""
           rightButton: "ui/image/tumblrIcon.png"
