@@ -130,8 +130,8 @@ Ti.Geolocation.addEventListener("location", (e) ->
           subtitle: ""
           pincolor: Titanium.Map.ANNOTATION_PURPLE
           animate: false
-          leftButton: "images/atlanta.jpg"
-          rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
+          leftButton: ""
+          rightButton: "ui/image/tumblrIcon.png"
         )
         # annotation.addEventListener('click',(e)->
         #   Ti.API.info "id: #{place.id} and state is #{place.name} and phone_number is #{place.phone_number}"
@@ -164,7 +164,7 @@ shopDataWindow = Ti.UI.createWindow
   title: "お店のリスト"
   barColor:"#DD9F00"
   backgroundColor: "#343434"
-  
+
 shopDataWindow.add shopData
 
 shopDataTab = Ti.UI.createTab

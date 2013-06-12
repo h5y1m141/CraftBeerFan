@@ -135,8 +135,8 @@ Ti.Geolocation.addEventListener("location", function(e) {
           subtitle: "",
           pincolor: Titanium.Map.ANNOTATION_PURPLE,
           animate: false,
-          leftButton: "images/atlanta.jpg",
-          rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
+          leftButton: "",
+          rightButton: "ui/image/tumblrIcon.png"
         });
         mapView.addAnnotation(annotation);
         _results.push(i++);
