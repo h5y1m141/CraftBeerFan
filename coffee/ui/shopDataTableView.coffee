@@ -87,48 +87,38 @@ class shopDataTableView
       else
 
         prefectureName = e.row.prefectureName
-        Cloud.Places.query
-          page: 1
-          per_page: 200
-          where: {"state":e.row.prefectureName}
-        , (e) ->
-          if e.success
-            i = 0
-            shopDataRows = []
-            shopDataRowTable = Ti.UI.createTableView
-              width:'auto'
-              height:'auto'
-              
-            shopDataRowTable.addEventListener('click',(e) ->
-              Ti.API.info "start. data is #{e.row.shopData}"
-              
-            )
+        shopDataList = @_groupingShopDataby(prefectureName)
+        
+        shopDataRows = []
+        shopDataRowTable = Ti.UI.createTableView
+          width:'auto'
+          height:'auto'
+          
+        shopDataRowTable.addEventListener('click',(e) ->
+          Ti.API.info "start. data is #{e.row.shopData}"
+          
+        )
+        if typeof shopDataList[prefectureName] is "undefined"
+          alert "選択した地域のお店がみつかりません"
+        else
+        
+          for _items in shopDataList[prefectureName]
+            Ti.API.info "お店の名前:#{_items.name}"
+            shopDataRow = @_createShopDataRow(_items)
+            shopDataRows.push(shopDataRow)
             
-            while i < e.places.length
-              placeData = e.places[i]
-              Ti.API.info placeData.name
-              shopDataRow = that._createShopDataRow(placeData)
-              shopDataRows.push(shopDataRow)
-              i++
-              
-            activeTab = Ti.API._activeTab
-              
-            # shopDataRowTable.startLayout()            
-            shopDataRowTable.setData(shopDataRows)
-            # shopDataRowTable.finishLayout()
+          shopDataRowTable.startLayout()
+          shopDataRowTable.setData(shopDataRows)
+          shopDataRowTable.finishLayout()
             
-            shopWindow = Ti.UI.createWindow
-              title: "地域別のお店情報"
-              barColor:"#DD9F00"
-              backgroundColor: "#343434"
-            shopWindow.add shopDataRowTable
-            activeTab.open(shopWindow )
-            
-
-          else
-            Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
-        return
-
+          shopWindow = Ti.UI.createWindow
+            title: "地域別のお店情報"
+            barColor:"#DD9F00"
+            backgroundColor: "#343434"
+          shopWindow.add shopDataRowTable
+          activeTab = Ti.API._activeTab
+          activeTab.open(shopWindow )
+          return
     )
     
     rows = []
@@ -215,6 +205,7 @@ class shopDataTableView
       return row.area
     )
     return result
+    
   _showSubMenu:(prefectureNameList,curretRowIndex) ->
     
     index = curretRowIndex
@@ -360,7 +351,18 @@ class shopDataTableView
     json = JSON.parse(file);
 
     return json
-            
+
+  # 引数に与えた都道府県名にマッチするお店
+  # 情報だけを抽出する
+  _groupingShopDataby:(prefectureName) ->
+    _ =  require("lib/underscore-1.4.3.min")
+    _result = _.groupBy(@shopData,(row) ->
+      row.state
+    )
+    
+    return _result
+    
+
 module.exports = shopDataTableView
 
 
