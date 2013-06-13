@@ -68,6 +68,9 @@ class shopDataTableView
       color: "#ededed"
       position: 1.0
     ]
+
+    @shopData = @_loadData()
+
     
     @table.addEventListener('click',(e) =>
       that = @
@@ -82,7 +85,8 @@ class shopDataTableView
         @_hideSubMenu(curretRowIndex,prefectureNameList.length)
         e.row.opendFlg = false
       else
-        Ti.API.info e.row.prefectureName
+
+        prefectureName = e.row.prefectureName
         Cloud.Places.query
           page: 1
           per_page: 200
@@ -349,7 +353,14 @@ class shopDataTableView
     else
       Ti.API.info 'no platform'
     return row
-        
+    
+  _loadData:() ->
+    shopData = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/shopData.json")
+    file = shopData.read().toString();
+    json = JSON.parse(file);
+
+    return json
+            
 module.exports = shopDataTableView
 
 

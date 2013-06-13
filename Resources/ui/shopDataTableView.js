@@ -172,8 +172,9 @@ shopDataTableView = (function() {
         position: 1.0
       }
     ];
+    this.shopData = this._loadData();
     this.table.addEventListener('click', function(e) {
-      var curretRowIndex, opendFlg, prefectureNameList, that;
+      var curretRowIndex, opendFlg, prefectureName, prefectureNameList, that;
       that = _this;
       opendFlg = e.row.opendFlg;
       prefectureNameList = e.row.prefectureNameList;
@@ -185,7 +186,7 @@ shopDataTableView = (function() {
         _this._hideSubMenu(curretRowIndex, prefectureNameList.length);
         return e.row.opendFlg = false;
       } else {
-        Ti.API.info(e.row.prefectureName);
+        prefectureName = e.row.prefectureName;
         Cloud.Places.query({
           page: 1,
           per_page: 200,
@@ -458,6 +459,14 @@ shopDataTableView = (function() {
       Ti.API.info('no platform');
     }
     return row;
+  };
+
+  shopDataTableView.prototype._loadData = function() {
+    var file, json, shopData;
+    shopData = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/shopData.json");
+    file = shopData.read().toString();
+    json = JSON.parse(file);
+    return json;
   };
 
   return shopDataTableView;
