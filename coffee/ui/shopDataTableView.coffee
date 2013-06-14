@@ -95,8 +95,7 @@ class shopDataTableView
           height:'auto'
           
         shopDataRowTable.addEventListener('click',(e) ->
-          Ti.API.info "start. data is #{e.row.shopData}"
-          
+          Ti.API.info "start. data is #{e.row.placeData}"
         )
         if typeof shopDataList[prefectureName] is "undefined"
           alert "選択した地域のお店がみつかりません"
