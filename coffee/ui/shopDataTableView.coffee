@@ -51,23 +51,26 @@ class shopDataTableView
       {"name":"沖縄県","area":"九州・沖縄"}      
     ]
     @table = Ti.UI.createTableView
-      backgroundColor:'#fff'
-      separatorColor: '#ccc'
+      backgroundColor:'"#f8f8f8"'
+      separatorColor: '##ecf0f1'
       width:'auto'
       height:'auto'
       left:0
       top:0
       
     @colorSet = [
-      color: "#fff"
+      color: "#f8f8f8"
       position: 0.0
     ,
-      color: "#eee"
-      position: 0.3
+      color: "#f2f2f2"
+      position: 0.5
     ,
-      color: "#ededed"
+      color: "#eeeeee"
       position: 1.0
     ]
+
+    @shopData = @_loadData()
+
     
     @table.addEventListener('click',(e) =>
       that = @
@@ -82,49 +85,39 @@ class shopDataTableView
         @_hideSubMenu(curretRowIndex,prefectureNameList.length)
         e.row.opendFlg = false
       else
-        Ti.API.info e.row.prefectureName
-        Cloud.Places.query
-          page: 1
-          per_page: 200
-          where: {"state":e.row.prefectureName}
-        , (e) ->
-          if e.success
-            i = 0
-            shopDataRows = []
-            shopDataRowTable = Ti.UI.createTableView
-              width:'auto'
-              height:'auto'
-              
-            shopDataRowTable.addEventListener('click',(e) ->
-              Ti.API.info "start. data is #{e.row.shopData}"
-              
-            )
-            
-            while i < e.places.length
-              placeData = e.places[i]
-              Ti.API.info placeData.name
-              shopDataRow = that._createShopDataRow(placeData)
-              shopDataRows.push(shopDataRow)
-              i++
-              
-            activeTab = Ti.API._activeTab
-              
-            # shopDataRowTable.startLayout()            
-            shopDataRowTable.setData(shopDataRows)
-            # shopDataRowTable.finishLayout()
-            
-            shopWindow = Ti.UI.createWindow
-              title: "地域別のお店情報"
-              barColor:"#DD9F00"
-              backgroundColor: "#343434"
-            shopWindow.add shopDataRowTable
-            activeTab.open(shopWindow )
-            
 
-          else
-            Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
-        return
-
+        prefectureName = e.row.prefectureName
+        shopDataList = @_groupingShopDataby(prefectureName)
+        
+        shopDataRows = []
+        shopDataRowTable = Ti.UI.createTableView
+          width:'auto'
+          height:'auto'
+          
+        shopDataRowTable.addEventListener('click',(e) ->
+          Ti.API.info "start. data is #{e.row.placeData}"
+        )
+        if typeof shopDataList[prefectureName] is "undefined"
+          alert "選択した地域のお店がみつかりません"
+        else
+        
+          for _items in shopDataList[prefectureName]
+            Ti.API.info "お店の名前:#{_items.name}"
+            shopDataRow = @_createShopDataRow(_items)
+            shopDataRows.push(shopDataRow)
+            
+          shopDataRowTable.startLayout()
+          shopDataRowTable.setData(shopDataRows)
+          shopDataRowTable.finishLayout()
+            
+          shopWindow = Ti.UI.createWindow
+            title: "地域別のお店情報"
+            barColor:"#DD9F00"
+            backgroundColor: "#f8f8f8"
+          shopWindow.add shopDataRowTable
+          activeTab = Ti.API._activeTab
+          activeTab.open(shopWindow )
+          return
     )
     
     rows = []
@@ -211,6 +204,7 @@ class shopDataTableView
       return row.area
     )
     return result
+    
   _showSubMenu:(prefectureNameList,curretRowIndex) ->
     
     index = curretRowIndex
@@ -349,7 +343,25 @@ class shopDataTableView
     else
       Ti.API.info 'no platform'
     return row
-        
+    
+  _loadData:() ->
+    shopData = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/shopData.json")
+    file = shopData.read().toString();
+    json = JSON.parse(file);
+
+    return json
+
+  # 引数に与えた都道府県名にマッチするお店
+  # 情報だけを抽出する
+  _groupingShopDataby:(prefectureName) ->
+    _ =  require("lib/underscore-1.4.3.min")
+    _result = _.groupBy(@shopData,(row) ->
+      row.state
+    )
+    
+    return _result
+    
+
 module.exports = shopDataTableView
 
 

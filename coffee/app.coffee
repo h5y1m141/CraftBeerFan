@@ -1,15 +1,27 @@
 Cloud = require('ti.cloud')
-shopDataTableView = require('ui/shopDataTableView')
 
+shopDataTableView = require('ui/shopDataTableView')
+shopDataDetail = require("ui/shopDataDetail")
+shopDataDetail = new shopDataDetail()
+shopDataDetailTable = shopDataDetail.getTable()
+
+
+shopDataWindow = Ti.UI.createWindow
+  title: "詳細情報"
+  barColor:"#DD9F00"
+  backgroundColor: "#343434"
+    
 
 mapWindow = Ti.UI.createWindow
   title: "お店の情報"
   barColor:"#DD9F00"
   backgroundColor: "#343434"
+
   
 # 1.0から0.001の間で縮尺尺度を示している。
 # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
-  
+
+    
 mapView = Titanium.Map.createView
   mapType: Titanium.Map.STANDARD_TYPE
   region: 
@@ -21,71 +33,22 @@ mapView = Titanium.Map.createView
   regionFit:true
   userLocation:true
 
-mapView.addEventListener('click',(e)->
 
-  title   = e.title
-  phoneNumber   = e.annotation.phoneNumber
-  shopAddress = e.annotation.shopAddress
-  if e.clicksource is 'rightButton'
-    annotation = e.annotation;
-    shopDataWindow = Ti.UI.createWindow
-      title: "詳細情報"
+mapView.addEventListener('click',(e)->
+  if e.clicksource is "rightButton"
+    Ti.API.info "map view event fire"
+    _win = Ti.UI.createWindow
+      title: "お店の詳細情報"
       barColor:"#DD9F00"
       backgroundColor: "#343434"
-      
-    shopData = []  
-    section = Ti.UI.createTableViewSection
-      headerTitle: title
-
-    addressRow = Ti.UI.createTableViewRow
-      width:'auto'
-      height:40
-
-      
-    addressLabel = Ti.UI.createLabel
-      text: "#{shopAddress}"
-      width:280
-      left:20
-      top:10
     
-    phoneRow = Ti.UI.createTableViewRow
-      width:'auto'
-      height:40
+    _win.add shopDataDetailTable
     
-    phoneLabel = Ti.UI.createLabel
-      text: phoneNumber
-      left:20
-      top:10
-      width:120
-
-    callBtn = Ti.UI.createButton
-      title:'電話する'
-      width:100
-      height:25
-      left:150
-      top:10
-      
-    callBtn.addEventListener('click',()->
-      Ti.API.info phoneNumber
-      Titanium.Platform.openURL("tel:#{phoneNumber}")
-    )
+    shopDataDetail.setData(e)
+    shopDataDetail.show()
+    activeTab = Ti.API._activeTab
     
-    addressRow.add addressLabel
-    phoneRow.add phoneLabel
-    phoneRow.add callBtn
-    
-    shopData.push section  
-    shopData.push addressRow
-    shopData.push phoneRow
-
-    tableView = Ti.UI.createTableView
-      width:'auto'
-      height:'auto'
-      data:shopData  
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
-    shopDataWindow.add tableView
-    activeTab = Ti.API._activeTab    
-    activeTab.open(shopDataWindow)
+    activeTab.open(_win)
   
 )    
 mapView.hide()  
