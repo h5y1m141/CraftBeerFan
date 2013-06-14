@@ -3,11 +3,11 @@ class shopDataDetail
     shopDataWindow = Ti.UI.createWindow
       title: "詳細情報"
       barColor:"#DD9F00"
-      backgroundColor: "#343434"
+      backgroundColor: "#f8f8f8"
       
     shopData = []  
     @section = Ti.UI.createTableViewSection
-      headerTitle: data.title
+      headerTitle: ""
 
     addressRow = Ti.UI.createTableViewRow
       width:'auto'
@@ -15,7 +15,7 @@ class shopDataDetail
 
       
     @addressLabel = Ti.UI.createLabel
-      text: data.annotation.shopAddress
+      text: ""
       width:280
       left:20
       top:10
@@ -25,7 +25,7 @@ class shopDataDetail
       height:40
     
     @phoneLabel = Ti.UI.createLabel
-      text: data.annotation.phoneNumber
+      text: ""
       left:20
       top:10
       width:120
@@ -36,11 +36,7 @@ class shopDataDetail
       height:25
       left:150
       top:10
-      phoneNumber:""
       
-    @callBtn.addEventListener('click',(e)->
-      Titanium.Platform.openURL("tel:#{data.annotation.phoneNumber}")
-    )
     
     addressRow.add @addressLabel
     phoneRow.add @phoneLabel
@@ -55,7 +51,23 @@ class shopDataDetail
       height:'auto'
       data:shopData  
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+    @tableView.hide()
 
+  show: () ->
+    return @tableView.show()
+    
+  getTable:() ->
     return @tableView
+    
+  setData: (data) ->
 
+    @addressLabel.setText(data.annotation.shopAddress)
+    @phoneLabel.setText(data.annotation.phoneNumber)
+    @callBtn.addEventListener('click',(e)->
+      Titanium.Platform.openURL("tel:#{data.annotation.phoneNumber}")
+    )
+    @section.setHeaderTitle(data.title)
+    return
+
+      
 module.exports = shopDataDetail    

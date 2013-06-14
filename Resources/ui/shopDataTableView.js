@@ -153,8 +153,8 @@ shopDataTableView = (function() {
       }
     ];
     this.table = Ti.UI.createTableView({
-      backgroundColor: '#fff',
-      separatorColor: '#ccc',
+      backgroundColor: '"#f8f8f8"',
+      separatorColor: '##ecf0f1',
       width: 'auto',
       height: 'auto',
       left: 0,
@@ -162,13 +162,13 @@ shopDataTableView = (function() {
     });
     this.colorSet = [
       {
-        color: "#fff",
+        color: "#f8f8f8",
         position: 0.0
       }, {
-        color: "#eee",
-        position: 0.3
+        color: "#f2f2f2",
+        position: 0.5
       }, {
-        color: "#ededed",
+        color: "#eeeeee",
         position: 1.0
       }
     ];
@@ -212,7 +212,7 @@ shopDataTableView = (function() {
           shopWindow = Ti.UI.createWindow({
             title: "地域別のお店情報",
             barColor: "#DD9F00",
-            backgroundColor: "#343434"
+            backgroundColor: "#f8f8f8"
           });
           shopWindow.add(shopDataRowTable);
           activeTab = Ti.API._activeTab;

@@ -7,7 +7,7 @@ shopDataDetail = (function() {
     shopDataWindow = Ti.UI.createWindow({
       title: "詳細情報",
       barColor: "#DD9F00",
-      backgroundColor: "#343434"
+      backgroundColor: "#f8f8f8"
     });
     shopData = [];
     this.section = Ti.UI.createTableViewSection({
