@@ -194,7 +194,7 @@ shopDataTableView = (function() {
           height: 'auto'
         });
         shopDataRowTable.addEventListener('click', function(e) {
-          return Ti.API.info("start. data is " + e.row.shopData);
+          return Ti.API.info("start. data is " + e.row.placeData);
         });
         if (typeof shopDataList[prefectureName] === "undefined") {
           return alert("選択した地域のお店がみつかりません");
