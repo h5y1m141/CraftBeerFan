@@ -11,14 +11,14 @@ shopDataDetail = (function() {
     });
     shopData = [];
     this.section = Ti.UI.createTableViewSection({
-      headerTitle: data.title
+      headerTitle: ""
     });
     addressRow = Ti.UI.createTableViewRow({
       width: 'auto',
       height: 40
     });
     this.addressLabel = Ti.UI.createLabel({
-      text: data.annotation.shopAddress,
+      text: "",
       width: 280,
       left: 20,
       top: 10
@@ -28,7 +28,7 @@ shopDataDetail = (function() {
       height: 40
     });
     this.phoneLabel = Ti.UI.createLabel({
-      text: data.annotation.phoneNumber,
+      text: "",
       left: 20,
       top: 10,
       width: 120
@@ -38,11 +38,7 @@ shopDataDetail = (function() {
       width: 100,
       height: 25,
       left: 150,
-      top: 10,
-      phoneNumber: ""
-    });
-    this.callBtn.addEventListener('click', function(e) {
-      return Titanium.Platform.openURL("tel:" + data.annotation.phoneNumber);
+      top: 10
     });
     addressRow.add(this.addressLabel);
     phoneRow.add(this.phoneLabel);
@@ -56,8 +52,25 @@ shopDataDetail = (function() {
       data: shopData,
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
     });
-    return this.tableView;
+    this.tableView.hide();
   }
+
+  shopDataDetail.prototype.show = function() {
+    return this.tableView.show();
+  };
+
+  shopDataDetail.prototype.getTable = function() {
+    return this.tableView;
+  };
+
+  shopDataDetail.prototype.setData = function(data) {
+    this.addressLabel.setText(data.annotation.shopAddress);
+    this.phoneLabel.setText(data.annotation.phoneNumber);
+    this.callBtn.addEventListener('click', function(e) {
+      return Titanium.Platform.openURL("tel:" + data.annotation.phoneNumber);
+    });
+    this.section.setHeaderTitle(data.title);
+  };
 
   return shopDataDetail;
 

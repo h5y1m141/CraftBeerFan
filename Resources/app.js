@@ -1,8 +1,20 @@
-var Cloud, mapView, mapWindow, shopData, shopDataTab, shopDataTableView, shopDataWindow, tab, tabGroup;
+var Cloud, mapView, mapWindow, shopData, shopDataDetail, shopDataDetailTable, shopDataTab, shopDataTableView, shopDataWindow, tab, tabGroup;
 
 Cloud = require('ti.cloud');
 
 shopDataTableView = require('ui/shopDataTableView');
+
+shopDataDetail = require("ui/shopDataDetail");
+
+shopDataDetail = new shopDataDetail();
+
+shopDataDetailTable = shopDataDetail.getTable();
+
+shopDataWindow = Ti.UI.createWindow({
+  title: "詳細情報",
+  barColor: "#DD9F00",
+  backgroundColor: "#343434"
+});
 
 mapWindow = Ti.UI.createWindow({
   title: "お店の情報",
@@ -24,67 +36,19 @@ mapView = Titanium.Map.createView({
 });
 
 mapView.addEventListener('click', function(e) {
-  var activeTab, addressLabel, addressRow, annotation, callBtn, phoneLabel, phoneNumber, phoneRow, section, shopAddress, shopData, shopDataWindow, tableView, title;
-  title = e.title;
-  phoneNumber = e.annotation.phoneNumber;
-  shopAddress = e.annotation.shopAddress;
-  if (e.clicksource === 'rightButton') {
-    annotation = e.annotation;
-    shopDataWindow = Ti.UI.createWindow({
-      title: "詳細情報",
+  var activeTab, _win;
+  if (e.clicksource === "rightButton") {
+    Ti.API.info("map view event fire");
+    _win = Ti.UI.createWindow({
+      title: "お店の詳細情報",
       barColor: "#DD9F00",
       backgroundColor: "#343434"
     });
-    shopData = [];
-    section = Ti.UI.createTableViewSection({
-      headerTitle: title
-    });
-    addressRow = Ti.UI.createTableViewRow({
-      width: 'auto',
-      height: 40
-    });
-    addressLabel = Ti.UI.createLabel({
-      text: "" + shopAddress,
-      width: 280,
-      left: 20,
-      top: 10
-    });
-    phoneRow = Ti.UI.createTableViewRow({
-      width: 'auto',
-      height: 40
-    });
-    phoneLabel = Ti.UI.createLabel({
-      text: phoneNumber,
-      left: 20,
-      top: 10,
-      width: 120
-    });
-    callBtn = Ti.UI.createButton({
-      title: '電話する',
-      width: 100,
-      height: 25,
-      left: 150,
-      top: 10
-    });
-    callBtn.addEventListener('click', function() {
-      Ti.API.info(phoneNumber);
-      return Titanium.Platform.openURL("tel:" + phoneNumber);
-    });
-    addressRow.add(addressLabel);
-    phoneRow.add(phoneLabel);
-    phoneRow.add(callBtn);
-    shopData.push(section);
-    shopData.push(addressRow);
-    shopData.push(phoneRow);
-    tableView = Ti.UI.createTableView({
-      width: 'auto',
-      height: 'auto',
-      data: shopData,
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
-    });
-    shopDataWindow.add(tableView);
+    _win.add(shopDataDetailTable);
+    shopDataDetail.setData(e);
+    shopDataDetail.show();
     activeTab = Ti.API._activeTab;
-    return activeTab.open(shopDataWindow);
+    return activeTab.open(_win);
   }
 });
 
