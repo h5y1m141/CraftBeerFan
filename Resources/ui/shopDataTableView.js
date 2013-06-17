@@ -153,8 +153,8 @@ shopDataTableView = (function() {
       }
     ];
     this.table = Ti.UI.createTableView({
-      backgroundColor: "#f9f9f9",
-      separatorColor: '#ecf0f1',
+      backgroundColor: "#f3f3f3",
+      separatorColor: '#cccccc',
       width: 'auto',
       height: 'auto',
       left: 0,
@@ -290,19 +290,7 @@ shopDataTableView = (function() {
           className: 'shopData',
           numberOfPrefecture: numberOfPrefecture,
           prefectureNameList: prefectureNameList,
-          opendFlg: false,
-          backgroundGradient: {
-            type: 'linear',
-            startPoint: {
-              x: '0%',
-              y: '0%'
-            },
-            endPoint: {
-              x: '0%',
-              y: '100%'
-            },
-            colors: this.colorSet
-          }
+          opendFlg: false
         });
         row.add(textLabel);
         row.add(roundLabel);
@@ -318,19 +306,7 @@ shopDataTableView = (function() {
         });
         view = Ti.UI.createView({
           width: 'auto',
-          height: 80,
-          backgroundGradient: {
-            type: 'linear',
-            startPoint: {
-              x: '0%',
-              y: '0%'
-            },
-            endPoint: {
-              x: '0%',
-              y: '100%'
-            },
-            colors: this.colorSet
-          }
+          height: 80
         });
         view.add(roundLabel);
         view.add(textLabel);

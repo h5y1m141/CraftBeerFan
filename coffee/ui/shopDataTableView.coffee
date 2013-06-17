@@ -51,8 +51,8 @@ class shopDataTableView
       {"name":"沖縄県","area":"九州・沖縄"}      
     ]
     @table = Ti.UI.createTableView
-      backgroundColor:"#f9f9f9"
-      separatorColor: '#ecf0f1'
+      backgroundColor:"#f3f3f3"
+      separatorColor: '#cccccc'
       width:'auto'
       height:'auto'
       left:0
@@ -185,17 +185,17 @@ class shopDataTableView
           numberOfPrefecture:numberOfPrefecture
           prefectureNameList:prefectureNameList
           opendFlg:false
-          backgroundGradient: 
-            type: 'linear'
-            startPoint: 
-              x: '0%',
-              y: '0%'
-            ,
-            endPoint: 
-              x: '0%'
-              y: '100%'
-            ,
-            colors: @colorSet
+          # backgroundGradient: 
+          #   type: 'linear'
+          #   startPoint: 
+          #     x: '0%',
+          #     y: '0%'
+          #   ,
+          #   endPoint: 
+          #     x: '0%'
+          #     y: '100%'
+          #   ,
+          #   colors: @colorSet
         row.add textLabel
         row.add roundLabel
       else if Titanium.Platform.osname is "android"
@@ -211,17 +211,17 @@ class shopDataTableView
         view = Ti.UI.createView
           width:'auto'
           height:80
-          backgroundGradient: 
-            type: 'linear'
-            startPoint: 
-              x: '0%',
-              y: '0%'
-            ,
-            endPoint: 
-              x: '0%'
-              y: '100%'
-            ,
-            colors: @colorSet
+          # backgroundGradient: 
+          #   type: 'linear'
+          #   startPoint: 
+          #     x: '0%',
+          #     y: '0%'
+          #   ,
+          #   endPoint: 
+          #     x: '0%'
+          #     y: '100%'
+          #   ,
+          #   colors: @colorSet
         view.add roundLabel
         view.add textLabel   
         row.add view
