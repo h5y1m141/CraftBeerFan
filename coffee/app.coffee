@@ -24,9 +24,11 @@ shopDataWindow = Ti.UI.createWindow
   title:"都道府県別リスト"
   barColor:baseColor.barColor
   backgroundColor: baseColor.backgroundColor
-    
-shopDataWindow.setTitleControl shopDataWindowTitle
 
+if Ti.Platform.osname is 'iphone'
+  shopDataWindow.setTitleControl shopDataWindowTitle
+
+  
 
 mapWindowTitle = Ti.UI.createLabel
   textAlign: 'center'
@@ -42,7 +44,8 @@ mapWindow = Ti.UI.createWindow
   barColor:baseColor.barColor
   backgroundColor: baseColor.backgroundColor
 
-mapWindow.setTitleControl mapWindowTitle
+if Ti.Platform.osname is 'iphone'
+  mapWindow.setTitleControl mapWindowTitle
 
 # 1.0から0.001の間で縮尺尺度を示している。
 # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
@@ -85,7 +88,9 @@ mapView.addEventListener('click',(e)->
         fontWeight:'bold'
       text:"お店の詳細情報"
       
-    _win.setTitleControl _winTitle
+    if Ti.Platform.osname is 'iphone'  
+      _win.setTitleControl _winTitle
+      
     _win.add shopDataDetailTable
     
     shopDataDetail.setData(e)
@@ -127,8 +132,8 @@ Ti.Geolocation.addEventListener("location", (e) ->
       while i < e.places.length
         place = e.places[i]
         tumblrImage = Titanium.UI.createImageView
-          width : "26dip"
-          height : "40dip"
+          width : "26sp"
+          height : "40sp"
           image : "ui/image/tumblr.png"
           
         annotation = Titanium.Map.createAnnotation(

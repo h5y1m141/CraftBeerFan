@@ -33,7 +33,9 @@ shopDataWindow = Ti.UI.createWindow({
   backgroundColor: baseColor.backgroundColor
 });
 
-shopDataWindow.setTitleControl(shopDataWindowTitle);
+if (Ti.Platform.osname === 'iphone') {
+  shopDataWindow.setTitleControl(shopDataWindowTitle);
+}
 
 mapWindowTitle = Ti.UI.createLabel({
   textAlign: 'center',
@@ -52,7 +54,9 @@ mapWindow = Ti.UI.createWindow({
   backgroundColor: baseColor.backgroundColor
 });
 
-mapWindow.setTitleControl(mapWindowTitle);
+if (Ti.Platform.osname === 'iphone') {
+  mapWindow.setTitleControl(mapWindowTitle);
+}
 
 mapView = Titanium.Map.createView({
   mapType: Titanium.Map.STANDARD_TYPE,
@@ -96,7 +100,9 @@ mapView.addEventListener('click', function(e) {
       },
       text: "お店の詳細情報"
     });
-    _win.setTitleControl(_winTitle);
+    if (Ti.Platform.osname === 'iphone') {
+      _win.setTitleControl(_winTitle);
+    }
     _win.add(shopDataDetailTable);
     shopDataDetail.setData(e);
     shopDataDetail.show();
@@ -144,8 +150,8 @@ Ti.Geolocation.addEventListener("location", function(e) {
       while (i < e.places.length) {
         place = e.places[i];
         tumblrImage = Titanium.UI.createImageView({
-          width: "26dip",
-          height: "40dip",
+          width: "26sp",
+          height: "40sp",
           image: "ui/image/tumblr.png"
         });
         annotation = Titanium.Map.createAnnotation({
