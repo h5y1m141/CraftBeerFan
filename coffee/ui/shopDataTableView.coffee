@@ -123,7 +123,7 @@ class shopDataTableView
             width:"44sp"
             height:"44sp"
           backButton.addEventListener('click',(e) ->
-            return shopWindow.close()
+            return shopWindow.close({animated:true})
           )      
           shopWindow = Ti.UI.createWindow
             title: "地域別のお店情報"
@@ -185,17 +185,6 @@ class shopDataTableView
           numberOfPrefecture:numberOfPrefecture
           prefectureNameList:prefectureNameList
           opendFlg:false
-          # backgroundGradient: 
-          #   type: 'linear'
-          #   startPoint: 
-          #     x: '0%',
-          #     y: '0%'
-          #   ,
-          #   endPoint: 
-          #     x: '0%'
-          #     y: '100%'
-          #   ,
-          #   colors: @colorSet
         row.add textLabel
         row.add roundLabel
       else if Titanium.Platform.osname is "android"
@@ -211,17 +200,6 @@ class shopDataTableView
         view = Ti.UI.createView
           width:'auto'
           height:80
-          # backgroundGradient: 
-          #   type: 'linear'
-          #   startPoint: 
-          #     x: '0%',
-          #     y: '0%'
-          #   ,
-          #   endPoint: 
-          #     x: '0%'
-          #     y: '100%'
-          #   ,
-          #   colors: @colorSet
         view.add roundLabel
         view.add textLabel   
         row.add view
@@ -259,23 +237,11 @@ class shopDataTableView
         height:40
         borderWidth:0
         className:'subMenu'
-        selectedBackgroundColor:"#EDAD0B"
+        backgroundColor:"#f3f3f3"
+        separatorColor: '#cccccc'
+        
         prefectureName:item.name
-        backgroundGradient: 
-          type: 'linear'
-          startPoint: 
-            x: '0%',
-            y: '0%'
-          ,
-          endPoint: 
-            x: '0%'
-            y: '100%'
-          ,
-          colors: @colorSet
 
-      # subMenu.addEventListener('click',(e) ->
-      #   alert e.row.className
-      # )    
       subMenuLabel = Ti.UI.createLabel
         width:240
         height:40

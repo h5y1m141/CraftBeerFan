@@ -11,7 +11,7 @@ class shopDataDetail
       height:"44sp"
       
     backButton.addEventListener('click',(e) ->
-      return shopDataWindow.close()
+      return shopDataWindow.close({animated:true})
     )
     shopDataWindow.leftButton = backButton
 

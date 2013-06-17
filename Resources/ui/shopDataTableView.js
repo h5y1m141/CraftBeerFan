@@ -225,7 +225,9 @@ shopDataTableView = (function() {
             height: "44sp"
           });
           backButton.addEventListener('click', function(e) {
-            return shopWindow.close();
+            return shopWindow.close({
+              animated: true
+            });
           });
           shopWindow = Ti.UI.createWindow({
             title: "地域別のお店情報",
@@ -340,20 +342,9 @@ shopDataTableView = (function() {
         height: 40,
         borderWidth: 0,
         className: 'subMenu',
-        selectedBackgroundColor: "#EDAD0B",
-        prefectureName: item.name,
-        backgroundGradient: {
-          type: 'linear',
-          startPoint: {
-            x: '0%',
-            y: '0%'
-          },
-          endPoint: {
-            x: '0%',
-            y: '100%'
-          },
-          colors: this.colorSet
-        }
+        backgroundColor: "#f3f3f3",
+        separatorColor: '#cccccc',
+        prefectureName: item.name
       });
       subMenuLabel = Ti.UI.createLabel({
         width: 240,

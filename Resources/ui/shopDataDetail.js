@@ -15,7 +15,9 @@ shopDataDetail = (function() {
       height: "44sp"
     });
     backButton.addEventListener('click', function(e) {
-      return shopDataWindow.close();
+      return shopDataWindow.close({
+        animated: true
+      });
     });
     shopDataWindow.leftButton = backButton;
     shopData = [];
