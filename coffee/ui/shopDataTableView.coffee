@@ -109,6 +109,7 @@ class shopDataTableView
           shopDataRowTable.startLayout()
           shopDataRowTable.setData(shopDataRows)
           shopDataRowTable.finishLayout()
+          
           shopAreaDataWindowTitle = Ti.UI.createLabel
             textAlign: 'center'
             color:'#333'
@@ -130,7 +131,8 @@ class shopDataTableView
             barColor:"#f9f9f9"
             backgroundColor: "#343434"
           shopWindow.leftNavButton = backButton
-          shopWindow.setTitleControl shopAreaDataWindowTitle
+          if Ti.Platform.osname is 'iphone'
+            shopWindow.setTitleControl shopAreaDataWindowTitle
           
           shopWindow.add shopDataRowTable
           activeTab = Ti.API._activeTab
@@ -140,6 +142,8 @@ class shopDataTableView
     
     rows = []
     PrefectureCategory = @_makePrefectureCategory prefectures
+
+    
     for categoryName of PrefectureCategory
       numberOfPrefecture = PrefectureCategory[categoryName].length
       prefectureNameList = PrefectureCategory[categoryName]
@@ -151,63 +155,66 @@ class shopDataTableView
         "中国・四国":"#FFF7AA"
         "九州・沖縄":"#C6EDDB"
         
-      roundLabel = Ti.UI.createLabel
-        width:40
-        height:40
-        top:5
-        left:5
-        color:prefectureColorSet.name["#{categoryName}"]
+      section = Ti.UI.createTableViewSection
+        headerTitle: "#{categoryName}"
         font:
           fontSize:'18sp'
           fontFamily : 'Rounded M+ 1p'
           fontWeight:'bold'
-        text:"●"
-      
-      textLabel = Ti.UI.createLabel
-        width:240
-        height:40
-        top:5
-        left:50
-        color:'#333'
-        font:
-          fontSize:'18sp'
-          fontFamily : 'Rounded M+ 1p'
-          fontWeight:'bold'
-        text:"#{categoryName}"
-
-      if Titanium.Platform.osname is "iphone"
-        row = Ti.UI.createTableViewRow
-          width:'auto'
-          height:40
-          borderWidth:0
-          selectedBackgroundColor:"#EDAD0B"
-          className:'shopData'
-          numberOfPrefecture:numberOfPrefecture
-          prefectureNameList:prefectureNameList
-          opendFlg:false
-        row.add textLabel
-        row.add roundLabel
-      else if Titanium.Platform.osname is "android"
-        row = Ti.UI.createTableViewRow
-          width:'auto'
-          height:80
-          selectedBackgroundColor:"#EDAD0B"
-          className:'shopData'
-          numberOfPrefecture:numberOfPrefecture
-          prefectureNameList:prefectureNameList
-          opendFlg:false
           
-        view = Ti.UI.createView
-          width:'auto'
-          height:80
-        view.add roundLabel
-        view.add textLabel   
-        row.add view
-      else
-        Ti.API.info 'no data'
-
       
-      rows.push row
+      # 都道府県のエリア毎に都道府県のrowを生成
+      for _items in prefectureNameList
+        prefectureRow = Ti.UI.createTableViewRow
+          width:'auto'
+          height:'40sp'
+          title:"#{_items.name}"
+
+        section.add prefectureRow
+
+      rows.push section
+
+
+        
+        
+      # roundLabel = Ti.UI.createLabel
+      #   width:40
+      #   height:40
+      #   top:5
+      #   left:5
+      #   color:prefectureColorSet.name["#{categoryName}"]
+      #   font:
+      #     fontSize:'18sp'
+      #     fontFamily : 'Rounded M+ 1p'
+      #     fontWeight:'bold'
+      #   text:"●"
+      
+      # textLabel = Ti.UI.createLabel
+      #   width:240
+      #   height:40
+      #   top:5
+      #   left:50
+      #   color:'#333'
+      #   font:
+      #     fontSize:'18sp'
+      #     fontFamily : 'Rounded M+ 1p'
+      #     fontWeight:'bold'
+      #   text:"#{categoryName}"
+
+      # row = Ti.UI.createTableViewRow
+      #   width:'auto'
+      #   height:40
+      #   borderWidth:0
+      #   backgroundColor:"#f3f3f3"
+      #   selectedBackgroundColor:"#EDAD0B"
+      #   className:'shopData'
+      #   numberOfPrefecture:numberOfPrefecture
+      #   prefectureNameList:prefectureNameList
+      #   opendFlg:false
+      # row.add textLabel
+      # row.add roundLabel
+      
+      # rows.push row
       
     @table.setData rows
     
@@ -308,52 +315,15 @@ class shopDataTableView
         fontFamily : 'Rounded M+ 1p'
       text:"#{placeData.address}"
 
-    if Titanium.Platform.osname is "iphone"
-      row = Ti.UI.createTableViewRow
-        width:'auto'
-        height:45
-        borderWidth:0
-        hasChild:true
-        placeData:placeData
-        className:'shopData'
-        backgroundGradient: 
-          type: 'linear'
-          startPoint: 
-            x: '0%',
-            y: '0%'
-          ,
-          endPoint: 
-            x: '0%'
-            y: '100%'
-          ,
-          colors: @colorSet
-      row.add titleLabel
-      row.add addressLabel
-    else if Titanium.Platform.osname is "android"
-      row = Ti.UI.createTableViewRow
-        width:'auto'
-        height:80
-        className:'shopData'
-        hasDetail:true
-        
-      view = Ti.UI.createView
-        width:'auto'
-        height:80
-        backgroundGradient: 
-          type: 'linear'
-          startPoint: 
-            x: '0%',
-            y: '0%'
-          ,
-          endPoint: 
-            x: '0%'
-            y: '100%'
-          ,
-          colors: @colorSet
-      view.add textLabel   
-      row.add view    
-    else
-      Ti.API.info 'no platform'
+    row = Ti.UI.createTableViewRow
+      width:'auto'
+      height:'45sp'
+      borderWidth:0
+      hasChild:true
+      placeData:placeData
+      className:'shopData'
+    row.add titleLabel
+    row.add addressLabel
     return row
     
   _loadData:() ->
