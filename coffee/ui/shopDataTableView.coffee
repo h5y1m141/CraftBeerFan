@@ -51,18 +51,18 @@ class shopDataTableView
       {"name":"沖縄県","area":"九州・沖縄"}      
     ]
     @table = Ti.UI.createTableView
-      backgroundColor:'"#f8f8f8"'
-      separatorColor: '##ecf0f1'
+      backgroundColor:"#f9f9f9"
+      separatorColor: '#ecf0f1'
       width:'auto'
       height:'auto'
       left:0
       top:0
       
     @colorSet = [
-      color: "#f8f8f8"
+      color:"#f9f9f9"
       position: 0.0
     ,
-      color: "#f2f2f2"
+      color: "#f6f6f6"
       position: 0.5
     ,
       color: "#eeeeee"
@@ -109,11 +109,29 @@ class shopDataTableView
           shopDataRowTable.startLayout()
           shopDataRowTable.setData(shopDataRows)
           shopDataRowTable.finishLayout()
-            
+          shopAreaDataWindowTitle = Ti.UI.createLabel
+            textAlign: 'center'
+            color:'#333'
+            font:
+              fontSize:'18sp'
+              fontFamily : 'Rounded M+ 1p'
+              fontWeight:'bold'
+            text:"地域別のお店情報"
+
+          backButton = Titanium.UI.createButton
+            backgroundImage:"ui/image/backButton.png"
+            width:"44sp"
+            height:"44sp"
+          backButton.addEventListener('click',(e) ->
+            return shopWindow.close()
+          )      
           shopWindow = Ti.UI.createWindow
             title: "地域別のお店情報"
-            barColor:"#DD9F00"
-            backgroundColor: "#f8f8f8"
+            barColor:"#f9f9f9"
+            backgroundColor: "#343434"
+          shopWindow.leftNavButton = backButton
+          shopWindow.setTitleControl shopAreaDataWindowTitle
+          
           shopWindow.add shopDataRowTable
           activeTab = Ti.API._activeTab
           activeTab.open(shopWindow )
@@ -124,16 +142,36 @@ class shopDataTableView
     PrefectureCategory = @_makePrefectureCategory prefectures
     for categoryName of PrefectureCategory
       numberOfPrefecture = PrefectureCategory[categoryName].length
-      prefectureNameList = PrefectureCategory[categoryName]  
+      prefectureNameList = PrefectureCategory[categoryName]
+      prefectureColorSet = "name":
+        "北海道・東北":"#EDAD0B"
+        "関東":"#3261AB"
+        "中部":"#FFEE55"
+        "近畿":"#007AB7"
+        "中国・四国":"#FFF7AA"
+        "九州・沖縄":"#C6EDDB"
+        
+      roundLabel = Ti.UI.createLabel
+        width:40
+        height:40
+        top:5
+        left:5
+        color:prefectureColorSet.name["#{categoryName}"]
+        font:
+          fontSize:'18sp'
+          fontFamily : 'Rounded M+ 1p'
+          fontWeight:'bold'
+        text:"●"
       
       textLabel = Ti.UI.createLabel
         width:240
         height:40
         top:5
-        left:5
-        color:'#222'
+        left:50
+        color:'#333'
         font:
           fontSize:'18sp'
+          fontFamily : 'Rounded M+ 1p'
           fontWeight:'bold'
         text:"#{categoryName}"
 
@@ -142,6 +180,7 @@ class shopDataTableView
           width:'auto'
           height:40
           borderWidth:0
+          selectedBackgroundColor:"#EDAD0B"
           className:'shopData'
           numberOfPrefecture:numberOfPrefecture
           prefectureNameList:prefectureNameList
@@ -158,10 +197,12 @@ class shopDataTableView
             ,
             colors: @colorSet
         row.add textLabel
+        row.add roundLabel
       else if Titanium.Platform.osname is "android"
         row = Ti.UI.createTableViewRow
           width:'auto'
           height:80
+          selectedBackgroundColor:"#EDAD0B"
           className:'shopData'
           numberOfPrefecture:numberOfPrefecture
           prefectureNameList:prefectureNameList
@@ -181,6 +222,7 @@ class shopDataTableView
               y: '100%'
             ,
             colors: @colorSet
+        view.add roundLabel
         view.add textLabel   
         row.add view
       else
@@ -217,6 +259,7 @@ class shopDataTableView
         height:40
         borderWidth:0
         className:'subMenu'
+        selectedBackgroundColor:"#EDAD0B"
         prefectureName:item.name
         backgroundGradient: 
           type: 'linear'
@@ -238,8 +281,9 @@ class shopDataTableView
         height:40
         top:5
         left:30
-        color:'#222'
+        color:'#333'
         font:
+          fontFamily : 'Rounded M+ 1p'
           fontSize:'18sp'
         text:item.name
       subMenu.add subMenuLabel
@@ -280,10 +324,11 @@ class shopDataTableView
       height:20
       top:5
       left:5
-      color:'#222'
+      color:'#333'
       font:
         fontSize:'16sp'
         fontWeight:'bold'
+        fontFamily : 'Rounded M+ 1p'
       text:"#{placeData.name}"
       
     addressLabel = Ti.UI.createLabel
@@ -294,6 +339,7 @@ class shopDataTableView
       color:'#444'
       font:
         fontSize:'12sp'
+        fontFamily : 'Rounded M+ 1p'
       text:"#{placeData.address}"
 
     if Titanium.Platform.osname is "iphone"

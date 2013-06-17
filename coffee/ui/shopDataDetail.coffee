@@ -2,12 +2,28 @@ class shopDataDetail
   constructor: (data) ->
     shopDataWindow = Ti.UI.createWindow
       title: "詳細情報"
-      barColor:"#DD9F00"
-      backgroundColor: "#f8f8f8"
+      barColor:"#ccc"
+      backgroundColor:"#f9f9f9"
+      
+    backButton = Titanium.UI.createButton
+      backgroundImage:"ui/image/backButton.png"
+      width:"44sp"
+      height:"44sp"
+      
+    backButton.addEventListener('click',(e) ->
+      return shopDataWindow.close()
+    )
+    shopDataWindow.leftButton = backButton
+
       
     shopData = []  
     @section = Ti.UI.createTableViewSection
       headerTitle: ""
+      font:
+        fontSize:'18sp'
+        fontFamily : 'Rounded M+ 1p'
+        fontWeight:'bold'
+  
 
     addressRow = Ti.UI.createTableViewRow
       width:'auto'
@@ -19,6 +35,10 @@ class shopDataDetail
       width:280
       left:20
       top:10
+      font:
+        fontSize:'18sp'
+        fontFamily : 'Rounded M+ 1p'
+        fontWeight:'bold'
     
     phoneRow = Ti.UI.createTableViewRow
       width:'auto'
@@ -28,13 +48,17 @@ class shopDataDetail
       text: ""
       left:20
       top:10
-      width:120
+      width:150
+      font:
+        fontSize:'18sp'
+        fontFamily : 'Rounded M+ 1p'
+        fontWeight:'bold'
 
     @callBtn = Ti.UI.createButton
-      title:'電話する'
-      width:100
+      title:'call'
+      width:50
       height:25
-      left:150
+      left:180
       top:10
       
     
@@ -49,7 +73,9 @@ class shopDataDetail
     @tableView = Ti.UI.createTableView
       width:'auto'
       height:'auto'
-      data:shopData  
+      data:shopData
+      backgroundColor:"#f3f3f3"
+      separatorColor: '#cccccc'
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
     @tableView.hide()
 

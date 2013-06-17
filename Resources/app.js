@@ -1,4 +1,4 @@
-var Cloud, mapView, mapWindow, shopData, shopDataDetail, shopDataDetailTable, shopDataTab, shopDataTableView, shopDataWindow, tab, tabGroup;
+var Cloud, baseColor, mapView, mapWindow, mapWindowTitle, shopData, shopDataDetail, shopDataDetailTable, shopDataTab, shopDataTableView, shopDataWindow, shopDataWindowTitle, tab, tabGroup;
 
 Cloud = require('ti.cloud');
 
@@ -10,17 +10,49 @@ shopDataDetail = new shopDataDetail();
 
 shopDataDetailTable = shopDataDetail.getTable();
 
+baseColor = {
+  barColor: "#f9f9f9",
+  backgroundColor: "#343434",
+  keyColor: "#EDAD0B"
+};
+
+shopDataWindowTitle = Ti.UI.createLabel({
+  textAlign: 'center',
+  color: '#333',
+  font: {
+    fontSize: '18sp',
+    fontFamily: 'Rounded M+ 1p',
+    fontWeight: 'bold'
+  },
+  text: "都道府県別リスト"
+});
+
 shopDataWindow = Ti.UI.createWindow({
-  title: "詳細情報",
-  barColor: "#DD9F00",
-  backgroundColor: "#343434"
+  title: "都道府県別リスト",
+  barColor: baseColor.barColor,
+  backgroundColor: baseColor.backgroundColor
+});
+
+shopDataWindow.setTitleControl(shopDataWindowTitle);
+
+mapWindowTitle = Ti.UI.createLabel({
+  textAlign: 'center',
+  color: '#333',
+  font: {
+    fontSize: '18sp',
+    fontFamily: 'Rounded M+ 1p',
+    fontWeight: 'bold'
+  },
+  text: "近くのお店"
 });
 
 mapWindow = Ti.UI.createWindow({
-  title: "お店の情報",
-  barColor: "#DD9F00",
-  backgroundColor: "#343434"
+  title: "近くのお店",
+  barColor: baseColor.barColor,
+  backgroundColor: baseColor.backgroundColor
 });
+
+mapWindow.setTitleControl(mapWindowTitle);
 
 mapView = Titanium.Map.createView({
   mapType: Titanium.Map.STANDARD_TYPE,
@@ -36,14 +68,35 @@ mapView = Titanium.Map.createView({
 });
 
 mapView.addEventListener('click', function(e) {
-  var activeTab, _win;
+  var activeTab, backButton, _win, _winTitle;
   if (e.clicksource === "rightButton") {
     Ti.API.info("map view event fire");
     _win = Ti.UI.createWindow({
-      title: "お店の詳細情報",
-      barColor: "#DD9F00",
-      backgroundColor: "#343434"
+      barColor: baseColor.barColor,
+      backgroundColor: baseColor.backgroundColor
     });
+    backButton = Titanium.UI.createButton({
+      backgroundImage: "ui/image/backButton.png",
+      width: "44sp",
+      height: "44sp"
+    });
+    backButton.addEventListener('click', function(e) {
+      return _win.close({
+        animated: true
+      });
+    });
+    _win.leftNavButton = backButton;
+    _winTitle = Ti.UI.createLabel({
+      textAlign: 'center',
+      color: '#333',
+      font: {
+        fontSize: '18sp',
+        fontFamily: 'Rounded M+ 1p',
+        fontWeight: 'bold'
+      },
+      text: "お店の詳細情報"
+    });
+    _win.setTitleControl(_winTitle);
     _win.add(shopDataDetailTable);
     shopDataDetail.setData(e);
     shopDataDetail.show();
@@ -119,7 +172,13 @@ Ti.Geolocation.addEventListener("location", function(e) {
 
 mapWindow.add(mapView);
 
-tabGroup = Ti.UI.createTabGroup();
+tabGroup = Ti.UI.createTabGroup({
+  tabsBackgroundColor: "#f9f9f9",
+  tabsBackgroundFocusedColor: baseColor.keyColor,
+  tabsBackgroundImage: "ui/image/tabbar.png",
+  activeTabBackgroundImage: "ui/image/activetab.png",
+  shadowImage: "ui/image/shadowimage.png"
+});
 
 tabGroup.addEventListener('focus', function(e) {
   tabGroup._activeTab = e.tab;
@@ -133,22 +192,20 @@ tabGroup.addEventListener('focus', function(e) {
 
 tab = Ti.UI.createTab({
   window: mapWindow,
-  icon: "ui/image/dark_pin@2x.png"
+  barColor: "#343434",
+  icon: "ui/image/inactivePin.png",
+  activeIcon: "ui/image/pin.png"
 });
 
 shopData = new shopDataTableView();
-
-shopDataWindow = Ti.UI.createWindow({
-  title: "お店のリスト",
-  barColor: "#DD9F00",
-  backgroundColor: "#343434"
-});
 
 shopDataWindow.add(shopData);
 
 shopDataTab = Ti.UI.createTab({
   window: shopDataWindow,
-  icon: "ui/image/dark_list@2x.png"
+  barColor: "#343434",
+  icon: "ui/image/inactivePin.png",
+  activeIcon: "ui/image/pin.png"
 });
 
 tabGroup.addTab(tab);

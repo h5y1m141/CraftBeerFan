@@ -6,7 +6,7 @@ shopDataTableView = (function() {
   function shopDataTableView() {
     this._hideSubMenu = __bind(this._hideSubMenu, this);
 
-    var PrefectureCategory, categoryName, numberOfPrefecture, prefectureNameList, prefectures, row, rows, textLabel, view,
+    var PrefectureCategory, categoryName, numberOfPrefecture, prefectureColorSet, prefectureNameList, prefectures, roundLabel, row, rows, textLabel, view,
       _this = this;
     prefectures = [
       {
@@ -153,8 +153,8 @@ shopDataTableView = (function() {
       }
     ];
     this.table = Ti.UI.createTableView({
-      backgroundColor: '"#f8f8f8"',
-      separatorColor: '##ecf0f1',
+      backgroundColor: "#f9f9f9",
+      separatorColor: '#ecf0f1',
       width: 'auto',
       height: 'auto',
       left: 0,
@@ -162,10 +162,10 @@ shopDataTableView = (function() {
     });
     this.colorSet = [
       {
-        color: "#f8f8f8",
+        color: "#f9f9f9",
         position: 0.0
       }, {
-        color: "#f2f2f2",
+        color: "#f6f6f6",
         position: 0.5
       }, {
         color: "#eeeeee",
@@ -174,7 +174,7 @@ shopDataTableView = (function() {
     ];
     this.shopData = this._loadData();
     this.table.addEventListener('click', function(e) {
-      var activeTab, curretRowIndex, opendFlg, prefectureName, prefectureNameList, shopDataList, shopDataRow, shopDataRowTable, shopDataRows, shopWindow, that, _i, _items, _len, _ref;
+      var activeTab, backButton, curretRowIndex, opendFlg, prefectureName, prefectureNameList, shopAreaDataWindowTitle, shopDataList, shopDataRow, shopDataRowTable, shopDataRows, shopWindow, that, _i, _items, _len, _ref;
       that = _this;
       opendFlg = e.row.opendFlg;
       prefectureNameList = e.row.prefectureNameList;
@@ -209,11 +209,31 @@ shopDataTableView = (function() {
           shopDataRowTable.startLayout();
           shopDataRowTable.setData(shopDataRows);
           shopDataRowTable.finishLayout();
+          shopAreaDataWindowTitle = Ti.UI.createLabel({
+            textAlign: 'center',
+            color: '#333',
+            font: {
+              fontSize: '18sp',
+              fontFamily: 'Rounded M+ 1p',
+              fontWeight: 'bold'
+            },
+            text: "地域別のお店情報"
+          });
+          backButton = Titanium.UI.createButton({
+            backgroundImage: "ui/image/backButton.png",
+            width: "44sp",
+            height: "44sp"
+          });
+          backButton.addEventListener('click', function(e) {
+            return shopWindow.close();
+          });
           shopWindow = Ti.UI.createWindow({
             title: "地域別のお店情報",
-            barColor: "#DD9F00",
-            backgroundColor: "#f8f8f8"
+            barColor: "#f9f9f9",
+            backgroundColor: "#343434"
           });
+          shopWindow.leftNavButton = backButton;
+          shopWindow.setTitleControl(shopAreaDataWindowTitle);
           shopWindow.add(shopDataRowTable);
           activeTab = Ti.API._activeTab;
           activeTab.open(shopWindow);
@@ -225,14 +245,38 @@ shopDataTableView = (function() {
     for (categoryName in PrefectureCategory) {
       numberOfPrefecture = PrefectureCategory[categoryName].length;
       prefectureNameList = PrefectureCategory[categoryName];
+      prefectureColorSet = {
+        "name": {
+          "北海道・東北": "#EDAD0B",
+          "関東": "#3261AB",
+          "中部": "#FFEE55",
+          "近畿": "#007AB7",
+          "中国・四国": "#FFF7AA",
+          "九州・沖縄": "#C6EDDB"
+        }
+      };
+      roundLabel = Ti.UI.createLabel({
+        width: 40,
+        height: 40,
+        top: 5,
+        left: 5,
+        color: prefectureColorSet.name["" + categoryName],
+        font: {
+          fontSize: '18sp',
+          fontFamily: 'Rounded M+ 1p',
+          fontWeight: 'bold'
+        },
+        text: "●"
+      });
       textLabel = Ti.UI.createLabel({
         width: 240,
         height: 40,
         top: 5,
-        left: 5,
-        color: '#222',
+        left: 50,
+        color: '#333',
         font: {
           fontSize: '18sp',
+          fontFamily: 'Rounded M+ 1p',
           fontWeight: 'bold'
         },
         text: "" + categoryName
@@ -242,6 +286,7 @@ shopDataTableView = (function() {
           width: 'auto',
           height: 40,
           borderWidth: 0,
+          selectedBackgroundColor: "#EDAD0B",
           className: 'shopData',
           numberOfPrefecture: numberOfPrefecture,
           prefectureNameList: prefectureNameList,
@@ -260,10 +305,12 @@ shopDataTableView = (function() {
           }
         });
         row.add(textLabel);
+        row.add(roundLabel);
       } else if (Titanium.Platform.osname === "android") {
         row = Ti.UI.createTableViewRow({
           width: 'auto',
           height: 80,
+          selectedBackgroundColor: "#EDAD0B",
           className: 'shopData',
           numberOfPrefecture: numberOfPrefecture,
           prefectureNameList: prefectureNameList,
@@ -285,6 +332,7 @@ shopDataTableView = (function() {
             colors: this.colorSet
           }
         });
+        view.add(roundLabel);
         view.add(textLabel);
         row.add(view);
       } else {
@@ -316,6 +364,7 @@ shopDataTableView = (function() {
         height: 40,
         borderWidth: 0,
         className: 'subMenu',
+        selectedBackgroundColor: "#EDAD0B",
         prefectureName: item.name,
         backgroundGradient: {
           type: 'linear',
@@ -335,8 +384,9 @@ shopDataTableView = (function() {
         height: 40,
         top: 5,
         left: 30,
-        color: '#222',
+        color: '#333',
         font: {
+          fontFamily: 'Rounded M+ 1p',
           fontSize: '18sp'
         },
         text: item.name
@@ -382,10 +432,11 @@ shopDataTableView = (function() {
       height: 20,
       top: 5,
       left: 5,
-      color: '#222',
+      color: '#333',
       font: {
         fontSize: '16sp',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontFamily: 'Rounded M+ 1p'
       },
       text: "" + placeData.name
     });
@@ -396,7 +447,8 @@ shopDataTableView = (function() {
       left: 20,
       color: '#444',
       font: {
-        fontSize: '12sp'
+        fontSize: '12sp',
+        fontFamily: 'Rounded M+ 1p'
       },
       text: "" + placeData.address
     });

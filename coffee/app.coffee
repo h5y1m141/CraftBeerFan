@@ -5,22 +5,47 @@ shopDataDetail = require("ui/shopDataDetail")
 shopDataDetail = new shopDataDetail()
 shopDataDetailTable = shopDataDetail.getTable()
 
+baseColor =
+  barColor:"#f9f9f9"
+  backgroundColor: "#343434"
+  keyColor:"#EDAD0B"
+
+shopDataWindowTitle = Ti.UI.createLabel
+  textAlign: 'center'
+  color:'#333'
+  font:
+    fontSize:'18sp'
+    fontFamily : 'Rounded M+ 1p'
+    fontWeight:'bold'
+  text:"都道府県別リスト"
+
 
 shopDataWindow = Ti.UI.createWindow
-  title: "詳細情報"
-  barColor:"#DD9F00"
-  backgroundColor: "#343434"
+  title:"都道府県別リスト"
+  barColor:baseColor.barColor
+  backgroundColor: baseColor.backgroundColor
     
+shopDataWindow.setTitleControl shopDataWindowTitle
+
+
+mapWindowTitle = Ti.UI.createLabel
+  textAlign: 'center'
+  color:'#333'
+  font:
+    fontSize:'18sp'
+    fontFamily : 'Rounded M+ 1p'
+    fontWeight:'bold'
+  text:"近くのお店"
 
 mapWindow = Ti.UI.createWindow
-  title: "お店の情報"
-  barColor:"#DD9F00"
-  backgroundColor: "#343434"
+  title: "近くのお店"
+  barColor:baseColor.barColor
+  backgroundColor: baseColor.backgroundColor
 
-  
+mapWindow.setTitleControl mapWindowTitle
+
 # 1.0から0.001の間で縮尺尺度を示している。
 # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
-
     
 mapView = Titanium.Map.createView
   mapType: Titanium.Map.STANDARD_TYPE
@@ -38,10 +63,29 @@ mapView.addEventListener('click',(e)->
   if e.clicksource is "rightButton"
     Ti.API.info "map view event fire"
     _win = Ti.UI.createWindow
-      title: "お店の詳細情報"
-      barColor:"#DD9F00"
-      backgroundColor: "#343434"
-    
+      barColor:baseColor.barColor
+      backgroundColor: baseColor.backgroundColor
+      
+    backButton = Titanium.UI.createButton
+      backgroundImage:"ui/image/backButton.png"
+      width:"44sp"
+      height:"44sp"
+      
+    backButton.addEventListener('click',(e) ->
+      return _win.close({animated:true})
+    )
+    _win.leftNavButton = backButton
+      
+    _winTitle = Ti.UI.createLabel
+      textAlign: 'center'
+      color:'#333'
+      font:
+        fontSize:'18sp'
+        fontFamily : 'Rounded M+ 1p'
+        fontWeight:'bold'
+      text:"お店の詳細情報"
+      
+    _win.setTitleControl _winTitle
     _win.add shopDataDetailTable
     
     shopDataDetail.setData(e)
@@ -82,8 +126,6 @@ Ti.Geolocation.addEventListener("location", (e) ->
       i = 0
       while i < e.places.length
         place = e.places[i]
-
-        # Ti.API.info "id: " + place.id + "\n" + "name: " + place.name + "\n" + "longitude: " + place.longitude + "\n" + "latitude: " + place.latitude + "\n" + "updated_at: " + place.updated_at
         tumblrImage = Titanium.UI.createImageView
           width : "26dip"
           height : "40dip"
@@ -101,9 +143,6 @@ Ti.Geolocation.addEventListener("location", (e) ->
           leftButton: ""
           rightButton: "ui/image/tumblrIcon.png"
         )
-        # annotation.addEventListener('click',(e)->
-        #   Ti.API.info "id: #{place.id} and state is #{place.name} and phone_number is #{place.phone_number}"
-        # )
 
         mapView.addAnnotation annotation
         i++
@@ -112,7 +151,13 @@ Ti.Geolocation.addEventListener("location", (e) ->
 )  
 
 mapWindow.add mapView
-tabGroup = Ti.UI.createTabGroup()
+tabGroup = Ti.UI.createTabGroup
+  tabsBackgroundColor:"#f9f9f9"
+  tabsBackgroundFocusedColor:baseColor.keyColor
+  tabsBackgroundImage:"ui/image/tabbar.png"
+  activeTabBackgroundImage:"ui/image/activetab.png"
+  shadowImage:"ui/image/shadowimage.png"
+
 tabGroup.addEventListener('focus',(e) ->
   tabGroup._activeTab = e.tab
   tabGroup._activeTabIndex = e.index
@@ -125,22 +170,20 @@ tabGroup.addEventListener('focus',(e) ->
 )
 tab = Ti.UI.createTab
   window:mapWindow
-  icon:"ui/image/dark_pin@2x.png"
+  barColor:"#343434"
+  icon:"ui/image/inactivePin.png"
+  activeIcon:"ui/image/pin.png"
 
 shopData = new shopDataTableView()
-shopDataWindow = Ti.UI.createWindow
-  title: "お店のリスト"
-  barColor:"#DD9F00"
-  backgroundColor: "#343434"
 
 shopDataWindow.add shopData
 
 shopDataTab = Ti.UI.createTab
   window:shopDataWindow
-  icon:"ui/image/dark_list@2x.png"
+  barColor:"#343434"
+  icon:"ui/image/inactivePin.png"
+  activeIcon:"ui/image/pin.png"
   
 tabGroup.addTab tab
 tabGroup.addTab shopDataTab
 tabGroup.open()
-
-
