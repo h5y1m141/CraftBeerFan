@@ -57,6 +57,7 @@ class shopDataTableView
       height:'auto'
       left:0
       top:0
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       
     @colorSet = [
       color:"#f9f9f9"
@@ -148,74 +149,75 @@ class shopDataTableView
       numberOfPrefecture = PrefectureCategory[categoryName].length
       prefectureNameList = PrefectureCategory[categoryName]
       prefectureColorSet = "name":
-        "北海道・東北":"#EDAD0B"
-        "関東":"#3261AB"
-        "中部":"#FFEE55"
-        "近畿":"#007AB7"
-        "中国・四国":"#FFF7AA"
-        "九州・沖縄":"#C6EDDB"
+        "北海道・東北":"#3261AB"
+        "関東":"#007FB1"
+        "中部":"#23AC0E"
+        "近畿":"#FFE600"
+        "中国・四国":"#F6CA06"
+        "九州・沖縄":"#DA5019"
         
-      section = Ti.UI.createTableViewSection
-        headerTitle: "#{categoryName}"
+          
+      customHeaderView = Ti.UI.createView
+        height:"30sp"
+        backgroundColor:"#f3f3f3"
+
+      headerPoint = Ti.UI.createView
+        width:'10sp'
+        height:"30sp"        
+        top:0
+        left:10
+        backgroundColor:prefectureColorSet.name[categoryName]
+
+      headerLabel = Ti.UI.createLabel
+        text: "#{categoryName}"
+        top:0
+        left:30
+        color:"#222"
         font:
           fontSize:'18sp'
-          fontFamily : 'Rounded M+ 1p'
+          fontFamily:'Rounded M+ 1p'
           fontWeight:'bold'
           
+      customHeaderView.add headerPoint    
+      customHeaderView.add headerLabel
+          
+      section = Ti.UI.createTableViewSection
+        headerView:customHeaderView
       
       # 都道府県のエリア毎に都道府県のrowを生成
       for _items in prefectureNameList
-        prefectureRow = Ti.UI.createTableViewRow
-          width:'auto'
-          height:'40sp'
-          title:"#{_items.name}"
+        if Ti.Platform.osname is "iphone"
+          prefectureRow = Ti.UI.createTableViewRow
+            width:'auto'
+            height:'40sp'
+            hasChild:true
+            prefectureName:"#{_items.name}"
+
+          textLabel = Ti.UI.createLabel
+            width:240
+            height:40
+            top:5
+            left:30
+            color:'#333'
+            font:
+              fontSize:'18sp'
+              fontFamily : 'Rounded M+ 1p'
+              fontWeight:'bold'
+            text:"#{_items.name}"
+          prefectureRow.add textLabel
+          
+        else
+          prefectureRow = Ti.UI.createTableViewRow
+            width:'auto'
+            height:'40sp'
+            prefectureName:"#{_items.name}"
+            hasDetail:true            
+            title:"#{_items.name}"
 
         section.add prefectureRow
 
       rows.push section
 
-
-        
-        
-      # roundLabel = Ti.UI.createLabel
-      #   width:40
-      #   height:40
-      #   top:5
-      #   left:5
-      #   color:prefectureColorSet.name["#{categoryName}"]
-      #   font:
-      #     fontSize:'18sp'
-      #     fontFamily : 'Rounded M+ 1p'
-      #     fontWeight:'bold'
-      #   text:"●"
-      
-      # textLabel = Ti.UI.createLabel
-      #   width:240
-      #   height:40
-      #   top:5
-      #   left:50
-      #   color:'#333'
-      #   font:
-      #     fontSize:'18sp'
-      #     fontFamily : 'Rounded M+ 1p'
-      #     fontWeight:'bold'
-      #   text:"#{categoryName}"
-
-      # row = Ti.UI.createTableViewRow
-      #   width:'auto'
-      #   height:40
-      #   borderWidth:0
-      #   backgroundColor:"#f3f3f3"
-      #   selectedBackgroundColor:"#EDAD0B"
-      #   className:'shopData'
-      #   numberOfPrefecture:numberOfPrefecture
-      #   prefectureNameList:prefectureNameList
-      #   opendFlg:false
-      # row.add textLabel
-      # row.add roundLabel
-      
-      # rows.push row
-      
     @table.setData rows
     
     return @table

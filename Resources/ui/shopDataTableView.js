@@ -6,7 +6,7 @@ shopDataTableView = (function() {
   function shopDataTableView() {
     this._hideSubMenu = __bind(this._hideSubMenu, this);
 
-    var PrefectureCategory, categoryName, numberOfPrefecture, prefectureColorSet, prefectureNameList, prefectureRow, prefectures, rows, section, _i, _items, _len,
+    var PrefectureCategory, categoryName, customHeaderView, headerLabel, headerPoint, numberOfPrefecture, prefectureColorSet, prefectureNameList, prefectureRow, prefectures, rows, section, textLabel, _i, _items, _len,
       _this = this;
     prefectures = [
       {
@@ -158,7 +158,8 @@ shopDataTableView = (function() {
       width: 'auto',
       height: 'auto',
       left: 0,
-      top: 0
+      top: 0,
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
     });
     this.colorSet = [
       {
@@ -251,29 +252,73 @@ shopDataTableView = (function() {
       prefectureNameList = PrefectureCategory[categoryName];
       prefectureColorSet = {
         "name": {
-          "北海道・東北": "#EDAD0B",
-          "関東": "#3261AB",
-          "中部": "#FFEE55",
-          "近畿": "#007AB7",
-          "中国・四国": "#FFF7AA",
-          "九州・沖縄": "#C6EDDB"
+          "北海道・東北": "#3261AB",
+          "関東": "#007FB1",
+          "中部": "#23AC0E",
+          "近畿": "#FFE600",
+          "中国・四国": "#F6CA06",
+          "九州・沖縄": "#DA5019"
         }
       };
-      section = Ti.UI.createTableViewSection({
-        headerTitle: "" + categoryName,
+      customHeaderView = Ti.UI.createView({
+        height: "30sp",
+        backgroundColor: "#f3f3f3"
+      });
+      headerPoint = Ti.UI.createView({
+        width: '10sp',
+        height: "30sp",
+        top: 0,
+        left: 10,
+        backgroundColor: prefectureColorSet.name[categoryName]
+      });
+      headerLabel = Ti.UI.createLabel({
+        text: "" + categoryName,
+        top: 0,
+        left: 30,
+        color: "#222",
         font: {
           fontSize: '18sp',
           fontFamily: 'Rounded M+ 1p',
           fontWeight: 'bold'
         }
       });
+      customHeaderView.add(headerPoint);
+      customHeaderView.add(headerLabel);
+      section = Ti.UI.createTableViewSection({
+        headerView: customHeaderView
+      });
       for (_i = 0, _len = prefectureNameList.length; _i < _len; _i++) {
         _items = prefectureNameList[_i];
-        prefectureRow = Ti.UI.createTableViewRow({
-          width: 'auto',
-          height: '40sp',
-          title: "" + _items.name
-        });
+        if (Ti.Platform.osname === "iphone") {
+          prefectureRow = Ti.UI.createTableViewRow({
+            width: 'auto',
+            height: '40sp',
+            hasChild: true,
+            prefectureName: "" + _items.name
+          });
+          textLabel = Ti.UI.createLabel({
+            width: 240,
+            height: 40,
+            top: 5,
+            left: 30,
+            color: '#333',
+            font: {
+              fontSize: '18sp',
+              fontFamily: 'Rounded M+ 1p',
+              fontWeight: 'bold'
+            },
+            text: "" + _items.name
+          });
+          prefectureRow.add(textLabel);
+        } else {
+          prefectureRow = Ti.UI.createTableViewRow({
+            width: 'auto',
+            height: '40sp',
+            prefectureName: "" + _items.name,
+            hasDetail: true,
+            title: "" + _items.name
+          });
+        }
         section.add(prefectureRow);
       }
       rows.push(section);
