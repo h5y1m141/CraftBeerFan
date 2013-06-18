@@ -1,11 +1,8 @@
-var shopDataTableView,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var shopDataTableView;
 
 shopDataTableView = (function() {
 
   function shopDataTableView() {
-    this._hideSubMenu = __bind(this._hideSubMenu, this);
-
     var _this = this;
     this.prefectures = this._loadPrefectures();
     this.table = Ti.UI.createTableView({
@@ -137,67 +134,6 @@ shopDataTableView = (function() {
       return row.area;
     });
     return result;
-  };
-
-  shopDataTableView.prototype._showSubMenu = function(prefectureNameList, curretRowIndex) {
-    var index, item, subMenu, subMenuLabel, _i, _len;
-    index = curretRowIndex;
-    Ti.API.info("curretRowIndex is " + curretRowIndex + " and " + prefectureNameList.length);
-    for (_i = 0, _len = prefectureNameList.length; _i < _len; _i++) {
-      item = prefectureNameList[_i];
-      subMenu = Ti.UI.createTableViewRow({
-        width: 'auto',
-        height: 40,
-        borderWidth: 0,
-        className: 'subMenu',
-        backgroundColor: "#f3f3f3",
-        separatorColor: '#cccccc',
-        prefectureName: item.name
-      });
-      subMenuLabel = Ti.UI.createLabel({
-        width: 240,
-        height: 40,
-        top: 5,
-        left: 30,
-        color: '#333',
-        font: {
-          fontFamily: 'Rounded M+ 1p',
-          fontSize: '18sp'
-        },
-        text: item.name
-      });
-      subMenu.add(subMenuLabel);
-      this.table.insertRowAfter(index, subMenu, {
-        animated: false
-      });
-      this._sleep(100);
-      index++;
-      Ti.API.info("index is " + index);
-    }
-  };
-
-  shopDataTableView.prototype._hideSubMenu = function(curretRowIndex, numberOfPrefecture) {
-    var counter, endPosition, startPosition, _i;
-    if (curretRowIndex === 0) {
-      startPosition = numberOfPrefecture;
-    } else {
-      startPosition = numberOfPrefecture + curretRowIndex;
-    }
-    endPosition = curretRowIndex + 1;
-    Ti.API.info("start is " + startPosition + " and end is  " + endPosition);
-    for (counter = _i = startPosition; startPosition <= endPosition ? _i <= endPosition : _i >= endPosition; counter = startPosition <= endPosition ? ++_i : --_i) {
-      this.table.deleteRow(counter);
-      this._sleep(100);
-    }
-  };
-
-  shopDataTableView.prototype._sleep = function(time) {
-    var d1, d2;
-    d1 = new Date().getTime();
-    d2 = new Date().getTime();
-    while (d2 < d1 + time) {
-      d2 = new Date().getTime();
-    }
   };
 
   shopDataTableView.prototype._createShopDataRow = function(placeData) {

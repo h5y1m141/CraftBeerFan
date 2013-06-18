@@ -130,64 +130,6 @@ class shopDataTableView
     )
     return result
     
-  _showSubMenu:(prefectureNameList,curretRowIndex) ->
-    
-    index = curretRowIndex
-    Ti.API.info "curretRowIndex is #{curretRowIndex} and #{prefectureNameList.length}"
-
-      
-    for item in prefectureNameList
-      subMenu = Ti.UI.createTableViewRow
-        width:'auto'
-        height:40
-        borderWidth:0
-        className:'subMenu'
-        backgroundColor:"#f3f3f3"
-        separatorColor: '#cccccc'
-        
-        prefectureName:item.name
-
-      subMenuLabel = Ti.UI.createLabel
-        width:240
-        height:40
-        top:5
-        left:30
-        color:'#333'
-        font:
-          fontFamily : 'Rounded M+ 1p'
-          fontSize:'18sp'
-        text:item.name
-      subMenu.add subMenuLabel
-      @table.insertRowAfter(index,subMenu,{animated:false})
-      @_sleep(100)
-      index++
-      Ti.API.info "index is #{index}"
-      # Ti.API.info item.name
-  
-    return
-    
-  _hideSubMenu:(curretRowIndex,numberOfPrefecture) =>
-    if curretRowIndex is 0
-      startPosition = numberOfPrefecture
-    else
-      startPosition = numberOfPrefecture + curretRowIndex
-      
-    endPosition = curretRowIndex+1
-    Ti.API.info "start is #{startPosition} and end is  #{endPosition}"
-    for counter in [startPosition..endPosition]
-      @table.deleteRow counter
-      @_sleep(100)
-
-
-    return
-    
-  # 以下URLを参照してビジーループというアプローチでsleepを実装
-  # http://yanor.net/wiki/?JavaScript%2F%E3%82%BF%E3%82%A4%E3%83%9E%E3%83%BC%E5%87%A6%E7%90%86%2Fsleep%E3%81%84%E3%82%8D%E3%81%84%E3%82%8D    
-  _sleep:(time) ->
-    d1 = new Date().getTime()
-    d2 = new Date().getTime()
-    d2 = new Date().getTime()  while d2 < d1 + time
-    return
     
   _createShopDataRow:(placeData) ->
     titleLabel = Ti.UI.createLabel
