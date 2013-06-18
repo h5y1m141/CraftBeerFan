@@ -1,9 +1,11 @@
 Cloud = require('ti.cloud')
 
 shopDataTableView = require('ui/shopDataTableView')
+subMenuTable = require("ui/subMenuTable")
 shopDataDetail = require("ui/shopDataDetail")
 shopDataDetail = new shopDataDetail()
-shopDataDetailTable = shopDataDetail.getTable()
+cbFan = {}
+cbFan.shopDataDetailTable = shopDataDetail.getTable()
 
 baseColor =
   barColor:"#f9f9f9"
@@ -20,13 +22,13 @@ shopDataWindowTitle = Ti.UI.createLabel
   text:"都道府県別リスト"
 
 
-shopDataWindow = Ti.UI.createWindow
+cbFan.shopDataWindow = Ti.UI.createWindow
   title:"都道府県別リスト"
   barColor:baseColor.barColor
   backgroundColor: baseColor.backgroundColor
 
 if Ti.Platform.osname is 'iphone'
-  shopDataWindow.setTitleControl shopDataWindowTitle
+  cbFan.shopDataWindow.setTitleControl shopDataWindowTitle
 
 listButton = Titanium.UI.createButton
   backgroundImage:"ui/image/light_list.png"
@@ -37,7 +39,7 @@ listButton.addEventListener('click',(e) ->
   
 )  
 
-shopDataWindow.leftNavButton = listButton
+cbFan.shopDataWindow.leftNavButton = listButton
 
 mapWindowTitle = Ti.UI.createLabel
   textAlign: 'center'
@@ -48,18 +50,18 @@ mapWindowTitle = Ti.UI.createLabel
     fontWeight:'bold'
   text:"近くのお店"
 
-mapWindow = Ti.UI.createWindow
+cbFan.mapWindow = Ti.UI.createWindow
   title: "近くのお店"
   barColor:baseColor.barColor
   backgroundColor: baseColor.backgroundColor
 
 if Ti.Platform.osname is 'iphone'
-  mapWindow.setTitleControl mapWindowTitle
+  cbFan.mapWindow.setTitleControl mapWindowTitle
 
 # 1.0から0.001の間で縮尺尺度を示している。
 # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
     
-mapView = Titanium.Map.createView
+cbFan.mapView = Titanium.Map.createView
   mapType: Titanium.Map.STANDARD_TYPE
   region: 
     latitude:35.676564
@@ -71,7 +73,7 @@ mapView = Titanium.Map.createView
   userLocation:true
 
 
-mapView.addEventListener('click',(e)->
+cbFan.mapView.addEventListener('click',(e)->
   if e.clicksource is "rightButton"
     Ti.API.info "map view event fire"
     _win = Ti.UI.createWindow
@@ -102,14 +104,14 @@ mapView.addEventListener('click',(e)->
       
     _win.add shopDataDetailTable
     
-    shopDataDetail.setData(e)
-    shopDataDetail.show()
+    cbFan.shopDataDetail.setData(e)
+    cbFan.shopDataDetail.show()
     activeTab = Ti.API._activeTab
     
     activeTab.open(_win)
   
 )    
-mapView.hide()  
+cbFan.mapView.hide()  
 
 Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため'
 Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS
@@ -120,8 +122,8 @@ Ti.Geolocation.addEventListener("location", (e) ->
   Ti.API.info "latitude: #{e.coords.latitude}longitude: #{e.coords.longitude}"
   latitude = e.coords.latitude
   longitude = e.coords.longitude
-  mapView.show() # 隠していた地図を表示する
-  mapView.setLocation # 現在地まで地図をスクロールする
+  cbFan.mapView.show() # 隠していた地図を表示する
+  cbFan.mapView.setLocation # 現在地まで地図をスクロールする
     latitude: latitude
     longitude: longitude
     latitudeDelta: 0.05
@@ -158,13 +160,13 @@ Ti.Geolocation.addEventListener("location", (e) ->
           rightButton: "ui/image/tumblrIcon.png"
         )
 
-        mapView.addAnnotation annotation
+        cbFan.mapView.addAnnotation annotation
         i++
     else
       Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
 )  
 
-mapWindow.add mapView
+cbFan.mapWindow.add cbFan.mapView
 tabGroup = Ti.UI.createTabGroup
   tabsBackgroundColor:"#f9f9f9"
   tabsBackgroundFocusedColor:baseColor.keyColor
@@ -183,17 +185,20 @@ tabGroup.addEventListener('focus',(e) ->
   return
 )
 tab = Ti.UI.createTab
-  window:mapWindow
+  window:cbFan.mapWindow
   barColor:"#343434"
   icon:"ui/image/inactivePin.png"
   activeIcon:"ui/image/pin.png"
 
 shopData = new shopDataTableView()
+cbFan.shopData = shopData.getTable()
 
-shopDataWindow.add shopData
+cbFan.subMenu = new subMenuTable()
+cbFan.shopDataWindow.add cbFan.shopData
+cbFan.shopDataWindow.add cbFan.subMenu
 
 shopDataTab = Ti.UI.createTab
-  window:shopDataWindow
+  window:cbFan.shopDataWindow
   barColor:"#343434"
   icon:"ui/image/inactivePin.png"
   activeIcon:"ui/image/pin.png"

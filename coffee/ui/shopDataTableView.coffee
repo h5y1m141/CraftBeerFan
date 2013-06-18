@@ -1,78 +1,19 @@
 class shopDataTableView
   constructor: () ->
     
-    prefectures = [
-      {"name":"北海道","area":"北海道・東北"},
-      {"name":"青森県","area":"北海道・東北"},
-      {"name":"岩手県","area":"北海道・東北"},
-      {"name":"宮城県","area":"北海道・東北"},
-      {"name":"秋田県","area":"北海道・東北"},
-      {"name":"山形県","area":"北海道・東北"},
-      {"name":"福島県","area":"北海道・東北"},
-      {"name":"茨城県","area":"関東"},
-      {"name":"栃木県","area":"関東"},
-      {"name":"群馬県","area":"関東"},
-      {"name":"埼玉県","area":"関東"},
-      {"name":"千葉県","area":"関東"},
-      {"name":"東京都","area":"関東"},
-      {"name":"神奈川県","area":"関東"},
-      {"name":"新潟県","area":"中部"},
-      {"name":"富山県","area":"中部"},
-      {"name":"石川県","area":"中部"},
-      {"name":"福井県","area":"中部"},
-      {"name":"山梨県","area":"中部"},
-      {"name":"長野県","area":"中部"},
-      {"name":"岐阜県","area":"中部"},
-      {"name":"静岡県","area":"中部"},
-      {"name":"愛知県","area":"中部"},
-      {"name":"三重県","area":"近畿"},
-      {"name":"滋賀県","area":"近畿"},
-      {"name":"京都府","area":"近畿"},
-      {"name":"大阪府","area":"近畿"},
-      {"name":"兵庫県","area":"近畿"},
-      {"name":"奈良県","area":"近畿"},
-      {"name":"和歌山県","area":"近畿"},
-      {"name":"鳥取県","area":"中国・四国"},
-      {"name":"島根県","area":"中国・四国"},
-      {"name":"岡山県","area":"中国・四国"},
-      {"name":"広島県","area":"中国・四国"},
-      {"name":"山口県","area":"中国・四国"},
-      {"name":"徳島県","area":"中国・四国"},
-      {"name":"香川県","area":"中国・四国"},
-      {"name":"愛媛県","area":"中国・四国"},
-      {"name":"高知県","area":"中国・四国"},
-      {"name":"福岡県","area":"九州・沖縄"},
-      {"name":"佐賀県","area":"九州・沖縄"},
-      {"name":"長崎県","area":"九州・沖縄"},
-      {"name":"熊本県","area":"九州・沖縄"},
-      {"name":"大分県","area":"九州・沖縄"},
-      {"name":"宮崎県","area":"九州・沖縄"},
-      {"name":"鹿児島県","area":"九州・沖縄"},
-      {"name":"沖縄県","area":"九州・沖縄"}      
-    ]
+    @prefectures = @_loadPrefectures()
     @table = Ti.UI.createTableView
       backgroundColor:"#f3f3f3"
       separatorColor: '#cccccc'
       width:'auto'
       height:'auto'
-      left:0
+      left:"150sp"
       top:0
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      zIndex:10
       
-    @colorSet = [
-      color:"#f9f9f9"
-      position: 0.0
-    ,
-      color: "#f6f6f6"
-      position: 0.5
-    ,
-      color: "#eeeeee"
-      position: 1.0
-    ]
-
+    @table.hide()
     @shopData = @_loadData()
 
-    
     @table.addEventListener('click',(e) =>
       that = @
       opendFlg = e.row.opendFlg
@@ -139,88 +80,43 @@ class shopDataTableView
           activeTab = Ti.API._activeTab
           activeTab.open(shopWindow )
           return
-    )
+    ) # end of tableView Event
     
+    return
+    
+  getTable:() ->
+    return @table
+    
+  refreshTableData: (categoryName) ->        
     rows = []
-    PrefectureCategory = @_makePrefectureCategory prefectures
+    PrefectureCategory = @_makePrefectureCategory(@prefectures)
+    prefectureNameList = PrefectureCategory[categoryName]
+      
+    # 都道府県のエリア毎に都道府県のrowを生成
+    for _items in prefectureNameList
+      prefectureRow = Ti.UI.createTableViewRow
+        width:'auto'
+        height:'40sp'
+        hasChild:true
+        prefectureName:"#{_items.name}"
 
-    
-    for categoryName of PrefectureCategory
-      numberOfPrefecture = PrefectureCategory[categoryName].length
-      prefectureNameList = PrefectureCategory[categoryName]
-      prefectureColorSet = "name":
-        "北海道・東北":"#3261AB"
-        "関東":"#007FB1"
-        "中部":"#23AC0E"
-        "近畿":"#FFE600"
-        "中国・四国":"#F6CA06"
-        "九州・沖縄":"#DA5019"
-        
-          
-      customHeaderView = Ti.UI.createView
-        height:"30sp"
-        backgroundColor:"#f3f3f3"
-
-      headerPoint = Ti.UI.createView
-        width:'10sp'
-        height:"30sp"        
-        top:0
-        left:10
-        backgroundColor:prefectureColorSet.name[categoryName]
-
-      headerLabel = Ti.UI.createLabel
-        text: "#{categoryName}"
-        top:0
+      textLabel = Ti.UI.createLabel
+        width:240
+        height:40
+        top:5
         left:30
-        color:"#222"
+        color:'#333'
         font:
           fontSize:'18sp'
-          fontFamily:'Rounded M+ 1p'
+          fontFamily : 'Rounded M+ 1p'
           fontWeight:'bold'
-          
-      customHeaderView.add headerPoint    
-      customHeaderView.add headerLabel
-          
-      section = Ti.UI.createTableViewSection
-        headerView:customHeaderView
+        text:"#{_items.name}"
+        
+      prefectureRow.add textLabel
+      rows.push prefectureRow
       
-      # 都道府県のエリア毎に都道府県のrowを生成
-      for _items in prefectureNameList
-        if Ti.Platform.osname is "iphone"
-          prefectureRow = Ti.UI.createTableViewRow
-            width:'auto'
-            height:'40sp'
-            hasChild:true
-            prefectureName:"#{_items.name}"
-
-          textLabel = Ti.UI.createLabel
-            width:240
-            height:40
-            top:5
-            left:30
-            color:'#333'
-            font:
-              fontSize:'18sp'
-              fontFamily : 'Rounded M+ 1p'
-              fontWeight:'bold'
-            text:"#{_items.name}"
-          prefectureRow.add textLabel
-          
-        else
-          prefectureRow = Ti.UI.createTableViewRow
-            width:'auto'
-            height:'40sp'
-            prefectureName:"#{_items.name}"
-            hasDetail:true            
-            title:"#{_items.name}"
-
-        section.add prefectureRow
-
-      rows.push section
-
     @table.setData rows
-    
-    return @table
+    return @table.show()
 
   # 都道府県のリスト情報から日本の地域ｘ都道府県名の以下の様なリストを作成する
   # "北海道・東北":[ {},{} ],
@@ -334,7 +230,13 @@ class shopDataTableView
     json = JSON.parse(file);
 
     return json
+  _loadPrefectures:() ->
+    prefectures = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/prefectures.json")
+    file = prefectures.read().toString();
+    json = JSON.parse(file);
 
+    return json
+    
   # 引数に与えた都道府県名にマッチするお店
   # 情報だけを抽出する
   _groupingShopDataby:(prefectureName) ->

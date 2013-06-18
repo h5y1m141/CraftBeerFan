@@ -1,14 +1,18 @@
-var Cloud, baseColor, listButton, mapView, mapWindow, mapWindowTitle, shopData, shopDataDetail, shopDataDetailTable, shopDataTab, shopDataTableView, shopDataWindow, shopDataWindowTitle, tab, tabGroup;
+var Cloud, baseColor, cbFan, listButton, mapWindowTitle, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tab, tabGroup;
 
 Cloud = require('ti.cloud');
 
 shopDataTableView = require('ui/shopDataTableView');
 
+subMenuTable = require("ui/subMenuTable");
+
 shopDataDetail = require("ui/shopDataDetail");
 
 shopDataDetail = new shopDataDetail();
 
-shopDataDetailTable = shopDataDetail.getTable();
+cbFan = {};
+
+cbFan.shopDataDetailTable = shopDataDetail.getTable();
 
 baseColor = {
   barColor: "#f9f9f9",
@@ -27,14 +31,14 @@ shopDataWindowTitle = Ti.UI.createLabel({
   text: "都道府県別リスト"
 });
 
-shopDataWindow = Ti.UI.createWindow({
+cbFan.shopDataWindow = Ti.UI.createWindow({
   title: "都道府県別リスト",
   barColor: baseColor.barColor,
   backgroundColor: baseColor.backgroundColor
 });
 
 if (Ti.Platform.osname === 'iphone') {
-  shopDataWindow.setTitleControl(shopDataWindowTitle);
+  cbFan.shopDataWindow.setTitleControl(shopDataWindowTitle);
 }
 
 listButton = Titanium.UI.createButton({
@@ -45,7 +49,7 @@ listButton = Titanium.UI.createButton({
 
 listButton.addEventListener('click', function(e) {});
 
-shopDataWindow.leftNavButton = listButton;
+cbFan.shopDataWindow.leftNavButton = listButton;
 
 mapWindowTitle = Ti.UI.createLabel({
   textAlign: 'center',
@@ -58,17 +62,17 @@ mapWindowTitle = Ti.UI.createLabel({
   text: "近くのお店"
 });
 
-mapWindow = Ti.UI.createWindow({
+cbFan.mapWindow = Ti.UI.createWindow({
   title: "近くのお店",
   barColor: baseColor.barColor,
   backgroundColor: baseColor.backgroundColor
 });
 
 if (Ti.Platform.osname === 'iphone') {
-  mapWindow.setTitleControl(mapWindowTitle);
+  cbFan.mapWindow.setTitleControl(mapWindowTitle);
 }
 
-mapView = Titanium.Map.createView({
+cbFan.mapView = Titanium.Map.createView({
   mapType: Titanium.Map.STANDARD_TYPE,
   region: {
     latitude: 35.676564,
@@ -81,7 +85,7 @@ mapView = Titanium.Map.createView({
   userLocation: true
 });
 
-mapView.addEventListener('click', function(e) {
+cbFan.mapView.addEventListener('click', function(e) {
   var activeTab, backButton, _win, _winTitle;
   if (e.clicksource === "rightButton") {
     Ti.API.info("map view event fire");
@@ -114,14 +118,14 @@ mapView.addEventListener('click', function(e) {
       _win.setTitleControl(_winTitle);
     }
     _win.add(shopDataDetailTable);
-    shopDataDetail.setData(e);
-    shopDataDetail.show();
+    cbFan.shopDataDetail.setData(e);
+    cbFan.shopDataDetail.show();
     activeTab = Ti.API._activeTab;
     return activeTab.open(_win);
   }
 });
 
-mapView.hide();
+cbFan.mapView.hide();
 
 Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため';
 
@@ -136,8 +140,8 @@ Ti.Geolocation.addEventListener("location", function(e) {
   Ti.API.info("latitude: " + e.coords.latitude + "longitude: " + e.coords.longitude);
   latitude = e.coords.latitude;
   longitude = e.coords.longitude;
-  mapView.show();
-  mapView.setLocation({
+  cbFan.mapView.show();
+  cbFan.mapView.setLocation({
     latitude: latitude,
     longitude: longitude,
     latitudeDelta: 0.05,
@@ -176,7 +180,7 @@ Ti.Geolocation.addEventListener("location", function(e) {
           leftButton: "",
           rightButton: "ui/image/tumblrIcon.png"
         });
-        mapView.addAnnotation(annotation);
+        cbFan.mapView.addAnnotation(annotation);
         _results.push(i++);
       }
       return _results;
@@ -186,7 +190,7 @@ Ti.Geolocation.addEventListener("location", function(e) {
   });
 });
 
-mapWindow.add(mapView);
+cbFan.mapWindow.add(cbFan.mapView);
 
 tabGroup = Ti.UI.createTabGroup({
   tabsBackgroundColor: "#f9f9f9",
@@ -207,7 +211,7 @@ tabGroup.addEventListener('focus', function(e) {
 });
 
 tab = Ti.UI.createTab({
-  window: mapWindow,
+  window: cbFan.mapWindow,
   barColor: "#343434",
   icon: "ui/image/inactivePin.png",
   activeIcon: "ui/image/pin.png"
@@ -215,10 +219,16 @@ tab = Ti.UI.createTab({
 
 shopData = new shopDataTableView();
 
-shopDataWindow.add(shopData);
+cbFan.shopData = shopData.getTable();
+
+cbFan.subMenu = new subMenuTable();
+
+cbFan.shopDataWindow.add(cbFan.shopData);
+
+cbFan.shopDataWindow.add(cbFan.subMenu);
 
 shopDataTab = Ti.UI.createTab({
-  window: shopDataWindow,
+  window: cbFan.shopDataWindow,
   barColor: "#343434",
   icon: "ui/image/inactivePin.png",
   activeIcon: "ui/image/pin.png"

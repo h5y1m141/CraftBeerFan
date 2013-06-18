@@ -6,173 +6,18 @@ shopDataTableView = (function() {
   function shopDataTableView() {
     this._hideSubMenu = __bind(this._hideSubMenu, this);
 
-    var PrefectureCategory, categoryName, customHeaderView, headerLabel, headerPoint, numberOfPrefecture, prefectureColorSet, prefectureNameList, prefectureRow, prefectures, rows, section, textLabel, _i, _items, _len,
-      _this = this;
-    prefectures = [
-      {
-        "name": "北海道",
-        "area": "北海道・東北"
-      }, {
-        "name": "青森県",
-        "area": "北海道・東北"
-      }, {
-        "name": "岩手県",
-        "area": "北海道・東北"
-      }, {
-        "name": "宮城県",
-        "area": "北海道・東北"
-      }, {
-        "name": "秋田県",
-        "area": "北海道・東北"
-      }, {
-        "name": "山形県",
-        "area": "北海道・東北"
-      }, {
-        "name": "福島県",
-        "area": "北海道・東北"
-      }, {
-        "name": "茨城県",
-        "area": "関東"
-      }, {
-        "name": "栃木県",
-        "area": "関東"
-      }, {
-        "name": "群馬県",
-        "area": "関東"
-      }, {
-        "name": "埼玉県",
-        "area": "関東"
-      }, {
-        "name": "千葉県",
-        "area": "関東"
-      }, {
-        "name": "東京都",
-        "area": "関東"
-      }, {
-        "name": "神奈川県",
-        "area": "関東"
-      }, {
-        "name": "新潟県",
-        "area": "中部"
-      }, {
-        "name": "富山県",
-        "area": "中部"
-      }, {
-        "name": "石川県",
-        "area": "中部"
-      }, {
-        "name": "福井県",
-        "area": "中部"
-      }, {
-        "name": "山梨県",
-        "area": "中部"
-      }, {
-        "name": "長野県",
-        "area": "中部"
-      }, {
-        "name": "岐阜県",
-        "area": "中部"
-      }, {
-        "name": "静岡県",
-        "area": "中部"
-      }, {
-        "name": "愛知県",
-        "area": "中部"
-      }, {
-        "name": "三重県",
-        "area": "近畿"
-      }, {
-        "name": "滋賀県",
-        "area": "近畿"
-      }, {
-        "name": "京都府",
-        "area": "近畿"
-      }, {
-        "name": "大阪府",
-        "area": "近畿"
-      }, {
-        "name": "兵庫県",
-        "area": "近畿"
-      }, {
-        "name": "奈良県",
-        "area": "近畿"
-      }, {
-        "name": "和歌山県",
-        "area": "近畿"
-      }, {
-        "name": "鳥取県",
-        "area": "中国・四国"
-      }, {
-        "name": "島根県",
-        "area": "中国・四国"
-      }, {
-        "name": "岡山県",
-        "area": "中国・四国"
-      }, {
-        "name": "広島県",
-        "area": "中国・四国"
-      }, {
-        "name": "山口県",
-        "area": "中国・四国"
-      }, {
-        "name": "徳島県",
-        "area": "中国・四国"
-      }, {
-        "name": "香川県",
-        "area": "中国・四国"
-      }, {
-        "name": "愛媛県",
-        "area": "中国・四国"
-      }, {
-        "name": "高知県",
-        "area": "中国・四国"
-      }, {
-        "name": "福岡県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "佐賀県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "長崎県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "熊本県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "大分県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "宮崎県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "鹿児島県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "沖縄県",
-        "area": "九州・沖縄"
-      }
-    ];
+    var _this = this;
+    this.prefectures = this._loadPrefectures();
     this.table = Ti.UI.createTableView({
       backgroundColor: "#f3f3f3",
       separatorColor: '#cccccc',
       width: 'auto',
       height: 'auto',
-      left: 0,
+      left: "150sp",
       top: 0,
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      zIndex: 10
     });
-    this.colorSet = [
-      {
-        color: "#f9f9f9",
-        position: 0.0
-      }, {
-        color: "#f6f6f6",
-        position: 0.5
-      }, {
-        color: "#eeeeee",
-        position: 1.0
-      }
-    ];
+    this.table.hide();
     this.shopData = this._loadData();
     this.table.addEventListener('click', function(e) {
       var activeTab, backButton, curretRowIndex, opendFlg, prefectureName, prefectureNameList, shopAreaDataWindowTitle, shopDataList, shopDataRow, shopDataRowTable, shopDataRows, shopWindow, that, _i, _items, _len, _ref;
@@ -245,87 +90,45 @@ shopDataTableView = (function() {
         }
       }
     });
+    return;
+  }
+
+  shopDataTableView.prototype.getTable = function() {
+    return this.table;
+  };
+
+  shopDataTableView.prototype.refreshTableData = function(categoryName) {
+    var PrefectureCategory, prefectureNameList, prefectureRow, rows, textLabel, _i, _items, _len;
     rows = [];
-    PrefectureCategory = this._makePrefectureCategory(prefectures);
-    for (categoryName in PrefectureCategory) {
-      numberOfPrefecture = PrefectureCategory[categoryName].length;
-      prefectureNameList = PrefectureCategory[categoryName];
-      prefectureColorSet = {
-        "name": {
-          "北海道・東北": "#3261AB",
-          "関東": "#007FB1",
-          "中部": "#23AC0E",
-          "近畿": "#FFE600",
-          "中国・四国": "#F6CA06",
-          "九州・沖縄": "#DA5019"
-        }
-      };
-      customHeaderView = Ti.UI.createView({
-        height: "30sp",
-        backgroundColor: "#f3f3f3"
+    PrefectureCategory = this._makePrefectureCategory(this.prefectures);
+    prefectureNameList = PrefectureCategory[categoryName];
+    for (_i = 0, _len = prefectureNameList.length; _i < _len; _i++) {
+      _items = prefectureNameList[_i];
+      prefectureRow = Ti.UI.createTableViewRow({
+        width: 'auto',
+        height: '40sp',
+        hasChild: true,
+        prefectureName: "" + _items.name
       });
-      headerPoint = Ti.UI.createView({
-        width: '10sp',
-        height: "30sp",
-        top: 0,
-        left: 10,
-        backgroundColor: prefectureColorSet.name[categoryName]
-      });
-      headerLabel = Ti.UI.createLabel({
-        text: "" + categoryName,
-        top: 0,
+      textLabel = Ti.UI.createLabel({
+        width: 240,
+        height: 40,
+        top: 5,
         left: 30,
-        color: "#222",
+        color: '#333',
         font: {
           fontSize: '18sp',
           fontFamily: 'Rounded M+ 1p',
           fontWeight: 'bold'
-        }
+        },
+        text: "" + _items.name
       });
-      customHeaderView.add(headerPoint);
-      customHeaderView.add(headerLabel);
-      section = Ti.UI.createTableViewSection({
-        headerView: customHeaderView
-      });
-      for (_i = 0, _len = prefectureNameList.length; _i < _len; _i++) {
-        _items = prefectureNameList[_i];
-        if (Ti.Platform.osname === "iphone") {
-          prefectureRow = Ti.UI.createTableViewRow({
-            width: 'auto',
-            height: '40sp',
-            hasChild: true,
-            prefectureName: "" + _items.name
-          });
-          textLabel = Ti.UI.createLabel({
-            width: 240,
-            height: 40,
-            top: 5,
-            left: 30,
-            color: '#333',
-            font: {
-              fontSize: '18sp',
-              fontFamily: 'Rounded M+ 1p',
-              fontWeight: 'bold'
-            },
-            text: "" + _items.name
-          });
-          prefectureRow.add(textLabel);
-        } else {
-          prefectureRow = Ti.UI.createTableViewRow({
-            width: 'auto',
-            height: '40sp',
-            prefectureName: "" + _items.name,
-            hasDetail: true,
-            title: "" + _items.name
-          });
-        }
-        section.add(prefectureRow);
-      }
-      rows.push(section);
+      prefectureRow.add(textLabel);
+      rows.push(prefectureRow);
     }
     this.table.setData(rows);
-    return this.table;
-  }
+    return this.table.show();
+  };
 
   shopDataTableView.prototype._makePrefectureCategory = function(data) {
     var result, _;
@@ -441,6 +244,14 @@ shopDataTableView = (function() {
     var file, json, shopData;
     shopData = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/shopData.json");
     file = shopData.read().toString();
+    json = JSON.parse(file);
+    return json;
+  };
+
+  shopDataTableView.prototype._loadPrefectures = function() {
+    var file, json, prefectures;
+    prefectures = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/prefectures.json");
+    file = prefectures.read().toString();
     json = JSON.parse(file);
     return json;
   };
