@@ -28,7 +28,16 @@ shopDataWindow = Ti.UI.createWindow
 if Ti.Platform.osname is 'iphone'
   shopDataWindow.setTitleControl shopDataWindowTitle
 
+listButton = Titanium.UI.createButton
+  backgroundImage:"ui/image/light_list.png"
+  width:"22sp"
+  height:"20sp"
   
+listButton.addEventListener('click',(e) ->
+  
+)  
+
+shopDataWindow.leftNavButton = listButton
 
 mapWindowTitle = Ti.UI.createLabel
   textAlign: 'center'

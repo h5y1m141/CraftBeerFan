@@ -1,4 +1,4 @@
-var Cloud, baseColor, mapView, mapWindow, mapWindowTitle, shopData, shopDataDetail, shopDataDetailTable, shopDataTab, shopDataTableView, shopDataWindow, shopDataWindowTitle, tab, tabGroup;
+var Cloud, baseColor, listButton, mapView, mapWindow, mapWindowTitle, shopData, shopDataDetail, shopDataDetailTable, shopDataTab, shopDataTableView, shopDataWindow, shopDataWindowTitle, tab, tabGroup;
 
 Cloud = require('ti.cloud');
 
@@ -36,6 +36,16 @@ shopDataWindow = Ti.UI.createWindow({
 if (Ti.Platform.osname === 'iphone') {
   shopDataWindow.setTitleControl(shopDataWindowTitle);
 }
+
+listButton = Titanium.UI.createButton({
+  backgroundImage: "ui/image/light_list.png",
+  width: "22sp",
+  height: "20sp"
+});
+
+listButton.addEventListener('click', function(e) {});
+
+shopDataWindow.leftNavButton = listButton;
 
 mapWindowTitle = Ti.UI.createLabel({
   textAlign: 'center',
