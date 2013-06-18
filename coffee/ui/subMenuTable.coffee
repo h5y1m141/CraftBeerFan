@@ -46,7 +46,7 @@ class subMenuTable
             
       subMenuRow = Ti.UI.createTableViewRow
         width:'150sp'
-        height:'45sp'
+        height:'40sp'
         backgroundColor:"f3f3f3"
         categoryName:"#{categoryName}"
       
