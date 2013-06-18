@@ -26,14 +26,15 @@ cbFan.shopDataWindow = Ti.UI.createWindow
   title:"都道府県別リスト"
   barColor:baseColor.barColor
   backgroundColor: baseColor.backgroundColor
+  tabBarHidden:true
 
 if Ti.Platform.osname is 'iphone'
   cbFan.shopDataWindow.setTitleControl shopDataWindowTitle
 
 listButton = Titanium.UI.createButton
-  backgroundImage:"ui/image/light_list.png"
-  width:"22sp"
-  height:"20sp"
+  backgroundImage:"ui/image/listButton.png"
+  width:"40sp"
+  height:"40sp"
   
 listButton.addEventListener('click',(e) ->
   
@@ -54,6 +55,7 @@ cbFan.mapWindow = Ti.UI.createWindow
   title: "近くのお店"
   barColor:baseColor.barColor
   backgroundColor: baseColor.backgroundColor
+  tabBarHidden:true
 
 if Ti.Platform.osname is 'iphone'
   cbFan.mapWindow.setTitleControl mapWindowTitle
@@ -102,10 +104,10 @@ cbFan.mapView.addEventListener('click',(e)->
     if Ti.Platform.osname is 'iphone'  
       _win.setTitleControl _winTitle
       
-    _win.add shopDataDetailTable
+    _win.add cbFan.shopDataDetailTable
     
-    cbFan.shopDataDetail.setData(e)
-    cbFan.shopDataDetail.show()
+    shopDataDetail.setData(e)
+    shopDataDetail.show()
     activeTab = Ti.API._activeTab
     
     activeTab.open(_win)
@@ -184,7 +186,7 @@ tabGroup.addEventListener('focus',(e) ->
   Ti.API.info tabGroup._activeTab
   return
 )
-tab = Ti.UI.createTab
+mapTab = Ti.UI.createTab
   window:cbFan.mapWindow
   barColor:"#343434"
   icon:"ui/image/inactivePin.png"
@@ -194,6 +196,20 @@ shopData = new shopDataTableView()
 cbFan.shopData = shopData.getTable()
 
 cbFan.subMenu = new subMenuTable()
+
+arrowImage = Ti.UI.createImageView
+  width:'50sp'
+  height:'50sp'
+  left:150
+  top:35
+  borderRadius:5
+  transform : Ti.UI.create2DMatrix().rotate(45)
+  borderColor:"#f3f3f3"
+  borderWidth:1
+  zIndex:8      
+  backgroundColor:"#007FB1"
+  
+cbFan.shopDataWindow.add arrowImage
 cbFan.shopDataWindow.add cbFan.shopData
 cbFan.shopDataWindow.add cbFan.subMenu
 
@@ -203,6 +219,6 @@ shopDataTab = Ti.UI.createTab
   icon:"ui/image/inactivePin.png"
   activeIcon:"ui/image/pin.png"
   
-tabGroup.addTab tab
 tabGroup.addTab shopDataTab
+tabGroup.addTab mapTab
 tabGroup.open()

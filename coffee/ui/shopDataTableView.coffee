@@ -4,11 +4,13 @@ class shopDataTableView
     @prefectures = @_loadPrefectures()
     @table = Ti.UI.createTableView
       backgroundColor:"#f3f3f3"
-      separatorColor: '#cccccc'
+      separatorStyle: Titanium.UI.iPhone.TableViewSeparatorStyle.NONE
       width:'auto'
       height:'auto'
       left:"150sp"
       top:0
+      borderColor:"#f3f3f3"
+      borderWidth:2
       zIndex:10
       
     @table.hide()
@@ -87,7 +89,7 @@ class shopDataTableView
   getTable:() ->
     return @table
     
-  refreshTableData: (categoryName) ->        
+  refreshTableData: (categoryName,selectedColor) ->        
     rows = []
     PrefectureCategory = @_makePrefectureCategory(@prefectures)
     prefectureNameList = PrefectureCategory[categoryName]
@@ -115,6 +117,8 @@ class shopDataTableView
       prefectureRow.add textLabel
       rows.push prefectureRow
       
+    @table.borderColor = selectedColor
+    @table.backgroundColor = "#CAE7F2"
     @table.setData rows
     return @table.show()
 

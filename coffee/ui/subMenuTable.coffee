@@ -9,30 +9,33 @@ class subMenuTable
       left:0
       top:0
       zIndex:5
-    @subMenu.addEventListener('click',(e)->
+      
+    @prefectureColorSet = "name":
+      "北海道・東北":"#3261AB"
+      "関東":"#007FB1"
+      "中部":"#23AC0E"
+      "近畿":"#FFE600"
+      "中国・四国":"#F6CA06"
+      "九州・沖縄":"#DA5019"
+      
+    @subMenu.addEventListener('click',(e)=>
       categoryName = e.row.categoryName
       Ti.API.info categoryName
-      shopData.refreshTableData(categoryName)
+      selectedColor = @prefectureColorSet.name[categoryName]
+      shopData.refreshTableData(categoryName,selectedColor)
 
     )
 
     PrefectureCategory = @_makePrefectureCategory(@prefectures)
     subMenuRows = []
     for categoryName of PrefectureCategory
-      prefectureColorSet = "name":
-        "北海道・東北":"#3261AB"
-        "関東":"#007FB1"
-        "中部":"#23AC0E"
-        "近畿":"#FFE600"
-        "中国・四国":"#F6CA06"
-        "九州・沖縄":"#DA5019"
       
       headerPoint = Ti.UI.createView
         width:'10sp'
         height:"30sp"        
         top:5
         left:10
-        backgroundColor:prefectureColorSet.name[categoryName]
+        backgroundColor:@prefectureColorSet.name[categoryName]
 
       headerLabel = Ti.UI.createLabel
         text: "#{categoryName}"

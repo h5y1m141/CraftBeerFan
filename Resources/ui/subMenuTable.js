@@ -3,7 +3,8 @@ var subMenuTable;
 subMenuTable = (function() {
 
   function subMenuTable() {
-    var PrefectureCategory, categoryName, headerLabel, headerPoint, prefectureColorSet, subMenuRow, subMenuRows;
+    var PrefectureCategory, categoryName, headerLabel, headerPoint, subMenuRow, subMenuRows,
+      _this = this;
     this.prefectures = this._loadPrefectures();
     this.subMenu = Ti.UI.createTableView({
       backgroundColor: "#f3f3f3",
@@ -14,31 +15,32 @@ subMenuTable = (function() {
       top: 0,
       zIndex: 5
     });
+    this.prefectureColorSet = {
+      "name": {
+        "北海道・東北": "#3261AB",
+        "関東": "#007FB1",
+        "中部": "#23AC0E",
+        "近畿": "#FFE600",
+        "中国・四国": "#F6CA06",
+        "九州・沖縄": "#DA5019"
+      }
+    };
     this.subMenu.addEventListener('click', function(e) {
-      var categoryName;
+      var categoryName, selectedColor;
       categoryName = e.row.categoryName;
       Ti.API.info(categoryName);
-      return shopData.refreshTableData(categoryName);
+      selectedColor = _this.prefectureColorSet.name[categoryName];
+      return shopData.refreshTableData(categoryName, selectedColor);
     });
     PrefectureCategory = this._makePrefectureCategory(this.prefectures);
     subMenuRows = [];
     for (categoryName in PrefectureCategory) {
-      prefectureColorSet = {
-        "name": {
-          "北海道・東北": "#3261AB",
-          "関東": "#007FB1",
-          "中部": "#23AC0E",
-          "近畿": "#FFE600",
-          "中国・四国": "#F6CA06",
-          "九州・沖縄": "#DA5019"
-        }
-      };
       headerPoint = Ti.UI.createView({
         width: '10sp',
         height: "30sp",
         top: 5,
         left: 10,
-        backgroundColor: prefectureColorSet.name[categoryName]
+        backgroundColor: this.prefectureColorSet.name[categoryName]
       });
       headerLabel = Ti.UI.createLabel({
         text: "" + categoryName,

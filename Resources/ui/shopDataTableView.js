@@ -7,11 +7,13 @@ shopDataTableView = (function() {
     this.prefectures = this._loadPrefectures();
     this.table = Ti.UI.createTableView({
       backgroundColor: "#f3f3f3",
-      separatorColor: '#cccccc',
+      separatorStyle: Titanium.UI.iPhone.TableViewSeparatorStyle.NONE,
       width: 'auto',
       height: 'auto',
       left: "150sp",
       top: 0,
+      borderColor: "#f3f3f3",
+      borderWidth: 2,
       zIndex: 10
     });
     this.table.hide();
@@ -94,7 +96,7 @@ shopDataTableView = (function() {
     return this.table;
   };
 
-  shopDataTableView.prototype.refreshTableData = function(categoryName) {
+  shopDataTableView.prototype.refreshTableData = function(categoryName, selectedColor) {
     var PrefectureCategory, prefectureNameList, prefectureRow, rows, textLabel, _i, _items, _len;
     rows = [];
     PrefectureCategory = this._makePrefectureCategory(this.prefectures);
@@ -123,6 +125,8 @@ shopDataTableView = (function() {
       prefectureRow.add(textLabel);
       rows.push(prefectureRow);
     }
+    this.table.borderColor = selectedColor;
+    this.table.backgroundColor = "#CAE7F2";
     this.table.setData(rows);
     return this.table.show();
   };

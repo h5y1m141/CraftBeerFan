@@ -1,4 +1,4 @@
-var Cloud, baseColor, cbFan, listButton, mapWindowTitle, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tab, tabGroup;
+var Cloud, arrowImage, baseColor, cbFan, listButton, mapTab, mapWindowTitle, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
 
 Cloud = require('ti.cloud');
 
@@ -34,7 +34,8 @@ shopDataWindowTitle = Ti.UI.createLabel({
 cbFan.shopDataWindow = Ti.UI.createWindow({
   title: "都道府県別リスト",
   barColor: baseColor.barColor,
-  backgroundColor: baseColor.backgroundColor
+  backgroundColor: baseColor.backgroundColor,
+  tabBarHidden: true
 });
 
 if (Ti.Platform.osname === 'iphone') {
@@ -42,9 +43,9 @@ if (Ti.Platform.osname === 'iphone') {
 }
 
 listButton = Titanium.UI.createButton({
-  backgroundImage: "ui/image/light_list.png",
-  width: "22sp",
-  height: "20sp"
+  backgroundImage: "ui/image/listButton.png",
+  width: "40sp",
+  height: "40sp"
 });
 
 listButton.addEventListener('click', function(e) {});
@@ -65,7 +66,8 @@ mapWindowTitle = Ti.UI.createLabel({
 cbFan.mapWindow = Ti.UI.createWindow({
   title: "近くのお店",
   barColor: baseColor.barColor,
-  backgroundColor: baseColor.backgroundColor
+  backgroundColor: baseColor.backgroundColor,
+  tabBarHidden: true
 });
 
 if (Ti.Platform.osname === 'iphone') {
@@ -117,9 +119,9 @@ cbFan.mapView.addEventListener('click', function(e) {
     if (Ti.Platform.osname === 'iphone') {
       _win.setTitleControl(_winTitle);
     }
-    _win.add(shopDataDetailTable);
-    cbFan.shopDataDetail.setData(e);
-    cbFan.shopDataDetail.show();
+    _win.add(cbFan.shopDataDetailTable);
+    shopDataDetail.setData(e);
+    shopDataDetail.show();
     activeTab = Ti.API._activeTab;
     return activeTab.open(_win);
   }
@@ -210,7 +212,7 @@ tabGroup.addEventListener('focus', function(e) {
   Ti.API.info(tabGroup._activeTab);
 });
 
-tab = Ti.UI.createTab({
+mapTab = Ti.UI.createTab({
   window: cbFan.mapWindow,
   barColor: "#343434",
   icon: "ui/image/inactivePin.png",
@@ -223,6 +225,21 @@ cbFan.shopData = shopData.getTable();
 
 cbFan.subMenu = new subMenuTable();
 
+arrowImage = Ti.UI.createImageView({
+  width: '50sp',
+  height: '50sp',
+  left: 150,
+  top: 35,
+  borderRadius: 5,
+  transform: Ti.UI.create2DMatrix().rotate(45),
+  borderColor: "#f3f3f3",
+  borderWidth: 1,
+  zIndex: 8,
+  backgroundColor: "#007FB1"
+});
+
+cbFan.shopDataWindow.add(arrowImage);
+
 cbFan.shopDataWindow.add(cbFan.shopData);
 
 cbFan.shopDataWindow.add(cbFan.subMenu);
@@ -234,8 +251,8 @@ shopDataTab = Ti.UI.createTab({
   activeIcon: "ui/image/pin.png"
 });
 
-tabGroup.addTab(tab);
-
 tabGroup.addTab(shopDataTab);
+
+tabGroup.addTab(mapTab);
 
 tabGroup.open();
