@@ -1,177 +1,22 @@
-var shopDataTableView,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var shopDataTableView;
 
 shopDataTableView = (function() {
 
   function shopDataTableView() {
-    this._hideSubMenu = __bind(this._hideSubMenu, this);
-
-    var PrefectureCategory, categoryName, numberOfPrefecture, prefectureColorSet, prefectureNameList, prefectures, roundLabel, row, rows, textLabel, view,
-      _this = this;
-    prefectures = [
-      {
-        "name": "北海道",
-        "area": "北海道・東北"
-      }, {
-        "name": "青森県",
-        "area": "北海道・東北"
-      }, {
-        "name": "岩手県",
-        "area": "北海道・東北"
-      }, {
-        "name": "宮城県",
-        "area": "北海道・東北"
-      }, {
-        "name": "秋田県",
-        "area": "北海道・東北"
-      }, {
-        "name": "山形県",
-        "area": "北海道・東北"
-      }, {
-        "name": "福島県",
-        "area": "北海道・東北"
-      }, {
-        "name": "茨城県",
-        "area": "関東"
-      }, {
-        "name": "栃木県",
-        "area": "関東"
-      }, {
-        "name": "群馬県",
-        "area": "関東"
-      }, {
-        "name": "埼玉県",
-        "area": "関東"
-      }, {
-        "name": "千葉県",
-        "area": "関東"
-      }, {
-        "name": "東京都",
-        "area": "関東"
-      }, {
-        "name": "神奈川県",
-        "area": "関東"
-      }, {
-        "name": "新潟県",
-        "area": "中部"
-      }, {
-        "name": "富山県",
-        "area": "中部"
-      }, {
-        "name": "石川県",
-        "area": "中部"
-      }, {
-        "name": "福井県",
-        "area": "中部"
-      }, {
-        "name": "山梨県",
-        "area": "中部"
-      }, {
-        "name": "長野県",
-        "area": "中部"
-      }, {
-        "name": "岐阜県",
-        "area": "中部"
-      }, {
-        "name": "静岡県",
-        "area": "中部"
-      }, {
-        "name": "愛知県",
-        "area": "中部"
-      }, {
-        "name": "三重県",
-        "area": "近畿"
-      }, {
-        "name": "滋賀県",
-        "area": "近畿"
-      }, {
-        "name": "京都府",
-        "area": "近畿"
-      }, {
-        "name": "大阪府",
-        "area": "近畿"
-      }, {
-        "name": "兵庫県",
-        "area": "近畿"
-      }, {
-        "name": "奈良県",
-        "area": "近畿"
-      }, {
-        "name": "和歌山県",
-        "area": "近畿"
-      }, {
-        "name": "鳥取県",
-        "area": "中国・四国"
-      }, {
-        "name": "島根県",
-        "area": "中国・四国"
-      }, {
-        "name": "岡山県",
-        "area": "中国・四国"
-      }, {
-        "name": "広島県",
-        "area": "中国・四国"
-      }, {
-        "name": "山口県",
-        "area": "中国・四国"
-      }, {
-        "name": "徳島県",
-        "area": "中国・四国"
-      }, {
-        "name": "香川県",
-        "area": "中国・四国"
-      }, {
-        "name": "愛媛県",
-        "area": "中国・四国"
-      }, {
-        "name": "高知県",
-        "area": "中国・四国"
-      }, {
-        "name": "福岡県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "佐賀県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "長崎県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "熊本県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "大分県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "宮崎県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "鹿児島県",
-        "area": "九州・沖縄"
-      }, {
-        "name": "沖縄県",
-        "area": "九州・沖縄"
-      }
-    ];
+    var _this = this;
+    this.prefectures = this._loadPrefectures();
     this.table = Ti.UI.createTableView({
-      backgroundColor: "#f9f9f9",
-      separatorColor: '#ecf0f1',
+      backgroundColor: "#f3f3f3",
+      separatorStyle: Titanium.UI.iPhone.TableViewSeparatorStyle.NONE,
       width: 'auto',
       height: 'auto',
-      left: 0,
-      top: 0
+      left: "150sp",
+      top: 0,
+      borderColor: "#f3f3f3",
+      borderWidth: 2,
+      zIndex: 10
     });
-    this.colorSet = [
-      {
-        color: "#f9f9f9",
-        position: 0.0
-      }, {
-        color: "#f6f6f6",
-        position: 0.5
-      }, {
-        color: "#eeeeee",
-        position: 1.0
-      }
-    ];
+    this.table.hide();
     this.shopData = this._loadData();
     this.table.addEventListener('click', function(e) {
       var activeTab, backButton, curretRowIndex, opendFlg, prefectureName, prefectureNameList, shopAreaDataWindowTitle, shopDataList, shopDataRow, shopDataRowTable, shopDataRows, shopWindow, that, _i, _items, _len, _ref;
@@ -225,7 +70,9 @@ shopDataTableView = (function() {
             height: "44sp"
           });
           backButton.addEventListener('click', function(e) {
-            return shopWindow.close();
+            return shopWindow.close({
+              animated: true
+            });
           });
           shopWindow = Ti.UI.createWindow({
             title: "地域別のお店情報",
@@ -233,116 +80,56 @@ shopDataTableView = (function() {
             backgroundColor: "#343434"
           });
           shopWindow.leftNavButton = backButton;
-          shopWindow.setTitleControl(shopAreaDataWindowTitle);
+          if (Ti.Platform.osname === 'iphone') {
+            shopWindow.setTitleControl(shopAreaDataWindowTitle);
+          }
           shopWindow.add(shopDataRowTable);
           activeTab = Ti.API._activeTab;
           activeTab.open(shopWindow);
         }
       }
     });
+    return;
+  }
+
+  shopDataTableView.prototype.getTable = function() {
+    return this.table;
+  };
+
+  shopDataTableView.prototype.refreshTableData = function(categoryName, selectedColor, selectedSubColor) {
+    var PrefectureCategory, prefectureNameList, prefectureRow, rows, textLabel, _i, _items, _len;
     rows = [];
-    PrefectureCategory = this._makePrefectureCategory(prefectures);
-    for (categoryName in PrefectureCategory) {
-      numberOfPrefecture = PrefectureCategory[categoryName].length;
-      prefectureNameList = PrefectureCategory[categoryName];
-      prefectureColorSet = {
-        "name": {
-          "北海道・東北": "#EDAD0B",
-          "関東": "#3261AB",
-          "中部": "#FFEE55",
-          "近畿": "#007AB7",
-          "中国・四国": "#FFF7AA",
-          "九州・沖縄": "#C6EDDB"
-        }
-      };
-      roundLabel = Ti.UI.createLabel({
-        width: 40,
-        height: 40,
-        top: 5,
-        left: 5,
-        color: prefectureColorSet.name["" + categoryName],
-        font: {
-          fontSize: '18sp',
-          fontFamily: 'Rounded M+ 1p',
-          fontWeight: 'bold'
-        },
-        text: "●"
+    PrefectureCategory = this._makePrefectureCategory(this.prefectures);
+    prefectureNameList = PrefectureCategory[categoryName];
+    for (_i = 0, _len = prefectureNameList.length; _i < _len; _i++) {
+      _items = prefectureNameList[_i];
+      prefectureRow = Ti.UI.createTableViewRow({
+        width: 'auto',
+        height: '60sp',
+        hasChild: true,
+        prefectureName: "" + _items.name
       });
       textLabel = Ti.UI.createLabel({
         width: 240,
         height: 40,
         top: 5,
-        left: 50,
+        left: 30,
         color: '#333',
         font: {
           fontSize: '18sp',
           fontFamily: 'Rounded M+ 1p',
           fontWeight: 'bold'
         },
-        text: "" + categoryName
+        text: "" + _items.name
       });
-      if (Titanium.Platform.osname === "iphone") {
-        row = Ti.UI.createTableViewRow({
-          width: 'auto',
-          height: 40,
-          borderWidth: 0,
-          selectedBackgroundColor: "#EDAD0B",
-          className: 'shopData',
-          numberOfPrefecture: numberOfPrefecture,
-          prefectureNameList: prefectureNameList,
-          opendFlg: false,
-          backgroundGradient: {
-            type: 'linear',
-            startPoint: {
-              x: '0%',
-              y: '0%'
-            },
-            endPoint: {
-              x: '0%',
-              y: '100%'
-            },
-            colors: this.colorSet
-          }
-        });
-        row.add(textLabel);
-        row.add(roundLabel);
-      } else if (Titanium.Platform.osname === "android") {
-        row = Ti.UI.createTableViewRow({
-          width: 'auto',
-          height: 80,
-          selectedBackgroundColor: "#EDAD0B",
-          className: 'shopData',
-          numberOfPrefecture: numberOfPrefecture,
-          prefectureNameList: prefectureNameList,
-          opendFlg: false
-        });
-        view = Ti.UI.createView({
-          width: 'auto',
-          height: 80,
-          backgroundGradient: {
-            type: 'linear',
-            startPoint: {
-              x: '0%',
-              y: '0%'
-            },
-            endPoint: {
-              x: '0%',
-              y: '100%'
-            },
-            colors: this.colorSet
-          }
-        });
-        view.add(roundLabel);
-        view.add(textLabel);
-        row.add(view);
-      } else {
-        Ti.API.info('no data');
-      }
-      rows.push(row);
+      prefectureRow.add(textLabel);
+      rows.push(prefectureRow);
     }
+    this.table.borderColor = selectedColor;
+    this.table.backgroundColor = selectedSubColor;
     this.table.setData(rows);
-    return this.table;
-  }
+    return this.table.show();
+  };
 
   shopDataTableView.prototype._makePrefectureCategory = function(data) {
     var result, _;
@@ -353,80 +140,8 @@ shopDataTableView = (function() {
     return result;
   };
 
-  shopDataTableView.prototype._showSubMenu = function(prefectureNameList, curretRowIndex) {
-    var index, item, subMenu, subMenuLabel, _i, _len;
-    index = curretRowIndex;
-    Ti.API.info("curretRowIndex is " + curretRowIndex + " and " + prefectureNameList.length);
-    for (_i = 0, _len = prefectureNameList.length; _i < _len; _i++) {
-      item = prefectureNameList[_i];
-      subMenu = Ti.UI.createTableViewRow({
-        width: 'auto',
-        height: 40,
-        borderWidth: 0,
-        className: 'subMenu',
-        selectedBackgroundColor: "#EDAD0B",
-        prefectureName: item.name,
-        backgroundGradient: {
-          type: 'linear',
-          startPoint: {
-            x: '0%',
-            y: '0%'
-          },
-          endPoint: {
-            x: '0%',
-            y: '100%'
-          },
-          colors: this.colorSet
-        }
-      });
-      subMenuLabel = Ti.UI.createLabel({
-        width: 240,
-        height: 40,
-        top: 5,
-        left: 30,
-        color: '#333',
-        font: {
-          fontFamily: 'Rounded M+ 1p',
-          fontSize: '18sp'
-        },
-        text: item.name
-      });
-      subMenu.add(subMenuLabel);
-      this.table.insertRowAfter(index, subMenu, {
-        animated: false
-      });
-      this._sleep(100);
-      index++;
-      Ti.API.info("index is " + index);
-    }
-  };
-
-  shopDataTableView.prototype._hideSubMenu = function(curretRowIndex, numberOfPrefecture) {
-    var counter, endPosition, startPosition, _i;
-    if (curretRowIndex === 0) {
-      startPosition = numberOfPrefecture;
-    } else {
-      startPosition = numberOfPrefecture + curretRowIndex;
-    }
-    endPosition = curretRowIndex + 1;
-    Ti.API.info("start is " + startPosition + " and end is  " + endPosition);
-    for (counter = _i = startPosition; startPosition <= endPosition ? _i <= endPosition : _i >= endPosition; counter = startPosition <= endPosition ? ++_i : --_i) {
-      this.table.deleteRow(counter);
-      this._sleep(100);
-    }
-  };
-
-  shopDataTableView.prototype._sleep = function(time) {
-    var d1, d2;
-    d1 = new Date().getTime();
-    d2 = new Date().getTime();
-    while (d2 < d1 + time) {
-      d2 = new Date().getTime();
-    }
-  };
-
   shopDataTableView.prototype._createShopDataRow = function(placeData) {
-    var addressLabel, row, titleLabel, view;
+    var addressLabel, row, titleLabel;
     titleLabel = Ti.UI.createLabel({
       width: 240,
       height: 20,
@@ -452,57 +167,16 @@ shopDataTableView = (function() {
       },
       text: "" + placeData.address
     });
-    if (Titanium.Platform.osname === "iphone") {
-      row = Ti.UI.createTableViewRow({
-        width: 'auto',
-        height: 45,
-        borderWidth: 0,
-        hasChild: true,
-        placeData: placeData,
-        className: 'shopData',
-        backgroundGradient: {
-          type: 'linear',
-          startPoint: {
-            x: '0%',
-            y: '0%'
-          },
-          endPoint: {
-            x: '0%',
-            y: '100%'
-          },
-          colors: this.colorSet
-        }
-      });
-      row.add(titleLabel);
-      row.add(addressLabel);
-    } else if (Titanium.Platform.osname === "android") {
-      row = Ti.UI.createTableViewRow({
-        width: 'auto',
-        height: 80,
-        className: 'shopData',
-        hasDetail: true
-      });
-      view = Ti.UI.createView({
-        width: 'auto',
-        height: 80,
-        backgroundGradient: {
-          type: 'linear',
-          startPoint: {
-            x: '0%',
-            y: '0%'
-          },
-          endPoint: {
-            x: '0%',
-            y: '100%'
-          },
-          colors: this.colorSet
-        }
-      });
-      view.add(textLabel);
-      row.add(view);
-    } else {
-      Ti.API.info('no platform');
-    }
+    row = Ti.UI.createTableViewRow({
+      width: 'auto',
+      height: '45sp',
+      borderWidth: 0,
+      hasChild: true,
+      placeData: placeData,
+      className: 'shopData'
+    });
+    row.add(titleLabel);
+    row.add(addressLabel);
     return row;
   };
 
@@ -510,6 +184,14 @@ shopDataTableView = (function() {
     var file, json, shopData;
     shopData = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/shopData.json");
     file = shopData.read().toString();
+    json = JSON.parse(file);
+    return json;
+  };
+
+  shopDataTableView.prototype._loadPrefectures = function() {
+    var file, json, prefectures;
+    prefectures = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/prefectures.json");
+    file = prefectures.read().toString();
     json = JSON.parse(file);
     return json;
   };

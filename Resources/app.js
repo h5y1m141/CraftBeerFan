@@ -1,14 +1,24 @@
-var Cloud, baseColor, mapView, mapWindow, mapWindowTitle, shopData, shopDataDetail, shopDataDetailTable, shopDataTab, shopDataTableView, shopDataWindow, shopDataWindowTitle, tab, tabGroup;
+var Cloud, baseColor, cbFan, listButton, mapTab, mapWindowTitle, menu, menuTable, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+
+cbFan = {};
 
 Cloud = require('ti.cloud');
 
 shopDataTableView = require('ui/shopDataTableView');
 
+subMenuTable = require("ui/subMenuTable");
+
 shopDataDetail = require("ui/shopDataDetail");
+
+menuTable = require("ui/menuTable");
+
+menu = new menuTable();
 
 shopDataDetail = new shopDataDetail();
 
-shopDataDetailTable = shopDataDetail.getTable();
+cbFan.shopDataDetailTable = shopDataDetail.getTable();
+
+cbFan.menu = menu.getTable();
 
 baseColor = {
   barColor: "#f9f9f9",
@@ -27,13 +37,28 @@ shopDataWindowTitle = Ti.UI.createLabel({
   text: "都道府県別リスト"
 });
 
-shopDataWindow = Ti.UI.createWindow({
+cbFan.shopDataWindow = Ti.UI.createWindow({
   title: "都道府県別リスト",
   barColor: baseColor.barColor,
-  backgroundColor: baseColor.backgroundColor
+  backgroundColor: baseColor.backgroundColor,
+  tabBarHidden: true
 });
 
-shopDataWindow.setTitleControl(shopDataWindowTitle);
+if (Ti.Platform.osname === 'iphone') {
+  cbFan.shopDataWindow.setTitleControl(shopDataWindowTitle);
+}
+
+listButton = Titanium.UI.createButton({
+  backgroundImage: "ui/image/listButton.png",
+  width: "40sp",
+  height: "40sp"
+});
+
+listButton.addEventListener('click', function(e) {
+  return menu.show();
+});
+
+cbFan.shopDataWindow.leftNavButton = listButton;
 
 mapWindowTitle = Ti.UI.createLabel({
   textAlign: 'center',
@@ -46,15 +71,18 @@ mapWindowTitle = Ti.UI.createLabel({
   text: "近くのお店"
 });
 
-mapWindow = Ti.UI.createWindow({
+cbFan.mapWindow = Ti.UI.createWindow({
   title: "近くのお店",
   barColor: baseColor.barColor,
-  backgroundColor: baseColor.backgroundColor
+  backgroundColor: baseColor.backgroundColor,
+  tabBarHidden: true
 });
 
-mapWindow.setTitleControl(mapWindowTitle);
+if (Ti.Platform.osname === 'iphone') {
+  cbFan.mapWindow.setTitleControl(mapWindowTitle);
+}
 
-mapView = Titanium.Map.createView({
+cbFan.mapView = Titanium.Map.createView({
   mapType: Titanium.Map.STANDARD_TYPE,
   region: {
     latitude: 35.676564,
@@ -67,7 +95,7 @@ mapView = Titanium.Map.createView({
   userLocation: true
 });
 
-mapView.addEventListener('click', function(e) {
+cbFan.mapView.addEventListener('click', function(e) {
   var activeTab, backButton, _win, _winTitle;
   if (e.clicksource === "rightButton") {
     Ti.API.info("map view event fire");
@@ -96,8 +124,10 @@ mapView.addEventListener('click', function(e) {
       },
       text: "お店の詳細情報"
     });
-    _win.setTitleControl(_winTitle);
-    _win.add(shopDataDetailTable);
+    if (Ti.Platform.osname === 'iphone') {
+      _win.setTitleControl(_winTitle);
+    }
+    _win.add(cbFan.shopDataDetailTable);
     shopDataDetail.setData(e);
     shopDataDetail.show();
     activeTab = Ti.API._activeTab;
@@ -105,7 +135,7 @@ mapView.addEventListener('click', function(e) {
   }
 });
 
-mapView.hide();
+cbFan.mapView.hide();
 
 Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため';
 
@@ -120,8 +150,8 @@ Ti.Geolocation.addEventListener("location", function(e) {
   Ti.API.info("latitude: " + e.coords.latitude + "longitude: " + e.coords.longitude);
   latitude = e.coords.latitude;
   longitude = e.coords.longitude;
-  mapView.show();
-  mapView.setLocation({
+  cbFan.mapView.show();
+  cbFan.mapView.setLocation({
     latitude: latitude,
     longitude: longitude,
     latitudeDelta: 0.05,
@@ -144,8 +174,8 @@ Ti.Geolocation.addEventListener("location", function(e) {
       while (i < e.places.length) {
         place = e.places[i];
         tumblrImage = Titanium.UI.createImageView({
-          width: "26dip",
-          height: "40dip",
+          width: "26sp",
+          height: "40sp",
           image: "ui/image/tumblr.png"
         });
         annotation = Titanium.Map.createAnnotation({
@@ -160,7 +190,7 @@ Ti.Geolocation.addEventListener("location", function(e) {
           leftButton: "",
           rightButton: "ui/image/tumblrIcon.png"
         });
-        mapView.addAnnotation(annotation);
+        cbFan.mapView.addAnnotation(annotation);
         _results.push(i++);
       }
       return _results;
@@ -170,7 +200,7 @@ Ti.Geolocation.addEventListener("location", function(e) {
   });
 });
 
-mapWindow.add(mapView);
+cbFan.mapWindow.add(cbFan.mapView);
 
 tabGroup = Ti.UI.createTabGroup({
   tabsBackgroundColor: "#f9f9f9",
@@ -190,8 +220,8 @@ tabGroup.addEventListener('focus', function(e) {
   Ti.API.info(tabGroup._activeTab);
 });
 
-tab = Ti.UI.createTab({
-  window: mapWindow,
+mapTab = Ti.UI.createTab({
+  window: cbFan.mapWindow,
   barColor: "#343434",
   icon: "ui/image/inactivePin.png",
   activeIcon: "ui/image/pin.png"
@@ -199,17 +229,42 @@ tab = Ti.UI.createTab({
 
 shopData = new shopDataTableView();
 
-shopDataWindow.add(shopData);
+cbFan.shopData = shopData.getTable();
+
+cbFan.subMenu = new subMenuTable();
+
+cbFan.arrowImage = Ti.UI.createImageView({
+  width: '50sp',
+  height: '50sp',
+  left: 150,
+  top: 35,
+  borderRadius: 5,
+  transform: Ti.UI.create2DMatrix().rotate(45),
+  borderColor: "#f3f3f3",
+  borderWidth: 1,
+  zIndex: 8,
+  backgroundColor: "#007FB1"
+});
+
+cbFan.arrowImage.hide();
+
+cbFan.shopDataWindow.add(cbFan.arrowImage);
+
+cbFan.shopDataWindow.add(cbFan.shopData);
+
+cbFan.shopDataWindow.add(cbFan.subMenu);
+
+cbFan.shopDataWindow.add(cbFan.menu);
 
 shopDataTab = Ti.UI.createTab({
-  window: shopDataWindow,
+  window: cbFan.shopDataWindow,
   barColor: "#343434",
   icon: "ui/image/inactivePin.png",
   activeIcon: "ui/image/pin.png"
 });
 
-tabGroup.addTab(tab);
-
 tabGroup.addTab(shopDataTab);
+
+tabGroup.addTab(mapTab);
 
 tabGroup.open();
