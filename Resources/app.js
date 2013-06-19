@@ -1,4 +1,6 @@
-var Cloud, arrowImage, baseColor, cbFan, listButton, mapTab, mapWindowTitle, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+var Cloud, baseColor, cbFan, listButton, mapTab, mapWindowTitle, menu, menuTable, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+
+cbFan = {};
 
 Cloud = require('ti.cloud');
 
@@ -8,11 +10,15 @@ subMenuTable = require("ui/subMenuTable");
 
 shopDataDetail = require("ui/shopDataDetail");
 
+menuTable = require("ui/menuTable");
+
+menu = new menuTable();
+
 shopDataDetail = new shopDataDetail();
 
-cbFan = {};
-
 cbFan.shopDataDetailTable = shopDataDetail.getTable();
+
+cbFan.menu = menu.getTable();
 
 baseColor = {
   barColor: "#f9f9f9",
@@ -48,7 +54,9 @@ listButton = Titanium.UI.createButton({
   height: "40sp"
 });
 
-listButton.addEventListener('click', function(e) {});
+listButton.addEventListener('click', function(e) {
+  return menu.show();
+});
 
 cbFan.shopDataWindow.leftNavButton = listButton;
 
@@ -225,7 +233,7 @@ cbFan.shopData = shopData.getTable();
 
 cbFan.subMenu = new subMenuTable();
 
-arrowImage = Ti.UI.createImageView({
+cbFan.arrowImage = Ti.UI.createImageView({
   width: '50sp',
   height: '50sp',
   left: 150,
@@ -238,11 +246,15 @@ arrowImage = Ti.UI.createImageView({
   backgroundColor: "#007FB1"
 });
 
-cbFan.shopDataWindow.add(arrowImage);
+cbFan.arrowImage.hide();
+
+cbFan.shopDataWindow.add(cbFan.arrowImage);
 
 cbFan.shopDataWindow.add(cbFan.shopData);
 
 cbFan.shopDataWindow.add(cbFan.subMenu);
+
+cbFan.shopDataWindow.add(cbFan.menu);
 
 shopDataTab = Ti.UI.createTab({
   window: cbFan.shopDataWindow,

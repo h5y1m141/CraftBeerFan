@@ -3,9 +3,10 @@ var subMenuTable;
 subMenuTable = (function() {
 
   function subMenuTable() {
-    var PrefectureCategory, categoryName, headerLabel, headerPoint, subMenuRow, subMenuRows,
+    var PrefectureCategory, categoryName, headerLabel, headerPoint, index, subMenuRow, subMenuRows,
       _this = this;
     this.prefectures = this._loadPrefectures();
+    this.rowHeight = 60;
     this.subMenu = Ti.UI.createTableView({
       backgroundColor: "#f3f3f3",
       separatorColor: '#cccccc',
@@ -26,25 +27,30 @@ subMenuTable = (function() {
       }
     };
     this.subMenu.addEventListener('click', function(e) {
-      var categoryName, selectedColor;
+      var arrowImagePosition, categoryName, curretRowIndex　, selectedColor;
       categoryName = e.row.categoryName;
-      Ti.API.info(categoryName);
       selectedColor = _this.prefectureColorSet.name[categoryName];
+      curretRowIndex　 = e.index;
+      arrowImagePosition = (curretRowIndex + 1) * _this.rowHeight - 55;
+      cbFan.arrowImage.backgroundColor = selectedColor;
+      cbFan.arrowImage.top = arrowImagePosition;
+      cbFan.arrowImage.show();
       return shopData.refreshTableData(categoryName, selectedColor);
     });
     PrefectureCategory = this._makePrefectureCategory(this.prefectures);
     subMenuRows = [];
+    index = 0;
     for (categoryName in PrefectureCategory) {
       headerPoint = Ti.UI.createView({
         width: '10sp',
-        height: "30sp",
+        height: "50sp",
         top: 5,
         left: 10,
         backgroundColor: this.prefectureColorSet.name[categoryName]
       });
       headerLabel = Ti.UI.createLabel({
         text: "" + categoryName,
-        top: 0,
+        top: 15,
         left: 30,
         color: "#222",
         font: {
@@ -55,13 +61,15 @@ subMenuTable = (function() {
       });
       subMenuRow = Ti.UI.createTableViewRow({
         width: '150sp',
-        height: '40sp',
+        height: this.rowHeight,
+        rowID: index,
         backgroundColor: "f3f3f3",
         categoryName: "" + categoryName
       });
       subMenuRow.add(headerPoint);
       subMenuRow.add(headerLabel);
       subMenuRows.push(subMenuRow);
+      index++;
     }
     this.subMenu.setData(subMenuRows);
     return this.subMenu;

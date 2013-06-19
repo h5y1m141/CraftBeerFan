@@ -1,6 +1,7 @@
 class subMenuTable
   constructor:() ->
     @prefectures = @_loadPrefectures()
+    @rowHeight =  60
     @subMenu = Ti.UI.createTableView
       backgroundColor:"#f3f3f3"
       separatorColor: '#cccccc'
@@ -20,26 +21,36 @@ class subMenuTable
       
     @subMenu.addEventListener('click',(e)=>
       categoryName = e.row.categoryName
-      Ti.API.info categoryName
       selectedColor = @prefectureColorSet.name[categoryName]
+      curretRowIndex　= e.index
+      
+      # arrowImageの高さの50ずらづだけだとrowの真ん中に位置しないため
+      # 55ずらすことで丁度真ん中に位置する
+      arrowImagePosition = (curretRowIndex+1) * @rowHeight - 55
+
+      cbFan.arrowImage.backgroundColor = selectedColor
+      cbFan.arrowImage.top = arrowImagePosition
+      cbFan.arrowImage.show()
+      
       shopData.refreshTableData(categoryName,selectedColor)
 
     )
 
     PrefectureCategory = @_makePrefectureCategory(@prefectures)
     subMenuRows = []
+    index = 0
     for categoryName of PrefectureCategory
       
       headerPoint = Ti.UI.createView
         width:'10sp'
-        height:"30sp"        
+        height:"50sp"        
         top:5
         left:10
         backgroundColor:@prefectureColorSet.name[categoryName]
 
       headerLabel = Ti.UI.createLabel
         text: "#{categoryName}"
-        top:0
+        top:15
         left:30
         color:"#222"
         font:
@@ -49,13 +60,15 @@ class subMenuTable
             
       subMenuRow = Ti.UI.createTableViewRow
         width:'150sp'
-        height:'40sp'
+        height:@rowHeight
+        rowID:index
         backgroundColor:"f3f3f3"
         categoryName:"#{categoryName}"
       
       subMenuRow.add headerPoint
       subMenuRow.add headerLabel
       subMenuRows.push subMenuRow
+      index++
       
     @subMenu.setData subMenuRows
     return @subMenu
@@ -77,6 +90,5 @@ class subMenuTable
       return row.area
     )
     return result
-    
-    
+        
 module.exports = subMenuTable

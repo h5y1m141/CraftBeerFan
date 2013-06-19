@@ -1,11 +1,18 @@
-Cloud = require('ti.cloud')
+# アプリの名前空間を設定
+cbFan = {}
 
+Cloud = require('ti.cloud')
 shopDataTableView = require('ui/shopDataTableView')
 subMenuTable = require("ui/subMenuTable")
 shopDataDetail = require("ui/shopDataDetail")
+menuTable = require("ui/menuTable")
+menu = new menuTable()
+
+
 shopDataDetail = new shopDataDetail()
-cbFan = {}
+
 cbFan.shopDataDetailTable = shopDataDetail.getTable()
+cbFan.menu = menu.getTable()
 
 baseColor =
   barColor:"#f9f9f9"
@@ -37,7 +44,7 @@ listButton = Titanium.UI.createButton
   height:"40sp"
   
 listButton.addEventListener('click',(e) ->
-  
+  menu.show()
 )  
 
 cbFan.shopDataWindow.leftNavButton = listButton
@@ -197,7 +204,7 @@ cbFan.shopData = shopData.getTable()
 
 cbFan.subMenu = new subMenuTable()
 
-arrowImage = Ti.UI.createImageView
+cbFan.arrowImage = Ti.UI.createImageView
   width:'50sp'
   height:'50sp'
   left:150
@@ -208,10 +215,11 @@ arrowImage = Ti.UI.createImageView
   borderWidth:1
   zIndex:8      
   backgroundColor:"#007FB1"
-  
-cbFan.shopDataWindow.add arrowImage
+cbFan.arrowImage.hide()  
+cbFan.shopDataWindow.add cbFan.arrowImage
 cbFan.shopDataWindow.add cbFan.shopData
 cbFan.shopDataWindow.add cbFan.subMenu
+cbFan.shopDataWindow.add cbFan.menu
 
 shopDataTab = Ti.UI.createTab
   window:cbFan.shopDataWindow
