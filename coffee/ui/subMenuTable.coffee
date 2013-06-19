@@ -5,7 +5,7 @@ class subMenuTable
     @subMenu = Ti.UI.createTableView
       backgroundColor:"#f3f3f3"
       separatorColor: '#cccccc'
-      width:"150sp"
+      width:"auto"
       height:'auto'
       left:0
       top:0
@@ -19,20 +19,27 @@ class subMenuTable
       "中国・四国":"#F6CA06"
       "九州・沖縄":"#DA5019"
       
+    @prefectureSubColorSet = "name":  
+      "北海道・東北":"#D5E0F1"
+      "関東":"#CAE7F2"
+      "中部":"#D1F1CC"
+      "近畿":"#FFFBD5"
+      "中国・四国":"#FEF7D5"
+      "九州・沖縄":"#F9DFD5"
+      
     @subMenu.addEventListener('click',(e)=>
       categoryName = e.row.categoryName
       selectedColor = @prefectureColorSet.name[categoryName]
+      selectedSubColor = @prefectureSubColorSet.name[categoryName]
       curretRowIndex　= e.index
+      shopData.refreshTableData(categoryName,selectedColor,selectedSubColor)
       
       # arrowImageの高さの50ずらづだけだとrowの真ん中に位置しないため
       # 55ずらすことで丁度真ん中に位置する
       arrowImagePosition = (curretRowIndex+1) * @rowHeight - 55
-
       cbFan.arrowImage.backgroundColor = selectedColor
       cbFan.arrowImage.top = arrowImagePosition
       cbFan.arrowImage.show()
-      
-      shopData.refreshTableData(categoryName,selectedColor)
 
     )
 

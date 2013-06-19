@@ -96,7 +96,7 @@ shopDataTableView = (function() {
     return this.table;
   };
 
-  shopDataTableView.prototype.refreshTableData = function(categoryName, selectedColor) {
+  shopDataTableView.prototype.refreshTableData = function(categoryName, selectedColor, selectedSubColor) {
     var PrefectureCategory, prefectureNameList, prefectureRow, rows, textLabel, _i, _items, _len;
     rows = [];
     PrefectureCategory = this._makePrefectureCategory(this.prefectures);
@@ -105,7 +105,7 @@ shopDataTableView = (function() {
       _items = prefectureNameList[_i];
       prefectureRow = Ti.UI.createTableViewRow({
         width: 'auto',
-        height: '40sp',
+        height: '60sp',
         hasChild: true,
         prefectureName: "" + _items.name
       });
@@ -126,7 +126,7 @@ shopDataTableView = (function() {
       rows.push(prefectureRow);
     }
     this.table.borderColor = selectedColor;
-    this.table.backgroundColor = "#CAE7F2";
+    this.table.backgroundColor = selectedSubColor;
     this.table.setData(rows);
     return this.table.show();
   };

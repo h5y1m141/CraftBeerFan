@@ -89,7 +89,7 @@ class shopDataTableView
   getTable:() ->
     return @table
     
-  refreshTableData: (categoryName,selectedColor) ->        
+  refreshTableData: (categoryName,selectedColor,selectedSubColor) ->        
     rows = []
     PrefectureCategory = @_makePrefectureCategory(@prefectures)
     prefectureNameList = PrefectureCategory[categoryName]
@@ -98,7 +98,7 @@ class shopDataTableView
     for _items in prefectureNameList
       prefectureRow = Ti.UI.createTableViewRow
         width:'auto'
-        height:'40sp'
+        height:'60sp'
         hasChild:true
         prefectureName:"#{_items.name}"
 
@@ -118,7 +118,7 @@ class shopDataTableView
       rows.push prefectureRow
       
     @table.borderColor = selectedColor
-    @table.backgroundColor = "#CAE7F2"
+    @table.backgroundColor = selectedSubColor
     @table.setData rows
     return @table.show()
 
