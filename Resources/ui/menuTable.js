@@ -14,7 +14,13 @@ menuTable = (function() {
       top: 0,
       zIndex: 0
     });
-    this.Menu.addEventListener('click', function(e) {});
+    this.Menu.addEventListener('click', function(e) {
+      if (e.row.className === "Map") {
+        cbFan.currentView = cbFan.mapView;
+        cbFan.mapView.zIndex = 50;
+        return cbFan.mapView.show();
+      }
+    });
     rows = [];
     menuHeaderView = Ti.UI.createView({
       backgroundColor: "#3f3f3f",
@@ -35,9 +41,10 @@ menuTable = (function() {
       headerView: menuHeaderView
     });
     listRow = Ti.UI.createTableViewRow({
-      selectedColor: 'transparent',
+      selectedColor: "#3f3f3f",
       color: "#f3f3f3",
-      height: 40
+      height: 40,
+      className: "List"
     });
     listLabel = Ti.UI.createLabel({
       top: 5,
@@ -47,7 +54,7 @@ menuTable = (function() {
         fontSize: '18sp',
         fontFamily: "Lato-Light.ttf"
       },
-      text: 'List'
+      text: "List"
     });
     mapLabel = Ti.UI.createLabel({
       top: 5,
@@ -62,7 +69,8 @@ menuTable = (function() {
     mapRow = Ti.UI.createTableViewRow({
       color: "#f3f3f3",
       selectedColor: 'transparent',
-      height: 40
+      height: 40,
+      className: "Map"
     });
     mapRow.add(mapLabel);
     listRow.add(listLabel);

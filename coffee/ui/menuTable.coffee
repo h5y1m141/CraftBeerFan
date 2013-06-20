@@ -11,6 +11,12 @@ class menuTable
       zIndex:0
       
     @Menu.addEventListener('click',(e) ->
+      if e.row.className is "Map"
+        cbFan.currentView = cbFan.mapView
+        
+        cbFan.mapView.zIndex = 50
+        cbFan.mapView.show()
+        
     ) # end of EventListener
 
     rows = []
@@ -34,9 +40,10 @@ class menuTable
       headerView:menuHeaderView
       
     listRow = Ti.UI.createTableViewRow
-      selectedColor:'transparent'
+      selectedColor:"#3f3f3f"
       color:"#f3f3f3"
       height:40
+      className:"List"
 
     listLabel = Ti.UI.createLabel
       top:5
@@ -45,7 +52,7 @@ class menuTable
       font:
         fontSize:'18sp'
         fontFamily:"Lato-Light.ttf"        
-      text:'List'
+      text:"List"
             
     mapLabel = Ti.UI.createLabel
       top:5
@@ -61,6 +68,7 @@ class menuTable
       color:"#f3f3f3"
       selectedColor:'transparent'
       height:40
+      className:"Map"
       
     mapRow.add mapLabel
     listRow.add listLabel

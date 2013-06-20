@@ -1,4 +1,4 @@
-var Cloud, baseColor, cbFan, listButton, mapTab, mapWindowTitle, menu, menuTable, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+var Cloud, baseColor, cbFan, listButton, mapWindowTitle, menu, menuTable, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
 
 cbFan = {};
 
@@ -57,6 +57,7 @@ listButton = Titanium.UI.createButton({
 });
 
 listButton.addEventListener('click', function(e) {
+  Ti.API.info(cbFan.currentView);
   if (cbFan.isSlide === false) {
     return cbFan.subMenu.animate({
       duration: 400,
@@ -85,13 +86,6 @@ mapWindowTitle = Ti.UI.createLabel({
     fontWeight: 'bold'
   },
   text: "近くのお店"
-});
-
-cbFan.mapWindow = Ti.UI.createWindow({
-  title: "近くのお店",
-  barColor: baseColor.barColor,
-  backgroundColor: baseColor.backgroundColor,
-  tabBarHidden: true
 });
 
 if (Ti.Platform.osname === 'iphone') {
@@ -236,13 +230,6 @@ tabGroup.addEventListener('focus', function(e) {
   Ti.API.info(tabGroup._activeTab);
 });
 
-mapTab = Ti.UI.createTab({
-  window: cbFan.mapWindow,
-  barColor: "#343434",
-  icon: "ui/image/inactivePin.png",
-  activeIcon: "ui/image/pin.png"
-});
-
 shopData = new shopDataTableView();
 
 cbFan.shopData = shopData.getTable();
@@ -272,6 +259,10 @@ cbFan.shopDataWindow.add(cbFan.subMenu);
 
 cbFan.shopDataWindow.add(cbFan.menu);
 
+cbFan.shopDataWindow.add(cbFan.mapView);
+
+cbFan.currentView = cbFan.subMenu;
+
 shopDataTab = Ti.UI.createTab({
   window: cbFan.shopDataWindow,
   barColor: "#343434",
@@ -280,7 +271,5 @@ shopDataTab = Ti.UI.createTab({
 });
 
 tabGroup.addTab(shopDataTab);
-
-tabGroup.addTab(mapTab);
 
 tabGroup.open();

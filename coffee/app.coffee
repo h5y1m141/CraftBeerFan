@@ -17,6 +17,7 @@ shopDataDetail = new shopDataDetail()
 
 cbFan.isSlide = false
 
+
 cbFan.shopDataDetailTable = shopDataDetail.getTable()
 cbFan.menu = menu.getTable()
 
@@ -50,6 +51,7 @@ listButton = Titanium.UI.createButton
   height:"40sp"
   
 listButton.addEventListener('click',(e) ->
+  Ti.API.info cbFan.currentView
   if cbFan.isSlide is false
     cbFan.subMenu.animate({
       duration:400
@@ -80,11 +82,6 @@ mapWindowTitle = Ti.UI.createLabel
     fontWeight:'bold'
   text:"近くのお店"
 
-cbFan.mapWindow = Ti.UI.createWindow
-  title: "近くのお店"
-  barColor:baseColor.barColor
-  backgroundColor: baseColor.backgroundColor
-  tabBarHidden:true
 
 if Ti.Platform.osname is 'iphone'
   cbFan.mapWindow.setTitleControl mapWindowTitle
@@ -215,11 +212,6 @@ tabGroup.addEventListener('focus',(e) ->
   Ti.API.info tabGroup._activeTab
   return
 )
-mapTab = Ti.UI.createTab
-  window:cbFan.mapWindow
-  barColor:"#343434"
-  icon:"ui/image/inactivePin.png"
-  activeIcon:"ui/image/pin.png"
 
 shopData = new shopDataTableView()
 cbFan.shopData = shopData.getTable()
@@ -242,6 +234,10 @@ cbFan.shopDataWindow.add cbFan.arrowImage
 cbFan.shopDataWindow.add cbFan.shopData
 cbFan.shopDataWindow.add cbFan.subMenu
 cbFan.shopDataWindow.add cbFan.menu
+cbFan.shopDataWindow.add cbFan.mapView
+
+# cbFan.currentViewにて現在表示してるViewの情報を取得できるようにしてる
+cbFan.currentView = cbFan.subMenu
 
 shopDataTab = Ti.UI.createTab
   window:cbFan.shopDataWindow
@@ -250,5 +246,4 @@ shopDataTab = Ti.UI.createTab
   activeIcon:"ui/image/pin.png"
   
 tabGroup.addTab shopDataTab
-tabGroup.addTab mapTab
 tabGroup.open()
