@@ -34,6 +34,7 @@ class menuTable
       headerView:menuHeaderView
       
     listRow = Ti.UI.createTableViewRow
+      selectedColor:'transparent'
       color:"#f3f3f3"
       height:40
 
@@ -58,6 +59,7 @@ class menuTable
       
     mapRow = Ti.UI.createTableViewRow
       color:"#f3f3f3"
+      selectedColor:'transparent'
       height:40
       
     mapRow.add mapLabel

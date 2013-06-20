@@ -69,8 +69,7 @@ class subMenuTable
         width:150
         height:@rowHeight
         rowID:index
-        touchEnabled:false
-        bubbleParent:false        
+        selectedColor:'transparent'
         backgroundColor:"f3f3f3"
         categoryName:"#{categoryName}"
       

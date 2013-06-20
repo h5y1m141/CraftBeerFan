@@ -7,8 +7,8 @@ class shopDataDetail
       
     backButton = Titanium.UI.createButton
       backgroundImage:"ui/image/backButton.png"
-      width:"44sp"
-      height:"44sp"
+      width:44
+      height:44
       
     backButton.addEventListener('click',(e) ->
       return shopDataWindow.close({animated:true})
@@ -20,7 +20,7 @@ class shopDataDetail
     @section = Ti.UI.createTableViewSection
       headerTitle: ""
       font:
-        fontSize:'18sp'
+        fontSize:18
         fontFamily : 'Rounded M+ 1p'
         fontWeight:'bold'
   
@@ -28,6 +28,7 @@ class shopDataDetail
     addressRow = Ti.UI.createTableViewRow
       width:'auto'
       height:40
+      selectedColor:'transparent'
 
       
     @addressLabel = Ti.UI.createLabel
@@ -36,13 +37,14 @@ class shopDataDetail
       left:20
       top:10
       font:
-        fontSize:'18sp'
+        fontSize:18
         fontFamily : 'Rounded M+ 1p'
         fontWeight:'bold'
     
     phoneRow = Ti.UI.createTableViewRow
       width:'auto'
       height:40
+      selectedColor:'transparent'
     
     @phoneLabel = Ti.UI.createLabel
       text: ""
@@ -50,7 +52,7 @@ class shopDataDetail
       top:10
       width:150
       font:
-        fontSize:'18sp'
+        fontSize:18
         fontFamily : 'Rounded M+ 1p'
         fontWeight:'bold'
 

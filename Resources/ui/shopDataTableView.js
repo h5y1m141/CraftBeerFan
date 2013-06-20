@@ -10,7 +10,7 @@ shopDataTableView = (function() {
       separatorStyle: Titanium.UI.iPhone.TableViewSeparatorStyle.NONE,
       width: 'auto',
       height: 'auto',
-      left: "150sp",
+      left: 150,
       top: 0,
       borderColor: "#f3f3f3",
       borderWidth: 2,
@@ -58,7 +58,7 @@ shopDataTableView = (function() {
             textAlign: 'center',
             color: '#333',
             font: {
-              fontSize: '18sp',
+              fontSize: 18,
               fontFamily: 'Rounded M+ 1p',
               fontWeight: 'bold'
             },
@@ -66,8 +66,8 @@ shopDataTableView = (function() {
           });
           backButton = Titanium.UI.createButton({
             backgroundImage: "ui/image/backButton.png",
-            width: "44sp",
-            height: "44sp"
+            width: 44,
+            height: 44
           });
           backButton.addEventListener('click', function(e) {
             return shopWindow.close({
@@ -105,7 +105,7 @@ shopDataTableView = (function() {
       _items = prefectureNameList[_i];
       prefectureRow = Ti.UI.createTableViewRow({
         width: 'auto',
-        height: '60sp',
+        height: 60,
         hasChild: true,
         prefectureName: "" + _items.name
       });
@@ -116,7 +116,7 @@ shopDataTableView = (function() {
         left: 30,
         color: '#333',
         font: {
-          fontSize: '18sp',
+          fontSize: 18,
           fontFamily: 'Rounded M+ 1p',
           fontWeight: 'bold'
         },
@@ -144,12 +144,12 @@ shopDataTableView = (function() {
     var addressLabel, row, titleLabel;
     titleLabel = Ti.UI.createLabel({
       width: 240,
-      height: 20,
+      height: 30,
       top: 5,
       left: 5,
       color: '#333',
       font: {
-        fontSize: '16sp',
+        fontSize: 18,
         fontWeight: 'bold',
         fontFamily: 'Rounded M+ 1p'
       },
@@ -157,19 +157,19 @@ shopDataTableView = (function() {
     });
     addressLabel = Ti.UI.createLabel({
       width: 240,
-      height: 20,
-      top: 25,
+      height: 30,
+      top: 30,
       left: 20,
       color: '#444',
       font: {
-        fontSize: '12sp',
+        fontSize: 14,
         fontFamily: 'Rounded M+ 1p'
       },
       text: "" + placeData.address
     });
     row = Ti.UI.createTableViewRow({
       width: 'auto',
-      height: '45sp',
+      height: 60,
       borderWidth: 0,
       hasChild: true,
       placeData: placeData,

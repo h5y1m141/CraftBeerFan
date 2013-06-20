@@ -11,8 +11,8 @@ shopDataDetail = (function() {
     });
     backButton = Titanium.UI.createButton({
       backgroundImage: "ui/image/backButton.png",
-      width: "44sp",
-      height: "44sp"
+      width: 44,
+      height: 44
     });
     backButton.addEventListener('click', function(e) {
       return shopDataWindow.close({
@@ -24,14 +24,15 @@ shopDataDetail = (function() {
     this.section = Ti.UI.createTableViewSection({
       headerTitle: "",
       font: {
-        fontSize: '18sp',
+        fontSize: 18,
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       }
     });
     addressRow = Ti.UI.createTableViewRow({
       width: 'auto',
-      height: 40
+      height: 40,
+      selectedColor: 'transparent'
     });
     this.addressLabel = Ti.UI.createLabel({
       text: "",
@@ -39,14 +40,15 @@ shopDataDetail = (function() {
       left: 20,
       top: 10,
       font: {
-        fontSize: '18sp',
+        fontSize: 18,
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       }
     });
     phoneRow = Ti.UI.createTableViewRow({
       width: 'auto',
-      height: 40
+      height: 40,
+      selectedColor: 'transparent'
     });
     this.phoneLabel = Ti.UI.createLabel({
       text: "",
@@ -54,7 +56,7 @@ shopDataDetail = (function() {
       top: 10,
       width: 150,
       font: {
-        fontSize: '18sp',
+        fontSize: 18,
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       }

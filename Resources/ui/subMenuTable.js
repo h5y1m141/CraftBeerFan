@@ -74,8 +74,7 @@ subMenuTable = (function() {
         width: 150,
         height: this.rowHeight,
         rowID: index,
-        touchEnabled: false,
-        bubbleParent: false,
+        selectedColor: 'transparent',
         backgroundColor: "f3f3f3",
         categoryName: "" + categoryName
       });
