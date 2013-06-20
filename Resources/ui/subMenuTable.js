@@ -71,9 +71,11 @@ subMenuTable = (function() {
         }
       });
       subMenuRow = Ti.UI.createTableViewRow({
-        width: '150sp',
+        width: 150,
         height: this.rowHeight,
         rowID: index,
+        touchEnabled: false,
+        bubbleParent: false,
         backgroundColor: "f3f3f3",
         categoryName: "" + categoryName
       });

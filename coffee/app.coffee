@@ -11,6 +11,12 @@ menu = new menuTable()
 
 shopDataDetail = new shopDataDetail()
 
+# メニューのスライド状態を管理するためのプロパティ
+# isSlide がfalseの場合にはスライドしてない状態で
+# 起動時にはメニュー展開したくないのでfalseに設定
+
+cbFan.isSlide = false
+
 cbFan.shopDataDetailTable = shopDataDetail.getTable()
 cbFan.menu = menu.getTable()
 
@@ -44,7 +50,23 @@ listButton = Titanium.UI.createButton
   height:"40sp"
   
 listButton.addEventListener('click',(e) ->
-  menu.show()
+  if cbFan.isSlide is false
+    cbFan.subMenu.animate({
+      duration:400
+      left:200
+    },() ->
+      cbFan.isSlide = true
+    )
+
+  else
+    cbFan.subMenu.animate({
+      duration:400
+      left:0
+    },() ->
+    
+      cbFan.isSlide = false
+    )
+    
 )  
 
 cbFan.shopDataWindow.leftNavButton = listButton

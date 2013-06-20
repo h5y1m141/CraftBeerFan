@@ -16,6 +16,8 @@ menu = new menuTable();
 
 shopDataDetail = new shopDataDetail();
 
+cbFan.isSlide = false;
+
 cbFan.shopDataDetailTable = shopDataDetail.getTable();
 
 cbFan.menu = menu.getTable();
@@ -55,7 +57,21 @@ listButton = Titanium.UI.createButton({
 });
 
 listButton.addEventListener('click', function(e) {
-  return menu.show();
+  if (cbFan.isSlide === false) {
+    return cbFan.subMenu.animate({
+      duration: 400,
+      left: 200
+    }, function() {
+      return cbFan.isSlide = true;
+    });
+  } else {
+    return cbFan.subMenu.animate({
+      duration: 400,
+      left: 0
+    }, function() {
+      return cbFan.isSlide = false;
+    });
+  }
 });
 
 cbFan.shopDataWindow.leftNavButton = listButton;
