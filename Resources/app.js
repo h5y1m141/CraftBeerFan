@@ -1,4 +1,4 @@
-var Cloud, baseColor, cbFan, mapTab, mapWindowTitle, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+var Cloud, baseColor, categoryName, cbFan, mapTab, mapWindowTitle, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
 
 cbFan = {};
 
@@ -225,6 +225,14 @@ tabGroup.addEventListener('focus', function(e) {
 shopData = new shopDataTableView();
 
 cbFan.shopData = shopData.getTable();
+
+categoryName = "関東";
+
+selectedColor = "#007FB1";
+
+selectedSubColor = "#CAE7F2";
+
+shopData.refreshTableData(categoryName, selectedColor, selectedSubColor);
 
 cbFan.subMenu = new subMenuTable();
 

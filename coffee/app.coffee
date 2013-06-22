@@ -213,7 +213,14 @@ tabGroup.addEventListener('focus',(e) ->
 )
 
 shopData = new shopDataTableView()
+
 cbFan.shopData = shopData.getTable()
+
+# 起動時に関東エリアを表示するための設定
+categoryName = "関東"
+selectedColor = "#007FB1"
+selectedSubColor = "#CAE7F2"
+shopData.refreshTableData(categoryName,selectedColor,selectedSubColor)
 
 cbFan.subMenu = new subMenuTable()
 
