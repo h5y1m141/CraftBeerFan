@@ -37,16 +37,29 @@ subMenuTable = (function() {
       }
     };
     this.subMenu.addEventListener('click', function(e) {
-      var arrowImagePosition, categoryName, curretRowIndex　, selectedColor, selectedSubColor;
+      var categoryName, curretRowIndex　, rowHeight, selectedColor, selectedSubColor;
       categoryName = e.row.categoryName;
       selectedColor = _this.prefectureColorSet.name[categoryName];
       selectedSubColor = _this.prefectureSubColorSet.name[categoryName];
       curretRowIndex　 = e.index;
-      shopData.refreshTableData(categoryName, selectedColor, selectedSubColor);
-      arrowImagePosition = (curretRowIndex + 1) * _this.rowHeight - 55;
-      cbFan.arrowImage.backgroundColor = selectedColor;
-      cbFan.arrowImage.top = arrowImagePosition;
-      return cbFan.arrowImage.show();
+      rowHeight = _this.rowHeight;
+      cbFan.arrowImage.hide();
+      return cbFan.shopData.animate({
+        duration: 400,
+        left: 300
+      }, function() {
+        var arrowImagePosition;
+        shopData.refreshTableData(categoryName, selectedColor, selectedSubColor);
+        arrowImagePosition = (curretRowIndex + 1) * rowHeight - 55;
+        cbFan.arrowImage.backgroundColor = selectedColor;
+        cbFan.arrowImage.top = arrowImagePosition;
+        return cbFan.shopData.animate({
+          duration: 400,
+          left: 150
+        }, function() {
+          return cbFan.arrowImage.show();
+        });
+      });
     });
     PrefectureCategory = this._makePrefectureCategory(this.prefectures);
     subMenuRows = [];
@@ -71,9 +84,10 @@ subMenuTable = (function() {
         }
       });
       subMenuRow = Ti.UI.createTableViewRow({
-        width: '150sp',
+        width: 150,
         height: this.rowHeight,
         rowID: index,
+        selectedColor: 'transparent',
         backgroundColor: "f3f3f3",
         categoryName: "" + categoryName
       });

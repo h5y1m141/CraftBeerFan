@@ -1,57 +1,40 @@
 class shopDataDetail
   constructor: (data) ->
-    shopDataWindow = Ti.UI.createWindow
-      title: "詳細情報"
-      barColor:"#ccc"
-      backgroundColor:"#f9f9f9"
       
-    backButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/backButton.png"
-      width:"44sp"
-      height:"44sp"
-      
-    backButton.addEventListener('click',(e) ->
-      return shopDataWindow.close({animated:true})
-    )
-    shopDataWindow.leftButton = backButton
-
-      
-    shopData = []  
-    @section = Ti.UI.createTableViewSection
-      headerTitle: ""
-      font:
-        fontSize:'18sp'
-        fontFamily : 'Rounded M+ 1p'
-        fontWeight:'bold'
-  
+    shopData = []
+    
 
     addressRow = Ti.UI.createTableViewRow
       width:'auto'
       height:40
+      selectedColor:'transparent'
 
       
     @addressLabel = Ti.UI.createLabel
       text: ""
       width:280
+      color:"#333"
       left:20
       top:10
       font:
-        fontSize:'18sp'
-        fontFamily : 'Rounded M+ 1p'
+        fontSize:18
+        fontFamily :'Rounded M+ 1p'
         fontWeight:'bold'
     
     phoneRow = Ti.UI.createTableViewRow
       width:'auto'
       height:40
+      selectedColor:'transparent'
     
     @phoneLabel = Ti.UI.createLabel
       text: ""
       left:20
       top:10
       width:150
+      color:"#333"
       font:
-        fontSize:'18sp'
-        fontFamily : 'Rounded M+ 1p'
+        fontSize:18
+        fontFamily:'Rounded M+ 1p'
         fontWeight:'bold'
 
     @callBtn = Ti.UI.createButton
@@ -72,11 +55,14 @@ class shopDataDetail
 
     @tableView = Ti.UI.createTableView
       width:'auto'
-      height:'auto'
+      height:80
+      top:10
+      left:0
       data:shopData
       backgroundColor:"#f3f3f3"
       separatorColor: '#cccccc'
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      borderRadius:5
+
     @tableView.hide()
 
   show: () ->
@@ -86,13 +72,13 @@ class shopDataDetail
     return @tableView
     
   setData: (data) ->
-
+    Ti.API.info data.annotation.phoneNumber
     @addressLabel.setText(data.annotation.shopAddress)
     @phoneLabel.setText(data.annotation.phoneNumber)
     @callBtn.addEventListener('click',(e)->
       Titanium.Platform.openURL("tel:#{data.annotation.phoneNumber}")
     )
-    @section.setHeaderTitle(data.title)
+    
     return
 
       

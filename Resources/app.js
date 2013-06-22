@@ -1,4 +1,4 @@
-var Cloud, baseColor, cbFan, listButton, mapTab, mapWindowTitle, menu, menuTable, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+var Cloud, baseColor, categoryName, cbFan, mapTab, mapWindowTitle, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
 
 cbFan = {};
 
@@ -10,15 +10,9 @@ subMenuTable = require("ui/subMenuTable");
 
 shopDataDetail = require("ui/shopDataDetail");
 
-menuTable = require("ui/menuTable");
-
-menu = new menuTable();
-
 shopDataDetail = new shopDataDetail();
 
 cbFan.shopDataDetailTable = shopDataDetail.getTable();
-
-cbFan.menu = menu.getTable();
 
 baseColor = {
   barColor: "#f9f9f9",
@@ -41,24 +35,8 @@ cbFan.shopDataWindow = Ti.UI.createWindow({
   title: "都道府県別リスト",
   barColor: baseColor.barColor,
   backgroundColor: baseColor.backgroundColor,
-  tabBarHidden: true
+  tabBarHidden: false
 });
-
-if (Ti.Platform.osname === 'iphone') {
-  cbFan.shopDataWindow.setTitleControl(shopDataWindowTitle);
-}
-
-listButton = Titanium.UI.createButton({
-  backgroundImage: "ui/image/listButton.png",
-  width: "40sp",
-  height: "40sp"
-});
-
-listButton.addEventListener('click', function(e) {
-  return menu.show();
-});
-
-cbFan.shopDataWindow.leftNavButton = listButton;
 
 mapWindowTitle = Ti.UI.createLabel({
   textAlign: 'center',
@@ -75,10 +53,11 @@ cbFan.mapWindow = Ti.UI.createWindow({
   title: "近くのお店",
   barColor: baseColor.barColor,
   backgroundColor: baseColor.backgroundColor,
-  tabBarHidden: true
+  tabBarHidden: false
 });
 
 if (Ti.Platform.osname === 'iphone') {
+  cbFan.shopDataWindow.setTitleControl(shopDataWindowTitle);
   cbFan.mapWindow.setTitleControl(mapWindowTitle);
 }
 
@@ -87,16 +66,19 @@ cbFan.mapView = Titanium.Map.createView({
   region: {
     latitude: 35.676564,
     longitude: 139.765076,
-    latitudeDelta: 1.0,
-    longitudeDelta: 1.0
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05
   },
   animate: true,
   regionFit: true,
-  userLocation: true
+  userLocation: true,
+  zIndex: 0
 });
 
+cbFan.mapView.hide();
+
 cbFan.mapView.addEventListener('click', function(e) {
-  var activeTab, backButton, _win, _winTitle;
+  var activeTab, backButton, _annotation, _mapView, _win, _winTitle;
   if (e.clicksource === "rightButton") {
     Ti.API.info("map view event fire");
     _win = Ti.UI.createWindow({
@@ -105,8 +87,8 @@ cbFan.mapView.addEventListener('click', function(e) {
     });
     backButton = Titanium.UI.createButton({
       backgroundImage: "ui/image/backButton.png",
-      width: "44sp",
-      height: "44sp"
+      width: 44,
+      height: 44
     });
     backButton.addEventListener('click', function(e) {
       return _win.close({
@@ -127,6 +109,31 @@ cbFan.mapView.addEventListener('click', function(e) {
     if (Ti.Platform.osname === 'iphone') {
       _win.setTitleControl(_winTitle);
     }
+    _annotation = Titanium.Map.createAnnotation({
+      latitude: e.annotation.latitude,
+      longitude: e.annotation.longitude,
+      pincolor: Titanium.Map.ANNOTATION_PURPLE,
+      animate: true
+    });
+    _mapView = Titanium.Map.createView({
+      mapType: Titanium.Map.STANDARD_TYPE,
+      region: {
+        latitude: e.annotation.latitude,
+        longitude: e.annotation.longitude,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005
+      },
+      animate: true,
+      regionFit: true,
+      userLocation: true,
+      zIndex: 0,
+      top: 100,
+      left: 0,
+      height: 250,
+      width: 'auto'
+    });
+    _mapView.addAnnotation(_annotation);
+    _win.add(_mapView);
     _win.add(cbFan.shopDataDetailTable);
     shopDataDetail.setData(e);
     shopDataDetail.show();
@@ -200,13 +207,8 @@ Ti.Geolocation.addEventListener("location", function(e) {
   });
 });
 
-cbFan.mapWindow.add(cbFan.mapView);
-
 tabGroup = Ti.UI.createTabGroup({
   tabsBackgroundColor: "#f9f9f9",
-  tabsBackgroundFocusedColor: baseColor.keyColor,
-  tabsBackgroundImage: "ui/image/tabbar.png",
-  activeTabBackgroundImage: "ui/image/activetab.png",
   shadowImage: "ui/image/shadowimage.png"
 });
 
@@ -220,16 +222,17 @@ tabGroup.addEventListener('focus', function(e) {
   Ti.API.info(tabGroup._activeTab);
 });
 
-mapTab = Ti.UI.createTab({
-  window: cbFan.mapWindow,
-  barColor: "#343434",
-  icon: "ui/image/inactivePin.png",
-  activeIcon: "ui/image/pin.png"
-});
-
 shopData = new shopDataTableView();
 
 cbFan.shopData = shopData.getTable();
+
+categoryName = "関東";
+
+selectedColor = "#007FB1";
+
+selectedSubColor = "#CAE7F2";
+
+shopData.refreshTableData(categoryName, selectedColor, selectedSubColor);
 
 cbFan.subMenu = new subMenuTable();
 
@@ -254,17 +257,26 @@ cbFan.shopDataWindow.add(cbFan.shopData);
 
 cbFan.shopDataWindow.add(cbFan.subMenu);
 
-cbFan.shopDataWindow.add(cbFan.menu);
+cbFan.mapWindow.add(cbFan.mapView);
+
+cbFan.currentView = cbFan.subMenu;
 
 shopDataTab = Ti.UI.createTab({
   window: cbFan.shopDataWindow,
+  barColor: "#343434",
+  icon: "ui/image/inactivelistButton.png",
+  activeIcon: "ui/image/listButton.png"
+});
+
+mapTab = Ti.UI.createTab({
+  window: cbFan.mapWindow,
   barColor: "#343434",
   icon: "ui/image/inactivePin.png",
   activeIcon: "ui/image/pin.png"
 });
 
-tabGroup.addTab(shopDataTab);
-
 tabGroup.addTab(mapTab);
+
+tabGroup.addTab(shopDataTab);
 
 tabGroup.open();

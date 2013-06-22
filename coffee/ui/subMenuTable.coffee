@@ -32,15 +32,28 @@ class subMenuTable
       selectedColor = @prefectureColorSet.name[categoryName]
       selectedSubColor = @prefectureSubColorSet.name[categoryName]
       curretRowIndex　= e.index
-      shopData.refreshTableData(categoryName,selectedColor,selectedSubColor)
-      
-      # arrowImageの高さの50ずらづだけだとrowの真ん中に位置しないため
-      # 55ずらすことで丁度真ん中に位置する
-      arrowImagePosition = (curretRowIndex+1) * @rowHeight - 55
-      cbFan.arrowImage.backgroundColor = selectedColor
-      cbFan.arrowImage.top = arrowImagePosition
-      cbFan.arrowImage.show()
+      # cbFan.shopData.animateした後のコールバック関数内では@rowHeightが
+      # 参照できないために以下変数に格納する
+      rowHeight = @rowHeight
+      cbFan.arrowImage.hide()
+      cbFan.shopData.animate({
+        duration:400
+        left:300
+      },() ->
+        shopData.refreshTableData(categoryName,selectedColor,selectedSubColor)
+        # arrowImageの高さの50ずらづだけだとrowの真ん中に位置しないため
+        # 55ずらすことで丁度真ん中に位置する
+        arrowImagePosition = (curretRowIndex+1) * rowHeight - 55
+        cbFan.arrowImage.backgroundColor = selectedColor
+        cbFan.arrowImage.top = arrowImagePosition
 
+        cbFan.shopData.animate({
+          duration:400
+          left:150
+        },() ->
+          cbFan.arrowImage.show()
+        )
+      )
     )
 
     PrefectureCategory = @_makePrefectureCategory(@prefectures)
@@ -66,9 +79,10 @@ class subMenuTable
           fontWeight:'bold'
             
       subMenuRow = Ti.UI.createTableViewRow
-        width:'150sp'
+        width:150
         height:@rowHeight
         rowID:index
+        selectedColor:'transparent'
         backgroundColor:"f3f3f3"
         categoryName:"#{categoryName}"
       

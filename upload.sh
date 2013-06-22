@@ -18,7 +18,7 @@ TERMINAL_NOTIFIER="/Users/hoyamada/.rvm/gems/ruby-1.9.2-p290/bin/terminal-notifi
 #echo "done." >> $LOG
 
 RELEASE_NOTES='Build uploaded automatically'
-DISTRIBUTION_LISTS='CraftBeerTokyo'
+DISTRIBUTION_LISTS='onlyMe'
 BUILD_PATH="/Users/hoyamada/Dropbox/Public/learning_javascript/titanium/CraftBeerFan/build/iphone/build/Debug-iphoneos"
 /usr/bin/curl "http://testflightapp.com/api/builds.json" \
 -F file=@"$BUILD_PATH/$(echo $PRODUCT_NAME).ipa" \
