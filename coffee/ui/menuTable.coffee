@@ -8,14 +8,9 @@ class menuTable
       height:'auto'
       left:0
       top:0
-      zIndex:0
+      zIndex:1
       
     @Menu.addEventListener('click',(e) ->
-      if e.row.className is "Map"
-        cbFan.currentView = cbFan.mapView
-        
-        cbFan.mapView.zIndex = 50
-        cbFan.mapView.show()
         
     ) # end of EventListener
 

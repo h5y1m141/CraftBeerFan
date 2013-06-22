@@ -12,15 +12,9 @@ menuTable = (function() {
       height: 'auto',
       left: 0,
       top: 0,
-      zIndex: 0
+      zIndex: 1
     });
-    this.Menu.addEventListener('click', function(e) {
-      if (e.row.className === "Map") {
-        cbFan.currentView = cbFan.mapView;
-        cbFan.mapView.zIndex = 50;
-        return cbFan.mapView.show();
-      }
-    });
+    this.Menu.addEventListener('click', function(e) {});
     rows = [];
     menuHeaderView = Ti.UI.createView({
       backgroundColor: "#3f3f3f",

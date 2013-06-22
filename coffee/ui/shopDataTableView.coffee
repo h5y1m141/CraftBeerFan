@@ -75,6 +75,7 @@ class shopDataTableView
             barColor:"#f9f9f9"
             backgroundColor: "#343434"
           shopWindow.leftNavButton = backButton
+          
           if Ti.Platform.osname is 'iphone'
             shopWindow.setTitleControl shopAreaDataWindowTitle
           
