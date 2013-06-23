@@ -78,12 +78,12 @@ cbFan.mapView = Titanium.Map.createView({
 cbFan.mapView.hide();
 
 cbFan.mapView.addEventListener('click', function(e) {
-  var activeTab, backButton, _annotation, _mapView, _win, _winTitle;
+  var activeTab, backButton, data, _annotation, _mapView, _win, _winTitle;
   if (e.clicksource === "rightButton") {
     Ti.API.info("map view event fire");
     _win = Ti.UI.createWindow({
       barColor: baseColor.barColor,
-      backgroundColor: baseColor.backgroundColor
+      backgroundColor: baseColor.barColor
     });
     backButton = Titanium.UI.createButton({
       backgroundImage: "ui/image/backButton.png",
@@ -135,7 +135,11 @@ cbFan.mapView.addEventListener('click', function(e) {
     _mapView.addAnnotation(_annotation);
     _win.add(_mapView);
     _win.add(cbFan.shopDataDetailTable);
-    shopDataDetail.setData(e);
+    data = {
+      shopAddress: e.annotation.shopAddress,
+      phoneNumber: e.annotation.phoneNumber
+    };
+    shopDataDetail.setData(data);
     shopDataDetail.show();
     activeTab = Ti.API._activeTab;
     return activeTab.open(_win);

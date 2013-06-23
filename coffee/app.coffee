@@ -80,7 +80,7 @@ cbFan.mapView.addEventListener('click',(e)->
     Ti.API.info "map view event fire"
     _win = Ti.UI.createWindow
       barColor:baseColor.barColor
-      backgroundColor: baseColor.backgroundColor
+      backgroundColor: baseColor.barColor
       
     backButton = Titanium.UI.createButton
       backgroundImage:"ui/image/backButton.png"
@@ -131,8 +131,12 @@ cbFan.mapView.addEventListener('click',(e)->
     _win.add _mapView
 
     _win.add cbFan.shopDataDetailTable
-    
-    shopDataDetail.setData(e)
+
+    data =
+      shopAddress:e.annotation.shopAddress
+      phoneNumber:e.annotation.phoneNumber
+      
+    shopDataDetail.setData(data)
     shopDataDetail.show()
     activeTab = Ti.API._activeTab
     

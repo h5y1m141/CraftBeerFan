@@ -72,9 +72,8 @@ class shopDataDetail
     return @tableView
     
   setData: (data) ->
-    Ti.API.info data.annotation.phoneNumber
-    @addressLabel.setText(data.annotation.shopAddress)
-    @phoneLabel.setText(data.annotation.phoneNumber)
+    @addressLabel.setText(data.shopAddress)
+    @phoneLabel.setText(data.phoneNumber)
     @callBtn.addEventListener('click',(e)->
       Titanium.Platform.openURL("tel:#{data.annotation.phoneNumber}")
     )

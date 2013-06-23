@@ -74,9 +74,8 @@ shopDataDetail = (function() {
   };
 
   shopDataDetail.prototype.setData = function(data) {
-    Ti.API.info(data.annotation.phoneNumber);
-    this.addressLabel.setText(data.annotation.shopAddress);
-    this.phoneLabel.setText(data.annotation.phoneNumber);
+    this.addressLabel.setText(data.shopAddress);
+    this.phoneLabel.setText(data.phoneNumber);
     this.callBtn.addEventListener('click', function(e) {
       return Titanium.Platform.openURL("tel:" + data.annotation.phoneNumber);
     });
