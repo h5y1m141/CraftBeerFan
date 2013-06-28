@@ -45,6 +45,7 @@
     </mobileweb>
     <modules>
         <module platform="commonjs">ti.cloud</module>
+	<module platform="iphone" version="1.0.1">net.nend</module>
     </modules>
     <deployment-targets>
         <target device="tizen">false</target>
