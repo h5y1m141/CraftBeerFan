@@ -1,10 +1,45 @@
-var Cloud, baseColor, categoryName, cbFan, mapTab, mapWindowTitle, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+var Cloud, Config, ad, adView, baseColor, categoryName, cbFan, config, mapTab, mapWindowTitle, nend, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
 
 cbFan = {};
 
 Cloud = require('ti.cloud');
 
 shopDataTableView = require('ui/shopDataTableView');
+
+ad = require('net.nend');
+
+Config = require("model/loadConfig");
+
+config = new Config();
+
+nend = config.getNendData();
+
+adView = ad.createView({
+  spotId: nend.spotId,
+  apiKey: nend.apiKey,
+  width: 320,
+  height: 50,
+  bottom: 0,
+  left: 0
+});
+
+if (Ti.Platform.osname === 'iphone' && Ti.Platform.displayCaps.platformHeight === 480) {
+  cbFan.platform = 'iPhone4s';
+} else {
+  cbFan.platform = 'iPhone5';
+}
+
+adView.addEventListener('receive', function(e) {
+  return Ti.API.info('receive');
+});
+
+adView.addEventListener('error', function(e) {
+  return Ti.API.info('error');
+});
+
+adView.addEventListener('click', function(e) {
+  return Ti.API.info('click');
+});
 
 subMenuTable = require("ui/subMenuTable");
 
@@ -72,8 +107,15 @@ cbFan.mapView = Titanium.Map.createView({
   animate: true,
   regionFit: true,
   userLocation: true,
-  zIndex: 0
+  zIndex: 0,
+  top: 0
 });
+
+if (cbFan.platform === 'iPhone4s') {
+  cbFan.mapView.height = 320;
+} else {
+  cbFan.mapView.height = 408;
+}
 
 cbFan.mapView.hide();
 
@@ -258,6 +300,8 @@ cbFan.shopDataWindow.add(cbFan.shopData);
 cbFan.shopDataWindow.add(cbFan.subMenu);
 
 cbFan.mapWindow.add(cbFan.mapView);
+
+cbFan.mapWindow.add(adView);
 
 cbFan.currentView = cbFan.subMenu;
 
