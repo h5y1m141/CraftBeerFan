@@ -3,6 +3,36 @@ cbFan = {}
 
 Cloud = require('ti.cloud')
 shopDataTableView = require('ui/shopDataTableView')
+ad = require('net.nend')
+Config = require("model/loadConfig")
+config = new Config()
+nend = config.getNendData()
+
+adView = ad.createView
+  spotId:nend.spotId
+  apiKey:nend.apiKey
+  width:320
+  height:50
+  bottom: 0
+  left:0
+
+if Ti.Platform.osname is 'iphone' and Ti.Platform.displayCaps.platformHeight is 480
+  cbFan.platform = 'iPhone4s'
+else
+  cbFan.platform = 'iPhone5'
+  
+adView.addEventListener('receive',(e)->
+    Ti.API.info('receive')
+)
+
+adView.addEventListener('error',(e)->
+    Ti.API.info('error')
+)
+
+adView.addEventListener('click',(e)->
+    Ti.API.info('click')
+)
+
 subMenuTable = require("ui/subMenuTable")
 shopDataDetail = require("ui/shopDataDetail")
 
@@ -60,7 +90,7 @@ if Ti.Platform.osname is 'iphone'
 
 # 1.0から0.001の間で縮尺尺度を示している。
 # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
-    
+
 cbFan.mapView = Titanium.Map.createView
   mapType: Titanium.Map.STANDARD_TYPE
   region: 
@@ -72,6 +102,13 @@ cbFan.mapView = Titanium.Map.createView
   regionFit:true
   userLocation:true
   zIndex:0
+  top:0
+  
+if cbFan.platform is 'iPhone4s'
+  cbFan.mapView.height = 320
+else
+  cbFan.mapView.height = 408
+
 
 cbFan.mapView.hide()
 
@@ -245,6 +282,7 @@ cbFan.shopDataWindow.add cbFan.shopData
 cbFan.shopDataWindow.add cbFan.subMenu
 
 cbFan.mapWindow.add cbFan.mapView
+cbFan.mapWindow.add adView
 
 # cbFan.currentViewにて現在表示してるViewの情報を取得できるようにしてる
 cbFan.currentView = cbFan.subMenu
