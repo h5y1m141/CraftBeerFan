@@ -44,6 +44,21 @@ class shopDataDetail
       left:180
       top:10
       
+    # お店のreview情報が存在するようだったら画面に表示する
+
+    Cloud.Reviews.query
+      page: 1
+      per_page: 20
+      place_id:"51cb8b0377b5c90acd0a0bb2"
+    , (e) ->
+      if e.success
+        i = 0
+        while i < e.reviews.length
+          review = e.reviews[i]
+          alert "id: " + review.id + "\n" + "id: " + review.id + "\n" + "rating: " + review.rating + "\n" + "content: " + review.content + "\n" + "updated_at: " + review.updated_at
+          i++
+      else
+        alert "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
     
     addressRow.add @addressLabel
     phoneRow.add @phoneLabel
