@@ -4,3 +4,5 @@ tmp
 ._*
 .DS_Store
 Resources/model/config.json
+Info.plist
+tiapp.xml
