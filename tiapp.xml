@@ -23,6 +23,7 @@
     <analytics>true</analytics>
     <guid>5253f00c-4204-4a1e-8300-0c397a8b8dda</guid>
     <property name="ti.ui.defaultunit" type="string">system</property>
+    <property name="ti.facebook.appid">181948098632770</property>
     <iphone>
         <orientations device="iphone">
             <orientation>Ti.UI.PORTRAIT</orientation>
@@ -46,6 +47,7 @@
     <modules>
         <module platform="commonjs">ti.cloud</module>
 	<module platform="iphone" version="1.0.1">net.nend</module>
+	<module platform="iphone">facebook</module>
     </modules>
     <deployment-targets>
         <target device="tizen">false</target>

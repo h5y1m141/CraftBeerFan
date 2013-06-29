@@ -14,10 +14,11 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>net.uchidak.tiflatdesign</string>
+			<string>info.craftbeerfan</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>tiflatdesign_sample</string>
+				<string>app</string>
+				<string>fb181948098632770</string>
 			</array>
 		</dict>
 	</array>

@@ -5,6 +5,8 @@ Cloud = require('ti.cloud')
 shopDataTableView = require('ui/shopDataTableView')
 ad = require('net.nend')
 Config = require("model/loadConfig")
+
+
 config = new Config()
 nend = config.getNendData()
 
@@ -45,7 +47,7 @@ cbFan.shopDataDetailTable = shopDataDetail.getTable()
 
 baseColor =
   barColor:"#f9f9f9"
-  backgroundColor:"#343434"
+  backgroundColor:"#dfdfdf"
   keyColor:"#EDAD0B"
 
 shopDataWindowTitle = Ti.UI.createLabel
@@ -81,10 +83,15 @@ cbFan.mapWindow = Ti.UI.createWindow
   backgroundColor: baseColor.backgroundColor
   tabBarHidden:false
 
+facebookWindowTitle = Ti.UI.createLabel
+  textAlign: 'center'
+  color:'#333'
+  font:
+    fontSize:'18sp'
+    fontFamily : 'Rounded M+ 1p'
+    fontWeight:'bold'
+  text:"アカウント設定"
 
-if Ti.Platform.osname is 'iphone'
-  cbFan.shopDataWindow.setTitleControl shopDataWindowTitle
-  cbFan.mapWindow.setTitleControl mapWindowTitle
 
 
 
@@ -284,8 +291,75 @@ cbFan.shopDataWindow.add cbFan.subMenu
 cbFan.mapWindow.add cbFan.mapView
 cbFan.mapWindow.add adView
 
+fb = require('facebook');
+fb.appid = 181948098632770
+fb.permissions =  ['read_stream']
+fb.forceDialogAuth = false
+cbFan.facebookToken = fb.accessToken
+fb.addEventListener('login', (e) ->
+  if e.success
+    Cloud.SocialIntegrations.externalAccountLogin
+      type: "facebook"
+      token: fb.accessToken
+    , (e) ->
+      if e.success
+        user = e.users[0]
+        Ti.API.info "User  = " + JSON.stringify(user)
+        Ti.App.Properties.setString "currentUserId", user.id
+        alert "Success: " + "id: " + user.id + "\\n" + "first name: " + user.first_name + "\\n" + "last name: " + user.last_name
+      else
+        alert "Error: " + ((e.error and e.message) or JSON.stringify(e))
+
+  else if e.error
+    alert e.error
+  else alert "Canceled"  if e.cancelled
+)
+fb.addEventListener('logout', (e) ->
+  alert "Facebbokアカウントからログアウトしました"
+)  
+fb.authorize()  unless fb.loggedIn
+button = Ti.UI.createButton(title: "Open Feed Dialog")
+button.addEventListener "click", (e) ->
+  fb.reauthorize ["publish_stream"], "me", (e) ->
+    if e.success
+      
+      # If successful, proceed with a publish call
+      fb.dialog "feed", {}, (e) ->
+        if e.success and e.result
+          alert "Success! New Post ID: " + e.result
+        else
+          if e.error
+            alert e.error
+          else
+            alert "User canceled dialog."
+    else
+      if e.error
+        alert e.error
+      else
+        alert "Unknown result"
+
+
+
+fbLoginButton = fb.createLoginButton
+  top : 50
+  style : fb.BUTTON_STYLE_WIDE
+cbFan.facebookWindow = Ti.UI.createWindow
+  title:"アカウント設定"
+  barColor:baseColor.barColor
+  backgroundColor: baseColor.backgroundColor
+  tabBarHidden:false
+
+
+cbFan.facebookWindow.add button
+cbFan.facebookWindow.add fbLoginButton
+
 # cbFan.currentViewにて現在表示してるViewの情報を取得できるようにしてる
 cbFan.currentView = cbFan.subMenu
+
+if Ti.Platform.osname is 'iphone'
+  cbFan.shopDataWindow.setTitleControl shopDataWindowTitle
+  cbFan.mapWindow.setTitleControl mapWindowTitle
+  cbFan.facebookWindow.setTitleControl facebookWindowTitle
 
 shopDataTab = Ti.UI.createTab
   window:cbFan.shopDataWindow
@@ -299,7 +373,12 @@ mapTab = Ti.UI.createTab
   icon:"ui/image/inactivePin.png"
   activeIcon:"ui/image/pin.png"
 
+facebookTab = Ti.UI.createTab
+  window:cbFan.facebookWindow
+  barColor:"#343434"
+  
 tabGroup.addTab mapTab      
 tabGroup.addTab shopDataTab
+tabGroup.addTab facebookTab
 
 tabGroup.open()

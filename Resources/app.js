@@ -1,4 +1,4 @@
-var Cloud, Config, ad, adView, baseColor, categoryName, cbFan, config, mapTab, mapWindowTitle, nend, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+var Cloud, Config, ad, adView, baseColor, button, categoryName, cbFan, config, facebookTab, facebookWindowTitle, fb, fbLoginButton, mapTab, mapWindowTitle, nend, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
 
 cbFan = {};
 
@@ -51,7 +51,7 @@ cbFan.shopDataDetailTable = shopDataDetail.getTable();
 
 baseColor = {
   barColor: "#f9f9f9",
-  backgroundColor: "#343434",
+  backgroundColor: "#dfdfdf",
   keyColor: "#EDAD0B"
 };
 
@@ -91,10 +91,16 @@ cbFan.mapWindow = Ti.UI.createWindow({
   tabBarHidden: false
 });
 
-if (Ti.Platform.osname === 'iphone') {
-  cbFan.shopDataWindow.setTitleControl(shopDataWindowTitle);
-  cbFan.mapWindow.setTitleControl(mapWindowTitle);
-}
+facebookWindowTitle = Ti.UI.createLabel({
+  textAlign: 'center',
+  color: '#333',
+  font: {
+    fontSize: '18sp',
+    fontFamily: 'Rounded M+ 1p',
+    fontWeight: 'bold'
+  },
+  text: "アカウント設定"
+});
 
 cbFan.mapView = Titanium.Map.createView({
   mapType: Titanium.Map.STANDARD_TYPE,
@@ -307,7 +313,100 @@ cbFan.mapWindow.add(cbFan.mapView);
 
 cbFan.mapWindow.add(adView);
 
+fb = require('facebook');
+
+fb.appid = 181948098632770;
+
+fb.permissions = ['read_stream'];
+
+fb.forceDialogAuth = false;
+
+cbFan.facebookToken = fb.accessToken;
+
+fb.addEventListener('login', function(e) {
+  if (e.success) {
+    return Cloud.SocialIntegrations.externalAccountLogin({
+      type: "facebook",
+      token: fb.accessToken
+    }, function(e) {
+      var user;
+      if (e.success) {
+        user = e.users[0];
+        Ti.API.info("User  = " + JSON.stringify(user));
+        Ti.App.Properties.setString("currentUserId", user.id);
+        return alert("Success: " + "id: " + user.id + "\\n" + "first name: " + user.first_name + "\\n" + "last name: " + user.last_name);
+      } else {
+        return alert("Error: " + ((e.error && e.message) || JSON.stringify(e)));
+      }
+    });
+  } else if (e.error) {
+    return alert(e.error);
+  } else {
+    if (e.cancelled) {
+      return alert("Canceled");
+    }
+  }
+});
+
+fb.addEventListener('logout', function(e) {
+  return alert("Facebbokアカウントからログアウトしました");
+});
+
+if (!fb.loggedIn) {
+  fb.authorize();
+}
+
+button = Ti.UI.createButton({
+  title: "Open Feed Dialog"
+});
+
+button.addEventListener("click", function(e) {
+  return fb.reauthorize(["publish_stream"], "me", function(e) {
+    if (e.success) {
+      return fb.dialog("feed", {}, function(e) {
+        if (e.success && e.result) {
+          return alert("Success! New Post ID: " + e.result);
+        } else {
+          if (e.error) {
+            return alert(e.error);
+          } else {
+            return alert("User canceled dialog.");
+          }
+        }
+      });
+    } else {
+      if (e.error) {
+        return alert(e.error);
+      } else {
+        return alert("Unknown result");
+      }
+    }
+  });
+});
+
+fbLoginButton = fb.createLoginButton({
+  top: 50,
+  style: fb.BUTTON_STYLE_WIDE
+});
+
+cbFan.facebookWindow = Ti.UI.createWindow({
+  title: "アカウント設定",
+  barColor: baseColor.barColor,
+  backgroundColor: baseColor.backgroundColor,
+  tabBarHidden: false
+});
+
+cbFan.facebookWindow.add(button);
+
+cbFan.facebookWindow.add(fbLoginButton);
+
 cbFan.currentView = cbFan.subMenu;
+
+if (Ti.Platform.osname === 'iphone') {
+  cbFan.shopDataWindow.setTitleControl(shopDataWindowTitle);
+  cbFan.mapWindow.setTitleControl(mapWindowTitle);
+  cbFan.facebookWindow.setTitleControl(facebookWindowTitle);
+}
 
 shopDataTab = Ti.UI.createTab({
   window: cbFan.shopDataWindow,
@@ -323,8 +422,15 @@ mapTab = Ti.UI.createTab({
   activeIcon: "ui/image/pin.png"
 });
 
+facebookTab = Ti.UI.createTab({
+  window: cbFan.facebookWindow,
+  barColor: "#343434"
+});
+
 tabGroup.addTab(mapTab);
 
 tabGroup.addTab(shopDataTab);
+
+tabGroup.addTab(facebookTab);
 
 tabGroup.open();
