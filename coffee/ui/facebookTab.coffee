@@ -55,7 +55,7 @@ class facebookTab
             alert e.error
           else
             alert "Unknown result"
-          
+    button.hide()      
     facebookWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
       color:'#333'
@@ -77,6 +77,7 @@ class facebookTab
 
     cbFan.facebookWindow.add button
     cbFan.facebookWindow.add fbLoginButton
+    
     if Ti.Platform.osname is 'iphone'
       cbFan.facebookWindow.setTitleControl facebookWindowTitle
 

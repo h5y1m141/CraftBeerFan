@@ -73,6 +73,7 @@ facebookTab = (function() {
         }
       });
     });
+    button.hide();
     facebookWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
       color: '#333',
