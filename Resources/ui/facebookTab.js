@@ -19,7 +19,6 @@ facebookTab = (function() {
       var that;
       that = _this;
       if (e.success) {
-        alert(that);
         return Cloud.SocialIntegrations.externalAccountLogin({
           type: "facebook",
           token: fb.accessToken
@@ -28,7 +27,8 @@ facebookTab = (function() {
           if (e.success) {
             user = e.users[0];
             Ti.API.info("User  = " + JSON.stringify(user));
-            return Ti.App.Properties.setString("cbFan.currentUserId", user.id);
+            Ti.App.Properties.setString("cbFan.currentUserId", user.id);
+            return that._userSection(user);
           } else {
             return alert("Error: " + ((e.error && e.message) || JSON.stringify(e)));
           }
@@ -84,7 +84,7 @@ facebookTab = (function() {
       text: "アカウント設定"
     });
     fbLoginButton = fb.createLoginButton({
-      top: 50,
+      top: 0,
       style: fb.BUTTON_STYLE_WIDE
     });
     cbFan.facebookWindow = Ti.UI.createWindow({
@@ -155,7 +155,7 @@ facebookTab = (function() {
       className: "facebook"
     });
     nameLabel = Ti.UI.createLabel({
-      text: user.first_name + user.last_name,
+      text: "" + user.first_name + "　" + user.last_name,
       width: 280,
       color: "#333",
       left: 5,
@@ -170,7 +170,7 @@ facebookTab = (function() {
     menuSection.add(nameRow);
     rows.push(menuSection);
     table.setData(rows);
-    return table;
+    cbFan.facebookWindow.add(table);
   };
 
   return facebookTab;

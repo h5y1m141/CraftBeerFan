@@ -14,7 +14,7 @@ class facebookTab
     fb.addEventListener('login', (e) =>
       that = @
       if e.success
-        alert that
+
         Cloud.SocialIntegrations.externalAccountLogin
           type: "facebook"
           token: fb.accessToken
@@ -23,6 +23,7 @@ class facebookTab
             user = e.users[0]
             Ti.API.info "User  = " + JSON.stringify(user)
             Ti.App.Properties.setString "cbFan.currentUserId", user.id
+            that._userSection(user)
           else
             alert "Error: " + ((e.error and e.message) or JSON.stringify(e))
 
@@ -65,8 +66,9 @@ class facebookTab
       text:"アカウント設定"
 
     fbLoginButton = fb.createLoginButton
-      top : 50
+      top : 0
       style : fb.BUTTON_STYLE_WIDE
+      
     cbFan.facebookWindow = Ti.UI.createWindow
       title:"アカウント設定"
       barColor:baseColor.barColor
@@ -92,6 +94,7 @@ class facebookTab
     json = JSON.parse(file)
     appid = json.facebook.appid
     return appid
+    
   _userSection:(user) ->
     baseColor =
       barColor:"#f9f9f9"
@@ -129,8 +132,9 @@ class facebookTab
       backgroundColor:baseColor.backgroundColor
       height:40
       className:"facebook"
+      
     nameLabel = Ti.UI.createLabel
-      text: user.first_name + user.last_name
+      text: "#{user.first_name}　#{user.last_name}"
       width:280
       color:"#333"
       left:5
@@ -138,12 +142,14 @@ class facebookTab
       font:
         fontSize:18
         fontFamily :'Rounded M+ 1p'
-        fontWeight:'bold'  
+        fontWeight:'bold'
+        
     nameRow.add nameLabel      
     menuSection.add nameRow
 
     rows.push menuSection
     
     table.setData rows
-    return table        
+    cbFan.facebookWindow.add table
+    return
 module.exports =  facebookTab
