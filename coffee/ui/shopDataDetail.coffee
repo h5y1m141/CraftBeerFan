@@ -55,10 +55,10 @@ class shopDataDetail
         i = 0
         while i < e.reviews.length
           review = e.reviews[i]
-          alert "id: " + review.id + "\n" + "id: " + review.id + "\n" + "rating: " + review.rating + "\n" + "content: " + review.content + "\n" + "updated_at: " + review.updated_at
+          Ti.API.info "id: " + review.id + "\n" + "id: " + review.id + "\n" + "rating: " + review.rating + "\n" + "content: " + review.content + "\n" + "updated_at: " + review.updated_at
           i++
       else
-        alert "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
+        Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
     
     addressRow.add @addressLabel
     phoneRow.add @phoneLabel

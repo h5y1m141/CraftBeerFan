@@ -57,12 +57,12 @@ shopDataDetail = (function() {
         _results = [];
         while (i < e.reviews.length) {
           review = e.reviews[i];
-          alert("id: " + review.id + "\n" + "id: " + review.id + "\n" + "rating: " + review.rating + "\n" + "content: " + review.content + "\n" + "updated_at: " + review.updated_at);
+          Ti.API.info("id: " + review.id + "\n" + "id: " + review.id + "\n" + "rating: " + review.rating + "\n" + "content: " + review.content + "\n" + "updated_at: " + review.updated_at);
           _results.push(i++);
         }
         return _results;
       } else {
-        return alert("Error:\n" + ((e.error && e.message) || JSON.stringify(e)));
+        return Ti.API.info("Error:\n" + ((e.error && e.message) || JSON.stringify(e)));
       }
     });
     addressRow.add(this.addressLabel);

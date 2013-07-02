@@ -3,8 +3,7 @@ var facebookTab;
 facebookTab = (function() {
 
   function facebookTab() {
-    var baseColor, button, facebookWindowTitle, fb, fbLoginButton,
-      _this = this;
+    var baseColor, button, facebookWindowTitle, fb, fbLoginButton, that;
     baseColor = {
       barColor: "#f9f9f9",
       backgroundColor: "#dfdfdf",
@@ -14,25 +13,28 @@ facebookTab = (function() {
     fb.appid = this._getAppID();
     fb.permissions = ['read_stream'];
     fb.forceDialogAuth = false;
-    cbFan.facebookToken = fb.accessToken;
+    that = this;
     fb.addEventListener('login', function(e) {
-      var that;
-      that = _this;
+      var token, _Cloud;
+      token = fb.accessToken;
+      _Cloud = require('ti.cloud');
       if (e.success) {
-        return Cloud.SocialIntegrations.externalAccountLogin({
-          type: "facebook",
-          token: fb.accessToken
-        }, function(e) {
-          var user;
-          if (e.success) {
-            user = e.users[0];
-            Ti.API.info("User  = " + JSON.stringify(user));
-            Ti.App.Properties.setString("cbFan.currentUserId", user.id);
-            return that._userSection(user);
-          } else {
-            return alert("Error: " + ((e.error && e.message) || JSON.stringify(e)));
-          }
-        });
+        if (e.success) {
+          return _Cloud.SocialIntegrations.externalAccountLogin({
+            type: "facebook",
+            token: token
+          }, function(e) {
+            var user;
+            if (e.success) {
+              user = e.users[0];
+              Ti.API.info("User  = " + JSON.stringify(user));
+              Ti.App.Properties.setString("cbFan.currentUserId", user.id);
+              return that._userSection(user);
+            } else {
+              return alert("Error: " + ((e.error && e.message) || JSON.stringify(e)));
+            }
+          });
+        }
       } else if (e.error) {
         return alert(e.error);
       } else {
@@ -42,28 +44,20 @@ facebookTab = (function() {
       }
     });
     fb.addEventListener('logout', function(e) {
-      return alert("Facebbokアカウントからログアウトしました");
+      return alert('logout');
     });
     if (!fb.loggedIn) {
       fb.authorize();
     }
     button = Ti.UI.createButton({
-      title: "Open Feed Dialog"
+      title: "Facebook auth",
+      top: 30,
+      left: 30
     });
     button.addEventListener("click", function(e) {
-      return fb.reauthorize(["publish_stream"], "me", function(e) {
+      return fb.reauthorize(["read_stream"], "me", function(e) {
         if (e.success) {
-          return fb.dialog("feed", {}, function(e) {
-            if (e.success && e.result) {
-              return alert("Success! New Post ID: " + e.result);
-            } else {
-              if (e.error) {
-                return alert(e.error);
-              } else {
-                return alert("User canceled dialog.");
-              }
-            }
-          });
+          return Ti.API.info("If successful, proceed with a publish call");
         } else {
           if (e.error) {
             return alert(e.error);
@@ -85,7 +79,8 @@ facebookTab = (function() {
       text: "アカウント設定"
     });
     fbLoginButton = fb.createLoginButton({
-      top: 0,
+      top: 5,
+      left: 5,
       style: fb.BUTTON_STYLE_WIDE
     });
     cbFan.facebookWindow = Ti.UI.createWindow({

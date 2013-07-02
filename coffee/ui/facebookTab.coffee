@@ -9,53 +9,83 @@ class facebookTab
     fb.appid = @_getAppID()
     fb.permissions =  ['read_stream']
     fb.forceDialogAuth = false
-    cbFan.facebookToken = fb.accessToken
+    that = @
+    fb.addEventListener('login', (e) ->
       
-    fb.addEventListener('login', (e) =>
-      that = @
+      token = fb.accessToken
+      _Cloud = require('ti.cloud')
+      
       if e.success
+        # alert "Logged In token is #{fb.accessToken}"
+        
+        # alert that
+        # alert token
+        if e.success
 
-        Cloud.SocialIntegrations.externalAccountLogin
-          type: "facebook"
-          token: fb.accessToken
-        , (e) ->
-          if e.success
-            user = e.users[0]
-            Ti.API.info "User  = " + JSON.stringify(user)
-            Ti.App.Properties.setString "cbFan.currentUserId", user.id
-            that._userSection(user)
-          else
-            alert "Error: " + ((e.error and e.message) or JSON.stringify(e))
-
+          _Cloud.SocialIntegrations.externalAccountLogin
+            type: "facebook"
+            token: token
+          , (e) ->
+            if e.success
+              user = e.users[0]
+              Ti.API.info "User  = " + JSON.stringify(user)
+              Ti.App.Properties.setString "cbFan.currentUserId", user.id
+              that._userSection(user)
+            else
+              alert "Error: " + ((e.error and e.message) or JSON.stringify(e))
+        
       else if e.error
-          alert e.error
+        alert e.error
       else alert "Canceled"  if e.cancelled
     )
-    
-    fb.addEventListener('logout', (e) ->
-      alert "Facebbokアカウントからログアウトしました"
-    )  
+    fb.addEventListener('logout',(e)->
+      alert 'logout'
+    )
     fb.authorize()  unless fb.loggedIn
-    
-    button = Ti.UI.createButton(title: "Open Feed Dialog")
+    button = Ti.UI.createButton
+      title: "Facebook auth"
+      top:30
+      left:30
     button.addEventListener "click", (e) ->
-      fb.reauthorize ["publish_stream"], "me", (e) ->
+      fb.reauthorize ["read_stream"], "me", (e) ->
         if e.success
-          # If successful, proceed with a publish call
-          fb.dialog "feed", {}, (e) ->
-            if e.success and e.result
-              alert "Success! New Post ID: " + e.result
-            else
-              if e.error
-                alert e.error
-              else
-                alert "User canceled dialog."
+          Ti.API.info "If successful, proceed with a publish call"
         else
           if e.error
             alert e.error
           else
             alert "Unknown result"
     button.hide()      
+    # fb.addEventListener('login', (e) =>
+    #   that = @
+    #   token = fb.accessToken
+    #   _Cloud = require('ti.cloud')
+      
+    #   if e.success
+    #     alert token
+    #     _Cloud.SocialIntegrations.externalAccountLogin
+    #       type: "facebook"
+    #       token: token
+    #     , (e) ->
+    #       if e.success
+    #         user = e.users[0]
+    #         Ti.API.info "User  = " + JSON.stringify(user)
+    #         Ti.App.Properties.setString "cbFan.currentUserId", user.id
+    #         that._userSection(user)
+    #       else
+    #         alert "Error: " + ((e.error and e.message) or JSON.stringify(e))
+
+    #   else if e.error
+    #       alert e.error
+    #   else alert "Canceled"  if e.cancelled
+    # )
+    
+    # fb.addEventListener('logout', (e) ->
+    #   alert "Facebbokアカウントからログアウトしました"
+    # )  
+    
+    
+
     facebookWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
       color:'#333'
@@ -66,7 +96,8 @@ class facebookTab
       text:"アカウント設定"
 
     fbLoginButton = fb.createLoginButton
-      top : 0
+      top:5
+      left:5
       style : fb.BUTTON_STYLE_WIDE
       
     cbFan.facebookWindow = Ti.UI.createWindow
