@@ -1,4 +1,4 @@
-var Cloud, Config, ad, adView, baseColor, categoryName, cbFan, config, mapTab, mapWindowTitle, nend, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+var Cloud, Config, FacebookTab, ad, adView, baseColor, categoryName, cbFan, config, facebookTab, mapTab, mapWindowTitle, nend, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
 
 cbFan = {};
 
@@ -51,7 +51,7 @@ cbFan.shopDataDetailTable = shopDataDetail.getTable();
 
 baseColor = {
   barColor: "#f9f9f9",
-  backgroundColor: "#343434",
+  backgroundColor: "#dfdfdf",
   keyColor: "#EDAD0B"
 };
 
@@ -90,11 +90,6 @@ cbFan.mapWindow = Ti.UI.createWindow({
   backgroundColor: baseColor.backgroundColor,
   tabBarHidden: false
 });
-
-if (Ti.Platform.osname === 'iphone') {
-  cbFan.shopDataWindow.setTitleControl(shopDataWindowTitle);
-  cbFan.mapWindow.setTitleControl(mapWindowTitle);
-}
 
 cbFan.mapView = Titanium.Map.createView({
   mapType: Titanium.Map.STANDARD_TYPE,
@@ -309,6 +304,11 @@ cbFan.mapWindow.add(adView);
 
 cbFan.currentView = cbFan.subMenu;
 
+if (Ti.Platform.osname === 'iphone') {
+  cbFan.shopDataWindow.setTitleControl(shopDataWindowTitle);
+  cbFan.mapWindow.setTitleControl(mapWindowTitle);
+}
+
 shopDataTab = Ti.UI.createTab({
   window: cbFan.shopDataWindow,
   barColor: "#343434",
@@ -323,8 +323,14 @@ mapTab = Ti.UI.createTab({
   activeIcon: "ui/image/pin.png"
 });
 
+FacebookTab = require("ui/facebookTab");
+
+facebookTab = new FacebookTab();
+
 tabGroup.addTab(mapTab);
 
 tabGroup.addTab(shopDataTab);
+
+tabGroup.addTab(facebookTab);
 
 tabGroup.open();

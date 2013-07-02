@@ -5,6 +5,8 @@ Cloud = require('ti.cloud')
 shopDataTableView = require('ui/shopDataTableView')
 ad = require('net.nend')
 Config = require("model/loadConfig")
+
+
 config = new Config()
 nend = config.getNendData()
 
@@ -45,7 +47,7 @@ cbFan.shopDataDetailTable = shopDataDetail.getTable()
 
 baseColor =
   barColor:"#f9f9f9"
-  backgroundColor:"#343434"
+  backgroundColor:"#dfdfdf"
   keyColor:"#EDAD0B"
 
 shopDataWindowTitle = Ti.UI.createLabel
@@ -82,9 +84,6 @@ cbFan.mapWindow = Ti.UI.createWindow
   tabBarHidden:false
 
 
-if Ti.Platform.osname is 'iphone'
-  cbFan.shopDataWindow.setTitleControl shopDataWindowTitle
-  cbFan.mapWindow.setTitleControl mapWindowTitle
 
 
 
@@ -284,8 +283,14 @@ cbFan.shopDataWindow.add cbFan.subMenu
 cbFan.mapWindow.add cbFan.mapView
 cbFan.mapWindow.add adView
 
+
 # cbFan.currentViewにて現在表示してるViewの情報を取得できるようにしてる
 cbFan.currentView = cbFan.subMenu
+
+if Ti.Platform.osname is 'iphone'
+  cbFan.shopDataWindow.setTitleControl shopDataWindowTitle
+  cbFan.mapWindow.setTitleControl mapWindowTitle
+
 
 shopDataTab = Ti.UI.createTab
   window:cbFan.shopDataWindow
@@ -299,7 +304,11 @@ mapTab = Ti.UI.createTab
   icon:"ui/image/inactivePin.png"
   activeIcon:"ui/image/pin.png"
 
+FacebookTab = require("ui/facebookTab")
+facebookTab = new FacebookTab()
+  
 tabGroup.addTab mapTab      
 tabGroup.addTab shopDataTab
+tabGroup.addTab facebookTab
 
 tabGroup.open()

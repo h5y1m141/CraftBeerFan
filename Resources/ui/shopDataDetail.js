@@ -46,6 +46,25 @@ shopDataDetail = (function() {
       left: 180,
       top: 10
     });
+    Cloud.Reviews.query({
+      page: 1,
+      per_page: 20,
+      place_id: "51cb8b0377b5c90acd0a0bb2"
+    }, function(e) {
+      var i, review, _results;
+      if (e.success) {
+        i = 0;
+        _results = [];
+        while (i < e.reviews.length) {
+          review = e.reviews[i];
+          Ti.API.info("id: " + review.id + "\n" + "id: " + review.id + "\n" + "rating: " + review.rating + "\n" + "content: " + review.content + "\n" + "updated_at: " + review.updated_at);
+          _results.push(i++);
+        }
+        return _results;
+      } else {
+        return Ti.API.info("Error:\n" + ((e.error && e.message) || JSON.stringify(e)));
+      }
+    });
     addressRow.add(this.addressLabel);
     phoneRow.add(this.phoneLabel);
     phoneRow.add(this.callBtn);
