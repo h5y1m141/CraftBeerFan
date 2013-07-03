@@ -41,6 +41,7 @@ shopDataTableView = (function() {
         shopDataRowTable.addEventListener('click', function(e) {
           var ShopDataDetail, activeTab, backButton, baseColor, data, shopDataDetail, _annotation, _mapView, _win;
           data = {
+            name: e.row.placeData.name,
             shopAddress: e.row.placeData.address,
             phoneNumber: e.row.placeData.phone_number,
             latitude: e.row.placeData.latitude,
@@ -199,7 +200,7 @@ shopDataTableView = (function() {
   };
 
   shopDataTableView.prototype._createShopDataRow = function(placeData) {
-    var addressLabel, row, titleLabel;
+    var addressLabel, iconButton, memoIcon, penIcon, row, titleLabel;
     titleLabel = Ti.UI.createLabel({
       width: 240,
       height: 30,
@@ -225,6 +226,24 @@ shopDataTableView = (function() {
       },
       text: "" + placeData.address
     });
+    memoIcon = String.fromCharCode("0xe08d");
+    penIcon = String.fromCharCode("0xe09f");
+    iconButton = Ti.UI.createButton({
+      top: 30,
+      left: 0,
+      width: 30,
+      height: 30,
+      backgroundColor: "EDAD0B",
+      backgroundImage: "NONE",
+      borderWidth: 0,
+      borderRadius: 0,
+      color: '#eee',
+      font: {
+        fontSize: 32,
+        fontFamily: 'LigatureSymbols'
+      },
+      title: penIcon
+    });
     row = Ti.UI.createTableViewRow({
       width: 'auto',
       height: 60,
@@ -235,6 +254,7 @@ shopDataTableView = (function() {
     });
     row.add(titleLabel);
     row.add(addressLabel);
+    row.add(iconButton);
     return row;
   };
 

@@ -1,6 +1,5 @@
 class shopDataDetail
   constructor: (data) ->
-      
     shopData = []
     
 
@@ -25,10 +24,25 @@ class shopDataDetail
       width:'auto'
       height:40
       selectedColor:'transparent'
-    
+
+    @phoneIcon = Ti.UI.createButton
+      top:5
+      left:10
+      width:30
+      height:30
+      backgroundColor:"#3261AB"
+      backgroundImage:"NONE"
+      borderWidth:0
+      borderRadius:0
+      color:'#fff'      
+      font:
+        fontSize: 32
+        fontFamily:'FontAwesome'
+      title:String.fromCharCode("0xf095")
+      
     @phoneLabel = Ti.UI.createLabel
       text: ""
-      left:20
+      left:50
       top:10
       width:150
       color:"#333"
@@ -37,41 +51,72 @@ class shopDataDetail
         fontFamily:'Rounded M+ 1p'
         fontWeight:'bold'
 
-    @callBtn = Ti.UI.createButton
-      title:'call'
-      width:50
-      height:25
-      left:180
-      top:10
-      
-    # お店のreview情報が存在するようだったら画面に表示する
 
-    Cloud.Reviews.query
-      page: 1
-      per_page: 20
-      place_id:"51cb8b0377b5c90acd0a0bb2"
-    , (e) ->
-      if e.success
-        i = 0
-        while i < e.reviews.length
-          review = e.reviews[i]
-          Ti.API.info "id: " + review.id + "\n" + "id: " + review.id + "\n" + "rating: " + review.rating + "\n" + "content: " + review.content + "\n" + "updated_at: " + review.updated_at
-          i++
-      else
-        Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
-    
+
+    reviewRow = Ti.UI.createTableViewRow
+      width:'auto'
+      height:40
+      selectedColor:'transparent'
+      
+    @memoIcon = Ti.UI.createButton
+      top:5
+      left:10
+      width:30
+      height:30
+      backgroundColor:"#3261AB"
+      backgroundImage:"NONE"
+      borderWidth:0
+      borderRadius:0
+      color:'#fff'      
+      font:
+        fontSize: 32
+        fontFamily:'LigatureSymbols'
+      title:String.fromCharCode("0xe08d")
+      
+    @memoIcon.addEventListener('click',(e) ->
+      alert e.source.shopName
+      Cloud.Places.query
+        page: 1
+        per_page: 1
+        where:{name:e.source.shopName}
+      , (e) ->
+        if e.success
+          i = 0
+          while i < e.places.length
+            place = e.places[i]
+            Ti.API.info "id:#{place.id} and name:#{place.name}"
+            i++
+        else
+          Ti.API.info "Error:\n"
+    )
+
+
+    @editLabel = Ti.UI.createLabel
+      top: 5
+      left:50
+      width: Ti.UI.SIZE
+      height: Ti.UI.SIZE
+      color: "#000"
+      font:
+        fontSize:18
+        fontFamily:'Rounded M+ 1p'
+      text: ''
+
     addressRow.add @addressLabel
+    phoneRow.add @phoneIcon
     phoneRow.add @phoneLabel
-    phoneRow.add @callBtn
+    reviewRow.add @memoIcon
+    reviewRow.add @editLabel
     
     shopData.push @section  
     shopData.push addressRow
     shopData.push phoneRow
+    shopData.push reviewRow
 
     @tableView = Ti.UI.createTableView
       width:'auto'
-      height:80
-      top:10
+      height:'auto'
+      top:200
       left:0
       data:shopData
       backgroundColor:"#f3f3f3"
@@ -89,9 +134,17 @@ class shopDataDetail
   setData: (data) ->
     @addressLabel.setText(data.shopAddress)
     @phoneLabel.setText(data.phoneNumber)
-    @callBtn.addEventListener('click',(e)->
-      Titanium.Platform.openURL("tel:#{data.annotation.phoneNumber}")
+    @editLabel.setFont({fontSize: 32,fontFamily: 'LigatureSymbols'})
+    shopName = data.name
+    @memoIcon.shopName =  shopName
+    @editLabel.setFont({fontFamily :'Rounded M+ 1p'})
+    @editLabel.setText("お気に入り登録する")
+
+    @phoneIcon.addEventListener('click',(e)->
+      alert "phone icon touch"
+      Titanium.Platform.openURL("tel:#{data.phoneNumber}")
     )
+
     
     return
 

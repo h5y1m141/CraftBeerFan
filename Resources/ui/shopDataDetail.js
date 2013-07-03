@@ -3,7 +3,7 @@ var shopDataDetail;
 shopDataDetail = (function() {
 
   function shopDataDetail(data) {
-    var addressRow, phoneRow, shopData;
+    var addressRow, phoneRow, reviewRow, shopData;
     shopData = [];
     addressRow = Ti.UI.createTableViewRow({
       width: 'auto',
@@ -27,9 +27,25 @@ shopDataDetail = (function() {
       height: 40,
       selectedColor: 'transparent'
     });
+    this.phoneIcon = Ti.UI.createButton({
+      top: 5,
+      left: 10,
+      width: 30,
+      height: 30,
+      backgroundColor: "#3261AB",
+      backgroundImage: "NONE",
+      borderWidth: 0,
+      borderRadius: 0,
+      color: '#fff',
+      font: {
+        fontSize: 32,
+        fontFamily: 'FontAwesome'
+      },
+      title: String.fromCharCode("0xf095")
+    });
     this.phoneLabel = Ti.UI.createLabel({
       text: "",
-      left: 20,
+      left: 50,
       top: 10,
       width: 150,
       color: "#333",
@@ -39,42 +55,76 @@ shopDataDetail = (function() {
         fontWeight: 'bold'
       }
     });
-    this.callBtn = Ti.UI.createButton({
-      title: 'call',
-      width: 50,
-      height: 25,
-      left: 180,
-      top: 10
+    reviewRow = Ti.UI.createTableViewRow({
+      width: 'auto',
+      height: 40,
+      selectedColor: 'transparent'
     });
-    Cloud.Reviews.query({
-      page: 1,
-      per_page: 20,
-      place_id: "51cb8b0377b5c90acd0a0bb2"
-    }, function(e) {
-      var i, review, _results;
-      if (e.success) {
-        i = 0;
-        _results = [];
-        while (i < e.reviews.length) {
-          review = e.reviews[i];
-          Ti.API.info("id: " + review.id + "\n" + "id: " + review.id + "\n" + "rating: " + review.rating + "\n" + "content: " + review.content + "\n" + "updated_at: " + review.updated_at);
-          _results.push(i++);
+    this.memoIcon = Ti.UI.createButton({
+      top: 5,
+      left: 10,
+      width: 30,
+      height: 30,
+      backgroundColor: "#3261AB",
+      backgroundImage: "NONE",
+      borderWidth: 0,
+      borderRadius: 0,
+      color: '#fff',
+      font: {
+        fontSize: 32,
+        fontFamily: 'LigatureSymbols'
+      },
+      title: String.fromCharCode("0xe08d")
+    });
+    this.memoIcon.addEventListener('click', function(e) {
+      alert(e.source.shopName);
+      return Cloud.Places.query({
+        page: 1,
+        per_page: 1,
+        where: {
+          name: e.source.shopName
         }
-        return _results;
-      } else {
-        return Ti.API.info("Error:\n" + ((e.error && e.message) || JSON.stringify(e)));
-      }
+      }, function(e) {
+        var i, place, _results;
+        if (e.success) {
+          i = 0;
+          _results = [];
+          while (i < e.places.length) {
+            place = e.places[i];
+            Ti.API.info("id:" + place.id + " and name:" + place.name);
+            _results.push(i++);
+          }
+          return _results;
+        } else {
+          return Ti.API.info("Error:\n");
+        }
+      });
+    });
+    this.editLabel = Ti.UI.createLabel({
+      top: 5,
+      left: 50,
+      width: Ti.UI.SIZE,
+      height: Ti.UI.SIZE,
+      color: "#000",
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p'
+      },
+      text: ''
     });
     addressRow.add(this.addressLabel);
+    phoneRow.add(this.phoneIcon);
     phoneRow.add(this.phoneLabel);
-    phoneRow.add(this.callBtn);
+    reviewRow.add(this.memoIcon);
+    reviewRow.add(this.editLabel);
     shopData.push(this.section);
     shopData.push(addressRow);
     shopData.push(phoneRow);
+    shopData.push(reviewRow);
     this.tableView = Ti.UI.createTableView({
       width: 'auto',
-      height: 80,
-      top: 10,
+      height: 'auto',
+      top: 200,
       left: 0,
       data: shopData,
       backgroundColor: "#f3f3f3",
@@ -93,10 +143,22 @@ shopDataDetail = (function() {
   };
 
   shopDataDetail.prototype.setData = function(data) {
+    var shopName;
     this.addressLabel.setText(data.shopAddress);
     this.phoneLabel.setText(data.phoneNumber);
-    this.callBtn.addEventListener('click', function(e) {
-      return Titanium.Platform.openURL("tel:" + data.annotation.phoneNumber);
+    this.editLabel.setFont({
+      fontSize: 32,
+      fontFamily: 'LigatureSymbols'
+    });
+    shopName = data.name;
+    this.memoIcon.shopName = shopName;
+    this.editLabel.setFont({
+      fontFamily: 'Rounded M+ 1p'
+    });
+    this.editLabel.setText("お気に入り登録する");
+    this.phoneIcon.addEventListener('click', function(e) {
+      alert("phone icon touch");
+      return Titanium.Platform.openURL("tel:" + data.phoneNumber);
     });
   };
 

@@ -176,8 +176,10 @@ class facebookTab
         fontFamily :'Rounded M+ 1p'
         fontWeight:'bold'
         
-    nameRow.add nameLabel      
+            
+    nameRow.add nameLabel
     menuSection.add nameRow
+
 
     rows.push menuSection
     

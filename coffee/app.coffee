@@ -6,7 +6,6 @@ shopDataTableView = require('ui/shopDataTableView')
 ad = require('net.nend')
 Config = require("model/loadConfig")
 
-
 config = new Config()
 nend = config.getNendData()
 
@@ -76,7 +75,6 @@ mapWindowTitle = Ti.UI.createLabel
     fontWeight:'bold'
   text:"近くのお店"
 
-
 cbFan.mapWindow = Ti.UI.createWindow
   title:"近くのお店"
   barColor:baseColor.barColor
@@ -102,6 +100,7 @@ cbFan.mapView = Titanium.Map.createView
   userLocation:true
   zIndex:0
   top:0
+  left:0
   
 if cbFan.platform is 'iPhone4s'
   cbFan.mapView.height = 320
@@ -158,9 +157,9 @@ cbFan.mapView.addEventListener('click',(e)->
       regionFit:true
       userLocation:true
       zIndex:0
-      top:100
+      top:0
       left:0
-      height:250
+      height:200
       width:'auto'
 
     _mapView.addAnnotation _annotation
@@ -169,6 +168,7 @@ cbFan.mapView.addEventListener('click',(e)->
     _win.add cbFan.shopDataDetailTable
 
     data =
+      name:e.title
       shopAddress:e.annotation.shopAddress
       phoneNumber:e.annotation.phoneNumber
       
