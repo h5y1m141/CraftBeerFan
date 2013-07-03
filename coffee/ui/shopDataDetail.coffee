@@ -74,18 +74,21 @@ class shopDataDetail
       title:String.fromCharCode("0xe08d")
       
     @memoIcon.addEventListener('click',(e) ->
-      alert e.source.shopName
       Cloud.Places.query
         page: 1
         per_page: 1
         where:{name:e.source.shopName}
       , (e) ->
         if e.success
-          i = 0
-          while i < e.places.length
-            place = e.places[i]
-            Ti.API.info "id:#{place.id} and name:#{place.name}"
-            i++
+          id = e.places[0].id
+          Cloud.Reviews.create
+            rating: 1
+            place_id:id
+          , (e) ->
+            if e.success
+              alert "お気に入りに登録しました"
+            else  
+              alert "お気に入りに登録することができませんでした"
         else
           Ti.API.info "Error:\n"
     )
@@ -133,7 +136,8 @@ class shopDataDetail
     
   setData: (data) ->
     @addressLabel.setText(data.shopAddress)
-    @phoneLabel.setText(data.phoneNumber)
+
+    @phoneLabel.setText("電話する")
     @editLabel.setFont({fontSize: 32,fontFamily: 'LigatureSymbols'})
     shopName = data.name
     @memoIcon.shopName =  shopName

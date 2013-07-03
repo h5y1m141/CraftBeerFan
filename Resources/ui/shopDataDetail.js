@@ -77,7 +77,6 @@ shopDataDetail = (function() {
       title: String.fromCharCode("0xe08d")
     });
     this.memoIcon.addEventListener('click', function(e) {
-      alert(e.source.shopName);
       return Cloud.Places.query({
         page: 1,
         per_page: 1,
@@ -85,16 +84,19 @@ shopDataDetail = (function() {
           name: e.source.shopName
         }
       }, function(e) {
-        var i, place, _results;
+        var id;
         if (e.success) {
-          i = 0;
-          _results = [];
-          while (i < e.places.length) {
-            place = e.places[i];
-            Ti.API.info("id:" + place.id + " and name:" + place.name);
-            _results.push(i++);
-          }
-          return _results;
+          id = e.places[0].id;
+          return Cloud.Reviews.create({
+            rating: 1,
+            place_id: id
+          }, function(e) {
+            if (e.success) {
+              return alert("お気に入りに登録しました");
+            } else {
+              return alert("お気に入りに登録することができませんでした");
+            }
+          });
         } else {
           return Ti.API.info("Error:\n");
         }
@@ -145,7 +147,7 @@ shopDataDetail = (function() {
   shopDataDetail.prototype.setData = function(data) {
     var shopName;
     this.addressLabel.setText(data.shopAddress);
-    this.phoneLabel.setText(data.phoneNumber);
+    this.phoneLabel.setText("電話する");
     this.editLabel.setFont({
       fontSize: 32,
       fontFamily: 'LigatureSymbols'
