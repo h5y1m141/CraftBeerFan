@@ -74,6 +74,7 @@ class shopDataDetail
       title:String.fromCharCode("0xe08d")
       
     @memoIcon.addEventListener('click',(e) ->
+      cbFan.activityIndicator.show()
       Cloud.Places.query
         page: 1
         per_page: 1
@@ -87,6 +88,7 @@ class shopDataDetail
             custom_fields:
               place_id:id
           , (e) ->
+            cbFan.activityIndicator.hide()
             if e.success
               alert "お気に入りに登録しました"
             else  

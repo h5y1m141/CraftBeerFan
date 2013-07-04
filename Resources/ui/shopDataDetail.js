@@ -77,6 +77,7 @@ shopDataDetail = (function() {
       title: String.fromCharCode("0xe08d")
     });
     this.memoIcon.addEventListener('click', function(e) {
+      cbFan.activityIndicator.show();
       return Cloud.Places.query({
         page: 1,
         per_page: 1,
@@ -94,6 +95,7 @@ shopDataDetail = (function() {
               place_id: id
             }
           }, function(e) {
+            cbFan.activityIndicator.hide();
             if (e.success) {
               return alert("お気に入りに登録しました");
             } else {

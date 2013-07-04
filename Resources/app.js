@@ -1,10 +1,14 @@
-var Cloud, Config, FacebookTab, ad, adView, baseColor, categoryName, cbFan, config, facebookTab, mapTab, mapWindowTitle, nend, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+var ActivityIndicator, Cloud, Config, FacebookTab, ad, adView, baseColor, categoryName, cbFan, config, facebookTab, mapTab, mapWindowTitle, nend, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
 
 cbFan = {};
 
 Cloud = require('ti.cloud');
 
 shopDataTableView = require('ui/shopDataTableView');
+
+ActivityIndicator = require('ui/activityIndicator');
+
+cbFan.activityIndicator = new ActivityIndicator();
 
 ad = require('net.nend');
 
@@ -173,6 +177,7 @@ cbFan.mapView.addEventListener('click', function(e) {
     _mapView.addAnnotation(_annotation);
     _win.add(_mapView);
     _win.add(cbFan.shopDataDetailTable);
+    _win.add(cbFan.activityIndicator);
     data = {
       name: e.title,
       shopAddress: e.annotation.shopAddress,
