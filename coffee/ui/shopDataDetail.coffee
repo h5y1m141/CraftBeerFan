@@ -100,7 +100,7 @@ class shopDataDetail
 
     @editLabel = Ti.UI.createLabel
       top: 5
-      left:50
+      left:10
       width: Ti.UI.SIZE
       height: Ti.UI.SIZE
       color: "#000"

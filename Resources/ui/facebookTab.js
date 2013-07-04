@@ -9,6 +9,14 @@ facebookTab = (function() {
       backgroundColor: "#dfdfdf",
       keyColor: "#EDAD0B"
     };
+    this.table = Ti.UI.createTableView({
+      backgroundColor: baseColor.backgroundColor,
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
+      width: 'auto',
+      height: 'auto',
+      top: 0,
+      left: 0
+    });
     fb = require('facebook');
     fb.appid = this._getAppID();
     fb.permissions = ['read_stream'];
@@ -30,12 +38,16 @@ facebookTab = (function() {
             type: "facebook",
             token: token
           }, function(e) {
-            var user;
+            var rows, user;
             if (e.success) {
               user = e.users[0];
+              rows = [];
               Ti.API.info("User  = " + JSON.stringify(user));
               Ti.App.Properties.setString("cbFan.currentUserId", user.id);
-              return that._userSection(user);
+              rows.push(that._userSection(user));
+              rows.push(that._favoriteSection(user));
+              that.table.setData(rows);
+              return cbFan.facebookWindow.add(that.table);
             } else {
               return alert("Error: " + ((e.error && e.message) || JSON.stringify(e)));
             }
@@ -82,10 +94,10 @@ facebookTab = (function() {
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       },
-      text: "アカウント設定"
+      text: "マイページ"
     });
     cbFan.facebookWindow = Ti.UI.createWindow({
-      title: "アカウント設定",
+      title: "マイページ",
       barColor: baseColor.barColor,
       backgroundColor: baseColor.backgroundColor,
       tabBarHidden: false
@@ -112,21 +124,12 @@ facebookTab = (function() {
   };
 
   facebookTab.prototype._userSection = function(user) {
-    var baseColor, menuHeaderTitle, menuHeaderView, menuSection, nameLabel, nameRow, reviewCount, reviewLabel, reviewRow, rows, shopLists, table, userID;
+    var baseColor, menuHeaderTitle, menuHeaderView, menuSection, nameLabel, nameRow;
     baseColor = {
       barColor: "#f9f9f9",
       backgroundColor: "#dfdfdf",
       keyColor: "#EDAD0B"
     };
-    rows = [];
-    table = Ti.UI.createTableView({
-      backgroundColor: baseColor.backgroundColor,
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
-      width: 'auto',
-      height: 'auto',
-      top: 0,
-      left: 0
-    });
     menuHeaderView = Ti.UI.createView({
       backgroundColor: baseColor.backgroundColor,
       height: 30
@@ -162,60 +165,60 @@ facebookTab = (function() {
         fontWeight: 'bold'
       }
     });
-    reviewRow = Ti.UI.createTableViewRow({
-      height: 40,
-      width: 'auto'
+    nameRow.add(nameLabel);
+    nameRow.add(this.fbLoginButton);
+    menuSection.add(nameRow);
+    return menuSection;
+  };
+
+  facebookTab.prototype._favoriteSection = function(user) {
+    var favoriteHeaderTitle, favoriteHeaderView, favoriteSection, placeIDList, shopLists, userID;
+    favoriteHeaderView = Ti.UI.createView({
+      backgroundColor: baseColor.backgroundColor,
+      height: 30
+    });
+    favoriteHeaderTitle = Ti.UI.createLabel({
+      top: 0,
+      left: 5,
+      color: '#333',
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p'
+      },
+      text: "お気に入り"
+    });
+    favoriteHeaderView.add(favoriteHeaderTitle);
+    favoriteSection = Ti.UI.createTableViewSection({
+      headerView: favoriteHeaderView
     });
     userID = user.id;
-    reviewCount = Ti.UI.createLabel({
-      text: "",
-      left: 200,
-      top: 10,
-      width: 50,
-      color: "#333",
-      font: {
-        fontSize: 18,
-        fontFamily: 'Rounded M+ 1p',
-        fontWeight: 'bold'
-      }
-    });
-    reviewLabel = Ti.UI.createLabel({
-      text: "お気に入り登録件数:　",
-      left: 5,
-      top: 10,
-      width: 180,
-      color: "#333",
-      font: {
-        fontSize: 18,
-        fontFamily: 'Rounded M+ 1p',
-        fontWeight: 'bold'
-      }
-    });
     shopLists = [];
+    placeIDList = [];
     Cloud.Reviews.query({
       page: 1,
       per_page: 50,
       response_json_depth: 5,
       user: userID
     }, function(e) {
-      var created_at, i, place_id, review, _id, _results;
+      var i, id, placeID, review, _i, _id, _len, _results;
       if (e.success) {
         i = 0;
-        Ti.API.info(e.reviews.length);
-        reviewCount.setText(e.reviews.length);
-        reviewCount.textAlign = Ti.UI.TEXT_ALIGNMENT_LEFT;
-        _results = [];
         while (i < e.reviews.length) {
           review = e.reviews[i];
           _id = review.id;
-          created_at = review.created_at;
-          place_id = review.custom_fields.place_id;
-          Cloud.Places.query({
-            page: 1,
-            per_page: 1,
-            place_id: place_id
+          placeID = review.custom_fields.place_id;
+          Ti.API.info("place_id is " + placeID);
+          placeIDList.push(placeID);
+          i++;
+        }
+        _results = [];
+        for (_i = 0, _len = placeIDList.length; _i < _len; _i++) {
+          id = placeIDList[_i];
+          Ti.API.info(id);
+          _results.push(Cloud.Places.show({
+            place_id: id
           }, function(e) {
-            var data;
+            var data, shopNameLabel, shopNameRow;
             if (e.success) {
               data = {
                 name: e.places[0].name,
@@ -224,26 +227,34 @@ facebookTab = (function() {
                 latitude: e.places[0].latitude,
                 longitude: e.places[0].longitude
               };
-              Ti.API.info(data);
-              return shopLists.push(data);
+              shopNameRow = Ti.UI.createTableViewRow({
+                width: 'auto',
+                height: 40,
+                selectedColor: 'transparent'
+              });
+              shopNameLabel = Ti.UI.createLabel({
+                text: data.name,
+                width: 'auto',
+                color: "#333",
+                left: 20,
+                top: 10,
+                font: {
+                  fontSize: 18,
+                  fontFamily: 'Rounded M+ 1p',
+                  fontWeight: 'bold'
+                }
+              });
+              shopNameRow.add(shopNameLabel);
+              return favoriteSection.add(shopNameRow);
             }
-          });
-          _results.push(i++);
+          }));
         }
         return _results;
       } else {
         return Ti.API.info("Error:\n");
       }
     });
-    reviewRow.add(reviewCount);
-    reviewRow.add(reviewLabel);
-    nameRow.add(nameLabel);
-    nameRow.add(this.fbLoginButton);
-    menuSection.add(nameRow);
-    menuSection.add(reviewRow);
-    rows.push(menuSection);
-    table.setData(rows);
-    cbFan.facebookWindow.add(table);
+    return favoriteSection;
   };
 
   return facebookTab;

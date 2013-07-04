@@ -4,6 +4,15 @@ class facebookTab
       barColor:"#f9f9f9"
       backgroundColor:"#dfdfdf"
       keyColor:"#EDAD0B"
+    
+    @table = Ti.UI.createTableView
+      backgroundColor: baseColor.backgroundColor
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      width:'auto'
+      height:'auto'
+      top:0
+      left:0
+    
 
     fb = require('facebook');
     fb.appid = @_getAppID()
@@ -22,10 +31,6 @@ class facebookTab
       _Cloud = require('ti.cloud')
       
       if e.success
-        # alert "Logged In token is #{fb.accessToken}"
-        
-        # alert that
-        # alert token
         if e.success
 
           _Cloud.SocialIntegrations.externalAccountLogin
@@ -34,9 +39,16 @@ class facebookTab
           , (e) ->
             if e.success
               user = e.users[0]
+              rows = []
               Ti.API.info "User  = " + JSON.stringify(user)
               Ti.App.Properties.setString "cbFan.currentUserId", user.id
-              that._userSection(user)
+              
+              rows.push(that._userSection(user))
+              rows.push(that._favoriteSection(user))
+              
+              that.table.setData rows
+              cbFan.facebookWindow.add that.table
+              
             else
               alert "Error: " + ((e.error and e.message) or JSON.stringify(e))
         
@@ -71,17 +83,16 @@ class facebookTab
         fontSize:'18sp'
         fontFamily : 'Rounded M+ 1p'
         fontWeight:'bold'
-      text:"アカウント設定"
+      text:"マイページ"
 
       
     cbFan.facebookWindow = Ti.UI.createWindow
-      title:"アカウント設定"
+      title:"マイページ"
       barColor:baseColor.barColor
       backgroundColor: baseColor.backgroundColor
       tabBarHidden:false
 
     cbFan.facebookWindow.add button
-    # cbFan.facebookWindow.add fbLoginButton
     
     if Ti.Platform.osname is 'iphone'
       cbFan.facebookWindow.setTitleControl facebookWindowTitle
@@ -106,16 +117,6 @@ class facebookTab
       barColor:"#f9f9f9"
       backgroundColor:"#dfdfdf"
       keyColor:"#EDAD0B"
-
-    rows = []
-    table = Ti.UI.createTableView
-      backgroundColor: baseColor.backgroundColor
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
-      width:'auto'
-      height:'auto'
-      top:0
-      left:0
-      
     menuHeaderView = Ti.UI.createView
       backgroundColor:baseColor.backgroundColor
       height:30
@@ -134,7 +135,6 @@ class facebookTab
     menuSection = Ti.UI.createTableViewSection
       headerView:menuHeaderView
 
-      
     nameRow = Ti.UI.createTableViewRow
       backgroundColor:baseColor.backgroundColor
       height:40
@@ -150,34 +150,38 @@ class facebookTab
         fontSize:18
         fontFamily :'Rounded M+ 1p'
         fontWeight:'bold'
-    reviewRow = Ti.UI.createTableViewRow
-      height:40
-      width:'auto'
+        
+    nameRow.add nameLabel
+    nameRow.add @fbLoginButton
+    menuSection.add nameRow
+    return menuSection
+
+
+  # お気に入り情報管理
+
+  _favoriteSection:(user) ->
+    favoriteHeaderView = Ti.UI.createView
+      backgroundColor:baseColor.backgroundColor
+      height:30
+      
+    favoriteHeaderTitle = Ti.UI.createLabel
+      top:0
+      left:5
+      color:'#333'
+      font:
+        fontSize:18
+        fontFamily :'Rounded M+ 1p'
+      text:"お気に入り"
+      
+    favoriteHeaderView.add favoriteHeaderTitle
+    
+    favoriteSection = Ti.UI.createTableViewSection
+      headerView:favoriteHeaderView
       
     userID = user.id
-    reviewCount = Ti.UI.createLabel
-      text: ""
-      left:200
-      top:10
-      width:50
-      color:"#333"
-      font:
-        fontSize:18
-        fontFamily:'Rounded M+ 1p'
-        fontWeight:'bold'
-        
-    reviewLabel = Ti.UI.createLabel
-      text: "お気に入り登録件数:　"
-      left:5
-      top:10
-      width:180
-      color:"#333"
-      font:
-        fontSize:18
-        fontFamily:'Rounded M+ 1p'
-        fontWeight:'bold'
-    # rows = []
     shopLists = []
+    placeIDList = []
+    # 該当するユーザのお気に入り情報を検索する
     Cloud.Reviews.query
         page: 1
         per_page: 50
@@ -186,20 +190,33 @@ class facebookTab
       , (e) ->
         if e.success
           i = 0
-          Ti.API.info e.reviews.length
-          reviewCount.setText(e.reviews.length)
-          reviewCount.textAlign = Ti.UI.TEXT_ALIGNMENT_LEFT
           while i < e.reviews.length
             review = e.reviews[i]
             _id = review.id
-            created_at = review.created_at
-            place_id = review.custom_fields.place_id
-            Cloud.Places.query
-              page:1
-              per_page:1
-              place_id:place_id
+            
+            # custom_fieldsに、該当するお気に入りのお店に関するplace_idを
+            # 格納してあるのでそのIDを利用することでお店の住所、名前を取得することができる
+            placeID = review.custom_fields.place_id
+            Ti.API.info "place_id is #{placeID}"
+            placeIDList.push placeID    
+            # whileのループカウンターを1つプラス  
+            i++
+            
+          # end of loop
+
+          
+          # Cloud.Reviews.queryのwhileループ内で
+          # Cloud.Places.queryを投げるとなぜか
+          # place_idが固定されてしまうため一旦
+          # place_idを配列に格納してその後に
+          # お店の情報を取得するクエリー発行
+          for id in placeIDList
+            Ti.API.info id            
+            Cloud.Places.show
+              place_id:id
             ,(e) ->
               if e.success
+
                 data =
                   name:e.places[0].name
                   shopAddress:e.places[0].address
@@ -207,28 +224,31 @@ class facebookTab
                   latitude:e.places[0].latitude
                   longitude:e.places[0].longitude
                   
-                Ti.API.info data
-                shopLists.push data
-  
-                
-            # whileのループカウンターを1つプラス  
-            i++
+                shopNameRow = Ti.UI.createTableViewRow
+                  width:'auto'
+                  height:40
+                  selectedColor:'transparent'
+                  
+                shopNameLabel = Ti.UI.createLabel
+                  text: data.name
+                  width:'auto'
+                  color:"#333"
+                  left:20
+                  top:10
+                  font:
+                    fontSize:18
+                    fontFamily :'Rounded M+ 1p'
+                    fontWeight:'bold'
+                    
+                shopNameRow.add shopNameLabel
+                favoriteSection.add shopNameRow
+            
+
           
         else
-          Ti.API.info "Error:\n"  
-        
-    reviewRow.add reviewCount
-    reviewRow.add reviewLabel
-    
-    nameRow.add nameLabel
-    nameRow.add @fbLoginButton
-    menuSection.add nameRow
-    menuSection.add reviewRow
+          Ti.API.info "Error:\n"
+          
 
 
-    rows.push menuSection
-    
-    table.setData rows
-    cbFan.facebookWindow.add table
-    return
+    return favoriteSection
 module.exports =  facebookTab
