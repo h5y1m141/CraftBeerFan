@@ -218,7 +218,7 @@ facebookTab = (function() {
           _results.push(Cloud.Places.show({
             place_id: id
           }, function(e) {
-            var data, shopNameLabel, shopNameRow;
+            var data, iconButton, rightIcon, shopNameLabel, shopNameRow;
             if (e.success) {
               data = {
                 name: e.places[0].name,
@@ -234,16 +234,35 @@ facebookTab = (function() {
               });
               shopNameLabel = Ti.UI.createLabel({
                 text: data.name,
-                width: 'auto',
+                width: 230,
                 color: "#333",
                 left: 20,
                 top: 10,
                 font: {
-                  fontSize: 18,
+                  fontSize: 12,
                   fontFamily: 'Rounded M+ 1p',
                   fontWeight: 'bold'
                 }
               });
+              rightIcon = String.fromCharCode("0xe112");
+              iconButton = Ti.UI.createButton({
+                top: 5,
+                right: 10,
+                width: 25,
+                height: 25,
+                backgroundColor: "EDAD0B",
+                backgroundImage: "NONE",
+                borderWidth: 0,
+                borderRadius: 0,
+                color: '#eee',
+                font: {
+                  fontSize: 25,
+                  fontFamily: 'LigatureSymbols'
+                },
+                title: rightIcon
+              });
+              iconButton.addEventListener('click', function(e) {});
+              shopNameRow.add(iconButton);
               shopNameRow.add(shopNameLabel);
               return favoriteSection.add(shopNameRow);
             }

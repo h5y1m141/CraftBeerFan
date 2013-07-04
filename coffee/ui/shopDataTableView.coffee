@@ -222,22 +222,6 @@ class shopDataTableView
         fontSize:14
         fontFamily : 'Rounded M+ 1p'
       text:"#{placeData.address}"
-    memoIcon = String.fromCharCode("0xe08d")
-    penIcon =  String.fromCharCode("0xe09f")
-    iconButton = Ti.UI.createButton
-      top:30
-      left:0
-      width:30
-      height:30
-      backgroundColor:"EDAD0B"
-      backgroundImage:"NONE"
-      borderWidth:0
-      borderRadius:0
-      color:'#eee'      
-      font:
-        fontSize: 32
-        fontFamily:'LigatureSymbols'
-      title:penIcon
 
     row = Ti.UI.createTableViewRow
       width:'auto'
@@ -248,7 +232,7 @@ class shopDataTableView
       className:'shopData'
     row.add titleLabel
     row.add addressLabel
-    row.add iconButton
+
     return row
     
   _loadData:() ->

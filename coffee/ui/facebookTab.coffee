@@ -231,15 +231,38 @@ class facebookTab
                   
                 shopNameLabel = Ti.UI.createLabel
                   text: data.name
-                  width:'auto'
+                  width:230
                   color:"#333"
                   left:20
                   top:10
                   font:
-                    fontSize:18
+                    fontSize:12
                     fontFamily :'Rounded M+ 1p'
                     fontWeight:'bold'
                     
+                # memoIcon = String.fromCharCode("0xe08d")
+                # penIcon =  String.fromCharCode("0xe09f")
+                rightIcon = String.fromCharCode("0xe112")
+                iconButton = Ti.UI.createButton
+                  top:5
+                  right:10
+                  width:25
+                  height:25
+                  backgroundColor:"EDAD0B"
+                  backgroundImage:"NONE"
+                  borderWidth:0
+                  borderRadius:0
+                  color:'#eee'      
+                  font:
+                    fontSize: 25
+                    fontFamily:'LigatureSymbols'
+                  title:rightIcon
+                  
+                iconButton.addEventListener('click',(e)->
+                  
+                )
+
+                shopNameRow.add iconButton
                 shopNameRow.add shopNameLabel
                 favoriteSection.add shopNameRow
             
