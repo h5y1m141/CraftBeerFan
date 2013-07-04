@@ -10,6 +10,12 @@ class facebookTab
     fb.permissions =  ['read_stream']
     fb.forceDialogAuth = false
     that = @
+    @fbLoginButton = fb.createLoginButton
+      top:5
+      left:5
+      width:100
+      style : fb.BUTTON_STYLE_NORMAL
+    
     fb.addEventListener('login', (e) ->
       
       token = fb.accessToken
@@ -56,34 +62,6 @@ class facebookTab
           else
             alert "Unknown result"
     button.hide()      
-    # fb.addEventListener('login', (e) =>
-    #   that = @
-    #   token = fb.accessToken
-    #   _Cloud = require('ti.cloud')
-      
-    #   if e.success
-    #     alert token
-    #     _Cloud.SocialIntegrations.externalAccountLogin
-    #       type: "facebook"
-    #       token: token
-    #     , (e) ->
-    #       if e.success
-    #         user = e.users[0]
-    #         Ti.API.info "User  = " + JSON.stringify(user)
-    #         Ti.App.Properties.setString "cbFan.currentUserId", user.id
-    #         that._userSection(user)
-    #       else
-    #         alert "Error: " + ((e.error and e.message) or JSON.stringify(e))
-
-    #   else if e.error
-    #       alert e.error
-    #   else alert "Canceled"  if e.cancelled
-    # )
-    
-    # fb.addEventListener('logout', (e) ->
-    #   alert "Facebbokアカウントからログアウトしました"
-    # )  
-    
     
 
     facebookWindowTitle = Ti.UI.createLabel
@@ -95,10 +73,6 @@ class facebookTab
         fontWeight:'bold'
       text:"アカウント設定"
 
-    fbLoginButton = fb.createLoginButton
-      top:5
-      left:5
-      style : fb.BUTTON_STYLE_WIDE
       
     cbFan.facebookWindow = Ti.UI.createWindow
       title:"アカウント設定"
@@ -107,7 +81,7 @@ class facebookTab
       tabBarHidden:false
 
     cbFan.facebookWindow.add button
-    cbFan.facebookWindow.add fbLoginButton
+    # cbFan.facebookWindow.add fbLoginButton
     
     if Ti.Platform.osname is 'iphone'
       cbFan.facebookWindow.setTitleControl facebookWindowTitle
@@ -138,8 +112,8 @@ class facebookTab
       backgroundColor: baseColor.backgroundColor
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       width:'auto'
-      height:'100'
-      top:50
+      height:'auto'
+      top:0
       left:0
       
     menuHeaderView = Ti.UI.createView
@@ -159,6 +133,7 @@ class facebookTab
     
     menuSection = Ti.UI.createTableViewSection
       headerView:menuHeaderView
+
       
     nameRow = Ti.UI.createTableViewRow
       backgroundColor:baseColor.backgroundColor
@@ -167,18 +142,88 @@ class facebookTab
       
     nameLabel = Ti.UI.createLabel
       text: "#{user.first_name}　#{user.last_name}"
-      width:280
+      width:200
       color:"#333"
-      left:5
+      left:120
       top:5
       font:
         fontSize:18
         fontFamily :'Rounded M+ 1p'
         fontWeight:'bold'
+    reviewRow = Ti.UI.createTableViewRow
+      height:40
+      width:'auto'
+      
+    userID = user.id
+    reviewCount = Ti.UI.createLabel
+      text: ""
+      left:200
+      top:10
+      width:50
+      color:"#333"
+      font:
+        fontSize:18
+        fontFamily:'Rounded M+ 1p'
+        fontWeight:'bold'
         
-            
+    reviewLabel = Ti.UI.createLabel
+      text: "お気に入り登録件数:　"
+      left:5
+      top:10
+      width:180
+      color:"#333"
+      font:
+        fontSize:18
+        fontFamily:'Rounded M+ 1p'
+        fontWeight:'bold'
+    # rows = []
+    shopLists = []
+    Cloud.Reviews.query
+        page: 1
+        per_page: 50
+        response_json_depth:5
+        user:userID
+      , (e) ->
+        if e.success
+          i = 0
+          Ti.API.info e.reviews.length
+          reviewCount.setText(e.reviews.length)
+          reviewCount.textAlign = Ti.UI.TEXT_ALIGNMENT_LEFT
+          while i < e.reviews.length
+            review = e.reviews[i]
+            _id = review.id
+            created_at = review.created_at
+            place_id = review.custom_fields.place_id
+            Cloud.Places.query
+              page:1
+              per_page:1
+              place_id:place_id
+            ,(e) ->
+              if e.success
+                data =
+                  name:e.places[0].name
+                  shopAddress:e.places[0].address
+                  phoneNumber:e.places[0].phone_number
+                  latitude:e.places[0].latitude
+                  longitude:e.places[0].longitude
+                  
+                Ti.API.info data
+                shopLists.push data
+  
+                
+            # whileのループカウンターを1つプラス  
+            i++
+          
+        else
+          Ti.API.info "Error:\n"  
+        
+    reviewRow.add reviewCount
+    reviewRow.add reviewLabel
+    
     nameRow.add nameLabel
+    nameRow.add @fbLoginButton
     menuSection.add nameRow
+    menuSection.add reviewRow
 
 
     rows.push menuSection

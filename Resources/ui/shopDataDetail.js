@@ -89,7 +89,10 @@ shopDataDetail = (function() {
           id = e.places[0].id;
           return Cloud.Reviews.create({
             rating: 1,
-            place_id: id
+            place_id: id,
+            custom_fields: {
+              place_id: id
+            }
           }, function(e) {
             if (e.success) {
               return alert("お気に入りに登録しました");

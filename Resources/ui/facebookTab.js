@@ -3,7 +3,7 @@ var facebookTab;
 facebookTab = (function() {
 
   function facebookTab() {
-    var baseColor, button, facebookWindowTitle, fb, fbLoginButton, that;
+    var baseColor, button, facebookWindowTitle, fb, that;
     baseColor = {
       barColor: "#f9f9f9",
       backgroundColor: "#dfdfdf",
@@ -14,6 +14,12 @@ facebookTab = (function() {
     fb.permissions = ['read_stream'];
     fb.forceDialogAuth = false;
     that = this;
+    this.fbLoginButton = fb.createLoginButton({
+      top: 5,
+      left: 5,
+      width: 100,
+      style: fb.BUTTON_STYLE_NORMAL
+    });
     fb.addEventListener('login', function(e) {
       var token, _Cloud;
       token = fb.accessToken;
@@ -78,11 +84,6 @@ facebookTab = (function() {
       },
       text: "アカウント設定"
     });
-    fbLoginButton = fb.createLoginButton({
-      top: 5,
-      left: 5,
-      style: fb.BUTTON_STYLE_WIDE
-    });
     cbFan.facebookWindow = Ti.UI.createWindow({
       title: "アカウント設定",
       barColor: baseColor.barColor,
@@ -90,7 +91,6 @@ facebookTab = (function() {
       tabBarHidden: false
     });
     cbFan.facebookWindow.add(button);
-    cbFan.facebookWindow.add(fbLoginButton);
     if (Ti.Platform.osname === 'iphone') {
       cbFan.facebookWindow.setTitleControl(facebookWindowTitle);
     }
@@ -112,7 +112,7 @@ facebookTab = (function() {
   };
 
   facebookTab.prototype._userSection = function(user) {
-    var baseColor, menuHeaderTitle, menuHeaderView, menuSection, nameLabel, nameRow, rows, table;
+    var baseColor, menuHeaderTitle, menuHeaderView, menuSection, nameLabel, nameRow, reviewCount, reviewLabel, reviewRow, rows, shopLists, table, userID;
     baseColor = {
       barColor: "#f9f9f9",
       backgroundColor: "#dfdfdf",
@@ -123,8 +123,8 @@ facebookTab = (function() {
       backgroundColor: baseColor.backgroundColor,
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
       width: 'auto',
-      height: '100',
-      top: 50,
+      height: 'auto',
+      top: 0,
       left: 0
     });
     menuHeaderView = Ti.UI.createView({
@@ -152,9 +152,9 @@ facebookTab = (function() {
     });
     nameLabel = Ti.UI.createLabel({
       text: "" + user.first_name + "　" + user.last_name,
-      width: 280,
+      width: 200,
       color: "#333",
-      left: 5,
+      left: 120,
       top: 5,
       font: {
         fontSize: 18,
@@ -162,8 +162,85 @@ facebookTab = (function() {
         fontWeight: 'bold'
       }
     });
+    reviewRow = Ti.UI.createTableViewRow({
+      height: 40,
+      width: 'auto'
+    });
+    userID = user.id;
+    reviewCount = Ti.UI.createLabel({
+      text: "",
+      left: 200,
+      top: 10,
+      width: 50,
+      color: "#333",
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p',
+        fontWeight: 'bold'
+      }
+    });
+    reviewLabel = Ti.UI.createLabel({
+      text: "お気に入り登録件数:　",
+      left: 5,
+      top: 10,
+      width: 180,
+      color: "#333",
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p',
+        fontWeight: 'bold'
+      }
+    });
+    shopLists = [];
+    Cloud.Reviews.query({
+      page: 1,
+      per_page: 50,
+      response_json_depth: 5,
+      user: userID
+    }, function(e) {
+      var created_at, i, place_id, review, _id, _results;
+      if (e.success) {
+        i = 0;
+        Ti.API.info(e.reviews.length);
+        reviewCount.setText(e.reviews.length);
+        reviewCount.textAlign = Ti.UI.TEXT_ALIGNMENT_LEFT;
+        _results = [];
+        while (i < e.reviews.length) {
+          review = e.reviews[i];
+          _id = review.id;
+          created_at = review.created_at;
+          place_id = review.custom_fields.place_id;
+          Cloud.Places.query({
+            page: 1,
+            per_page: 1,
+            place_id: place_id
+          }, function(e) {
+            var data;
+            if (e.success) {
+              data = {
+                name: e.places[0].name,
+                shopAddress: e.places[0].address,
+                phoneNumber: e.places[0].phone_number,
+                latitude: e.places[0].latitude,
+                longitude: e.places[0].longitude
+              };
+              Ti.API.info(data);
+              return shopLists.push(data);
+            }
+          });
+          _results.push(i++);
+        }
+        return _results;
+      } else {
+        return Ti.API.info("Error:\n");
+      }
+    });
+    reviewRow.add(reviewCount);
+    reviewRow.add(reviewLabel);
     nameRow.add(nameLabel);
+    nameRow.add(this.fbLoginButton);
     menuSection.add(nameRow);
+    menuSection.add(reviewRow);
     rows.push(menuSection);
     table.setData(rows);
     cbFan.facebookWindow.add(table);

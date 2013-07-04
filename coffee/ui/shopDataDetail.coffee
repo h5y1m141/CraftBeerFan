@@ -84,6 +84,8 @@ class shopDataDetail
           Cloud.Reviews.create
             rating: 1
             place_id:id
+            custom_fields:
+              place_id:id
           , (e) ->
             if e.success
               alert "お気に入りに登録しました"
