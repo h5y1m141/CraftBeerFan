@@ -109,9 +109,9 @@ shopDataDetail = (function() {
     });
     this.editLabel = Ti.UI.createLabel({
       top: 5,
-      left: 10,
-      width: Ti.UI.SIZE,
-      height: Ti.UI.SIZE,
+      left: 50,
+      width: 200,
+      height: 30,
       color: "#000",
       font: {
         fontSize: 18,

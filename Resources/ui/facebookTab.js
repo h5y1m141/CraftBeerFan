@@ -3,14 +3,16 @@ var facebookTab;
 facebookTab = (function() {
 
   function facebookTab() {
-    var ShopDataDetail, baseColor, button, facebookWindowTitle, fb, shopDataDetail, shopDetailTable, that;
-    baseColor = {
+    var ShopDataDetail, button, facebookWindowTitle, fb, shopDataDetail, shopDetailTable, that,
+      _this = this;
+    this.baseColor = {
       barColor: "#f9f9f9",
-      backgroundColor: "#dfdfdf",
+      backgroundColor: "#f3f3f3",
+      backgroundDarkColor: "#dfdfdf",
       keyColor: "#EDAD0B"
     };
     this.table = Ti.UI.createTableView({
-      backgroundColor: baseColor.backgroundColor,
+      backgroundColor: this.baseColor.backgroundColor,
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
       width: 'auto',
       height: 'auto',
@@ -25,8 +27,8 @@ facebookTab = (function() {
       if (e.row.className === "shopName") {
         data = e.row.data;
         _win = Ti.UI.createWindow({
-          barColor: baseColor.barColor,
-          backgroundColor: baseColor.barColor
+          barColor: _this.baseColor.barColor,
+          backgroundColor: _this.baseColor.barColor
         });
         backButton = Titanium.UI.createButton({
           backgroundImage: "ui/image/backButton.png",
@@ -165,8 +167,8 @@ facebookTab = (function() {
     });
     cbFan.facebookWindow = Ti.UI.createWindow({
       title: "マイページ",
-      barColor: baseColor.barColor,
-      backgroundColor: baseColor.backgroundColor,
+      barColor: this.baseColor.barColor,
+      backgroundColor: this.baseColor.backgroundColor,
       tabBarHidden: false
     });
     cbFan.facebookWindow.add(button);
@@ -191,14 +193,9 @@ facebookTab = (function() {
   };
 
   facebookTab.prototype._userSection = function(user) {
-    var baseColor, menuHeaderTitle, menuHeaderView, menuSection, nameLabel, nameRow;
-    baseColor = {
-      barColor: "#f9f9f9",
-      backgroundColor: "#dfdfdf",
-      keyColor: "#EDAD0B"
-    };
+    var menuHeaderTitle, menuHeaderView, menuSection, nameLabel, nameRow;
     menuHeaderView = Ti.UI.createView({
-      backgroundColor: baseColor.backgroundColor,
+      backgroundColor: this.baseColor.backgroundColor,
       height: 30
     });
     menuHeaderTitle = Ti.UI.createLabel({
@@ -216,7 +213,7 @@ facebookTab = (function() {
       headerView: menuHeaderView
     });
     nameRow = Ti.UI.createTableViewRow({
-      backgroundColor: baseColor.backgroundColor,
+      backgroundColor: this.baseColor.backgroundColor,
       height: 40,
       className: "facebook"
     });
@@ -241,7 +238,7 @@ facebookTab = (function() {
   facebookTab.prototype._favoriteSection = function(user) {
     var favoriteHeaderTitle, favoriteHeaderView, favoriteSection, placeIDList, shopLists, userID;
     favoriteHeaderView = Ti.UI.createView({
-      backgroundColor: baseColor.backgroundColor,
+      backgroundColor: this.baseColor.backgroundColor,
       height: 30
     });
     favoriteHeaderTitle = Ti.UI.createLabel({

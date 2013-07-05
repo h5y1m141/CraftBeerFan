@@ -1,12 +1,14 @@
 class facebookTab
   constructor:() ->
-    baseColor =
+    @baseColor =
       barColor:"#f9f9f9"
-      backgroundColor:"#dfdfdf"
+      # backgroundColor:"#dfdfdf"
+      backgroundColor:"#f3f3f3"
+      backgroundDarkColor:"#dfdfdf"
       keyColor:"#EDAD0B"
     
     @table = Ti.UI.createTableView
-      backgroundColor: baseColor.backgroundColor
+      backgroundColor: @baseColor.backgroundColor
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       width:'auto'
       height:'auto'
@@ -16,13 +18,13 @@ class facebookTab
     ShopDataDetail = require("ui/shopDataDetail")
     shopDataDetail = new ShopDataDetail()
     shopDetailTable = shopDataDetail.getTable()    
-    @table.addEventListener('click',(e)->
+    @table.addEventListener('click',(e)=>
       if e.row.className is "shopName"
         data = e.row.data
         
         _win = Ti.UI.createWindow
-          barColor:baseColor.barColor
-          backgroundColor: baseColor.barColor
+          barColor:@baseColor.barColor
+          backgroundColor: @baseColor.barColor
         
         backButton = Titanium.UI.createButton
           backgroundImage:"ui/image/backButton.png"
@@ -154,8 +156,8 @@ class facebookTab
       
     cbFan.facebookWindow = Ti.UI.createWindow
       title:"マイページ"
-      barColor:baseColor.barColor
-      backgroundColor: baseColor.backgroundColor
+      barColor:@baseColor.barColor
+      backgroundColor: @baseColor.backgroundColor
       tabBarHidden:false
 
     cbFan.facebookWindow.add button
@@ -179,12 +181,8 @@ class facebookTab
     return appid
     
   _userSection:(user) ->
-    baseColor =
-      barColor:"#f9f9f9"
-      backgroundColor:"#dfdfdf"
-      keyColor:"#EDAD0B"
     menuHeaderView = Ti.UI.createView
-      backgroundColor:baseColor.backgroundColor
+      backgroundColor:@baseColor.backgroundColor
       height:30
       
     menuHeaderTitle = Ti.UI.createLabel
@@ -202,7 +200,7 @@ class facebookTab
       headerView:menuHeaderView
 
     nameRow = Ti.UI.createTableViewRow
-      backgroundColor:baseColor.backgroundColor
+      backgroundColor:@baseColor.backgroundColor
       height:40
       className:"facebook"
       
@@ -227,7 +225,7 @@ class facebookTab
 
   _favoriteSection:(user) ->
     favoriteHeaderView = Ti.UI.createView
-      backgroundColor:baseColor.backgroundColor
+      backgroundColor:@baseColor.backgroundColor
       height:30
       
     favoriteHeaderTitle = Ti.UI.createLabel
@@ -308,30 +306,6 @@ class facebookTab
                     fontFamily :'Rounded M+ 1p'
                     fontWeight:'bold'
                     
-                # memoIcon = String.fromCharCode("0xe08d")
-                # penIcon =  String.fromCharCode("0xe09f")
-                # rightIcon = String.fromCharCode("0xe112")
-                # iconButton = Ti.UI.createButton
-                #   top:5
-                #   right:10
-                #   width:25
-                #   height:25
-                #   backgroundColor:"EDAD0B"
-                #   backgroundImage:"NONE"
-                #   borderWidth:0
-                #   borderRadius:0
-                #   color:'#eee'      
-                #   font:
-                #     fontSize: 25
-                #     fontFamily:'LigatureSymbols'
-                #   title:rightIcon
-                
-                
-                # iconButton.addEventListener('click',(e)->
-                  
-                # )
-
-                # shopNameRow.add iconButton
                 shopNameRow.add shopNameLabel
                 favoriteSection.add shopNameRow
             
