@@ -3,7 +3,7 @@ var facebookTab;
 facebookTab = (function() {
 
   function facebookTab() {
-    var baseColor, button, facebookWindowTitle, fb, that;
+    var ShopDataDetail, baseColor, button, facebookWindowTitle, fb, shopDataDetail, shopDetailTable, that;
     baseColor = {
       barColor: "#f9f9f9",
       backgroundColor: "#dfdfdf",
@@ -17,10 +17,77 @@ facebookTab = (function() {
       top: 0,
       left: 0
     });
+    ShopDataDetail = require("ui/shopDataDetail");
+    shopDataDetail = new ShopDataDetail();
+    shopDetailTable = shopDataDetail.getTable();
+    this.table.addEventListener('click', function(e) {
+      var activeTab, backButton, data, _annotation, _mapView, _win, _winTitle;
+      if (e.row.className === "shopName") {
+        data = e.row.data;
+        _win = Ti.UI.createWindow({
+          barColor: baseColor.barColor,
+          backgroundColor: baseColor.barColor
+        });
+        backButton = Titanium.UI.createButton({
+          backgroundImage: "ui/image/backButton.png",
+          width: 44,
+          height: 44
+        });
+        backButton.addEventListener('click', function(e) {
+          return _win.close({
+            animated: true
+          });
+        });
+        _win.leftNavButton = backButton;
+        _winTitle = Ti.UI.createLabel({
+          textAlign: 'center',
+          color: '#333',
+          font: {
+            fontSize: '18sp',
+            fontFamily: 'Rounded M+ 1p',
+            fontWeight: 'bold'
+          },
+          text: "お店の詳細情報"
+        });
+        if (Ti.Platform.osname === 'iphone') {
+          _win.setTitleControl(_winTitle);
+        }
+        _annotation = Titanium.Map.createAnnotation({
+          latitude: data.latitude,
+          longitude: data.longitude,
+          pincolor: Titanium.Map.ANNOTATION_PURPLE,
+          animate: true
+        });
+        _mapView = Titanium.Map.createView({
+          mapType: Titanium.Map.STANDARD_TYPE,
+          region: {
+            latitude: data.latitude,
+            longitude: data.longitude,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005
+          },
+          animate: true,
+          regionFit: true,
+          userLocation: true,
+          zIndex: 0,
+          top: 0,
+          left: 0,
+          height: 200,
+          width: 'auto'
+        });
+        _mapView.addAnnotation(_annotation);
+        _win.add(_mapView);
+        _win.add(shopDetailTable);
+        shopDataDetail.setData(data);
+        shopDataDetail.show();
+        activeTab = Ti.API._activeTab;
+        return activeTab.open(_win);
+      }
+    });
     fb = require('facebook');
     fb.appid = this._getAppID();
     fb.permissions = ['read_stream'];
-    fb.forceDialogAuth = false;
+    fb.forceDialogAuth = true;
     that = this;
     this.fbLoginButton = fb.createLoginButton({
       top: 5,
@@ -218,7 +285,7 @@ facebookTab = (function() {
           _results.push(Cloud.Places.show({
             place_id: id
           }, function(e) {
-            var data, iconButton, rightIcon, shopNameLabel, shopNameRow;
+            var data, shopNameLabel, shopNameRow;
             if (e.success) {
               data = {
                 name: e.places[0].name,
@@ -230,7 +297,10 @@ facebookTab = (function() {
               shopNameRow = Ti.UI.createTableViewRow({
                 width: 'auto',
                 height: 40,
-                selectedColor: 'transparent'
+                selectedColor: 'transparent',
+                className: "shopName",
+                hasChild: true,
+                data: data
               });
               shopNameLabel = Ti.UI.createLabel({
                 text: data.name,
@@ -244,25 +314,6 @@ facebookTab = (function() {
                   fontWeight: 'bold'
                 }
               });
-              rightIcon = String.fromCharCode("0xe112");
-              iconButton = Ti.UI.createButton({
-                top: 5,
-                right: 10,
-                width: 25,
-                height: 25,
-                backgroundColor: "EDAD0B",
-                backgroundImage: "NONE",
-                borderWidth: 0,
-                borderRadius: 0,
-                color: '#eee',
-                font: {
-                  fontSize: 25,
-                  fontFamily: 'LigatureSymbols'
-                },
-                title: rightIcon
-              });
-              iconButton.addEventListener('click', function(e) {});
-              shopNameRow.add(iconButton);
               shopNameRow.add(shopNameLabel);
               return favoriteSection.add(shopNameRow);
             }

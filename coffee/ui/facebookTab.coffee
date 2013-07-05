@@ -12,12 +12,78 @@ class facebookTab
       height:'auto'
       top:0
       left:0
+      
+    ShopDataDetail = require("ui/shopDataDetail")
+    shopDataDetail = new ShopDataDetail()
+    shopDetailTable = shopDataDetail.getTable()    
+    @table.addEventListener('click',(e)->
+      if e.row.className is "shopName"
+        data = e.row.data
+        
+        _win = Ti.UI.createWindow
+          barColor:baseColor.barColor
+          backgroundColor: baseColor.barColor
+        
+        backButton = Titanium.UI.createButton
+          backgroundImage:"ui/image/backButton.png"
+          width:44
+          height:44
+          
+        backButton.addEventListener('click',(e) ->
+          return _win.close({animated:true})
+        )
+        _win.leftNavButton = backButton
+          
+        _winTitle = Ti.UI.createLabel
+          textAlign: 'center'
+          color:'#333'
+          font:
+            fontSize:'18sp'
+            fontFamily : 'Rounded M+ 1p'
+            fontWeight:'bold'
+          text:"お店の詳細情報"
+          
+        if Ti.Platform.osname is 'iphone'  
+          _win.setTitleControl _winTitle
     
+    
+        _annotation = Titanium.Map.createAnnotation
+          latitude: data.latitude
+          longitude: data.longitude
+          pincolor:Titanium.Map.ANNOTATION_PURPLE
+          animate: true
+        
+        _mapView = Titanium.Map.createView
+          mapType: Titanium.Map.STANDARD_TYPE
+          region: 
+            latitude:data.latitude
+            longitude:data.longitude
+            latitudeDelta:0.005
+            longitudeDelta:0.005
+          animate:true
+          regionFit:true
+          userLocation:true
+          zIndex:0
+          top:0
+          left:0
+          height:200
+          width:'auto'
+    
+        _mapView.addAnnotation _annotation
+        _win.add _mapView
+        _win.add shopDetailTable
+        
+        shopDataDetail.setData(data)
+        shopDataDetail.show()
 
+        activeTab = Ti.API._activeTab
+        activeTab.open(_win)
+
+    )
     fb = require('facebook');
     fb.appid = @_getAppID()
     fb.permissions =  ['read_stream']
-    fb.forceDialogAuth = false
+    fb.forceDialogAuth = true
     that = @
     @fbLoginButton = fb.createLoginButton
       top:5
@@ -223,11 +289,13 @@ class facebookTab
                   phoneNumber:e.places[0].phone_number
                   latitude:e.places[0].latitude
                   longitude:e.places[0].longitude
-                  
                 shopNameRow = Ti.UI.createTableViewRow
                   width:'auto'
                   height:40
                   selectedColor:'transparent'
+                  className:"shopName"
+                  hasChild:true
+                  data:data
                   
                 shopNameLabel = Ti.UI.createLabel
                   text: data.name
@@ -242,27 +310,28 @@ class facebookTab
                     
                 # memoIcon = String.fromCharCode("0xe08d")
                 # penIcon =  String.fromCharCode("0xe09f")
-                rightIcon = String.fromCharCode("0xe112")
-                iconButton = Ti.UI.createButton
-                  top:5
-                  right:10
-                  width:25
-                  height:25
-                  backgroundColor:"EDAD0B"
-                  backgroundImage:"NONE"
-                  borderWidth:0
-                  borderRadius:0
-                  color:'#eee'      
-                  font:
-                    fontSize: 25
-                    fontFamily:'LigatureSymbols'
-                  title:rightIcon
+                # rightIcon = String.fromCharCode("0xe112")
+                # iconButton = Ti.UI.createButton
+                #   top:5
+                #   right:10
+                #   width:25
+                #   height:25
+                #   backgroundColor:"EDAD0B"
+                #   backgroundImage:"NONE"
+                #   borderWidth:0
+                #   borderRadius:0
+                #   color:'#eee'      
+                #   font:
+                #     fontSize: 25
+                #     fontFamily:'LigatureSymbols'
+                #   title:rightIcon
+                
+                
+                # iconButton.addEventListener('click',(e)->
                   
-                iconButton.addEventListener('click',(e)->
-                  
-                )
+                # )
 
-                shopNameRow.add iconButton
+                # shopNameRow.add iconButton
                 shopNameRow.add shopNameLabel
                 favoriteSection.add shopNameRow
             
