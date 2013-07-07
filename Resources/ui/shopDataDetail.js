@@ -228,10 +228,11 @@ shopDataDetail = (function() {
             }, function(e) {
               activityIndicator.hide();
               if (e.success) {
-                return alert("お気に入りに登録しました");
+                alert("お気に入りに登録しました");
+                return modalWindow.close();
               } else {
-                alert(e);
-                return alert("すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした");
+                alert("すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした");
+                return modalWindow.close();
               }
             });
           } else {

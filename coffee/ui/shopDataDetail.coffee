@@ -224,9 +224,10 @@ class shopDataDetail
               activityIndicator.hide()
               if e.success
                 alert "お気に入りに登録しました"
+                modalWindow.close()
               else
-                alert e
                 alert "すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした"
+                modalWindow.close()
           else
             Ti.API.info "Error:\n"        
       )
