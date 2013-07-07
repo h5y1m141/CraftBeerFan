@@ -310,8 +310,11 @@ mapTab = Ti.UI.createTab
 FacebookTab = require("ui/facebookTab")
 facebookTab = new FacebookTab()
   
-tabGroup.addTab mapTab      
-tabGroup.addTab shopDataTab
-tabGroup.addTab facebookTab
+# tabGroup.addTab mapTab      
+# tabGroup.addTab shopDataTab
+# tabGroup.addTab facebookTab
 
+mainTab = require("ui/mainTab")
+mainTab = new mainTab()
+tabGroup.addTab mainTab
 tabGroup.open()

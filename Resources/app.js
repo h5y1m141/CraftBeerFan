@@ -1,4 +1,4 @@
-var ActivityIndicator, Cloud, Config, FacebookTab, ad, adView, baseColor, categoryName, cbFan, config, facebookTab, mapTab, mapWindowTitle, nend, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+var ActivityIndicator, Cloud, Config, FacebookTab, ad, adView, baseColor, categoryName, cbFan, config, facebookTab, mainTab, mapTab, mapWindowTitle, nend, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
 
 cbFan = {};
 
@@ -334,10 +334,10 @@ FacebookTab = require("ui/facebookTab");
 
 facebookTab = new FacebookTab();
 
-tabGroup.addTab(mapTab);
+mainTab = require("ui/mainTab");
 
-tabGroup.addTab(shopDataTab);
+mainTab = new mainTab();
 
-tabGroup.addTab(facebookTab);
+tabGroup.addTab(mainTab);
 
 tabGroup.open();
