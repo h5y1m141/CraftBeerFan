@@ -1,6 +1,5 @@
 class shopDataTableView
   constructor: () ->
-    
     @prefectures = @_loadPrefectures()
     @table = Ti.UI.createTableView
       backgroundColor:"#f3f3f3"
@@ -41,6 +40,7 @@ class shopDataTableView
         shopDataRowTable.addEventListener('click',(e) ->
 
           data =
+            name:e.row.placeData.name
             shopAddress:e.row.placeData.address
             phoneNumber:e.row.placeData.phone_number
             latitude:e.row.placeData.latitude
@@ -122,6 +122,8 @@ class shopDataTableView
               fontWeight:'bold'
             text:"地域別のお店情報"
 
+              
+
           backButton = Titanium.UI.createButton
             backgroundImage:"ui/image/backButton.png"
             width:44
@@ -134,6 +136,7 @@ class shopDataTableView
             barColor:"#f9f9f9"
             backgroundColor: "#343434"
           shopWindow.leftNavButton = backButton
+
           
           if Ti.Platform.osname is 'iphone'
             shopWindow.setTitleControl shopAreaDataWindowTitle
@@ -196,6 +199,7 @@ class shopDataTableView
     
     
   _createShopDataRow:(placeData) ->
+
     titleLabel = Ti.UI.createLabel
       width:240
       height:30
@@ -228,6 +232,7 @@ class shopDataTableView
       className:'shopData'
     row.add titleLabel
     row.add addressLabel
+
     return row
     
   _loadData:() ->

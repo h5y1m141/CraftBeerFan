@@ -41,6 +41,7 @@ shopDataTableView = (function() {
         shopDataRowTable.addEventListener('click', function(e) {
           var ShopDataDetail, activeTab, backButton, baseColor, data, shopDataDetail, _annotation, _mapView, _win;
           data = {
+            name: e.row.placeData.name,
             shopAddress: e.row.placeData.address,
             phoneNumber: e.row.placeData.phone_number,
             latitude: e.row.placeData.latitude,

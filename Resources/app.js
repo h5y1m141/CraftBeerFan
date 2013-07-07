@@ -1,10 +1,14 @@
-var Cloud, Config, FacebookTab, ad, adView, baseColor, categoryName, cbFan, config, facebookTab, mapTab, mapWindowTitle, nend, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
+var ActivityIndicator, Cloud, Config, FacebookTab, ad, adView, baseColor, categoryName, cbFan, config, facebookTab, mapTab, mapWindowTitle, nend, selectedColor, selectedSubColor, shopData, shopDataDetail, shopDataTab, shopDataTableView, shopDataWindowTitle, subMenuTable, tabGroup;
 
 cbFan = {};
 
 Cloud = require('ti.cloud');
 
 shopDataTableView = require('ui/shopDataTableView');
+
+ActivityIndicator = require('ui/activityIndicator');
+
+cbFan.activityIndicator = new ActivityIndicator();
 
 ad = require('net.nend');
 
@@ -103,7 +107,8 @@ cbFan.mapView = Titanium.Map.createView({
   regionFit: true,
   userLocation: true,
   zIndex: 0,
-  top: 0
+  top: 0,
+  left: 0
 });
 
 if (cbFan.platform === 'iPhone4s') {
@@ -164,15 +169,17 @@ cbFan.mapView.addEventListener('click', function(e) {
       regionFit: true,
       userLocation: true,
       zIndex: 0,
-      top: 100,
+      top: 0,
       left: 0,
-      height: 250,
+      height: 200,
       width: 'auto'
     });
     _mapView.addAnnotation(_annotation);
     _win.add(_mapView);
     _win.add(cbFan.shopDataDetailTable);
+    _win.add(cbFan.activityIndicator);
     data = {
+      name: e.title,
       shopAddress: e.annotation.shopAddress,
       phoneNumber: e.annotation.phoneNumber
     };
