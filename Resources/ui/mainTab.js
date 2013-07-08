@@ -3,25 +3,16 @@ var mainTab;
 mainTab = (function() {
 
   function mainTab() {
-    var item, itemList, items, mainWindow, mainWindowTitle, menu, section, _i, _len;
-    this.baseColor = {
-      barColor: "#f9f9f9",
-      backgroundColor: "#f3f3f3",
-      keyColor: "#EDAD0B"
-    };
-    this.table = Ti.UI.createTableView({
-      backgroundColor: this.baseColor.backgroundColor,
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
-      width: 'auto',
-      height: 'auto',
-      left: 0,
-      top: 10
-    });
-    this.table.addEventListener('click', function(e) {
-      if (e.row.className === "menu") {
-        return Ti.API.info("Window name:" + cbFan[e.row.windowName]);
-      }
-    });
+    var FavoriteWindow, ListWindow, MapWindow, MypageWindow, item, itemList, items, mainWindow, mainWindowTitle, menu, section, _i, _len,
+      _this = this;
+    MapWindow = require("ui/mapWindow");
+    this.mapWindow = new MapWindow();
+    MypageWindow = require("ui/mypageWindow");
+    this.mypageWindow = new MypageWindow();
+    ListWindow = require("ui/listWindow");
+    this.listWindow = new ListWindow();
+    FavoriteWindow = require("ui/favoriteWindow");
+    this.favoriteWindow = new FavoriteWindow();
     itemList = [
       {
         "name": "近くから探す",
@@ -45,6 +36,27 @@ mainTab = (function() {
         "windowName": "mypageWindow"
       }
     ];
+    this.baseColor = {
+      barColor: "#f9f9f9",
+      backgroundColor: "#f3f3f3",
+      keyColor: "#EDAD0B"
+    };
+    this.table = Ti.UI.createTableView({
+      backgroundColor: this.baseColor.backgroundColor,
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
+      width: 'auto',
+      height: 'auto',
+      left: 0,
+      top: 10
+    });
+    this.table.addEventListener('click', function(e) {
+      var activeTab;
+      if (e.row.className === "menu") {
+        Ti.API.info(_this[e.row.windowName]);
+        activeTab = Ti.API._activeTab;
+        return activeTab.open(_this[e.row.windowName]);
+      }
+    });
     section = this._createSection();
     items = [];
     for (_i = 0, _len = itemList.length; _i < _len; _i++) {
@@ -68,7 +80,7 @@ mainTab = (function() {
       barColor: this.baseColor.barColor,
       backgroundColor: this.baseColor.barColor,
       tabBarHidden: true,
-      navBarHidden: true
+      navBarHidden: false
     });
     if (Ti.Platform.osname === 'iphone') {
       mainWindow.setTitleControl(mainWindowTitle);

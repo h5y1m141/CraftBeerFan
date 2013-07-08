@@ -1,21 +1,17 @@
 class mainTab
   constructor:() ->
-    @baseColor =
-      barColor:"#f9f9f9"
-      backgroundColor:"#f3f3f3"
-      keyColor:"#EDAD0B"
-     
-    @table = Ti.UI.createTableView
-      backgroundColor:@baseColor.backgroundColor
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
-      width:'auto'
-      height:'auto'
-      left:0
-      top:10
-    @table.addEventListener('click',(e)->
-      if e.row.className is "menu"
-        Ti.API.info "Window name:" + cbFan[e.row.windowName]
-    )
+    MapWindow = require("ui/mapWindow")
+    @mapWindow = new MapWindow()
+    
+    MypageWindow = require("ui/mypageWindow")
+    @mypageWindow = new MypageWindow()
+    
+    ListWindow = require("ui/listWindow")
+    @listWindow = new ListWindow()
+    
+    FavoriteWindow = require("ui/favoriteWindow")
+    @favoriteWindow = new FavoriteWindow()
+    
     itemList = [
       "name":"近くから探す"
       "imageCharCode":"0xe103"
@@ -36,8 +32,27 @@ class mainTab
       "imageCharCode":"0xe137"
       "backgroundColor":"#23AC0E"
       "windowName":"mypageWindow"      
-            
     ]
+    
+    @baseColor =
+      barColor:"#f9f9f9"
+      backgroundColor:"#f3f3f3"
+      keyColor:"#EDAD0B"
+     
+    @table = Ti.UI.createTableView
+      backgroundColor:@baseColor.backgroundColor
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      width:'auto'
+      height:'auto'
+      left:0
+      top:10
+    @table.addEventListener('click',(e)=>
+      if e.row.className is "menu"
+        Ti.API.info @[e.row.windowName]
+        activeTab = Ti.API._activeTab
+        activeTab.open @[e.row.windowName]
+    )
+
     section = @_createSection()
     items = []
     for item in itemList
@@ -61,7 +76,7 @@ class mainTab
       barColor:@baseColor.barColor
       backgroundColor: @baseColor.barColor
       tabBarHidden:true
-      navBarHidden:true
+      navBarHidden:false
       
     if Ti.Platform.osname is 'iphone'  
       mainWindow.setTitleControl mainWindowTitle
