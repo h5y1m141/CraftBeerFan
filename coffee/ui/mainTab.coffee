@@ -1,16 +1,5 @@
 class mainTab
   constructor:() ->
-    MapWindow = require("ui/mapWindow")
-    @mapWindow = new MapWindow()
-    
-    MypageWindow = require("ui/mypageWindow")
-    @mypageWindow = new MypageWindow()
-    
-    ListWindow = require("ui/listWindow")
-    @listWindow = new ListWindow()
-    
-    FavoriteWindow = require("ui/favoriteWindow")
-    @favoriteWindow = new FavoriteWindow()
     
     itemList = [
       "name":"近くから探す"
@@ -75,7 +64,7 @@ class mainTab
     mainWindow = Ti.UI.createWindow
       barColor:@baseColor.barColor
       backgroundColor: @baseColor.barColor
-      tabBarHidden:true
+      tabBarHidden:false
       navBarHidden:false
       
     if Ti.Platform.osname is 'iphone'  

@@ -3,16 +3,8 @@ var mainTab;
 mainTab = (function() {
 
   function mainTab() {
-    var FavoriteWindow, ListWindow, MapWindow, MypageWindow, item, itemList, items, mainWindow, mainWindowTitle, menu, section, _i, _len,
+    var item, itemList, items, mainWindow, mainWindowTitle, menu, section, _i, _len,
       _this = this;
-    MapWindow = require("ui/mapWindow");
-    this.mapWindow = new MapWindow();
-    MypageWindow = require("ui/mypageWindow");
-    this.mypageWindow = new MypageWindow();
-    ListWindow = require("ui/listWindow");
-    this.listWindow = new ListWindow();
-    FavoriteWindow = require("ui/favoriteWindow");
-    this.favoriteWindow = new FavoriteWindow();
     itemList = [
       {
         "name": "近くから探す",
@@ -79,7 +71,7 @@ mainTab = (function() {
     mainWindow = Ti.UI.createWindow({
       barColor: this.baseColor.barColor,
       backgroundColor: this.baseColor.barColor,
-      tabBarHidden: true,
+      tabBarHidden: false,
       navBarHidden: false
     });
     if (Ti.Platform.osname === 'iphone') {
