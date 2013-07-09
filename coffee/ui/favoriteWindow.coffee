@@ -11,6 +11,7 @@ class favoriteWindow
       barColor:@baseColor.barColor
       backgroundColor: @baseColor.backgroundColor
       tabBarHidden:false
+      navBarHidden:true
       
     @table = Ti.UI.createTableView
       backgroundColor: @baseColor.backgroundColor
@@ -86,16 +87,6 @@ class favoriteWindow
             alert "Unknown result"
     button.hide()      
     
-    @backButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/backButton.png"
-      width:44
-      height:44
-      
-    @backButton.addEventListener('click',(e) ->
-      return favoriteWindow.close({animated:true})
-    )
-
-    favoriteWindow.leftNavButton = @backButton
 
     favoriteWindowTitle = Ti.UI.createLabel
       textAlign: 'center'

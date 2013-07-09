@@ -14,7 +14,8 @@ listWindow = (function() {
       title: "リストから探す",
       barColor: this.baseColor.barColor,
       backgroundColor: this.baseColor.backgroundColor,
-      tabBarHidden: false
+      tabBarHidden: false,
+      navBarHidden: true
     });
     this.prefectures = this._loadPrefectures();
     this.rowHeight = 60;
@@ -108,17 +109,6 @@ listWindow = (function() {
       index++;
     }
     this.subMenu.setData(subMenuRows);
-    this.backButton = Titanium.UI.createButton({
-      backgroundImage: "ui/image/backButton.png",
-      width: 44,
-      height: 44
-    });
-    this.backButton.addEventListener('click', function(e) {
-      Ti.API.info("maypageWindow close");
-      return listWindow.close({
-        animated: true
-      });
-    });
     listWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
       color: '#333',
@@ -132,7 +122,6 @@ listWindow = (function() {
     if (Ti.Platform.osname === 'iphone') {
       listWindow.setTitleControl(listWindowTitle);
     }
-    listWindow.leftNavButton = this.backButton;
     listWindow.add(this.subMenu);
     return listWindow;
   }

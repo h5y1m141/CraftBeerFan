@@ -9,6 +9,7 @@ class listWindow
       barColor:@baseColor.barColor
       backgroundColor: @baseColor.backgroundColor
       tabBarHidden:false
+      navBarHidden:true
     
     @prefectures = @_loadPrefectures()
     @rowHeight =  60
@@ -103,17 +104,6 @@ class listWindow
       index++
       
     @subMenu.setData subMenuRows
-    @backButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/backButton.png"
-      width:44
-      height:44
-      
-    @backButton.addEventListener('click',(e) ->
-      Ti.API.info "maypageWindow close"
-      return listWindow.close({animated:true})
-    )
-    
-    
     
     listWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
@@ -127,7 +117,7 @@ class listWindow
     if Ti.Platform.osname is 'iphone'
       listWindow.setTitleControl listWindowTitle
       
-    listWindow.leftNavButton = @backButton
+
     listWindow.add @subMenu
     
     return listWindow

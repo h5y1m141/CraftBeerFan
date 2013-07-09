@@ -3,7 +3,7 @@ var mapWindow;
 mapWindow = (function() {
 
   function mapWindow() {
-    var Config, ad, adView, backButton, config, mapView, mapWindowTitle, nend, platform;
+    var Config, ad, adView, config, mapView, mapWindowTitle, nend, platform;
     this.baseColor = {
       barColor: "#f9f9f9",
       backgroundColor: "#f3f3f3",
@@ -35,8 +35,12 @@ mapWindow = (function() {
       title: "近くのお店",
       barColor: this.baseColor.barColor,
       backgroundColor: this.baseColor.backgroundColor,
+      navBarHidden: true,
       tabBarHidden: false
     });
+    if (Ti.Platform.osname === 'iphone') {
+      mapWindow.setTitleControl(mapWindowTitle);
+    }
     mapView = Titanium.Map.createView({
       mapType: Titanium.Map.STANDARD_TYPE,
       region: {
@@ -54,13 +58,10 @@ mapWindow = (function() {
     });
     if (Ti.Platform.osname === 'iphone' && Ti.Platform.displayCaps.platformHeight === 480) {
       platform = 'iPhone4s';
+      mapView.height = 364;
     } else {
       platform = 'iPhone5';
-    }
-    if (platform === 'iPhone4s') {
-      mapView.height = 320;
-    } else {
-      mapView.height = 408;
+      mapView.height = 452;
     }
     mapView.hide();
     mapView.addEventListener('click', function(e) {
@@ -181,7 +182,7 @@ mapWindow = (function() {
               image: "ui/image/tumblrIcon.png",
               animate: false,
               leftButton: "",
-              rightButton: "ui/image/tumblrIcon.png"
+              rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
             });
             mapView.addAnnotation(annotation);
             _results.push(i++);
@@ -192,17 +193,6 @@ mapWindow = (function() {
         }
       });
     });
-    backButton = Titanium.UI.createButton({
-      backgroundImage: "ui/image/backButton.png",
-      width: 44,
-      height: 44
-    });
-    backButton.addEventListener('click', function(e) {
-      return mapWindow.close({
-        animated: true
-      });
-    });
-    mapWindow.leftNavButton = backButton;
     mapWindow.add(mapView);
     mapWindow.add(adView);
     return mapWindow;

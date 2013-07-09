@@ -31,9 +31,12 @@ class mapWindow
       title:"近くのお店"
       barColor:@baseColor.barColor
       backgroundColor:@baseColor.backgroundColor
+      navBarHidden:true
       tabBarHidden:false
 
-
+      
+    if Ti.Platform.osname is 'iphone'  
+      mapWindow.setTitleControl mapWindowTitle
 
     # 1.0から0.001の間で縮尺尺度を示している。
     # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
@@ -54,14 +57,10 @@ class mapWindow
       
     if Ti.Platform.osname is 'iphone' and Ti.Platform.displayCaps.platformHeight is 480
       platform = 'iPhone4s'
+      mapView.height = 364
     else
       platform = 'iPhone5'
-  
-      
-    if platform is 'iPhone4s'
-      mapView.height = 320
-    else
-      mapView.height = 408
+      mapView.height = 452
     
     
     mapView.hide()
@@ -182,7 +181,7 @@ class mapWindow
               image:"ui/image/tumblrIcon.png"
               animate: false
               leftButton: ""
-              rightButton: "ui/image/tumblrIcon.png"
+              rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
             )
     
             mapView.addAnnotation annotation
@@ -190,15 +189,6 @@ class mapWindow
         else
           Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
     )
-    backButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/backButton.png"
-      width:44
-      height:44
-      
-    backButton.addEventListener('click',(e) ->
-      return mapWindow.close({animated:true})
-    )
-    mapWindow.leftNavButton = backButton
     
     mapWindow.add mapView
     mapWindow.add adView

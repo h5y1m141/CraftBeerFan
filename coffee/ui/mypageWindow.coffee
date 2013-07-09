@@ -11,6 +11,7 @@ class mypageWindow
       barColor:@baseColor.barColor
       backgroundColor: @baseColor.backgroundColor
       tabBarHidden:false
+      navBarHidden:true
     
     @table = Ti.UI.createTableView
       backgroundColor: @baseColor.backgroundColor
@@ -145,17 +146,6 @@ class mypageWindow
           else
             alert "Unknown result"
     button.hide()      
-    
-    @backButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/backButton.png"
-      width:44
-      height:44
-      
-    @backButton.addEventListener('click',(e) ->
-      return mypageWindow.close({animated:true})
-    )
-
-    mypageWindow.leftNavButton = @backButton
 
     mypageWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
@@ -165,8 +155,6 @@ class mypageWindow
         fontFamily : 'Rounded M+ 1p'
         fontWeight:'bold'
       text:"マイページ"
-
-      
 
     mypageWindow.add button
     mypageWindow.add @table

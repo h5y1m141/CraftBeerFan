@@ -15,7 +15,8 @@ mypageWindow = (function() {
       title: "マイページ",
       barColor: this.baseColor.barColor,
       backgroundColor: this.baseColor.backgroundColor,
-      tabBarHidden: false
+      tabBarHidden: false,
+      navBarHidden: true
     });
     this.table = Ti.UI.createTableView({
       backgroundColor: this.baseColor.backgroundColor,
@@ -159,17 +160,6 @@ mypageWindow = (function() {
       });
     });
     button.hide();
-    this.backButton = Titanium.UI.createButton({
-      backgroundImage: "ui/image/backButton.png",
-      width: 44,
-      height: 44
-    });
-    this.backButton.addEventListener('click', function(e) {
-      return mypageWindow.close({
-        animated: true
-      });
-    });
-    mypageWindow.leftNavButton = this.backButton;
     mypageWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
       color: '#333',
