@@ -3,7 +3,8 @@ var mapWindow;
 mapWindow = (function() {
 
   function mapWindow() {
-    var Config, ad, adView, config, mapView, mapWindowTitle, nend, platform;
+    var Config, ad, adView, config, mapWindowTitle, nend, platform, refreshButton,
+      _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
       backgroundColor: "#f3f3f3",
@@ -35,19 +36,16 @@ mapWindow = (function() {
       title: "近くのお店",
       barColor: this.baseColor.barColor,
       backgroundColor: this.baseColor.backgroundColor,
-      navBarHidden: true,
+      navBarHidden: false,
       tabBarHidden: false
     });
-    if (Ti.Platform.osname === 'iphone') {
-      mapWindow.setTitleControl(mapWindowTitle);
-    }
-    mapView = Titanium.Map.createView({
+    this.mapView = Titanium.Map.createView({
       mapType: Titanium.Map.STANDARD_TYPE,
       region: {
         latitude: 35.676564,
         longitude: 139.765076,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01
       },
       animate: true,
       regionFit: true,
@@ -58,145 +56,108 @@ mapWindow = (function() {
     });
     if (Ti.Platform.osname === 'iphone' && Ti.Platform.displayCaps.platformHeight === 480) {
       platform = 'iPhone4s';
-      mapView.height = 364;
+      this.mapView.height = 364;
     } else {
       platform = 'iPhone5';
-      mapView.height = 452;
+      this.mapView.height = 452;
     }
-    mapView.hide();
-    mapView.addEventListener('click', function(e) {
-      var activeTab, backButton, data, _annotation, _mapView, _win, _winTitle;
+    this.mapView.addEventListener('click', function(e) {
+      var data;
       if (e.clicksource === "rightButton") {
-        Ti.API.info("map view event fire");
-        _win = Ti.UI.createWindow({
-          barColor: baseColor.barColor,
-          backgroundColor: baseColor.barColor
-        });
-        backButton = Titanium.UI.createButton({
-          backgroundImage: "ui/image/backButton.png",
-          width: 44,
-          height: 44
-        });
-        backButton.addEventListener('click', function(e) {
-          return _win.close({
-            animated: true
-          });
-        });
-        _win.leftNavButton = backButton;
-        _winTitle = Ti.UI.createLabel({
-          textAlign: 'center',
-          color: '#333',
-          font: {
-            fontSize: '18sp',
-            fontFamily: 'Rounded M+ 1p',
-            fontWeight: 'bold'
-          },
-          text: "お店の詳細情報"
-        });
-        if (Ti.Platform.osname === 'iphone') {
-          _win.setTitleControl(_winTitle);
-        }
-        _annotation = Titanium.Map.createAnnotation({
-          latitude: e.annotation.latitude,
-          longitude: e.annotation.longitude,
-          pincolor: Titanium.Map.ANNOTATION_PURPLE,
-          animate: true
-        });
-        _mapView = Titanium.Map.createView({
-          mapType: Titanium.Map.STANDARD_TYPE,
-          region: {
-            latitude: e.annotation.latitude,
-            longitude: e.annotation.longitude,
-            latitudeDelta: 0.005,
-            longitudeDelta: 0.005
-          },
-          animate: true,
-          regionFit: true,
-          userLocation: true,
-          zIndex: 0,
-          top: 0,
-          left: 0,
-          height: 200,
-          width: 'auto'
-        });
-        _mapView.addAnnotation(_annotation);
-        _win.add(_mapView);
-        _win.add(cbFan.shopDataDetailTable);
-        _win.add(cbFan.activityIndicator);
         data = {
           name: e.title,
           shopAddress: e.annotation.shopAddress,
-          phoneNumber: e.annotation.phoneNumber
+          phoneNumber: e.annotation.phoneNumber,
+          latitude: e.annotation.latitude,
+          longitude: e.annotation.longitude
         };
-        shopDataDetail.setData(data);
-        shopDataDetail.show();
-        activeTab = Ti.API._activeTab;
-        return activeTab.open(_win);
+        return mainController.updateShopDataDetailWindow(data);
       }
     });
-    mapView.hide();
+    refreshButton = Titanium.UI.createButton({
+      backgroundImage: "ui/image/backButton.png",
+      width: 44,
+      height: 44
+    });
+    refreshButton.addEventListener('click', function(e) {
+      var that;
+      that = _this;
+      return Titanium.Geolocation.getCurrentPosition(function(e) {
+        var latitude, longitude;
+        if (e.error) {
+          Ti.API.info(e.error);
+          return;
+        }
+        latitude = e.coords.latitude;
+        longitude = e.coords.longitude;
+        that.mapView.setLocation({
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01
+        });
+        return that._nearBy(latitude, longitude);
+      });
+    });
+    mapWindow.rightNavButton = refreshButton;
+    if (Ti.Platform.osname === 'iphone') {
+      mapWindow.setTitleControl(mapWindowTitle);
+    }
     Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため';
     Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS;
     Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
     Ti.Geolocation.distanceFilter = 5;
-    Ti.Geolocation.addEventListener("location", function(e) {
-      var latitude, longitude;
-      Ti.API.info("latitude: " + e.coords.latitude + "longitude: " + e.coords.longitude);
-      latitude = e.coords.latitude;
-      longitude = e.coords.longitude;
-      mapView.show();
-      mapView.setLocation({
-        latitude: latitude,
-        longitude: longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05
-      });
-      return Cloud.Places.query({
-        page: 1,
-        per_page: 20,
-        where: {
-          lnglat: {
-            $nearSphere: [longitude, latitude],
-            $maxDistance: 0.01
-          }
-        }
-      }, function(e) {
-        var annotation, i, place, tumblrImage, _results;
-        if (e.success) {
-          i = 0;
-          _results = [];
-          while (i < e.places.length) {
-            place = e.places[i];
-            tumblrImage = Titanium.UI.createImageView({
-              width: "26sp",
-              height: "40sp",
-              image: "ui/image/tumblr.png"
-            });
-            annotation = Titanium.Map.createAnnotation({
-              latitude: place.latitude,
-              longitude: place.longitude,
-              title: place.name,
-              phoneNumber: place.phone_number,
-              shopAddress: place.address,
-              subtitle: "",
-              image: "ui/image/tumblrIcon.png",
-              animate: false,
-              leftButton: "",
-              rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
-            });
-            mapView.addAnnotation(annotation);
-            _results.push(i++);
-          }
-          return _results;
-        } else {
-          return Ti.API.info("Error:\n" + ((e.error && e.message) || JSON.stringify(e)));
-        }
-      });
-    });
-    mapWindow.add(mapView);
+    mapWindow.add(this.mapView);
     mapWindow.add(adView);
     return mapWindow;
   }
+
+  mapWindow.prototype._nearBy = function(latitude, longitude) {
+    var that;
+    Ti.API.info("nearBy start.latitude is" + latitude);
+    that = this;
+    Cloud.Places.query({
+      page: 1,
+      per_page: 20,
+      where: {
+        lnglat: {
+          $nearSphere: [longitude, latitude],
+          $maxDistance: 0.01
+        }
+      }
+    }, function(e) {
+      var annotation, i, place, tumblrImage, _results;
+      if (e.success) {
+        i = 0;
+        _results = [];
+        while (i < e.places.length) {
+          place = e.places[i];
+          tumblrImage = Titanium.UI.createImageView({
+            width: 20,
+            height: 40,
+            image: "ui/image/tumblr.png"
+          });
+          annotation = Titanium.Map.createAnnotation({
+            latitude: place.latitude,
+            longitude: place.longitude,
+            title: place.name,
+            phoneNumber: place.phone_number,
+            shopAddress: place.address,
+            subtitle: "",
+            image: "ui/image/tumblrIcon.png",
+            animate: false,
+            leftButton: "",
+            rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
+          });
+          that.mapView.addAnnotation(annotation);
+          _results.push(i++);
+        }
+        return _results;
+      } else {
+        return Ti.API.info("Error:\n" + ((e.error && e.message) || JSON.stringify(e)));
+      }
+    });
+  };
 
   return mapWindow;
 
