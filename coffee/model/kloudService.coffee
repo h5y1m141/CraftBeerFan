@@ -1,4 +1,4 @@
-class acs
+class kloudService
   constructor:() ->
     @Cloud = require('ti.cloud')
     
@@ -21,9 +21,9 @@ class acs
           data =
             latitude: place.latitude
             longitude: place.longitude
-            title:place.name
-            phoneNumber: place.phone_number
+            shopName:place.name
             shopAddress: place.address
+            phoneNumber: place.phone_number            
 
           result.push(data)
           i++
@@ -34,4 +34,4 @@ class acs
 
         
     
-module.exports = acs  
+module.exports = kloudService

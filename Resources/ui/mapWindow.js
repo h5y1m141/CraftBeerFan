@@ -3,7 +3,7 @@ var mapWindow;
 mapWindow = (function() {
 
   function mapWindow() {
-    var Config, ad, adView, config, mapWindowTitle, nend, platform, refreshButton, refreshLabel,
+    var Config, ad, adView, config, mapWindowTitle, nend, platform, refreshLabel,
       _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
@@ -62,7 +62,8 @@ mapWindow = (function() {
       this.mapView.height = 452;
     }
     this.mapView.addEventListener('click', function(e) {
-      var data;
+      var ShopDataDetailWindow, data, shopDataDetailWindow;
+      Ti.API.info("map view click event");
       if (e.clicksource === "rightButton") {
         data = {
           name: e.title,
@@ -71,15 +72,25 @@ mapWindow = (function() {
           latitude: e.annotation.latitude,
           longitude: e.annotation.longitude
         };
-        return mainController.updateShopDataDetailWindow(data);
+        ShopDataDetailWindow = require("ui/shopDataDetailWindow");
+        shopDataDetailWindow = new ShopDataDetailWindow();
+        return shopDataDetailWindow.update(data);
       }
     });
-    refreshButton = Titanium.UI.createButton({
-      backgroundImage: "ui/image/backButton.png",
-      width: 44,
-      height: 44
+    refreshLabel = Ti.UI.createLabel({
+      backgroundColor: "#f9f9f9",
+      borderWidth: 1,
+      borderColor: "#f3f3f3",
+      color: "#333",
+      width: 28,
+      height: 28,
+      font: {
+        fontSize: 32,
+        fontFamily: 'LigatureSymbols'
+      },
+      text: String.fromCharCode("0xe14d")
     });
-    refreshButton.addEventListener('click', function(e) {
+    refreshLabel.addEventListener('click', function(e) {
       var that;
       that = _this;
       return Titanium.Geolocation.getCurrentPosition(function(e) {
@@ -99,14 +110,6 @@ mapWindow = (function() {
         return that._nearBy(latitude, longitude);
       });
     });
-    refreshLabel = Ti.UI.createLabel({
-      backgroundColor: "#3261AB",
-      font: {
-        fontSize: 32,
-        fontFamily: 'LigatureSymbols'
-      },
-      text: String.fromCharCode("0xe103")
-    });
     mapWindow.rightNavButton = refreshLabel;
     if (Ti.Platform.osname === 'iphone') {
       mapWindow.setTitleControl(mapWindowTitle);
@@ -121,30 +124,26 @@ mapWindow = (function() {
   }
 
   mapWindow.prototype._nearBy = function(latitude, longitude) {
-    var ACS, acs, that;
+    var KloudService, kloudService, that;
     that = this;
-    ACS = require("model/acs");
-    acs = new ACS();
-    return acs.placesQuery(latitude, longitude, function(data) {
+    KloudService = require("model/kloudService");
+    kloudService = new KloudService();
+    return kloudService.placesQuery(latitude, longitude, function(data) {
       return that.addAnnotations(data);
     });
   };
 
   mapWindow.prototype.addAnnotations = function(array) {
-    var annotation, data, tumblrImage, _i, _len;
+    var annotation, data, _i, _len;
+    Ti.API.info("addAnnotations start mapView is " + this.mapView);
     for (_i = 0, _len = array.length; _i < _len; _i++) {
       data = array[_i];
-      tumblrImage = Titanium.UI.createImageView({
-        width: 20,
-        height: 40,
-        image: "ui/image/tumblr.png"
-      });
       annotation = Titanium.Map.createAnnotation({
         latitude: data.latitude,
         longitude: data.longitude,
-        title: data.name,
-        phoneNumber: data.phone_number,
-        shopAddress: data.address,
+        title: data.shopName,
+        phoneNumber: data.phoneNumber,
+        shopAddress: data.shopAddress,
         subtitle: "",
         image: "ui/image/tumblrIcon.png",
         animate: false,

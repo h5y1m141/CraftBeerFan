@@ -60,6 +60,7 @@ class mapWindow
       @mapView.height = 452
     
     @mapView.addEventListener('click',(e)=>
+      Ti.API.info "map view click event"
       if e.clicksource is "rightButton"
         data =
           name:e.title
@@ -68,17 +69,29 @@ class mapWindow
           latitude: e.annotation.latitude
           longitude: e.annotation.longitude
         # shopDataDetailWindow.update(data)
-        mainController.updateShopDataDetailWindow(data)
+        # mainController.updateShopDataDetailWindow(data)
+        ShopDataDetailWindow = require("ui/shopDataDetailWindow")
+        shopDataDetailWindow = new ShopDataDetailWindow()
+        shopDataDetailWindow.update(data)
         
       
     )    
 
-    refreshButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/backButton.png"
-      width:44
-      height:44
       
-    refreshButton.addEventListener('click',(e) =>
+    refreshLabel = Ti.UI.createLabel
+      backgroundColor:"#f9f9f9"
+      borderWidth:1
+      borderColor:"#f3f3f3"
+      # color:"#3261AB"
+      color:"#333"
+      width:28
+      height:28
+      font:
+        fontSize: 32
+        fontFamily:'LigatureSymbols'
+      text:String.fromCharCode("0xe14d")
+      
+    refreshLabel.addEventListener('click',(e) =>
       that = @
       Titanium.Geolocation.getCurrentPosition( (e) ->
         if e.error
@@ -99,16 +112,10 @@ class mapWindow
 
       )
     )
-    refreshLabel = Ti.UI.createLabel
-      backgroundColor:"#3261AB"
-      font:
-        fontSize: 32
-        fontFamily:'LigatureSymbols'
-      text:String.fromCharCode("0xe103")
-      
-    # mapWindow.rightNavButton =  refreshButton
+
 
     mapWindow.rightNavButton = refreshLabel
+    
     if Ti.Platform.osname is 'iphone'  
       mapWindow.setTitleControl mapWindowTitle
     
@@ -117,37 +124,27 @@ class mapWindow
     Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS
     Ti.Geolocation.distanceFilter = 5
     
-    # Ti.Geolocation.addEventListener("location", (e) ->
-    #   latitude = e.coords.latitude
-    #   longitude = e.coords.longitude
-    #   if !latitude and !longitude
-    #     @setCurrentPosition(latitude,longitude)
-    #     @_nearBy(latitude,longitude)
-    # )    
     mapWindow.add @mapView
     mapWindow.add adView
     return mapWindow
     
   _nearBy:(latitude,longitude) ->
     that = @
-    ACS =require("model/acs")
-    acs =new ACS()
-    acs.placesQuery(latitude,longitude,(data) ->
+    KloudService =require("model/kloudService")
+    kloudService = new KloudService()
+    kloudService.placesQuery(latitude,longitude,(data) ->
       that.addAnnotations(data)
     )
     
   addAnnotations:(array) ->
+    Ti.API.info "addAnnotations start mapView is #{@mapView}"
     for data in array
-      tumblrImage = Titanium.UI.createImageView
-        width :20
-        height :40
-        image : "ui/image/tumblr.png"    
       annotation = Titanium.Map.createAnnotation(
         latitude: data.latitude
         longitude: data.longitude
-        title: data.name
-        phoneNumber: data.phone_number
-        shopAddress: data.address
+        title: data.shopName
+        phoneNumber: data.phoneNumber
+        shopAddress: data.shopAddress
         subtitle: ""
         image:"ui/image/tumblrIcon.png"
         animate: false
@@ -158,43 +155,5 @@ class mapWindow
       @mapView.addAnnotation annotation
 
     return
-        
-    # Cloud.Places.query
-    #   page: 1
-    #   per_page: 20
-    #   where:
-    #     lnglat:
-    #       # $nearSphere: [139.672004, 35.658839] # longitude, latitude
-    #       $nearSphere:[longitude,latitude] 
-    #       $maxDistance: 0.01
-    # , (e) ->
-    #   if e.success
-    #     i = 0
-    #     while i < e.places.length
-    #       place = e.places[i]
-    #       tumblrImage = Titanium.UI.createImageView
-    #         width :20
-    #         height :40
-    #         image : "ui/image/tumblr.png"
-  
-    #       annotation = Titanium.Map.createAnnotation(
-    #         latitude: place.latitude
-    #         longitude: place.longitude
-    #         title: place.name
-    #         phoneNumber: place.phone_number
-    #         shopAddress: place.address
-    #         subtitle: ""
-    #         image:"ui/image/tumblrIcon.png"
-    #         animate: false
-    #         leftButton: ""
-    #         rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
-    #       )
-  
-    #       that.mapView.addAnnotation annotation
-    #       i++
-    #   else
-    #     Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
-
-
 
 module.exports = mapWindow  

@@ -1,12 +1,12 @@
-var acs;
+var kloudService;
 
-acs = (function() {
+kloudService = (function() {
 
-  function acs() {
+  function kloudService() {
     this.Cloud = require('ti.cloud');
   }
 
-  acs.prototype.placesQuery = function(latitude, longitude, callback) {
+  kloudService.prototype.placesQuery = function(latitude, longitude, callback) {
     Ti.API.info("startplacesQuery");
     return this.Cloud.Places.query({
       page: 1,
@@ -27,9 +27,9 @@ acs = (function() {
           data = {
             latitude: place.latitude,
             longitude: place.longitude,
-            title: place.name,
-            phoneNumber: place.phone_number,
-            shopAddress: place.address
+            shopName: place.name,
+            shopAddress: place.address,
+            phoneNumber: place.phone_number
           };
           result.push(data);
           i++;
@@ -41,8 +41,8 @@ acs = (function() {
     });
   };
 
-  return acs;
+  return kloudService;
 
 })();
 
-module.exports = acs;
+module.exports = kloudService;
