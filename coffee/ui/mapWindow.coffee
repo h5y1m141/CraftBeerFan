@@ -11,6 +11,10 @@ class mapWindow
     config = new Config()
     nend = config.getNendData()
     
+    ActivityIndicator = require('ui/activityIndicator')
+    @activityIndicator = new ActivityIndicator()
+    @activityIndicator.hide()
+    
     adView = ad.createView
       spotId:nend.spotId
       apiKey:nend.apiKey
@@ -44,15 +48,16 @@ class mapWindow
       region: 
         latitude:35.676564
         longitude:139.765076
-        latitudeDelta:0.01
-        longitudeDelta:0.01
+        latitudeDelta:0.025
+        longitudeDelta:0.025
       animate:true
       regionFit:true
       userLocation:true
       zIndex:0
       top:0
       left:0
-      
+    # プラットフォームを判定しながらスクリーンサイズ取得して
+    # iPhone4sとiPhone5とそれぞれに最適なmapViewの大きさにする
     if Ti.Platform.osname is 'iphone' and Ti.Platform.displayCaps.platformHeight is 480
       platform = 'iPhone4s'
       @mapView.height = 364
@@ -89,6 +94,7 @@ class mapWindow
       
     refreshLabel.addEventListener('click',(e) =>
       that = @
+      that.activityIndicator.show()      
       Titanium.Geolocation.getCurrentPosition( (e) ->
         if e.error
           Ti.API.info e.error
@@ -101,8 +107,8 @@ class mapWindow
         that.mapView.setLocation(
           latitude: latitude
           longitude: longitude
-          latitudeDelta:0.01
-          longitudeDelta:0.01
+          latitudeDelta:0.025
+          longitudeDelta:0.025
         )
         that._nearBy(latitude,longitude)
 
@@ -122,6 +128,7 @@ class mapWindow
     
     mapWindow.add @mapView
     mapWindow.add adView
+    mapWindow.add @activityIndicator
     return mapWindow
     
   _nearBy:(latitude,longitude) ->
@@ -134,6 +141,7 @@ class mapWindow
     
   addAnnotations:(array) ->
     Ti.API.info "addAnnotations start mapView is #{@mapView}"
+    @activityIndicator.hide()
     for data in array
       annotation = Titanium.Map.createAnnotation(
         latitude: data.latitude

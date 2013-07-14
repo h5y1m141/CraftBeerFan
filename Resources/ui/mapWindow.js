@@ -3,7 +3,7 @@ var mapWindow;
 mapWindow = (function() {
 
   function mapWindow() {
-    var Config, ad, adView, config, keyColor, mapWindowTitle, nend, platform, refreshLabel,
+    var ActivityIndicator, Config, ad, adView, config, keyColor, mapWindowTitle, nend, platform, refreshLabel,
       _this = this;
     keyColor = '#1abc9c';
     this.baseColor = {
@@ -14,6 +14,9 @@ mapWindow = (function() {
     Config = require("model/loadConfig");
     config = new Config();
     nend = config.getNendData();
+    ActivityIndicator = require('ui/activityIndicator');
+    this.activityIndicator = new ActivityIndicator();
+    this.activityIndicator.hide();
     adView = ad.createView({
       spotId: nend.spotId,
       apiKey: nend.apiKey,
@@ -44,8 +47,8 @@ mapWindow = (function() {
       region: {
         latitude: 35.676564,
         longitude: 139.765076,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01
+        latitudeDelta: 0.025,
+        longitudeDelta: 0.025
       },
       animate: true,
       regionFit: true,
@@ -90,6 +93,7 @@ mapWindow = (function() {
     refreshLabel.addEventListener('click', function(e) {
       var that;
       that = _this;
+      that.activityIndicator.show();
       return Titanium.Geolocation.getCurrentPosition(function(e) {
         var latitude, longitude;
         if (e.error) {
@@ -101,8 +105,8 @@ mapWindow = (function() {
         that.mapView.setLocation({
           latitude: latitude,
           longitude: longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01
+          latitudeDelta: 0.025,
+          longitudeDelta: 0.025
         });
         return that._nearBy(latitude, longitude);
       });
@@ -117,6 +121,7 @@ mapWindow = (function() {
     Ti.Geolocation.distanceFilter = 5;
     mapWindow.add(this.mapView);
     mapWindow.add(adView);
+    mapWindow.add(this.activityIndicator);
     return mapWindow;
   }
 
@@ -133,6 +138,7 @@ mapWindow = (function() {
   mapWindow.prototype.addAnnotations = function(array) {
     var annotation, data, _i, _len;
     Ti.API.info("addAnnotations start mapView is " + this.mapView);
+    this.activityIndicator.hide();
     for (_i = 0, _len = array.length; _i < _len; _i++) {
       data = array[_i];
       annotation = Titanium.Map.createAnnotation({

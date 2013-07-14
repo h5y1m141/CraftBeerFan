@@ -1,7 +1,5 @@
 Cloud = require('ti.cloud')
 
-ActivityIndicator = require('ui/activityIndicator')
-activityIndicator = new ActivityIndicator()
 
 tabGroup = Ti.UI.createTabGroup
   tabsBackgroundColor:"#f9f9f9"

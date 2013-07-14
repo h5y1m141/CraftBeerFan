@@ -1,10 +1,6 @@
-var ActivityIndicator, Cloud, MapWindow, MypageWindow, activityIndicator, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
+var Cloud, MapWindow, MypageWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
 
 Cloud = require('ti.cloud');
-
-ActivityIndicator = require('ui/activityIndicator');
-
-activityIndicator = new ActivityIndicator();
 
 tabGroup = Ti.UI.createTabGroup({
   tabsBackgroundColor: "#f9f9f9",
