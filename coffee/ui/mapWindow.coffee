@@ -80,7 +80,6 @@ class mapWindow
         shopDataDetailWindow = new ShopDataDetailWindow(data)
       
     )    
-
       
     refreshLabel = Ti.UI.createLabel
       backgroundColor:"transparent"
@@ -129,6 +128,9 @@ class mapWindow
     mapWindow.add @mapView
     mapWindow.add adView
     mapWindow.add @activityIndicator
+
+    # init時に現在位置を取得する
+    @_getGeoCurrentPosition()
     return mapWindow
     
   _nearBy:(latitude,longitude) ->
@@ -139,6 +141,30 @@ class mapWindow
       that.addAnnotations(data)
     )
     
+  _getGeoCurrentPosition:() ->
+    that = @
+    that.activityIndicator.show()
+    Titanium.Geolocation.getCurrentPosition( (e) ->
+      if e.error
+        Ti.API.info e.error
+        @activityIndicator.hide()
+        return
+        
+      latitude = e.coords.latitude
+      longitude = e.coords.longitude
+      
+       # 現在地まで地図をスクロールする
+      that.mapView.setLocation(
+        latitude: latitude
+        longitude: longitude
+        latitudeDelta:0.025
+        longitudeDelta:0.025
+      )
+
+      that._nearBy(latitude,longitude)
+      
+    )
+    return
   addAnnotations:(array) ->
     Ti.API.info "addAnnotations start mapView is #{@mapView}"
     @activityIndicator.hide()

@@ -122,6 +122,7 @@ mapWindow = (function() {
     mapWindow.add(this.mapView);
     mapWindow.add(adView);
     mapWindow.add(this.activityIndicator);
+    this._getGeoCurrentPosition();
     return mapWindow;
   }
 
@@ -132,6 +133,29 @@ mapWindow = (function() {
     kloudService = new KloudService();
     return kloudService.placesQuery(latitude, longitude, function(data) {
       return that.addAnnotations(data);
+    });
+  };
+
+  mapWindow.prototype._getGeoCurrentPosition = function() {
+    var that;
+    that = this;
+    that.activityIndicator.show();
+    Titanium.Geolocation.getCurrentPosition(function(e) {
+      var latitude, longitude;
+      if (e.error) {
+        Ti.API.info(e.error);
+        this.activityIndicator.hide();
+        return;
+      }
+      latitude = e.coords.latitude;
+      longitude = e.coords.longitude;
+      that.mapView.setLocation({
+        latitude: latitude,
+        longitude: longitude,
+        latitudeDelta: 0.025,
+        longitudeDelta: 0.025
+      });
+      return that._nearBy(latitude, longitude);
     });
   };
 
