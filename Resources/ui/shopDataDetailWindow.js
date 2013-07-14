@@ -2,13 +2,12 @@ var shopDataDetailWindow;
 
 shopDataDetailWindow = (function() {
 
-  function shopDataDetailWindow() {
-    var backButton, shopDataDetailWindowTitle,
-      _this = this;
+  function shopDataDetailWindow(data) {
+    var ShopDataDetail, activeTab, keyColor, shopDataDetail, shopDataTable;
+    keyColor = '#1abc9c';
     this.baseColor = {
-      barColor: "#f9f9f9",
-      backgroundColor: "#f3f3f3",
-      keyColor: "#EDAD0B"
+      barColor: keyColor,
+      backgroundColor: "#f3f3f3"
     };
     this.shopDataDetailWindow = Ti.UI.createWindow({
       title: "近くのお店",
@@ -17,8 +16,22 @@ shopDataDetailWindow = (function() {
       navBarHidden: false,
       tabBarHidden: false
     });
+    this._createNavbarElement();
+    this._createMapView(data);
+    ShopDataDetail = require("ui/shopDataDetail");
+    shopDataDetail = new ShopDataDetail();
+    shopDataDetail.setData(data);
+    shopDataTable = shopDataDetail.getTable();
+    this.shopDataDetailWindow.add(shopDataTable);
+    activeTab = Ti.API._activeTab;
+    return activeTab.open(this.shopDataDetailWindow);
+  }
+
+  shopDataDetailWindow.prototype._createNavbarElement = function() {
+    var backButton, shopDataDetailWindowTitle,
+      _this = this;
     backButton = Titanium.UI.createButton({
-      backgroundImage: "ui/image/backButton.png",
+      backgroundImage: "ui/image/back-button.png",
       width: 44,
       height: 44
     });
@@ -30,9 +43,9 @@ shopDataDetailWindow = (function() {
     this.shopDataDetailWindow.leftNavButton = backButton;
     shopDataDetailWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
-      color: '#333',
+      color: '#f3f3f3',
       font: {
-        fontSize: '18sp',
+        fontSize: 18,
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       },
@@ -41,15 +54,15 @@ shopDataDetailWindow = (function() {
     if (Ti.Platform.osname === 'iphone') {
       this.shopDataDetailWindow.setTitleControl(shopDataDetailWindowTitle);
     }
-    this.annotation = Titanium.Map.createAnnotation({
-      pincolor: Titanium.Map.ANNOTATION_PURPLE,
-      animate: true
-    });
-    this.mapView = Titanium.Map.createView({
+  };
+
+  shopDataDetailWindow.prototype._createMapView = function(data) {
+    var annotation, mapView;
+    mapView = Titanium.Map.createView({
       mapType: Titanium.Map.STANDARD_TYPE,
       region: {
-        latitude: 35.676564,
-        longitude: 139.765076,
+        latitude: data.latitude,
+        longitude: data.longitude,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005
       },
@@ -62,27 +75,14 @@ shopDataDetailWindow = (function() {
       height: 200,
       width: 'auto'
     });
-    this.mapView.addAnnotation(this.annotation);
-    this.shopDataDetailWindow.add(this.mapView);
-    this.mapView.hide();
-    return;
-  }
-
-  shopDataDetailWindow.prototype.update = function(data) {
-    var ShopDataDetail, activeTab, shopDataDetail, shopDataTable;
-    ShopDataDetail = require("ui/shopDataDetail");
-    shopDataDetail = new ShopDataDetail();
-    shopDataDetail.setData(data);
-    shopDataTable = shopDataDetail.getTable();
-    this.shopDataDetailWindow.add(shopDataTable);
-    this.annotation.latitude = data.latitude;
-    this.annotation.longitude = data.longitude;
-    this.mapView.latitude = data.latitude;
-    this.mapView.longitude = data.longitude;
-    this.mapView.show();
-    this.shopDataDetailWindow.add(this.mapView);
-    activeTab = Ti.API._activeTab;
-    return activeTab.open(this.shopDataDetailWindow);
+    annotation = Titanium.Map.createAnnotation({
+      pincolor: Titanium.Map.ANNOTATION_PURPLE,
+      animate: false,
+      latitude: data.latitude,
+      longitude: data.longitude
+    });
+    mapView.addAnnotation(annotation);
+    return this.shopDataDetailWindow.add(mapView);
   };
 
   return shopDataDetailWindow;

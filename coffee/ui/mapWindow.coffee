@@ -1,9 +1,10 @@
 class mapWindow
   constructor:() ->
+    keyColor = '#1abc9c'
     @baseColor =
-      barColor:"#f9f9f9"
+      barColor:keyColor
       backgroundColor:"#f3f3f3"
-      keyColor:"#EDAD0B"
+
       
     ad = require('net.nend')
     Config = require("model/loadConfig")
@@ -20,9 +21,9 @@ class mapWindow
       
     mapWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
-      color:'#333'
+      color:'#f3f3f3'
       font:
-        fontSize:'18sp'
+        fontSize:18
         fontFamily : 'Rounded M+ 1p'
         fontWeight:'bold'
       text:"近くのお店"
@@ -62,28 +63,23 @@ class mapWindow
     @mapView.addEventListener('click',(e)=>
       Ti.API.info "map view click event"
       if e.clicksource is "rightButton"
+
         data =
           name:e.title
           shopAddress:e.annotation.shopAddress
           phoneNumber:e.annotation.phoneNumber
           latitude: e.annotation.latitude
           longitude: e.annotation.longitude
-        # shopDataDetailWindow.update(data)
-        # mainController.updateShopDataDetailWindow(data)
+          
         ShopDataDetailWindow = require("ui/shopDataDetailWindow")
-        shopDataDetailWindow = new ShopDataDetailWindow()
-        shopDataDetailWindow.update(data)
-        
+        shopDataDetailWindow = new ShopDataDetailWindow(data)
       
     )    
 
       
     refreshLabel = Ti.UI.createLabel
-      backgroundColor:"#f9f9f9"
-      borderWidth:1
-      borderColor:"#f3f3f3"
-      # color:"#3261AB"
-      color:"#333"
+      backgroundColor:"transparent"
+      color:@baseColor.backgroundColor
       width:28
       height:28
       font:

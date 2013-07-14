@@ -11,6 +11,7 @@ class shopDataDetail
       
     @addressLabel = Ti.UI.createLabel
       text: ""
+      textAlign: 'center'      
       width:280
       color:"#333"
       left:20
@@ -42,6 +43,7 @@ class shopDataDetail
       
     @phoneLabel = Ti.UI.createLabel
       text: ""
+      textAlign: 'center'      
       left:50
       top:10
       width:150
@@ -285,11 +287,13 @@ class shopDataDetail
     @addressLabel.setText(data.shopAddress)
 
     @phoneLabel.setText("電話する")
+    @phoneLabel.textAlign ='center'
     @editLabel.setFont({fontSize: 32,fontFamily: 'LigatureSymbols'})
     shopName = data.name
     @starIcon.shopName =  shopName
     @editLabel.setFont({fontFamily :'Rounded M+ 1p'})
     @editLabel.setText("お気に入り登録する")
+    @editLabel.textAlign ='center'
 
     @phoneIcon.addEventListener('click',(e)->
       alert "phone icon touch"

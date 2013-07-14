@@ -3,12 +3,12 @@ var mapWindow;
 mapWindow = (function() {
 
   function mapWindow() {
-    var Config, ad, adView, config, mapWindowTitle, nend, platform, refreshLabel,
+    var Config, ad, adView, config, keyColor, mapWindowTitle, nend, platform, refreshLabel,
       _this = this;
+    keyColor = '#1abc9c';
     this.baseColor = {
-      barColor: "#f9f9f9",
-      backgroundColor: "#f3f3f3",
-      keyColor: "#EDAD0B"
+      barColor: keyColor,
+      backgroundColor: "#f3f3f3"
     };
     ad = require('net.nend');
     Config = require("model/loadConfig");
@@ -24,9 +24,9 @@ mapWindow = (function() {
     });
     mapWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
-      color: '#333',
+      color: '#f3f3f3',
       font: {
-        fontSize: '18sp',
+        fontSize: 18,
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       },
@@ -73,15 +73,12 @@ mapWindow = (function() {
           longitude: e.annotation.longitude
         };
         ShopDataDetailWindow = require("ui/shopDataDetailWindow");
-        shopDataDetailWindow = new ShopDataDetailWindow();
-        return shopDataDetailWindow.update(data);
+        return shopDataDetailWindow = new ShopDataDetailWindow(data);
       }
     });
     refreshLabel = Ti.UI.createLabel({
-      backgroundColor: "#f9f9f9",
-      borderWidth: 1,
-      borderColor: "#f3f3f3",
-      color: "#333",
+      backgroundColor: "transparent",
+      color: this.baseColor.backgroundColor,
       width: 28,
       height: 28,
       font: {

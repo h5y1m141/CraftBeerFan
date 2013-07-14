@@ -1,14 +1,6 @@
-var ActivityIndicator, Cloud, FavoriteWindow, ListWindow, MainController, MapWindow, MypageWindow, ShopDataDetailWindow, activityIndicator, favoriteTab, favoriteWindow, listTab, listWindow, mainController, mapTab, mapWindow, mypageTab, mypageWindow, shopDataDetailWindow, tabGroup;
+var ActivityIndicator, Cloud, MapWindow, MypageWindow, activityIndicator, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
 
 Cloud = require('ti.cloud');
-
-MainController = require("controller/mainController");
-
-mainController = new MainController();
-
-ShopDataDetailWindow = require("ui/shopDataDetailWindow");
-
-shopDataDetailWindow = new ShopDataDetailWindow();
 
 ActivityIndicator = require('ui/activityIndicator');
 
@@ -36,47 +28,21 @@ MapWindow = require("ui/mapWindow");
 
 mapWindow = new MapWindow();
 
+mapTab = Titanium.UI.createTab({
+  window: mapWindow,
+  icon: "ui/image/light_pin.png"
+});
+
 MypageWindow = require("ui/mypageWindow");
 
 mypageWindow = new MypageWindow();
 
-ListWindow = require("ui/listWindow");
-
-listWindow = new ListWindow();
-
-FavoriteWindow = require("ui/favoriteWindow");
-
-favoriteWindow = new FavoriteWindow();
-
-mapTab = Titanium.UI.createTab({
-  window: mapWindow,
-  icon: "ui/image/light_pin.png",
-  title: "近くのお店"
-});
-
 mypageTab = Titanium.UI.createTab({
   window: mypageWindow,
-  icon: "ui/image/light_gears.png",
-  title: "設定画面"
-});
-
-favoriteTab = Titanium.UI.createTab({
-  window: favoriteWindow,
-  icon: "ui/image/light_star.png",
-  title: "お気に入り"
-});
-
-listTab = Titanium.UI.createTab({
-  window: listWindow,
-  icon: "ui/image/light_list.png",
-  title: "お店一覧"
+  icon: "ui/image/light_gears.png"
 });
 
 tabGroup.addTab(mapTab);
-
-tabGroup.addTab(listTab);
-
-tabGroup.addTab(favoriteTab);
 
 tabGroup.addTab(mypageTab);
 
