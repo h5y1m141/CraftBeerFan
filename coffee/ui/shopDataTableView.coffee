@@ -38,67 +38,16 @@ class shopDataTableView
           height:'auto'
           
         shopDataRowTable.addEventListener('click',(e) ->
-
           data =
             name:e.row.placeData.name
             shopAddress:e.row.placeData.address
             phoneNumber:e.row.placeData.phone_number
             latitude:e.row.placeData.latitude
             longitude:e.row.placeData.longitude
-          ShopDataDetail = require("ui/shopDataDetail")
-          shopDataDetail = new ShopDataDetail()
-          shopDataDetail.setData(data)
-          shopDataDetail.show()
-          
-          _annotation = Titanium.Map.createAnnotation
-            latitude: e.row.placeData.latitude
-            longitude: e.row.placeData.longitude
-            pincolor:Titanium.Map.ANNOTATION_PURPLE
-            animate: true
-          
-          _mapView = Titanium.Map.createView
-            mapType: Titanium.Map.STANDARD_TYPE
-            region: 
-              latitude:e.row.placeData.latitude
-              longitude:e.row.placeData.longitude
-              latitudeDelta:0.005
-              longitudeDelta:0.005
-            animate:true
-            regionFit:true
-            userLocation:true
-            zIndex:0
-            top:100
-            left:0
-            height:250
-            width:'auto'
-    
-          
-          baseColor =
-            barColor:"#f9f9f9"
-            backgroundColor:"#f9f9f9"
-            keyColor:"#EDAD0B"
-
-          _win = Ti.UI.createWindow
-            barColor:baseColor.barColor
-            backgroundColor: baseColor.backgroundColor
-          
-          backButton = Titanium.UI.createButton
-            backgroundImage:"ui/image/backButton.png"
-            width:44
-            height:44
             
-          backButton.addEventListener('click',(e) ->
-            return _win.close({animated:true})
-          )
-          _win.leftNavButton = backButton
-          _win.add shopDataDetail.getTable()
-          _mapView.addAnnotation _annotation
-          _win.add _mapView
+          ShopDataDetailWindow = require("ui/shopDataDetailWindow")
+          shopDataDetailWindow = new ShopDataDetailWindow(data)
 
-          activeTab = Ti.API._activeTab
-          activeTab.open(_win)
-
-          
         )
         if typeof shopDataList[prefectureName] is "undefined"
           alert "選択した地域のお店がみつかりません"
