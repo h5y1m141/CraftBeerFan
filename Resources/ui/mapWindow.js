@@ -132,6 +132,7 @@ mapWindow = (function() {
     KloudService = require("model/kloudService");
     kloudService = new KloudService();
     return kloudService.placesQuery(latitude, longitude, function(data) {
+      Ti.API.info(data);
       return that.addAnnotations(data);
     });
   };
@@ -160,25 +161,43 @@ mapWindow = (function() {
   };
 
   mapWindow.prototype.addAnnotations = function(array) {
-    var annotation, data, _i, _len;
+    var annotation, data, _i, _len, _results;
     Ti.API.info("addAnnotations start mapView is " + this.mapView);
     this.activityIndicator.hide();
+    _results = [];
     for (_i = 0, _len = array.length; _i < _len; _i++) {
       data = array[_i];
-      annotation = Titanium.Map.createAnnotation({
-        latitude: data.latitude,
-        longitude: data.longitude,
-        title: data.shopName,
-        phoneNumber: data.phoneNumber,
-        shopAddress: data.shopAddress,
-        subtitle: "",
-        image: "ui/image/tumblrIcon.png",
-        animate: false,
-        leftButton: "",
-        rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
-      });
-      this.mapView.addAnnotation(annotation);
+      if (data.shopFlg === "true") {
+        annotation = Titanium.Map.createAnnotation({
+          latitude: data.latitude,
+          longitude: data.longitude,
+          title: data.shopName,
+          phoneNumber: data.phoneNumber,
+          shopAddress: data.shopAddress,
+          subtitle: "",
+          image: "ui/image/bottle.png",
+          animate: false,
+          leftButton: "",
+          rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
+        });
+        _results.push(this.mapView.addAnnotation(annotation));
+      } else {
+        annotation = Titanium.Map.createAnnotation({
+          latitude: data.latitude,
+          longitude: data.longitude,
+          title: data.shopName,
+          phoneNumber: data.phoneNumber,
+          shopAddress: data.shopAddress,
+          subtitle: "",
+          image: "ui/image/tumblrIcon.png",
+          animate: false,
+          leftButton: "",
+          rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
+        });
+        _results.push(this.mapView.addAnnotation(annotation));
+      }
     }
+    return _results;
   };
 
   return mapWindow;

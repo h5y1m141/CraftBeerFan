@@ -138,6 +138,7 @@ class mapWindow
     KloudService =require("model/kloudService")
     kloudService = new KloudService()
     kloudService.placesQuery(latitude,longitude,(data) ->
+      Ti.API.info data
       that.addAnnotations(data)
     )
     
@@ -169,21 +170,35 @@ class mapWindow
     Ti.API.info "addAnnotations start mapView is #{@mapView}"
     @activityIndicator.hide()
     for data in array
-      annotation = Titanium.Map.createAnnotation(
-        latitude: data.latitude
-        longitude: data.longitude
-        title: data.shopName
-        phoneNumber: data.phoneNumber
-        shopAddress: data.shopAddress
-        subtitle: ""
-        image:"ui/image/tumblrIcon.png"
-        animate: false
-        leftButton: ""
-        rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
-      )
 
-      @mapView.addAnnotation annotation
+      if data.shopFlg is "true"
+        annotation = Titanium.Map.createAnnotation
+          latitude: data.latitude
+          longitude: data.longitude
+          title: data.shopName
+          phoneNumber: data.phoneNumber
+          shopAddress: data.shopAddress
+          subtitle: ""
+          image:"ui/image/bottle.png"
+          animate: false
+          leftButton: ""
+          rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
+        @mapView.addAnnotation annotation
+      else
+        annotation = Titanium.Map.createAnnotation
+          latitude: data.latitude
+          longitude: data.longitude
+          title: data.shopName
+          phoneNumber: data.phoneNumber
+          shopAddress: data.shopAddress
+          subtitle: ""
+          image:"ui/image/tumblrIcon.png"
+          animate: false
+          leftButton: ""
+          rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
+        @mapView.addAnnotation annotation
+      
 
-    return
+
 
 module.exports = mapWindow  

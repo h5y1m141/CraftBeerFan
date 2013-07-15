@@ -17,14 +17,14 @@ class kloudService
         i = 0
         while i < e.places.length
           place = e.places[i]
-
           data =
             latitude: place.latitude
             longitude: place.longitude
             shopName:place.name
             shopAddress: place.address
-            phoneNumber: place.phone_number            
-
+            phoneNumber: place.phone_number
+            shopFlg:place.custom_fields.shopFlg
+            
           result.push(data)
           i++
 

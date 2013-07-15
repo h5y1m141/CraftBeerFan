@@ -29,7 +29,8 @@ kloudService = (function() {
             longitude: place.longitude,
             shopName: place.name,
             shopAddress: place.address,
-            phoneNumber: place.phone_number
+            phoneNumber: place.phone_number,
+            shopFlg: place.custom_fields.shopFlg
           };
           result.push(data);
           i++;
