@@ -51,26 +51,30 @@ class listWindow
       
     ShopDataTableView = require('ui/shopDataTableView')
     shopDataTableView = new ShopDataTableView()
-    shopData = shopDataTableView.getTable()
+    @shopData = shopDataTableView.getTable()
     @subMenu.addEventListener('click',(e)=>
       categoryName = e.row.categoryName
       selectedColor = @prefectureColorSet.name[categoryName]
       selectedSubColor = @prefectureSubColorSet.name[categoryName]
       curretRowIndex　= e.index
-      # shopData.animateした後のコールバック関数内では@rowHeightが
+
+      # animateした後のコールバック関数内では@xxxが
       # 参照できないために以下変数に格納する
       rowHeight = @rowHeight
+      shopData = @shopData
+      arrowImage = @arrowImage
       @arrowImage.hide()
       shopData.animate({
         duration:400
         left:300
       },() ->
-        shopData.refreshTableData(categoryName,selectedColor,selectedSubColor)
+        
+        shopDataTableView.refreshTableData(categoryName,selectedColor,selectedSubColor)
         # arrowImageの高さの50ずらづだけだとrowの真ん中に位置しないため
         # 55ずらすことで丁度真ん中に位置する
         arrowImagePosition = (curretRowIndex+1) * rowHeight - 55
-        @arrowImage.backgroundColor = selectedColor
-        @arrowImage.top = arrowImagePosition
+        arrowImage.backgroundColor = selectedColor
+        arrowImage.top = arrowImagePosition
 
         shopData.animate({
           duration:400
@@ -107,7 +111,7 @@ class listWindow
         width:150
         height:@rowHeight
         rowID:index
-        selectedColor:'transparent'
+        selectedBackgroundColor:'transparent'
         backgroundColor:"f3f3f3"
         categoryName:"#{categoryName}"
 
@@ -133,6 +137,7 @@ class listWindow
       
 
     listWindow.add @subMenu
+    listWindow.add @shopData
     
     return listWindow
             

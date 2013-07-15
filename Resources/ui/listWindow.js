@@ -3,7 +3,7 @@ var listWindow;
 listWindow = (function() {
 
   function listWindow() {
-    var PrefectureCategory, ShopDataTableView, categoryName, headerLabel, headerPoint, index, listWindowTitle, shopData, shopDataTableView, subMenuRow, subMenuRows,
+    var PrefectureCategory, ShopDataTableView, categoryName, headerLabel, headerPoint, index, listWindowTitle, shopDataTableView, subMenuRow, subMenuRows,
       _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
@@ -61,24 +61,26 @@ listWindow = (function() {
     });
     ShopDataTableView = require('ui/shopDataTableView');
     shopDataTableView = new ShopDataTableView();
-    shopData = shopDataTableView.getTable();
+    this.shopData = shopDataTableView.getTable();
     this.subMenu.addEventListener('click', function(e) {
-      var categoryName, curretRowIndex　, rowHeight, selectedColor, selectedSubColor;
+      var arrowImage, categoryName, curretRowIndex　, rowHeight, selectedColor, selectedSubColor, shopData;
       categoryName = e.row.categoryName;
       selectedColor = _this.prefectureColorSet.name[categoryName];
       selectedSubColor = _this.prefectureSubColorSet.name[categoryName];
       curretRowIndex　 = e.index;
       rowHeight = _this.rowHeight;
+      shopData = _this.shopData;
+      arrowImage = _this.arrowImage;
       _this.arrowImage.hide();
       return shopData.animate({
         duration: 400,
         left: 300
       }, function() {
         var arrowImagePosition;
-        shopData.refreshTableData(categoryName, selectedColor, selectedSubColor);
+        shopDataTableView.refreshTableData(categoryName, selectedColor, selectedSubColor);
         arrowImagePosition = (curretRowIndex + 1) * rowHeight - 55;
-        this.arrowImage.backgroundColor = selectedColor;
-        this.arrowImage.top = arrowImagePosition;
+        arrowImage.backgroundColor = selectedColor;
+        arrowImage.top = arrowImagePosition;
         return shopData.animate({
           duration: 400,
           left: 150
@@ -113,7 +115,7 @@ listWindow = (function() {
         width: 150,
         height: this.rowHeight,
         rowID: index,
-        selectedColor: 'transparent',
+        selectedBackgroundColor: 'transparent',
         backgroundColor: "f3f3f3",
         categoryName: "" + categoryName
       });
@@ -137,6 +139,7 @@ listWindow = (function() {
       listWindow.setTitleControl(listWindowTitle);
     }
     listWindow.add(this.subMenu);
+    listWindow.add(this.shopData);
     return listWindow;
   }
 
