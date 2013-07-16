@@ -5,10 +5,10 @@ mapWindow = (function() {
   function mapWindow() {
     var ActivityIndicator, Config, ad, adView, config, keyColor, mapWindowTitle, nend, platform, refreshLabel,
       _this = this;
-    keyColor = '#1abc9c';
+    keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
-      backgroundColor: "#f3f3f3"
+      backgroundColor: keyColor
     };
     ad = require('net.nend');
     Config = require("model/loadConfig");
@@ -27,7 +27,7 @@ mapWindow = (function() {
     });
     mapWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
-      color: '#f3f3f3',
+      color: "#333",
       font: {
         fontSize: 18,
         fontFamily: 'Rounded M+ 1p',
