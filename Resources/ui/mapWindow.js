@@ -144,7 +144,7 @@ mapWindow = (function() {
       var latitude, longitude;
       if (e.error) {
         Ti.API.info(e.error);
-        this.activityIndicator.hide();
+        that.activityIndicator.hide();
         return;
       }
       latitude = e.coords.latitude;

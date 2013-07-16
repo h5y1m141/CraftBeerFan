@@ -147,7 +147,7 @@ class mapWindow
     Titanium.Geolocation.getCurrentPosition( (e) ->
       if e.error
         Ti.API.info e.error
-        @activityIndicator.hide()
+        that.activityIndicator.hide()
         return
         
       latitude = e.coords.latitude
