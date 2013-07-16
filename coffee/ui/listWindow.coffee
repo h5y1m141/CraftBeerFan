@@ -21,7 +21,7 @@ class listWindow
       height:'auto'
       left:0
       top:0
-      zIndex:5
+      zIndex:1
       
     @prefectureColorSet = "name":
       "北海道・東北":"#3261AB"
@@ -38,17 +38,20 @@ class listWindow
       "近畿":"#FFFBD5"
       "中国・四国":"#FEF7D5"
       "九州・沖縄":"#F9DFD5"
-    @arrowImage = Ti.UI.createImageView
+      
+    @arrowImage = Ti.UI.createView
       width:50
       height:50
-      left:150
+      left:140
       top:35
       borderRadius:5
       transform:Ti.UI.create2DMatrix().rotate(45)
       borderColor:"#f3f3f3"
       borderWidth:1
       backgroundColor:"#007FB1"
-      
+      zIndex:5
+    @arrowImage.hide()
+    
     ShopDataTableView = require('ui/shopDataTableView')
     shopDataTableView = new ShopDataTableView()
     @shopData = shopDataTableView.getTable()
