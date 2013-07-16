@@ -138,7 +138,6 @@ class mapWindow
     KloudService =require("model/kloudService")
     kloudService = new KloudService()
     kloudService.placesQuery(latitude,longitude,(data) ->
-      Ti.API.info data
       that.addAnnotations(data)
     )
     

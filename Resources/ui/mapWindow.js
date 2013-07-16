@@ -132,7 +132,6 @@ mapWindow = (function() {
     KloudService = require("model/kloudService");
     kloudService = new KloudService();
     return kloudService.placesQuery(latitude, longitude, function(data) {
-      Ti.API.info(data);
       return that.addAnnotations(data);
     });
   };
