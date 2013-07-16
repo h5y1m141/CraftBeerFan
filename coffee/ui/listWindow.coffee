@@ -6,11 +6,11 @@ class listWindow
       keyColor:"#EDAD0B"
       
     listWindow = Ti.UI.createWindow
-      title:"リストから探す"
+      title:"リスト"
       barColor:@baseColor.barColor
       backgroundColor: @baseColor.backgroundColor
       tabBarHidden:false
-      navBarHidden:true
+      navBarHidden:false
     
     @prefectures = @_loadPrefectures()
     @rowHeight =  60
@@ -138,7 +138,7 @@ class listWindow
 
     listWindow.add @subMenu
     listWindow.add @shopData
-    
+    listWindow.add @arrowImage
     return listWindow
             
   _loadPrefectures:() ->

@@ -11,11 +11,11 @@ listWindow = (function() {
       keyColor: "#EDAD0B"
     };
     listWindow = Ti.UI.createWindow({
-      title: "リストから探す",
+      title: "リスト",
       barColor: this.baseColor.barColor,
       backgroundColor: this.baseColor.backgroundColor,
       tabBarHidden: false,
-      navBarHidden: true
+      navBarHidden: false
     });
     this.prefectures = this._loadPrefectures();
     this.rowHeight = 60;
@@ -140,6 +140,7 @@ listWindow = (function() {
     }
     listWindow.add(this.subMenu);
     listWindow.add(this.shopData);
+    listWindow.add(this.arrowImage);
     return listWindow;
   }
 
