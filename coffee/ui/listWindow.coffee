@@ -42,23 +42,35 @@ class listWindow
     @arrowImage = Ti.UI.createView
       width:50
       height:50
-      left:140
-      top:35
+      left:150
+      top:5
       borderRadius:5
       transform:Ti.UI.create2DMatrix().rotate(45)
       borderColor:"#f3f3f3"
       borderWidth:1
       backgroundColor:"#007FB1"
       zIndex:5
-    @arrowImage.hide()
+
     
     ShopDataTableView = require('ui/shopDataTableView')
     shopDataTableView = new ShopDataTableView()
     @shopData = shopDataTableView.getTable()
+    
+    # listWindowを初めて開いた時にデフォルトで表示するエリアをここで指定
+    #
+    defaultArea =
+      n:"北海道・東北"
+      c:"#3261AB"
+      # s:"#D5E0F1"
+      s:"#FFF"
+      
+    shopDataTableView.refreshTableData(defaultArea.n,defaultArea.c,defaultArea.s)
+    
     @subMenu.addEventListener('click',(e)=>
       categoryName = e.row.categoryName
       selectedColor = @prefectureColorSet.name[categoryName]
-      selectedSubColor = @prefectureSubColorSet.name[categoryName]
+      # selectedSubColor = @prefectureSubColorSet.name[categoryName]
+      selectedSubColor = "#FFF"
       curretRowIndex　= e.index
 
       # animateした後のコールバック関数内では@xxxが
@@ -69,7 +81,7 @@ class listWindow
       @arrowImage.hide()
       shopData.animate({
         duration:400
-        left:300
+        left:315
       },() ->
         
         shopDataTableView.refreshTableData(categoryName,selectedColor,selectedSubColor)

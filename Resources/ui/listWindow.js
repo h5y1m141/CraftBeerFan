@@ -3,7 +3,7 @@ var listWindow;
 listWindow = (function() {
 
   function listWindow() {
-    var PrefectureCategory, ShopDataTableView, categoryName, headerLabel, headerPoint, index, listWindowTitle, shopDataTableView, subMenuRow, subMenuRows,
+    var PrefectureCategory, ShopDataTableView, categoryName, defaultArea, headerLabel, headerPoint, index, listWindowTitle, shopDataTableView, subMenuRow, subMenuRows,
       _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
@@ -51,8 +51,8 @@ listWindow = (function() {
     this.arrowImage = Ti.UI.createView({
       width: 50,
       height: 50,
-      left: 140,
-      top: 35,
+      left: 150,
+      top: 5,
       borderRadius: 5,
       transform: Ti.UI.create2DMatrix().rotate(45),
       borderColor: "#f3f3f3",
@@ -60,15 +60,20 @@ listWindow = (function() {
       backgroundColor: "#007FB1",
       zIndex: 5
     });
-    this.arrowImage.hide();
     ShopDataTableView = require('ui/shopDataTableView');
     shopDataTableView = new ShopDataTableView();
     this.shopData = shopDataTableView.getTable();
+    defaultArea = {
+      n: "北海道・東北",
+      c: "#3261AB",
+      s: "#FFF"
+    };
+    shopDataTableView.refreshTableData(defaultArea.n, defaultArea.c, defaultArea.s);
     this.subMenu.addEventListener('click', function(e) {
       var arrowImage, categoryName, curretRowIndex　, rowHeight, selectedColor, selectedSubColor, shopData;
       categoryName = e.row.categoryName;
       selectedColor = _this.prefectureColorSet.name[categoryName];
-      selectedSubColor = _this.prefectureSubColorSet.name[categoryName];
+      selectedSubColor = "#FFF";
       curretRowIndex　 = e.index;
       rowHeight = _this.rowHeight;
       shopData = _this.shopData;
@@ -76,7 +81,7 @@ listWindow = (function() {
       _this.arrowImage.hide();
       return shopData.animate({
         duration: 400,
-        left: 300
+        left: 315
       }, function() {
         var arrowImagePosition;
         shopDataTableView.refreshTableData(categoryName, selectedColor, selectedSubColor);
