@@ -28,72 +28,20 @@ class shopDataTableView
         @_hideSubMenu(curretRowIndex,prefectureNameList.length)
         e.row.opendFlg = false
       else
-
         prefectureName = e.row.prefectureName
-        shopDataList = @_groupingShopDataby(prefectureName)
-        
-        shopDataRows = []
-        shopDataRowTable = Ti.UI.createTableView
-          width:'auto'
-          height:'auto'
-          
-        shopDataRowTable.addEventListener('click',(e) ->
-          data =
-            name:e.row.placeData.name
-            shopAddress:e.row.placeData.address
-            phoneNumber:e.row.placeData.phone_number
-            latitude:e.row.placeData.latitude
-            longitude:e.row.placeData.longitude
-            
-          ShopDataDetailWindow = require("ui/shopDataDetailWindow")
-          shopDataDetailWindow = new ShopDataDetailWindow(data)
+        KloudService = require("model/kloudService")
+        kloudService = new KloudService()
+        kloudService.finsShopDataBy(prefectureName,(items) ->
+          if items.length is 0
+            alert "選択した地域のお店がみつかりません"
+          else
+            Ti.API.info "kloudService success"
 
+            ShopAreaDataWindow = require("ui/shopAreaDataWindow") 
+            shopAreaDataWindow = new ShopAreaDataWindow(items)
+            
         )
-        if typeof shopDataList[prefectureName] is "undefined"
-          alert "選択した地域のお店がみつかりません"
-        else
-        
-          for _items in shopDataList[prefectureName]
-            Ti.API.info "お店の名前:#{_items.name}"
-            shopDataRow = @_createShopDataRow(_items)
-            shopDataRows.push(shopDataRow)
-            
-          shopDataRowTable.startLayout()
-          shopDataRowTable.setData(shopDataRows)
-          shopDataRowTable.finishLayout()
-          
-          shopAreaDataWindowTitle = Ti.UI.createLabel
-            textAlign: 'center'
-            color:'#333'
-            font:
-              fontSize:18
-              fontFamily : 'Rounded M+ 1p'
-              fontWeight:'bold'
-            text:"地域別のお店情報"
 
-              
-
-          backButton = Titanium.UI.createButton
-            backgroundImage:"ui/image/backButton.png"
-            width:44
-            height:44
-          backButton.addEventListener('click',(e) ->
-            return shopWindow.close({animated:true})
-          )      
-          shopWindow = Ti.UI.createWindow
-            title: "地域別のお店情報"
-            barColor:"#f9f9f9"
-            backgroundColor: "#343434"
-          shopWindow.leftNavButton = backButton
-
-          
-          if Ti.Platform.osname is 'iphone'
-            shopWindow.setTitleControl shopAreaDataWindowTitle
-          
-          shopWindow.add shopDataRowTable
-          activeTab = Ti.API._activeTab
-          activeTab.open(shopWindow )
-          return
     ) # end of tableView Event
     
     return

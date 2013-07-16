@@ -19,7 +19,7 @@ shopDataTableView = (function() {
     this.table.hide();
     this.shopData = this._loadData();
     this.table.addEventListener('click', function(e) {
-      var activeTab, backButton, curretRowIndex, opendFlg, prefectureName, prefectureNameList, shopAreaDataWindowTitle, shopDataList, shopDataRow, shopDataRowTable, shopDataRows, shopWindow, that, _i, _items, _len, _ref;
+      var KloudService, curretRowIndex, kloudService, opendFlg, prefectureName, prefectureNameList, that;
       that = _this;
       opendFlg = e.row.opendFlg;
       prefectureNameList = e.row.prefectureNameList;
@@ -32,70 +32,18 @@ shopDataTableView = (function() {
         return e.row.opendFlg = false;
       } else {
         prefectureName = e.row.prefectureName;
-        shopDataList = _this._groupingShopDataby(prefectureName);
-        shopDataRows = [];
-        shopDataRowTable = Ti.UI.createTableView({
-          width: 'auto',
-          height: 'auto'
-        });
-        shopDataRowTable.addEventListener('click', function(e) {
-          var ShopDataDetailWindow, data, shopDataDetailWindow;
-          data = {
-            name: e.row.placeData.name,
-            shopAddress: e.row.placeData.address,
-            phoneNumber: e.row.placeData.phone_number,
-            latitude: e.row.placeData.latitude,
-            longitude: e.row.placeData.longitude
-          };
-          ShopDataDetailWindow = require("ui/shopDataDetailWindow");
-          return shopDataDetailWindow = new ShopDataDetailWindow(data);
-        });
-        if (typeof shopDataList[prefectureName] === "undefined") {
-          return alert("選択した地域のお店がみつかりません");
-        } else {
-          _ref = shopDataList[prefectureName];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            _items = _ref[_i];
-            Ti.API.info("お店の名前:" + _items.name);
-            shopDataRow = _this._createShopDataRow(_items);
-            shopDataRows.push(shopDataRow);
+        KloudService = require("model/kloudService");
+        kloudService = new KloudService();
+        return kloudService.finsShopDataBy(prefectureName, function(items) {
+          var ShopAreaDataWindow, shopAreaDataWindow;
+          if (items.length === 0) {
+            return alert("選択した地域のお店がみつかりません");
+          } else {
+            Ti.API.info("kloudService success");
+            ShopAreaDataWindow = require("ui/shopAreaDataWindow");
+            return shopAreaDataWindow = new ShopAreaDataWindow(items);
           }
-          shopDataRowTable.startLayout();
-          shopDataRowTable.setData(shopDataRows);
-          shopDataRowTable.finishLayout();
-          shopAreaDataWindowTitle = Ti.UI.createLabel({
-            textAlign: 'center',
-            color: '#333',
-            font: {
-              fontSize: 18,
-              fontFamily: 'Rounded M+ 1p',
-              fontWeight: 'bold'
-            },
-            text: "地域別のお店情報"
-          });
-          backButton = Titanium.UI.createButton({
-            backgroundImage: "ui/image/backButton.png",
-            width: 44,
-            height: 44
-          });
-          backButton.addEventListener('click', function(e) {
-            return shopWindow.close({
-              animated: true
-            });
-          });
-          shopWindow = Ti.UI.createWindow({
-            title: "地域別のお店情報",
-            barColor: "#f9f9f9",
-            backgroundColor: "#343434"
-          });
-          shopWindow.leftNavButton = backButton;
-          if (Ti.Platform.osname === 'iphone') {
-            shopWindow.setTitleControl(shopAreaDataWindowTitle);
-          }
-          shopWindow.add(shopDataRowTable);
-          activeTab = Ti.API._activeTab;
-          activeTab.open(shopWindow);
-        }
+        });
       }
     });
     return;
