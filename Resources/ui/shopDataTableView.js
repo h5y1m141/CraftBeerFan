@@ -19,32 +19,20 @@ shopDataTableView = (function() {
     this.table.hide();
     this.shopData = this._loadData();
     this.table.addEventListener('click', function(e) {
-      var KloudService, curretRowIndex, kloudService, opendFlg, prefectureName, prefectureNameList, that;
-      that = _this;
-      opendFlg = e.row.opendFlg;
-      prefectureNameList = e.row.prefectureNameList;
-      curretRowIndex = e.index;
-      if (opendFlg === false) {
-        _this._showSubMenu(prefectureNameList, curretRowIndex);
-        return e.row.opendFlg = true;
-      } else if (opendFlg === true) {
-        _this._hideSubMenu(curretRowIndex, prefectureNameList.length);
-        return e.row.opendFlg = false;
-      } else {
-        prefectureName = e.row.prefectureName;
-        KloudService = require("model/kloudService");
-        kloudService = new KloudService();
-        return kloudService.finsShopDataBy(prefectureName, function(items) {
-          var ShopAreaDataWindow, shopAreaDataWindow;
-          if (items.length === 0) {
-            return alert("選択した地域のお店がみつかりません");
-          } else {
-            Ti.API.info("kloudService success");
-            ShopAreaDataWindow = require("ui/shopAreaDataWindow");
-            return shopAreaDataWindow = new ShopAreaDataWindow(items);
-          }
-        });
-      }
+      var KloudService, kloudService, prefectureName;
+      prefectureName = e.row.prefectureName;
+      KloudService = require("model/kloudService");
+      kloudService = new KloudService();
+      return kloudService.finsShopDataBy(prefectureName, function(items) {
+        var ShopAreaDataWindow, shopAreaDataWindow;
+        if (items.length === 0) {
+          return alert("選択した地域のお店がみつかりません");
+        } else {
+          Ti.API.info("kloudService success");
+          ShopAreaDataWindow = require("ui/shopAreaDataWindow");
+          return shopAreaDataWindow = new ShopAreaDataWindow(items);
+        }
+      });
     });
     return;
   }

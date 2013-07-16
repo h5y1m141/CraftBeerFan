@@ -16,32 +16,20 @@ class shopDataTableView
     @shopData = @_loadData()
 
     @table.addEventListener('click',(e) =>
-      that = @
-      opendFlg = e.row.opendFlg
-      prefectureNameList = e.row.prefectureNameList
-      curretRowIndex = e.index
-      if opendFlg is false
-        @_showSubMenu(prefectureNameList,curretRowIndex)
+      prefectureName = e.row.prefectureName
+      KloudService = require("model/kloudService")
+      kloudService = new KloudService()
+      kloudService.finsShopDataBy(prefectureName,(items) ->
+        if items.length is 0
+          alert "選択した地域のお店がみつかりません"
+        else
+          Ti.API.info "kloudService success"
+
+          ShopAreaDataWindow = require("ui/shopAreaDataWindow") 
+          shopAreaDataWindow = new ShopAreaDataWindow(items)
           
-        e.row.opendFlg = true          
-      else if opendFlg is true
-        @_hideSubMenu(curretRowIndex,prefectureNameList.length)
-        e.row.opendFlg = false
-      else
-        prefectureName = e.row.prefectureName
-        KloudService = require("model/kloudService")
-        kloudService = new KloudService()
-        kloudService.finsShopDataBy(prefectureName,(items) ->
-          if items.length is 0
-            alert "選択した地域のお店がみつかりません"
-          else
-            Ti.API.info "kloudService success"
-
-            ShopAreaDataWindow = require("ui/shopAreaDataWindow") 
-            shopAreaDataWindow = new ShopAreaDataWindow(items)
-            
-        )
-
+      )
+      
     ) # end of tableView Event
     
     return
