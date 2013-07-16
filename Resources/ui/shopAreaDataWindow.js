@@ -3,17 +3,23 @@ var shopAreaDataWindow;
 shopAreaDataWindow = (function() {
 
   function shopAreaDataWindow(items) {
-    var activeTab, item, shopDataRow, shopDataRowTable, shopDataRows, _i, _len;
+    var activeTab, item, keyColor, shopDataRow, shopDataRowTable, shopDataRows, _i, _len;
+    keyColor = "#f9f9f9";
+    this.baseColor = {
+      barColor: keyColor,
+      backgroundColor: keyColor
+    };
     this.shopAreaDataWindow = Ti.UI.createWindow({
       title: "地域別のお店情報",
-      barColor: "#f9f9f9",
-      backgroundColor: "#343434",
+      barColor: this.baseColor.barColor,
+      backgroundColor: this.baseColor.backgroundColor,
       navBarHidden: false,
       tabBarHidden: false
     });
     shopDataRowTable = Ti.UI.createTableView({
       width: 'auto',
-      height: 'auto'
+      height: 'auto',
+      backgroundColor: this.baseColor.barColor
     });
     shopDataRowTable.addEventListener('click', function(e) {
       var ShopDataDetailWindow, data, shopDataDetailWindow;
@@ -104,7 +110,8 @@ shopAreaDataWindow = (function() {
       borderWidth: 0,
       hasChild: true,
       placeData: placeData,
-      className: 'shopData'
+      className: 'shopData',
+      backgroundColor: this.baseColor.barColor
     });
     row.add(titleLabel);
     row.add(addressLabel);

@@ -1,15 +1,21 @@
 class shopAreaDataWindow
   constructor:(items) ->
+    keyColor = "#f9f9f9"
+    @baseColor =
+      barColor:keyColor
+      backgroundColor:keyColor
+    
     @shopAreaDataWindow = Ti.UI.createWindow
       title: "地域別のお店情報"
-      barColor:"#f9f9f9"
-      backgroundColor: "#343434"
+      barColor:@baseColor.barColor
+      backgroundColor:@baseColor.backgroundColor
       navBarHidden:false
       tabBarHidden:false
       
     shopDataRowTable = Ti.UI.createTableView
       width:'auto'
       height:'auto'
+      backgroundColor:@baseColor.barColor
       
     shopDataRowTable.addEventListener('click',(e) ->
       data =
@@ -95,6 +101,7 @@ class shopAreaDataWindow
       hasChild:true
       placeData:placeData
       className:'shopData'
+      backgroundColor:@baseColor.barColor
       
     row.add titleLabel
     row.add addressLabel
