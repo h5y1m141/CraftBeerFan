@@ -19,7 +19,7 @@ class shopAreaDataWindow
       
     shopDataRowTable.addEventListener('click',(e) ->
       data =
-        name:e.row.placeData.name
+        shopName:e.row.placeData.name
         shopAddress:e.row.placeData.address
         phoneNumber:e.row.placeData.phone_number
         latitude:e.row.placeData.latitude
