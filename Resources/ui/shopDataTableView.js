@@ -59,6 +59,7 @@ shopDataTableView = (function() {
         height: 40,
         top: 5,
         left: 30,
+        textAlign: 'left',
         color: '#333',
         font: {
           fontSize: 18,

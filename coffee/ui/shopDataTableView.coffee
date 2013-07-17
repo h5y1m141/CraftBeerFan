@@ -16,6 +16,7 @@ class shopDataTableView
     @shopData = @_loadData()
 
     @table.addEventListener('click',(e) =>
+
       prefectureName = e.row.prefectureName
       KloudService = require("model/kloudService")
       kloudService = new KloudService()
@@ -55,6 +56,7 @@ class shopDataTableView
         height:40
         top:5
         left:30
+        textAlign:'left'
         color:'#333'
         font:
           fontSize:18
@@ -64,7 +66,8 @@ class shopDataTableView
         
       prefectureRow.add textLabel
       rows.push prefectureRow
-      
+
+            
     @table.borderColor = selectedColor
     @table.backgroundColor = selectedSubColor
     @table.setData rows
