@@ -61,7 +61,6 @@ kloudService = (function() {
             var user;
             if (e.success) {
               user = e.users[0];
-              alert(user);
               Ti.API.info("User  = " + JSON.stringify(user));
               Ti.App.Properties.setString("currentUserId", user.id);
               return callback(user.id);
@@ -121,7 +120,7 @@ kloudService = (function() {
             if (e.success) {
               Ti.API.info(e.places[0].name);
               data = {
-                name: e.places[0].name,
+                shopName: e.places[0].name,
                 shopAddress: e.places[0].address,
                 phoneNumber: e.places[0].phone_number,
                 latitude: e.places[0].latitude,

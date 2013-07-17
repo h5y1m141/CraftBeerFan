@@ -33,6 +33,7 @@ class kloudService
         Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
 
   fbLogin:(callback) ->
+
     fb = require('facebook');
     fb.appid = @_getAppID()
     fb.permissions =  ['read_stream']
@@ -48,7 +49,7 @@ class kloudService
           , (e) ->
             if e.success
               user = e.users[0]
-              alert user
+
               Ti.API.info "User  = " + JSON.stringify(user)
               Ti.App.Properties.setString "currentUserId", user.id
               callback(user.id)
@@ -113,7 +114,7 @@ class kloudService
               Ti.API.info e.places[0].name
 
               data =
-                name:e.places[0].name
+                shopName:e.places[0].name
                 shopAddress:e.places[0].address
                 phoneNumber:e.places[0].phone_number
                 latitude:e.places[0].latitude
