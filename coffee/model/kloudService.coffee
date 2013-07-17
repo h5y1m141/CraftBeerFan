@@ -48,6 +48,7 @@ class kloudService
           , (e) ->
             if e.success
               user = e.users[0]
+              alert user
               Ti.API.info "User  = " + JSON.stringify(user)
               Ti.App.Properties.setString "currentUserId", user.id
               callback(user.id)
@@ -69,6 +70,7 @@ class kloudService
   reviewsQuery:(userID,callback) ->
     shopLists = []
     placeIDList = []
+
     # 該当するユーザのお気に入り情報を検索する
     @Cloud.Reviews.query
       page: 1
@@ -84,8 +86,9 @@ class kloudService
           # custom_fieldsに、該当するお気に入りのお店に関するplace_idを
           # 格納してあるのでそのIDを利用することでお店の住所、名前を取得することができる
           placeID = review.custom_fields.place_id
-          Ti.API.info "place_id is #{placeID}"
-          placeIDList.push placeID    
+
+          if typeof placeID isnt "undefined"
+            placeIDList.push placeID    
           # whileのループカウンターを1つプラス  
           i++
               
@@ -94,12 +97,21 @@ class kloudService
         # Cloud.Reviews.queryのwhileループ内でCloud.Places.queryを投げるとなぜか
         # place_idが固定されてしまうため一旦place_idを配列に格納してその後にお店の
         # 情報を取得するクエリー発行
+
+        # forループ内のCloud.Places.showは非同期処理されてしまう
+        # そのため全部の値を取得してからcallback関数に渡すためには
+        # setIntervalで以下のカウンター変数の値をチェックする必要ある
+        length = placeIDList.length
+        placeQueryCounter = 0
+        Ti.API.info "length is #{length}"
         for id in placeIDList
-          Ti.API.info id            
           @Cloud.Places.show
             place_id:id
           ,(e) ->
+            placeQueryCounter++
             if e.success
+              Ti.API.info e.places[0].name
+
               data =
                 name:e.places[0].name
                 shopAddress:e.places[0].address
@@ -109,15 +121,24 @@ class kloudService
                 shopFlg:e.places[0].custom_fields.shopFlg
                 
               shopLists.push data
+
             else
               Ti.API.info "no review data"
+
               
-        callback( shopLists  )
+
+        timerId = setInterval (->
+
+          if placeQueryCounter is length
+            callback(shopLists)
+            clearInterval(timerId)
+        ),10
+        
 
       else
         Ti.API.info "Error:\n"
     
-    return                          
+
   _getAppID:() ->
     # Facebook appidを取得
     config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json")

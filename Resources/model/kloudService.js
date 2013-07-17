@@ -61,6 +61,7 @@ kloudService = (function() {
             var user;
             if (e.success) {
               user = e.users[0];
+              alert(user);
               Ti.API.info("User  = " + JSON.stringify(user));
               Ti.App.Properties.setString("currentUserId", user.id);
               return callback(user.id);
@@ -89,31 +90,36 @@ kloudService = (function() {
     var placeIDList, shopLists;
     shopLists = [];
     placeIDList = [];
-    this.Cloud.Reviews.query({
+    return this.Cloud.Reviews.query({
       page: 1,
       per_page: 100,
       response_json_depth: 5,
       user: userID
     }, function(e) {
-      var i, id, placeID, review, _i, _id, _len;
+      var i, id, length, placeID, placeQueryCounter, review, timerId, _i, _id, _len;
       if (e.success) {
         i = 0;
         while (i < e.reviews.length) {
           review = e.reviews[i];
           _id = review.id;
           placeID = review.custom_fields.place_id;
-          Ti.API.info("place_id is " + placeID);
-          placeIDList.push(placeID);
+          if (typeof placeID !== "undefined") {
+            placeIDList.push(placeID);
+          }
           i++;
         }
+        length = placeIDList.length;
+        placeQueryCounter = 0;
+        Ti.API.info("length is " + length);
         for (_i = 0, _len = placeIDList.length; _i < _len; _i++) {
           id = placeIDList[_i];
-          Ti.API.info(id);
           this.Cloud.Places.show({
             place_id: id
           }, function(e) {
             var data;
+            placeQueryCounter++;
             if (e.success) {
+              Ti.API.info(e.places[0].name);
               data = {
                 name: e.places[0].name,
                 shopAddress: e.places[0].address,
@@ -128,7 +134,12 @@ kloudService = (function() {
             }
           });
         }
-        return callback(shopLists);
+        return timerId = setInterval((function() {
+          if (placeQueryCounter === length) {
+            callback(shopLists);
+            return clearInterval(timerId);
+          }
+        }), 10);
       } else {
         return Ti.API.info("Error:\n");
       }
