@@ -68,36 +68,43 @@ class listWindow
     
     @subMenu.addEventListener('click',(e)=>
       categoryName = e.row.categoryName
-      selectedColor = @prefectureColorSet.name[categoryName]
-      # selectedSubColor = @prefectureSubColorSet.name[categoryName]
-      selectedSubColor = "#FFF"
-      curretRowIndex　= e.index
+      if categoryName is "お気に入り"
+        FavoriteWindow = require("ui/favoriteWindow")
+        favoriteWindow = new FavoriteWindow()
 
-      # animateした後のコールバック関数内では@xxxが
-      # 参照できないために以下変数に格納する
-      rowHeight = @rowHeight
-      shopData = @shopData
-      arrowImage = @arrowImage
-      @arrowImage.hide()
-      shopData.animate({
-        duration:400
-        left:315
-      },() ->
         
-        shopDataTableView.refreshTableData(categoryName,selectedColor,selectedSubColor)
-        # arrowImageの高さの50ずらづだけだとrowの真ん中に位置しないため
-        # 55ずらすことで丁度真ん中に位置する
-        arrowImagePosition = (curretRowIndex+1) * rowHeight - 55
-        arrowImage.backgroundColor = selectedColor
-        arrowImage.top = arrowImagePosition
+        
+      else
+        selectedColor = @prefectureColorSet.name[categoryName]
+        # selectedSubColor = @prefectureSubColorSet.name[categoryName]
+        selectedSubColor = "#FFF"
+        curretRowIndex　= e.index
 
+        # animateした後のコールバック関数内では@xxxが
+        # 参照できないために以下変数に格納する
+        rowHeight = @rowHeight
+        shopData = @shopData
+        arrowImage = @arrowImage
+        @arrowImage.hide()
         shopData.animate({
           duration:400
-          left:150
+          left:300
         },() ->
-          arrowImage.show()
-        )
-      )
+          
+          shopDataTableView.refreshTableData(categoryName,selectedColor,selectedSubColor)
+          # arrowImageの高さの50ずらづだけだとrowの真ん中に位置しないため
+          # 55ずらすことで丁度真ん中に位置する
+          arrowImagePosition = (curretRowIndex+1) * rowHeight - 55
+          arrowImage.backgroundColor = selectedColor
+          arrowImage.top = arrowImagePosition
+
+          shopData.animate({
+            duration:400
+            left:150
+          },() ->
+            arrowImage.show()
+          )
+        ) # end of animate()
     )
 
     PrefectureCategory = @_makePrefectureCategory(@prefectures)
@@ -126,7 +133,6 @@ class listWindow
         width:150
         height:@rowHeight
         rowID:index
-        selectedBackgroundColor:'transparent'
         backgroundColor:"f3f3f3"
         categoryName:"#{categoryName}"
 
@@ -135,7 +141,29 @@ class listWindow
       subMenuRow.add headerLabel
       subMenuRows.push subMenuRow
       index++
+
+    favoriteRow = Ti.UI.createTableViewRow
+      width:150
+      height:@rowHeight
+      backgroundColor:"f3f3f3"
+      categoryName:"お気に入り"
+
+    favoriteLabel = Ti.UI.createLabel
+      width:240
+      height:40
+      top:5
+      left:30
+      textAlign:'left'
+      color:'#333'
+      font:
+        fontSize:18
+        fontFamily : 'Rounded M+ 1p'
+        fontWeight:'bold'
+      text:"お気に入り"
       
+    favoriteRow.add favoriteLabel
+    subMenuRows.push favoriteRow
+    
     @subMenu.setData subMenuRows
     
     listWindowTitle = Ti.UI.createLabel

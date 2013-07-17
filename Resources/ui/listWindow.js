@@ -3,7 +3,7 @@ var listWindow;
 listWindow = (function() {
 
   function listWindow() {
-    var PrefectureCategory, ShopDataTableView, categoryName, defaultArea, headerLabel, headerPoint, index, listWindowTitle, shopDataTableView, subMenuRow, subMenuRows,
+    var PrefectureCategory, ShopDataTableView, categoryName, defaultArea, favoriteLabel, favoriteRow, headerLabel, headerPoint, index, listWindowTitle, shopDataTableView, subMenuRow, subMenuRows,
       _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
@@ -70,31 +70,36 @@ listWindow = (function() {
     };
     shopDataTableView.refreshTableData(defaultArea.n, defaultArea.c, defaultArea.s);
     this.subMenu.addEventListener('click', function(e) {
-      var arrowImage, categoryName, curretRowIndex　, rowHeight, selectedColor, selectedSubColor, shopData;
+      var FavoriteWindow, arrowImage, categoryName, curretRowIndex　, favoriteWindow, rowHeight, selectedColor, selectedSubColor, shopData;
       categoryName = e.row.categoryName;
-      selectedColor = _this.prefectureColorSet.name[categoryName];
-      selectedSubColor = "#FFF";
-      curretRowIndex　 = e.index;
-      rowHeight = _this.rowHeight;
-      shopData = _this.shopData;
-      arrowImage = _this.arrowImage;
-      _this.arrowImage.hide();
-      return shopData.animate({
-        duration: 400,
-        left: 315
-      }, function() {
-        var arrowImagePosition;
-        shopDataTableView.refreshTableData(categoryName, selectedColor, selectedSubColor);
-        arrowImagePosition = (curretRowIndex + 1) * rowHeight - 55;
-        arrowImage.backgroundColor = selectedColor;
-        arrowImage.top = arrowImagePosition;
+      if (categoryName === "お気に入り") {
+        FavoriteWindow = require("ui/favoriteWindow");
+        return favoriteWindow = new FavoriteWindow();
+      } else {
+        selectedColor = _this.prefectureColorSet.name[categoryName];
+        selectedSubColor = "#FFF";
+        curretRowIndex　 = e.index;
+        rowHeight = _this.rowHeight;
+        shopData = _this.shopData;
+        arrowImage = _this.arrowImage;
+        _this.arrowImage.hide();
         return shopData.animate({
           duration: 400,
-          left: 150
+          left: 300
         }, function() {
-          return arrowImage.show();
+          var arrowImagePosition;
+          shopDataTableView.refreshTableData(categoryName, selectedColor, selectedSubColor);
+          arrowImagePosition = (curretRowIndex + 1) * rowHeight - 55;
+          arrowImage.backgroundColor = selectedColor;
+          arrowImage.top = arrowImagePosition;
+          return shopData.animate({
+            duration: 400,
+            left: 150
+          }, function() {
+            return arrowImage.show();
+          });
         });
-      });
+      }
     });
     PrefectureCategory = this._makePrefectureCategory(this.prefectures);
     subMenuRows = [];
@@ -122,7 +127,6 @@ listWindow = (function() {
         width: 150,
         height: this.rowHeight,
         rowID: index,
-        selectedBackgroundColor: 'transparent',
         backgroundColor: "f3f3f3",
         categoryName: "" + categoryName
       });
@@ -131,6 +135,28 @@ listWindow = (function() {
       subMenuRows.push(subMenuRow);
       index++;
     }
+    favoriteRow = Ti.UI.createTableViewRow({
+      width: 150,
+      height: this.rowHeight,
+      backgroundColor: "f3f3f3",
+      categoryName: "お気に入り"
+    });
+    favoriteLabel = Ti.UI.createLabel({
+      width: 240,
+      height: 40,
+      top: 5,
+      left: 30,
+      textAlign: 'left',
+      color: '#333',
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p',
+        fontWeight: 'bold'
+      },
+      text: "お気に入り"
+    });
+    favoriteRow.add(favoriteLabel);
+    subMenuRows.push(favoriteRow);
     this.subMenu.setData(subMenuRows);
     listWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
