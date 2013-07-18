@@ -31,12 +31,6 @@ mypageTab = Titanium.UI.createTab
   window:mypageWindow
   icon:"ui/image/light_gears.png"
 
-# FavoriteWindow = require("ui/favoriteWindow")
-# favoriteWindow = new FavoriteWindow()
-# favoriteTab = Titanium.UI.createTab
-#   window:favoriteWindow
-#   icon:"ui/image/light_star.png"
-#   title:"お気に入り"
 
 
 ListWindow = require("ui/listWindow")
@@ -46,13 +40,7 @@ listTab = Titanium.UI.createTab
   icon:"ui/image/light_list.png"
 
 
-
-# mainTab = require("ui/mainTab")
-# mainTab = new mainTab()
-# tabGroup.addTab mainTab
-#
 tabGroup.addTab mapTab
 tabGroup.addTab listTab
-# tabGroup.addTab favoriteTab
 tabGroup.addTab mypageTab
 tabGroup.open()
