@@ -81,7 +81,7 @@ mapWindow = (function() {
     });
     refreshLabel = Ti.UI.createLabel({
       backgroundColor: "transparent",
-      color: this.baseColor.backgroundColor,
+      color: "#333",
       width: 28,
       height: 28,
       font: {

@@ -3,7 +3,7 @@ var mypageWindow;
 mypageWindow = (function() {
 
   function mypageWindow() {
-    var ShopDataDetail, button, fb, mypageWindowTitle, shopDataDetail, shopDetailTable, that,
+    var ShopDataDetail, fb, mypageWindowTitle, shopDataDetail, shopDetailTable, that,
       _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
@@ -141,25 +141,6 @@ mypageWindow = (function() {
     if (!fb.loggedIn) {
       fb.authorize();
     }
-    button = Ti.UI.createButton({
-      title: "Facebook auth",
-      top: 30,
-      left: 30
-    });
-    button.addEventListener("click", function(e) {
-      return fb.reauthorize(["read_stream"], "me", function(e) {
-        if (e.success) {
-          return Ti.API.info("If successful, proceed with a publish call");
-        } else {
-          if (e.error) {
-            return alert(e.error);
-          } else {
-            return alert("Unknown result");
-          }
-        }
-      });
-    });
-    button.hide();
     mypageWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
       color: '#333',
@@ -170,7 +151,6 @@ mypageWindow = (function() {
       },
       text: "マイページ"
     });
-    mypageWindow.add(button);
     mypageWindow.add(this.table);
     if (Ti.Platform.osname === 'iphone') {
       mypageWindow.setTitleControl(mypageWindowTitle);
