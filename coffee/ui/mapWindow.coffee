@@ -1,9 +1,9 @@
 class mapWindow
   constructor:() ->
-    keyColor = '#1abc9c'
+    keyColor = "#f9f9f9"
     @baseColor =
       barColor:keyColor
-      backgroundColor:"#f3f3f3"
+      backgroundColor:keyColor
 
       
     ad = require('net.nend')
@@ -25,7 +25,7 @@ class mapWindow
       
     mapWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
-      color:'#f3f3f3'
+      color:"#333"
       font:
         fontSize:18
         fontFamily : 'Rounded M+ 1p'
@@ -83,7 +83,7 @@ class mapWindow
       
     refreshLabel = Ti.UI.createLabel
       backgroundColor:"transparent"
-      color:@baseColor.backgroundColor
+      color:"#333"
       width:28
       height:28
       font:
@@ -138,7 +138,6 @@ class mapWindow
     KloudService =require("model/kloudService")
     kloudService = new KloudService()
     kloudService.placesQuery(latitude,longitude,(data) ->
-      Ti.API.info data
       that.addAnnotations(data)
     )
     
@@ -148,7 +147,7 @@ class mapWindow
     Titanium.Geolocation.getCurrentPosition( (e) ->
       if e.error
         Ti.API.info e.error
-        @activityIndicator.hide()
+        that.activityIndicator.hide()
         return
         
       latitude = e.coords.latitude
