@@ -1,24 +1,64 @@
 class listWindow
   constructor:() ->
+    ActivityIndicator = require("ui/activityIndicator")
+    @activityIndicator = new ActivityIndicator()
     @baseColor =
       barColor:"#f9f9f9"
       backgroundColor:"#f3f3f3"
       keyColor:"#EDAD0B"
       
-    listWindow = Ti.UI.createWindow
+    @listWindow = Ti.UI.createWindow
       title:"リスト"
       barColor:@baseColor.barColor
       backgroundColor: @baseColor.backgroundColor
       tabBarHidden:false
       navBarHidden:false
-    
+      
+      
+    @_createNavbarElement()
+
+    t = Titanium.UI.create2DMatrix().scale(0)    
+    @table = Ti.UI.createTableView
+      backgroundColor:"#f3f3f3"
+      separatorStyle: Titanium.UI.iPhone.TableViewSeparatorStyle.NONE
+      width:160
+      height:'auto'
+      left:150
+      top:20
+      borderColor:"#f3f3f3"
+      borderWidth:2
+      borderRadius:10
+      zIndex:10
+      transform:t
+
+    @table.addEventListener('click',(e) =>
+      that = @
+      that.activityIndicator.show()
+      prefectureName = e.row.prefectureName
+      KloudService = require("model/kloudService")
+      kloudService = new KloudService()
+      kloudService.finsShopDataBy(prefectureName,(items) ->
+        that.activityIndicator.hide()
+        if items.length is 0
+          alert "選択した地域のお店がみつかりません"
+        else
+          Ti.API.info "kloudService success"
+
+          ShopAreaDataWindow = require("ui/shopAreaDataWindow") 
+          new ShopAreaDataWindow(items)
+          
+      )
+      
+    ) # end of tableView Event
+        
     @prefectures = @_loadPrefectures()
-    @rowHeight =  60
+    @rowHeight =  50
     @subMenu = Ti.UI.createTableView
       backgroundColor:"#f3f3f3"
       separatorColor: '#cccccc'
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       width:"auto"
-      height:'auto'
+      height:"auto"
       left:0
       top:0
       zIndex:1
@@ -39,40 +79,13 @@ class listWindow
       "中国・四国":"#FEF7D5"
       "九州・沖縄":"#F9DFD5"
       
-    @arrowImage = Ti.UI.createView
-      width:50
-      height:50
-      left:150
-      top:5
-      borderRadius:5
-      transform:Ti.UI.create2DMatrix().rotate(45)
-      borderColor:"#f3f3f3"
-      borderWidth:1
-      backgroundColor:"#007FB1"
-      zIndex:5
-
-    
-    ShopDataTableView = require('ui/shopDataTableView')
-    shopDataTableView = new ShopDataTableView()
-    @shopData = shopDataTableView.getTable()
-    
-    # listWindowを初めて開いた時にデフォルトで表示するエリアをここで指定
-    #
-    defaultArea =
-      n:"北海道・東北"
-      c:"#3261AB"
-      # s:"#D5E0F1"
-      s:"#FFF"
-      
-    shopDataTableView.refreshTableData(defaultArea.n,defaultArea.c,defaultArea.s)
     
     @subMenu.addEventListener('click',(e)=>
       categoryName = e.row.categoryName
+      that = @
       if categoryName is "お気に入り"
         FavoriteWindow = require("ui/favoriteWindow")
         favoriteWindow = new FavoriteWindow()
-
-        
         
       else
         selectedColor = @prefectureColorSet.name[categoryName]
@@ -80,109 +93,43 @@ class listWindow
         selectedSubColor = "#FFF"
         curretRowIndex　= e.index
 
-        # animateした後のコールバック関数内では@xxxが
+        # animateした後のコールバック関数内では@が
         # 参照できないために以下変数に格納する
-        rowHeight = @rowHeight
-        shopData = @shopData
-        arrowImage = @arrowImage
-        @arrowImage.hide()
-        shopData.animate({
-          duration:400
-          left:300
-        },() ->
-          
-          shopDataTableView.refreshTableData(categoryName,selectedColor,selectedSubColor)
-          # arrowImageの高さの50ずらづだけだとrowの真ん中に位置しないため
-          # 55ずらすことで丁度真ん中に位置する
-          arrowImagePosition = (curretRowIndex+1) * rowHeight - 55
-          arrowImage.backgroundColor = selectedColor
-          arrowImage.top = arrowImagePosition
-
-          shopData.animate({
+        table = @table
+        t1 = Titanium.UI.create2DMatrix().scale(0.0)
+        a = Titanium.UI.createAnimation()
+        a.transform = t1
+        a.duration = 400
+        a.addEventListener('complete',() ->
+          t2 = Titanium.UI.create2DMatrix()
+          table.animate
+            transform:t2
             duration:400
-            left:150
-          },() ->
-            arrowImage.show()
-          )
-        ) # end of animate()
+        )  
+        table.animate(a,()->
+          that.refreshTableData(categoryName,selectedColor,selectedSubColor)
+        )
+
     )
 
     PrefectureCategory = @_makePrefectureCategory(@prefectures)
     subMenuRows = []
-    index = 0
+
     for categoryName of PrefectureCategory
+      row = @_createSubMenuRow("#{categoryName}")
+      subMenuRows.push row
+
       
-      headerPoint = Ti.UI.createView
-        width:'10sp'
-        height:"50sp"        
-        top:5
-        left:10
-        backgroundColor:@prefectureColorSet.name[categoryName]
-
-      headerLabel = Ti.UI.createLabel
-        text: "#{categoryName}"
-        top:15
-        left:30
-        color:"#222"
-        font:
-          fontSize:'18sp'
-          fontFamily:'Rounded M+ 1p'
-          fontWeight:'bold'
-            
-      subMenuRow = Ti.UI.createTableViewRow
-        width:150
-        height:@rowHeight
-        rowID:index
-        backgroundColor:"f3f3f3"
-        categoryName:"#{categoryName}"
-
-            
-      subMenuRow.add headerPoint
-      subMenuRow.add headerLabel
-      subMenuRows.push subMenuRow
-      index++
-
-    favoriteRow = Ti.UI.createTableViewRow
-      width:150
-      height:@rowHeight
-      backgroundColor:"f3f3f3"
-      categoryName:"お気に入り"
-
-    favoriteLabel = Ti.UI.createLabel
-      width:240
-      height:40
-      top:5
-      left:30
-      textAlign:'left'
-      color:'#333'
-      font:
-        fontSize:18
-        fontFamily : 'Rounded M+ 1p'
-        fontWeight:'bold'
-      text:"お気に入り"
-      
-    favoriteRow.add favoriteLabel
+    favoriteRow = @_createFavoriteRow()
     subMenuRows.push favoriteRow
     
     @subMenu.setData subMenuRows
+
+    @listWindow.add @subMenu
+    @listWindow.add @table
+    @listWindow.add @activityIndicator
     
-    listWindowTitle = Ti.UI.createLabel
-      textAlign: 'center'
-      color:'#333'
-      font:
-        fontSize:'18sp'
-        fontFamily : 'Rounded M+ 1p'
-        fontWeight:'bold'
-      text:"リストから探す"
-
-    if Ti.Platform.osname is 'iphone'
-      listWindow.setTitleControl listWindowTitle
-      
-
-    listWindow.add @subMenu
-    listWindow.add @shopData
-    listWindow.add @arrowImage
-    return listWindow
+    return @listWindow
             
   _loadPrefectures:() ->
     prefectures = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/prefectures.json")
@@ -201,5 +148,117 @@ class listWindow
       return row.area
     )
     return result
+  _createNavbarElement:() ->
+    listWindowTitle = Ti.UI.createLabel
+      textAlign: 'center'
+      color:'#333'
+      font:
+        fontSize:18
+        fontFamily : 'Rounded M+ 1p'
+        fontWeight:'bold'
+      text:"リストから探す"
+
+    if Ti.Platform.osname is 'iphone'
+      @listWindow.setTitleControl listWindowTitle
+      
+    return
+    
+  _createFavoriteRow:() ->
+    favoriteRow = Ti.UI.createTableViewRow
+      width:150
+      height:@rowHeight
+      backgroundColor:"f3f3f3"
+      categoryName:"お気に入り"
+      hasChild:true
+      
+    favoriteIcon = Ti.UI.createLabel
+      width:20
+      left:10
+      top:5
+      color:"#FFE600"
+      font:
+        fontSize: 24
+        fontFamily:'LigatureSymbols'
+      text:String.fromCharCode("0xe121")
+      
+    
+    favoriteLabel = Ti.UI.createLabel
+      width:240
+      height:24
+      top:5
+      left:30
+      textAlign:'left'
+      color:'#333'
+      font:
+        fontSize:16
+        fontFamily : 'Rounded M+ 1p'
+        fontWeight:'bold'
+      text:"お気に入り"
+      
+    favoriteRow.add favoriteIcon
+    favoriteRow.add favoriteLabel
+    return favoriteRow
+    
+  _createSubMenuRow:(categoryName) ->
+    headerPoint = Ti.UI.createView
+      width:10
+      height:30
+      top:5
+      left:10
+      backgroundColor:@prefectureColorSet.name[categoryName]
+
+    headerLabel = Ti.UI.createLabel
+      text: categoryName
+      top:5
+      left:30
+      color:"#222"
+      font:
+        fontSize:16
+        fontFamily:'Rounded M+ 1p'
+        fontWeight:'bold'
+          
+    subMenuRow = Ti.UI.createTableViewRow
+      width:'auto'
+      height:@rowHeight
+      backgroundColor:"f3f3f3"
+      categoryName:categoryName
+
+    subMenuRow.add headerPoint
+    subMenuRow.add headerLabel
+    return subMenuRow
+    
+  refreshTableData: (categoryName,selectedColor,selectedSubColor) =>        
+    rows = []
+    PrefectureCategory = @_makePrefectureCategory(@prefectures)
+    prefectureNameList = PrefectureCategory[categoryName]
+      
+    # 都道府県のエリア毎に都道府県のrowを生成
+    for _items in prefectureNameList
+      prefectureRow = Ti.UI.createTableViewRow
+        width:'auto'
+        height:40
+        hasChild:true
+        prefectureName:"#{_items.name}"
+
+      textLabel = Ti.UI.createLabel
+        width:240
+        height:40
+        top:5
+        left:30
+        textAlign:'left'
+        color:'#333'
+        font:
+          fontSize:16
+          fontFamily : 'Rounded M+ 1p'
+          fontWeight:'bold'
+        text:"#{_items.name}"
         
+      prefectureRow.add textLabel
+      rows.push prefectureRow
+
+            
+    @table.borderColor = selectedColor
+    @table.backgroundColor = selectedSubColor
+    return @table.setData rows
+    
 module.exports = listWindow
