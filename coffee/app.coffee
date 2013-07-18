@@ -4,7 +4,7 @@ Cloud = require('ti.cloud')
 tabGroup = Ti.UI.createTabGroup
   tabsBackgroundColor:"#f9f9f9"
   shadowImage:"ui/image/shadowimage.png"
-  tabsBackgroundImage:"ui/image/tabbarLightYellow.png"
+  tabsBackgroundImage:"ui/image/tabbar.png"
   activeTabBackgroundImage:"ui/image/activetab.png"  
   activeTabIconTint:"#fffBD5"
 
@@ -39,12 +39,12 @@ mypageTab = Titanium.UI.createTab
 #   title:"お気に入り"
 
 
-# ListWindow = require("ui/listWindow")
-# listWindow = new ListWindow()
-# listTab = Titanium.UI.createTab
-#   window:listWindow
-#   icon:"ui/image/light_list.png"
-#   title:"お店一覧"
+ListWindow = require("ui/listWindow")
+listWindow = new ListWindow()
+listTab = Titanium.UI.createTab
+  window:listWindow
+  icon:"ui/image/light_list.png"
+
 
 
 # mainTab = require("ui/mainTab")
@@ -52,7 +52,7 @@ mypageTab = Titanium.UI.createTab
 # tabGroup.addTab mainTab
 #
 tabGroup.addTab mapTab
-# tabGroup.addTab listTab
+tabGroup.addTab listTab
 # tabGroup.addTab favoriteTab
 tabGroup.addTab mypageTab
 tabGroup.open()

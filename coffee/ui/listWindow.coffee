@@ -6,11 +6,11 @@ class listWindow
       keyColor:"#EDAD0B"
       
     listWindow = Ti.UI.createWindow
-      title:"リストから探す"
+      title:"リスト"
       barColor:@baseColor.barColor
       backgroundColor: @baseColor.backgroundColor
       tabBarHidden:false
-      navBarHidden:true
+      navBarHidden:false
     
     @prefectures = @_loadPrefectures()
     @rowHeight =  60
@@ -21,7 +21,7 @@ class listWindow
       height:'auto'
       left:0
       top:0
-      zIndex:5
+      zIndex:1
       
     @prefectureColorSet = "name":
       "北海道・東北":"#3261AB"
@@ -38,47 +38,73 @@ class listWindow
       "近畿":"#FFFBD5"
       "中国・四国":"#FEF7D5"
       "九州・沖縄":"#F9DFD5"
-    @arrowImage = Ti.UI.createImageView
+      
+    @arrowImage = Ti.UI.createView
       width:50
       height:50
       left:150
-      top:35
+      top:5
       borderRadius:5
       transform:Ti.UI.create2DMatrix().rotate(45)
       borderColor:"#f3f3f3"
       borderWidth:1
       backgroundColor:"#007FB1"
-      
+      zIndex:5
+
+    
     ShopDataTableView = require('ui/shopDataTableView')
     shopDataTableView = new ShopDataTableView()
-    shopData = shopDataTableView.getTable()
+    @shopData = shopDataTableView.getTable()
+    
+    # listWindowを初めて開いた時にデフォルトで表示するエリアをここで指定
+    #
+    defaultArea =
+      n:"北海道・東北"
+      c:"#3261AB"
+      # s:"#D5E0F1"
+      s:"#FFF"
+      
+    shopDataTableView.refreshTableData(defaultArea.n,defaultArea.c,defaultArea.s)
+    
     @subMenu.addEventListener('click',(e)=>
       categoryName = e.row.categoryName
-      selectedColor = @prefectureColorSet.name[categoryName]
-      selectedSubColor = @prefectureSubColorSet.name[categoryName]
-      curretRowIndex　= e.index
-      # shopData.animateした後のコールバック関数内では@rowHeightが
-      # 参照できないために以下変数に格納する
-      rowHeight = @rowHeight
-      @arrowImage.hide()
-      shopData.animate({
-        duration:400
-        left:300
-      },() ->
-        shopData.refreshTableData(categoryName,selectedColor,selectedSubColor)
-        # arrowImageの高さの50ずらづだけだとrowの真ん中に位置しないため
-        # 55ずらすことで丁度真ん中に位置する
-        arrowImagePosition = (curretRowIndex+1) * rowHeight - 55
-        @arrowImage.backgroundColor = selectedColor
-        @arrowImage.top = arrowImagePosition
+      if categoryName is "お気に入り"
+        FavoriteWindow = require("ui/favoriteWindow")
+        favoriteWindow = new FavoriteWindow()
 
+        
+        
+      else
+        selectedColor = @prefectureColorSet.name[categoryName]
+        # selectedSubColor = @prefectureSubColorSet.name[categoryName]
+        selectedSubColor = "#FFF"
+        curretRowIndex　= e.index
+
+        # animateした後のコールバック関数内では@xxxが
+        # 参照できないために以下変数に格納する
+        rowHeight = @rowHeight
+        shopData = @shopData
+        arrowImage = @arrowImage
+        @arrowImage.hide()
         shopData.animate({
           duration:400
-          left:150
+          left:300
         },() ->
-          arrowImage.show()
-        )
-      )
+          
+          shopDataTableView.refreshTableData(categoryName,selectedColor,selectedSubColor)
+          # arrowImageの高さの50ずらづだけだとrowの真ん中に位置しないため
+          # 55ずらすことで丁度真ん中に位置する
+          arrowImagePosition = (curretRowIndex+1) * rowHeight - 55
+          arrowImage.backgroundColor = selectedColor
+          arrowImage.top = arrowImagePosition
+
+          shopData.animate({
+            duration:400
+            left:150
+          },() ->
+            arrowImage.show()
+          )
+        ) # end of animate()
     )
 
     PrefectureCategory = @_makePrefectureCategory(@prefectures)
@@ -107,7 +133,6 @@ class listWindow
         width:150
         height:@rowHeight
         rowID:index
-        selectedColor:'transparent'
         backgroundColor:"f3f3f3"
         categoryName:"#{categoryName}"
 
@@ -116,7 +141,29 @@ class listWindow
       subMenuRow.add headerLabel
       subMenuRows.push subMenuRow
       index++
+
+    favoriteRow = Ti.UI.createTableViewRow
+      width:150
+      height:@rowHeight
+      backgroundColor:"f3f3f3"
+      categoryName:"お気に入り"
+
+    favoriteLabel = Ti.UI.createLabel
+      width:240
+      height:40
+      top:5
+      left:30
+      textAlign:'left'
+      color:'#333'
+      font:
+        fontSize:18
+        fontFamily : 'Rounded M+ 1p'
+        fontWeight:'bold'
+      text:"お気に入り"
       
+    favoriteRow.add favoriteLabel
+    subMenuRows.push favoriteRow
+    
     @subMenu.setData subMenuRows
     
     listWindowTitle = Ti.UI.createLabel
@@ -133,7 +180,8 @@ class listWindow
       
 
     listWindow.add @subMenu
-    
+    listWindow.add @shopData
+    listWindow.add @arrowImage
     return listWindow
             
   _loadPrefectures:() ->

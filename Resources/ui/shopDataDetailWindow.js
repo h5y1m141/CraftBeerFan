@@ -4,10 +4,10 @@ shopDataDetailWindow = (function() {
 
   function shopDataDetailWindow(data) {
     var ShopDataDetail, activeTab, keyColor, shopDataDetail, shopDataTable;
-    keyColor = '#1abc9c';
+    keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
-      backgroundColor: "#f3f3f3"
+      backgroundColor: keyColor
     };
     this.shopDataDetailWindow = Ti.UI.createWindow({
       title: "近くのお店",
@@ -31,7 +31,7 @@ shopDataDetailWindow = (function() {
     var backButton, shopDataDetailWindowTitle,
       _this = this;
     backButton = Titanium.UI.createButton({
-      backgroundImage: "ui/image/back-button.png",
+      backgroundImage: "ui/image/backButton.png",
       width: 44,
       height: 44
     });
@@ -43,7 +43,7 @@ shopDataDetailWindow = (function() {
     this.shopDataDetailWindow.leftNavButton = backButton;
     shopDataDetailWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
-      color: '#f3f3f3',
+      color: '#333',
       font: {
         fontSize: 18,
         fontFamily: 'Rounded M+ 1p',

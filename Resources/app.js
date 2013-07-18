@@ -1,11 +1,11 @@
-var Cloud, MapWindow, MypageWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
+var Cloud, ListWindow, MapWindow, MypageWindow, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
 
 Cloud = require('ti.cloud');
 
 tabGroup = Ti.UI.createTabGroup({
   tabsBackgroundColor: "#f9f9f9",
   shadowImage: "ui/image/shadowimage.png",
-  tabsBackgroundImage: "ui/image/tabbarLightYellow.png",
+  tabsBackgroundImage: "ui/image/tabbar.png",
   activeTabBackgroundImage: "ui/image/activetab.png",
   activeTabIconTint: "#fffBD5"
 });
@@ -38,7 +38,18 @@ mypageTab = Titanium.UI.createTab({
   icon: "ui/image/light_gears.png"
 });
 
+ListWindow = require("ui/listWindow");
+
+listWindow = new ListWindow();
+
+listTab = Titanium.UI.createTab({
+  window: listWindow,
+  icon: "ui/image/light_list.png"
+});
+
 tabGroup.addTab(mapTab);
+
+tabGroup.addTab(listTab);
 
 tabGroup.addTab(mypageTab);
 

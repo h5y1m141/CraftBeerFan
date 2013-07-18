@@ -132,20 +132,20 @@ class mypageWindow
       alert 'logout'
     )
     fb.authorize()  unless fb.loggedIn
-    button = Ti.UI.createButton
-      title: "Facebook auth"
-      top:30
-      left:30
-    button.addEventListener "click", (e) ->
-      fb.reauthorize ["read_stream"], "me", (e) ->
-        if e.success
-          Ti.API.info "If successful, proceed with a publish call"
-        else
-          if e.error
-            alert e.error
-          else
-            alert "Unknown result"
-    button.hide()      
+    # button = Ti.UI.createButton
+    #   title: "Facebook auth"
+    #   top:30
+    #   left:30
+    # button.addEventListener "click", (e) ->
+    #   fb.reauthorize ["read_stream"], "me", (e) ->
+    #     if e.success
+    #       Ti.API.info "If successful, proceed with a publish call"
+    #     else
+    #       if e.error
+    #         alert e.error
+    #       else
+    #         alert "Unknown result"
+    # button.hide()      
 
     mypageWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
@@ -156,7 +156,7 @@ class mypageWindow
         fontWeight:'bold'
       text:"マイページ"
 
-    mypageWindow.add button
+    # mypageWindow.add button
     mypageWindow.add @table
     
     if Ti.Platform.osname is 'iphone'

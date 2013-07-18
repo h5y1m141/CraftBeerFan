@@ -16,135 +16,21 @@ class shopDataTableView
     @shopData = @_loadData()
 
     @table.addEventListener('click',(e) =>
-      that = @
-      opendFlg = e.row.opendFlg
-      prefectureNameList = e.row.prefectureNameList
-      curretRowIndex = e.index
-      if opendFlg is false
-        @_showSubMenu(prefectureNameList,curretRowIndex)
-          
-        e.row.opendFlg = true          
-      else if opendFlg is true
-        @_hideSubMenu(curretRowIndex,prefectureNameList.length)
-        e.row.opendFlg = false
-      else
 
-        prefectureName = e.row.prefectureName
-        shopDataList = @_groupingShopDataby(prefectureName)
-        
-        shopDataRows = []
-        shopDataRowTable = Ti.UI.createTableView
-          width:'auto'
-          height:'auto'
-          
-        shopDataRowTable.addEventListener('click',(e) ->
-
-          data =
-            name:e.row.placeData.name
-            shopAddress:e.row.placeData.address
-            phoneNumber:e.row.placeData.phone_number
-            latitude:e.row.placeData.latitude
-            longitude:e.row.placeData.longitude
-          ShopDataDetail = require("ui/shopDataDetail")
-          shopDataDetail = new ShopDataDetail()
-          shopDataDetail.setData(data)
-          shopDataDetail.show()
-          
-          _annotation = Titanium.Map.createAnnotation
-            latitude: e.row.placeData.latitude
-            longitude: e.row.placeData.longitude
-            pincolor:Titanium.Map.ANNOTATION_PURPLE
-            animate: true
-          
-          _mapView = Titanium.Map.createView
-            mapType: Titanium.Map.STANDARD_TYPE
-            region: 
-              latitude:e.row.placeData.latitude
-              longitude:e.row.placeData.longitude
-              latitudeDelta:0.005
-              longitudeDelta:0.005
-            animate:true
-            regionFit:true
-            userLocation:true
-            zIndex:0
-            top:100
-            left:0
-            height:250
-            width:'auto'
-    
-          
-          baseColor =
-            barColor:"#f9f9f9"
-            backgroundColor:"#f9f9f9"
-            keyColor:"#EDAD0B"
-
-          _win = Ti.UI.createWindow
-            barColor:baseColor.barColor
-            backgroundColor: baseColor.backgroundColor
-          
-          backButton = Titanium.UI.createButton
-            backgroundImage:"ui/image/backButton.png"
-            width:44
-            height:44
-            
-          backButton.addEventListener('click',(e) ->
-            return _win.close({animated:true})
-          )
-          _win.leftNavButton = backButton
-          _win.add shopDataDetail.getTable()
-          _mapView.addAnnotation _annotation
-          _win.add _mapView
-
-          activeTab = Ti.API._activeTab
-          activeTab.open(_win)
-
-          
-        )
-        if typeof shopDataList[prefectureName] is "undefined"
+      prefectureName = e.row.prefectureName
+      KloudService = require("model/kloudService")
+      kloudService = new KloudService()
+      kloudService.finsShopDataBy(prefectureName,(items) ->
+        if items.length is 0
           alert "選択した地域のお店がみつかりません"
         else
-        
-          for _items in shopDataList[prefectureName]
-            Ti.API.info "お店の名前:#{_items.name}"
-            shopDataRow = @_createShopDataRow(_items)
-            shopDataRows.push(shopDataRow)
-            
-          shopDataRowTable.startLayout()
-          shopDataRowTable.setData(shopDataRows)
-          shopDataRowTable.finishLayout()
-          
-          shopAreaDataWindowTitle = Ti.UI.createLabel
-            textAlign: 'center'
-            color:'#333'
-            font:
-              fontSize:18
-              fontFamily : 'Rounded M+ 1p'
-              fontWeight:'bold'
-            text:"地域別のお店情報"
+          Ti.API.info "kloudService success"
 
-              
-
-          backButton = Titanium.UI.createButton
-            backgroundImage:"ui/image/backButton.png"
-            width:44
-            height:44
-          backButton.addEventListener('click',(e) ->
-            return shopWindow.close({animated:true})
-          )      
-          shopWindow = Ti.UI.createWindow
-            title: "地域別のお店情報"
-            barColor:"#f9f9f9"
-            backgroundColor: "#343434"
-          shopWindow.leftNavButton = backButton
-
+          ShopAreaDataWindow = require("ui/shopAreaDataWindow") 
+          shopAreaDataWindow = new ShopAreaDataWindow(items)
           
-          if Ti.Platform.osname is 'iphone'
-            shopWindow.setTitleControl shopAreaDataWindowTitle
-          
-          shopWindow.add shopDataRowTable
-          activeTab = Ti.API._activeTab
-          activeTab.open(shopWindow )
-          return
+      )
+      
     ) # end of tableView Event
     
     return
@@ -170,6 +56,7 @@ class shopDataTableView
         height:40
         top:5
         left:30
+        textAlign:'left'
         color:'#333'
         font:
           fontSize:18
@@ -179,7 +66,8 @@ class shopDataTableView
         
       prefectureRow.add textLabel
       rows.push prefectureRow
-      
+
+            
     @table.borderColor = selectedColor
     @table.backgroundColor = selectedSubColor
     @table.setData rows

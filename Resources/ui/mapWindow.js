@@ -5,10 +5,10 @@ mapWindow = (function() {
   function mapWindow() {
     var ActivityIndicator, Config, ad, adView, config, keyColor, mapWindowTitle, nend, platform, refreshLabel,
       _this = this;
-    keyColor = '#1abc9c';
+    keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
-      backgroundColor: "#f3f3f3"
+      backgroundColor: keyColor
     };
     ad = require('net.nend');
     Config = require("model/loadConfig");
@@ -27,7 +27,7 @@ mapWindow = (function() {
     });
     mapWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
-      color: '#f3f3f3',
+      color: "#333",
       font: {
         fontSize: 18,
         fontFamily: 'Rounded M+ 1p',
@@ -81,7 +81,7 @@ mapWindow = (function() {
     });
     refreshLabel = Ti.UI.createLabel({
       backgroundColor: "transparent",
-      color: this.baseColor.backgroundColor,
+      color: "#333",
       width: 28,
       height: 28,
       font: {
@@ -132,7 +132,6 @@ mapWindow = (function() {
     KloudService = require("model/kloudService");
     kloudService = new KloudService();
     return kloudService.placesQuery(latitude, longitude, function(data) {
-      Ti.API.info(data);
       return that.addAnnotations(data);
     });
   };
@@ -145,7 +144,7 @@ mapWindow = (function() {
       var latitude, longitude;
       if (e.error) {
         Ti.API.info(e.error);
-        this.activityIndicator.hide();
+        that.activityIndicator.hide();
         return;
       }
       latitude = e.coords.latitude;

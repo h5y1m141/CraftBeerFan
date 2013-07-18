@@ -7,10 +7,10 @@ class shopDataDetailWindow
     #   phoneNumber:"お店の電話番号"
     #   latitude:
     #   longitude:
-    keyColor = '#1abc9c'    
+    keyColor = "#f9f9f9"
     @baseColor =
       barColor:keyColor
-      backgroundColor:"#f3f3f3"
+      backgroundColor:keyColor
 
       
     @shopDataDetailWindow = Ti.UI.createWindow
@@ -36,7 +36,7 @@ class shopDataDetailWindow
     
   _createNavbarElement:() ->
     backButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/back-button.png"
+      backgroundImage:"ui/image/backButton.png"
       width:44
       height:44
       
@@ -48,7 +48,7 @@ class shopDataDetailWindow
       
     shopDataDetailWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
-      color:'#f3f3f3'
+      color:'#333'
       font:
         fontSize:18
         fontFamily : 'Rounded M+ 1p'

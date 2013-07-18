@@ -3,7 +3,7 @@ var listWindow;
 listWindow = (function() {
 
   function listWindow() {
-    var PrefectureCategory, ShopDataTableView, categoryName, headerLabel, headerPoint, index, listWindowTitle, shopData, shopDataTableView, subMenuRow, subMenuRows,
+    var PrefectureCategory, ShopDataTableView, categoryName, defaultArea, favoriteLabel, favoriteRow, headerLabel, headerPoint, index, listWindowTitle, shopDataTableView, subMenuRow, subMenuRows,
       _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
@@ -11,11 +11,11 @@ listWindow = (function() {
       keyColor: "#EDAD0B"
     };
     listWindow = Ti.UI.createWindow({
-      title: "リストから探す",
+      title: "リスト",
       barColor: this.baseColor.barColor,
       backgroundColor: this.baseColor.backgroundColor,
       tabBarHidden: false,
-      navBarHidden: true
+      navBarHidden: false
     });
     this.prefectures = this._loadPrefectures();
     this.rowHeight = 60;
@@ -26,7 +26,7 @@ listWindow = (function() {
       height: 'auto',
       left: 0,
       top: 0,
-      zIndex: 5
+      zIndex: 1
     });
     this.prefectureColorSet = {
       "name": {
@@ -48,44 +48,58 @@ listWindow = (function() {
         "九州・沖縄": "#F9DFD5"
       }
     };
-    this.arrowImage = Ti.UI.createImageView({
+    this.arrowImage = Ti.UI.createView({
       width: 50,
       height: 50,
       left: 150,
-      top: 35,
+      top: 5,
       borderRadius: 5,
       transform: Ti.UI.create2DMatrix().rotate(45),
       borderColor: "#f3f3f3",
       borderWidth: 1,
-      backgroundColor: "#007FB1"
+      backgroundColor: "#007FB1",
+      zIndex: 5
     });
     ShopDataTableView = require('ui/shopDataTableView');
     shopDataTableView = new ShopDataTableView();
-    shopData = shopDataTableView.getTable();
+    this.shopData = shopDataTableView.getTable();
+    defaultArea = {
+      n: "北海道・東北",
+      c: "#3261AB",
+      s: "#FFF"
+    };
+    shopDataTableView.refreshTableData(defaultArea.n, defaultArea.c, defaultArea.s);
     this.subMenu.addEventListener('click', function(e) {
-      var categoryName, curretRowIndex　, rowHeight, selectedColor, selectedSubColor;
+      var FavoriteWindow, arrowImage, categoryName, curretRowIndex　, favoriteWindow, rowHeight, selectedColor, selectedSubColor, shopData;
       categoryName = e.row.categoryName;
-      selectedColor = _this.prefectureColorSet.name[categoryName];
-      selectedSubColor = _this.prefectureSubColorSet.name[categoryName];
-      curretRowIndex　 = e.index;
-      rowHeight = _this.rowHeight;
-      _this.arrowImage.hide();
-      return shopData.animate({
-        duration: 400,
-        left: 300
-      }, function() {
-        var arrowImagePosition;
-        shopData.refreshTableData(categoryName, selectedColor, selectedSubColor);
-        arrowImagePosition = (curretRowIndex + 1) * rowHeight - 55;
-        this.arrowImage.backgroundColor = selectedColor;
-        this.arrowImage.top = arrowImagePosition;
+      if (categoryName === "お気に入り") {
+        FavoriteWindow = require("ui/favoriteWindow");
+        return favoriteWindow = new FavoriteWindow();
+      } else {
+        selectedColor = _this.prefectureColorSet.name[categoryName];
+        selectedSubColor = "#FFF";
+        curretRowIndex　 = e.index;
+        rowHeight = _this.rowHeight;
+        shopData = _this.shopData;
+        arrowImage = _this.arrowImage;
+        _this.arrowImage.hide();
         return shopData.animate({
           duration: 400,
-          left: 150
+          left: 300
         }, function() {
-          return arrowImage.show();
+          var arrowImagePosition;
+          shopDataTableView.refreshTableData(categoryName, selectedColor, selectedSubColor);
+          arrowImagePosition = (curretRowIndex + 1) * rowHeight - 55;
+          arrowImage.backgroundColor = selectedColor;
+          arrowImage.top = arrowImagePosition;
+          return shopData.animate({
+            duration: 400,
+            left: 150
+          }, function() {
+            return arrowImage.show();
+          });
         });
-      });
+      }
     });
     PrefectureCategory = this._makePrefectureCategory(this.prefectures);
     subMenuRows = [];
@@ -113,7 +127,6 @@ listWindow = (function() {
         width: 150,
         height: this.rowHeight,
         rowID: index,
-        selectedColor: 'transparent',
         backgroundColor: "f3f3f3",
         categoryName: "" + categoryName
       });
@@ -122,6 +135,28 @@ listWindow = (function() {
       subMenuRows.push(subMenuRow);
       index++;
     }
+    favoriteRow = Ti.UI.createTableViewRow({
+      width: 150,
+      height: this.rowHeight,
+      backgroundColor: "f3f3f3",
+      categoryName: "お気に入り"
+    });
+    favoriteLabel = Ti.UI.createLabel({
+      width: 240,
+      height: 40,
+      top: 5,
+      left: 30,
+      textAlign: 'left',
+      color: '#333',
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p',
+        fontWeight: 'bold'
+      },
+      text: "お気に入り"
+    });
+    favoriteRow.add(favoriteLabel);
+    subMenuRows.push(favoriteRow);
     this.subMenu.setData(subMenuRows);
     listWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
@@ -137,6 +172,8 @@ listWindow = (function() {
       listWindow.setTitleControl(listWindowTitle);
     }
     listWindow.add(this.subMenu);
+    listWindow.add(this.shopData);
+    listWindow.add(this.arrowImage);
     return listWindow;
   }
 
