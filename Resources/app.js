@@ -1,6 +1,8 @@
-var Cloud, ListWindow, MapWindow, MypageWindow, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
+var Cloud, ListWindow, MapWindow, MypageWindow, NappSlideMenu, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
 
 Cloud = require('ti.cloud');
+
+NappSlideMenu = require('dk.napp.slidemenu');
 
 tabGroup = Ti.UI.createTabGroup({
   tabsBackgroundColor: "#f9f9f9",

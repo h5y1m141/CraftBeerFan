@@ -1,5 +1,5 @@
 Cloud = require('ti.cloud')
-
+NappSlideMenu = require('dk.napp.slidemenu')
 
 tabGroup = Ti.UI.createTabGroup
   tabsBackgroundColor:"#f9f9f9"
