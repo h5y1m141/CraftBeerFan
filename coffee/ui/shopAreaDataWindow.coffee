@@ -1,5 +1,6 @@
 class shopAreaDataWindow
   constructor:(items) ->
+
     keyColor = "#f9f9f9"
     @baseColor =
       barColor:keyColor
@@ -70,12 +71,30 @@ class shopAreaDataWindow
     return    
 
   _createShopDataRow:(placeData) ->
+    
+    if placeData.shopFlg is "true"
+      iconImage = Ti.UI.createImageView
+        image:"ui/image/bottle.png"
+        left:5
+        width:20
+        height:30
+        top:5      
+
+    else
+      iconImage = Ti.UI.createImageView
+        image:"ui/image/tumblrIcon.png"
+        left:5
+        width:20
+        height:30
+        top:5      
+
+      
 
     titleLabel = Ti.UI.createLabel
       width:240
       height:30
       top:5
-      left:5
+      left:40
       color:'#333'
       font:
         fontSize:18
@@ -87,7 +106,7 @@ class shopAreaDataWindow
       width:240
       height:30
       top:30
-      left:20
+      left:40
       color:'#444'
       font:
         fontSize:14
@@ -105,6 +124,7 @@ class shopAreaDataWindow
       
     row.add titleLabel
     row.add addressLabel
+    row.add iconImage
 
     return row
 
