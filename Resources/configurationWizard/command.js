@@ -45,10 +45,6 @@ Command = (function() {
     var _this = this;
     this._setValue(selectedNumber);
     this._buttonShowFlg();
-    this.items.backBtn.title = "前";
-    this.items.nextBtn.title = "次";
-    this.items.startPointBtn.title = "最初";
-    this.items.endPointBtn.title = "最後";
     this.items.nextBtn.addEventListener('click', function(e) {
       if (e.source.className !== null) {
         return _this.moveNext(e.source.className);
@@ -59,26 +55,8 @@ Command = (function() {
         return _this.moveBack(e.source.className);
       }
     });
-    this.items.startPointBtn.addEventListener('click', function(e) {
-      return _this.moveBack(0);
-    });
-    this.items.endPointBtn.addEventListener('click', function(e) {
-      var lastPoint;
-      lastPoint = _this.menuList.length;
-      return _this.moveBack(lastPoint - 1);
-    });
-    if (this.items.backBtn.title !== null) {
-      this.items.win.add(this.items.startPointBtn);
-    }
-    if (this.items.backBtn.title !== null) {
-      this.items.win.add(this.items.backBtn);
-    }
-    if (this.items.nextBtn.title !== null) {
-      this.items.win.add(this.items.nextBtn);
-    }
-    if (this.items.nextBtn.title !== null) {
-      this.items.win.add(this.items.endPointBtn);
-    }
+    this.items.win.add(this.items.backBtn);
+    this.items.win.add(this.items.nextBtn);
     this.items.currentView.add(this.items.label);
     this.items.win.add(this.items.currentView);
     this.items.win.add(this.items.nextView);
@@ -89,23 +67,22 @@ Command = (function() {
     this.items.label.text = this.menuList[selectedNumber].description;
     this.items.nextBtn.className = this.menuList[selectedNumber].nextCommand;
     this.items.backBtn.className = this.menuList[selectedNumber].backCommand;
+    if (this.menuList[selectedNumber].backCommand === 3) {
+      this.items.currentView.add(this.items.endPointBtn);
+    }
     return true;
   };
 
   Command.prototype._buttonShowFlg = function() {
     if (this.items.nextBtn.className === null) {
       this.items.nextBtn.hide();
-      this.items.endPointBtn.hide();
     } else {
       this.items.nextBtn.show();
-      this.items.endPointBtn.show();
     }
     if (this.items.backBtn.className === null) {
-      this.items.backBtn.hide();
-      return this.items.startPointBtn.hide();
+      return this.items.backBtn.hide();
     } else {
-      this.items.backBtn.show();
-      return this.items.startPointBtn.show();
+      return this.items.backBtn.show();
     }
   };
 

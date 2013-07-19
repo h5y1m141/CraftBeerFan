@@ -39,10 +39,6 @@ class Command
   execute:(selectedNumber) ->
     @_setValue(selectedNumber)
     @_buttonShowFlg()
-    @items.backBtn.title = "前"
-    @items.nextBtn.title = "次"
-    @items.startPointBtn.title = "最初"
-    @items.endPointBtn.title = "最後"   
 
 
     @items.nextBtn.addEventListener('click',(e) =>
@@ -55,20 +51,10 @@ class Command
         @moveBack(e.source.className)
     )
 
-    @items.startPointBtn.addEventListener('click',(e) =>
-      @moveBack(0)
-    )
 
-    @items.endPointBtn.addEventListener('click',(e) =>
-      lastPoint = @menuList.length
-      @moveBack(lastPoint-1)
-    )
-    
-    
-    @items.win.add @items.startPointBtn unless @items.backBtn.title is null
-    @items.win.add @items.backBtn unless @items.backBtn.title is null
-    @items.win.add @items.nextBtn unless @items.nextBtn.title is null
-    @items.win.add @items.endPointBtn unless @items.nextBtn.title is null
+    @items.win.add @items.backBtn # unless @items.backBtn.className is null
+    @items.win.add @items.nextBtn # unless @items.nextBtn.className is null
+
     
     @items.currentView.add @items.label
     
@@ -84,24 +70,22 @@ class Command
     @items.nextBtn.className = @menuList[selectedNumber].nextCommand
     @items.backBtn.className = @menuList[selectedNumber].backCommand
     
+    if @menuList[selectedNumber].backCommand is 3
+      @items.currentView.add @items.endPointBtn
+      
     return true
     
   _buttonShowFlg:() ->
     
     if @items.nextBtn.className is null
       @items.nextBtn.hide()
-      @items.endPointBtn.hide()
     else 
       @items.nextBtn.show()
-      @items.endPointBtn.show()
       
     if @items.backBtn.className is null
       @items.backBtn.hide()
-      @items.startPointBtn.hide()
+
     else 
       @items.backBtn.show()
-      @items.startPointBtn.show()      
-
- 
 
 module.exports = Command
