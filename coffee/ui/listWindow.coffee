@@ -43,7 +43,9 @@ class listWindow
           alert "選択した地域のお店がみつかりません"
         else
           Ti.API.info "kloudService success"
-
+          items.sort( (a, b) ->
+            (if a.shopAddress > b.shopAddress then -1 else 1)
+          )
           ShopAreaDataWindow = require("ui/shopAreaDataWindow") 
           new ShopAreaDataWindow(items)
           

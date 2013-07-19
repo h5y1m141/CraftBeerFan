@@ -51,6 +51,13 @@ listWindow = (function() {
           return alert("選択した地域のお店がみつかりません");
         } else {
           Ti.API.info("kloudService success");
+          items.sort(function(a, b) {
+            if (a.shopAddress > b.shopAddress) {
+              return -1;
+            } else {
+              return 1;
+            }
+          });
           ShopAreaDataWindow = require("ui/shopAreaDataWindow");
           return new ShopAreaDataWindow(items);
         }
