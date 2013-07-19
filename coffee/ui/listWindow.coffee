@@ -37,7 +37,7 @@ class listWindow
       prefectureName = e.row.prefectureName
       KloudService = require("model/kloudService")
       kloudService = new KloudService()
-      kloudService.finsShopDataBy(prefectureName,(items) ->
+      kloudService.findShopDataBy(prefectureName,(items) ->
         that.activityIndicator.hide()
         if items.length is 0
           alert "選択した地域のお店がみつかりません"
@@ -169,7 +169,7 @@ class listWindow
       height:@rowHeight
       backgroundColor:"f3f3f3"
       categoryName:"お気に入り"
-      hasChild:true
+
       
     favoriteIcon = Ti.UI.createLabel
       width:20

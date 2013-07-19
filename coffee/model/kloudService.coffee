@@ -148,7 +148,7 @@ class kloudService
     appid = json.facebook.appid
     return appid
     
-  finsShopDataBy:(prefectureName,callback) ->
+  findShopDataBy:(prefectureName,callback) ->
     @Cloud.Places.query
       page: 1
       per_page: 200

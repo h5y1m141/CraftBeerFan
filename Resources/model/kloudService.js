@@ -154,7 +154,7 @@ kloudService = (function() {
     return appid;
   };
 
-  kloudService.prototype.finsShopDataBy = function(prefectureName, callback) {
+  kloudService.prototype.findShopDataBy = function(prefectureName, callback) {
     return this.Cloud.Places.query({
       page: 1,
       per_page: 200,
