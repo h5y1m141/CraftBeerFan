@@ -1,6 +1,6 @@
 var Client, client, configurationWizard, mainController, startPoint;
 
-Ti.App.Properties.setBool("configurationWizard", false);
+Ti.App.Properties.setBool("configurationWizard", true);
 
 configurationWizard = Ti.App.Properties.getBool("configurationWizard");
 

@@ -3,6 +3,32 @@ var screen;
 screen = (function() {
 
   function screen() {
+    var keyColor, winTitle;
+    keyColor = "#f9f9f9";
+    this.baseColor = {
+      barColor: keyColor,
+      backgroundColor: keyColor
+    };
+    winTitle = Ti.UI.createLabel({
+      textAlign: 'center',
+      color: "#333",
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p',
+        fontWeight: 'bold'
+      },
+      text: "CraftBeerFan"
+    });
+    this.win = Ti.UI.createWindow({
+      title: "CraftBeerFan",
+      barColor: this.baseColor.barColor,
+      backgroundColor: this.baseColor.backgroundColor,
+      navBarHidden: false,
+      tabBarHidden: false
+    });
+    if (Ti.Platform.osname === 'iphone') {
+      this.win.setTitleControl(winTitle);
+    }
     this.label = Ti.UI.createLabel({
       textAlign: 1,
       color: "#222",

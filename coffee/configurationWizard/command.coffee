@@ -64,18 +64,18 @@ class Command
       @moveBack(lastPoint-1)
     )
     
-    win = Ti.UI.createWindow()
-    win.add @items.startPointBtn unless @items.backBtn.title is null
-    win.add @items.backBtn unless @items.backBtn.title is null
-    win.add @items.nextBtn unless @items.nextBtn.title is null
-    win.add @items.endPointBtn unless @items.nextBtn.title is null
+    
+    @items.win.add @items.startPointBtn unless @items.backBtn.title is null
+    @items.win.add @items.backBtn unless @items.backBtn.title is null
+    @items.win.add @items.nextBtn unless @items.nextBtn.title is null
+    @items.win.add @items.endPointBtn unless @items.nextBtn.title is null
     
     @items.currentView.add @items.label
     
-    win.add @items.currentView
-    win.add @items.nextView
+    @items.win.add @items.currentView
+    @items.win.add @items.nextView
     
-    return win.open()
+    return @items.win.open()
 
     
   _setValue:(selectedNumber) ->

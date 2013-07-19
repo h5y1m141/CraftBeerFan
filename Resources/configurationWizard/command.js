@@ -42,8 +42,7 @@ Command = (function() {
   };
 
   Command.prototype.execute = function(selectedNumber) {
-    var win,
-      _this = this;
+    var _this = this;
     this._setValue(selectedNumber);
     this._buttonShowFlg();
     this.items.backBtn.title = "前";
@@ -68,23 +67,22 @@ Command = (function() {
       lastPoint = _this.menuList.length;
       return _this.moveBack(lastPoint - 1);
     });
-    win = Ti.UI.createWindow();
     if (this.items.backBtn.title !== null) {
-      win.add(this.items.startPointBtn);
+      this.items.win.add(this.items.startPointBtn);
     }
     if (this.items.backBtn.title !== null) {
-      win.add(this.items.backBtn);
+      this.items.win.add(this.items.backBtn);
     }
     if (this.items.nextBtn.title !== null) {
-      win.add(this.items.nextBtn);
+      this.items.win.add(this.items.nextBtn);
     }
     if (this.items.nextBtn.title !== null) {
-      win.add(this.items.endPointBtn);
+      this.items.win.add(this.items.endPointBtn);
     }
     this.items.currentView.add(this.items.label);
-    win.add(this.items.currentView);
-    win.add(this.items.nextView);
-    return win.open();
+    this.items.win.add(this.items.currentView);
+    this.items.win.add(this.items.nextView);
+    return this.items.win.open();
   };
 
   Command.prototype._setValue = function(selectedNumber) {

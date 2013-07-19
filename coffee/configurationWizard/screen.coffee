@@ -1,5 +1,29 @@
 class screen
   constructor:() ->
+    keyColor = "#f9f9f9"
+    @baseColor =
+      barColor:keyColor
+      backgroundColor:keyColor
+      
+    winTitle = Ti.UI.createLabel
+      textAlign: 'center'
+      color:"#333"
+      font:
+        fontSize:18
+        fontFamily : 'Rounded M+ 1p'
+        fontWeight:'bold'
+      text:"CraftBeerFan"
+    
+    @win = Ti.UI.createWindow
+      title:"CraftBeerFan"
+      barColor:@baseColor.barColor
+      backgroundColor:@baseColor.backgroundColor
+      navBarHidden:false
+      tabBarHidden:false
+      
+    if Ti.Platform.osname is 'iphone'
+      @win.setTitleControl winTitle
+      
     @label = Ti.UI.createLabel
       textAlign:1
       color:"#222"
