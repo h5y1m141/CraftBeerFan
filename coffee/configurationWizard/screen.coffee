@@ -26,23 +26,36 @@ class screen
       @win.setTitleControl winTitle
       
     @label = Ti.UI.createLabel
-      textAlign:1
+      textAlign:'left'
       color:@baseColor.color
-      width:300
+      width:280
       font:
-        fontSize:18
+        fontSize:16
         fontFamily : 'Rounded M+ 1p'
         fontWeight:'bold'
-      height:80
-      top:50
-      left:5
+      height:100
+      top:10
+      left:20
+    @screenCapture = Ti.UI.createImageView
+      width:250
+      height:250
+      top:110
+      left:20
+      image:""
+      
       
     @backBtn = Ti.UI.createLabel
-      color:"#333"
-      width:40
-      height:120
-      top:50
-      left:30
+      color:@baseColor.barColor    
+      # color:"#333"
+      textAlign:'center'
+      width:35
+      height:35
+      top:20
+      borderWidth:1
+      borderRadius:20
+      borderColor:@baseColor.barColor
+      backgroundColor:"#44A5CB"
+      left:20
       font:
         fontSize:32
         fontFamily : 'Rounded M+ 1p'
@@ -54,11 +67,17 @@ class screen
       # text:String.fromCharCode("0xe080")
       
     @nextBtn = Ti.UI.createLabel
-      color:"#333"
-      width:40
-      height:120
-      top:50
-      right:30
+      color:@baseColor.barColor
+      # color:"#333"
+      textAlign:'center'
+      width:35
+      height:35
+      borderWidth:1
+      borderRadius:20
+      borderColor:@baseColor.barColor
+      backgroundColor:"#44A5CB"
+      top:20
+      right:20
       font:
         fontSize:32
         fontFamily : 'Rounded M+ 1p'
@@ -95,9 +114,9 @@ class screen
       
     @currentView = Ti.UI.createView
       width:300
-      height:300
+      height:400
       backgroundColor:@baseColor.backgroundColor
-      top:120
+      top:60
       left:10
       zIndex:1
       borderRadius:10
@@ -107,7 +126,7 @@ class screen
       width:300
       height:300
       backgroundColor:@baseColor.backgroundColor
-      top:120
+      top:60
       left:120
       zIndex:2
       visible:false

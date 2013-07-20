@@ -1,8 +1,10 @@
-Ti.App.Properties.setBool "configurationWizard", true
+
 
 configurationWizard = Ti.App.Properties.getBool "configurationWizard"
 
-if configurationWizard is true
+Ti.API.info configurationWizard
+
+if configurationWizard is null or typeof configurationWizard is "undefined"
   Client = require("configurationWizard/client")
   client = new Client()
   startPoint = 0

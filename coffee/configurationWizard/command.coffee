@@ -3,34 +3,50 @@ class Command
     
     @items = obj
     @menuList = [
-      description:"ようこそ"
+      description:"このアプリケーションは日本全国のクラフトビールが飲める/買えるお店を探すことが出来ます"
+      screenCapture:"configurationWizard/image/logo.png"
       backCommand:null
       nextCommand:1
     ,
-      description:"この画面では基本的な操作方法について解説します"
+      description:"現在の位置から近い所のお店を探すことができます。"
+      screenCapture:"configurationWizard/image/map.png"      
       backCommand:0
       nextCommand:2
     ,
-      description:"応用編について解説します"
+      description:"飲めるお店はタンブラーのアイコン、買えるお店はボトルのアイコンで表現してます"
+      screenCapture:"configurationWizard/image/iconImage.png"      
       backCommand:1
       nextCommand:3
     ,
-      description:"更に踏み込んだTIPSについて解説します"
+    
+      description:"リストからもお店を探すことができますので、これから出張や旅行先などでクラフトビールが飲める・買えるお店の下調べにも活用することができます"
+      screenCapture:"configurationWizard/image/list.png"
       backCommand:2
       nextCommand:4
     ,
-      description:"アプリ起動します"
+      description:"気になったお店があったら、お気に入りに登録することもできます"
+      screenCapture:"configurationWizard/image/favorite.png"
       backCommand:3
+      nextCommand:5
+    ,
+      description:"アプリケーションの説明は以上になります。Enjoy!"
+      backCommand:4
       nextCommand:null
     ]
     
   moveNext:(selectedNumber) ->
+    if selectedNumber is 5
+      @items.currentView.add @items.endPointBtn
+
     @_setValue(selectedNumber)
     @_buttonShowFlg()
 
     return @items
     
   moveBack:(selectedNumber) ->
+    if selectedNumber is 4
+      @items.currentView.remove @items.endPointBtn
+      
     @_setValue(selectedNumber)
     @_buttonShowFlg()
     
@@ -52,11 +68,12 @@ class Command
     )
 
 
-    @items.win.add @items.backBtn # unless @items.backBtn.className is null
-    @items.win.add @items.nextBtn # unless @items.nextBtn.className is null
+    @items.win.add @items.backBtn
+    @items.win.add @items.nextBtn
 
     
     @items.currentView.add @items.label
+    @items.currentView.add @items.screenCapture
     
     @items.win.add @items.currentView
     @items.win.add @items.nextView
@@ -66,13 +83,11 @@ class Command
     
   _setValue:(selectedNumber) ->
     @items.label.text = @menuList[selectedNumber].description
-        
+    @items.screenCapture.image = @menuList[selectedNumber].screenCapture
     @items.nextBtn.className = @menuList[selectedNumber].nextCommand
     @items.backBtn.className = @menuList[selectedNumber].backCommand
     
-    if @menuList[selectedNumber].backCommand is 3
-      @items.currentView.add @items.endPointBtn
-      
+        
     return true
     
   _buttonShowFlg:() ->

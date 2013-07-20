@@ -31,24 +31,36 @@ screen = (function() {
       this.win.setTitleControl(winTitle);
     }
     this.label = Ti.UI.createLabel({
-      textAlign: 1,
+      textAlign: 'left',
       color: this.baseColor.color,
-      width: 300,
+      width: 280,
       font: {
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       },
-      height: 80,
-      top: 50,
-      left: 5
+      height: 100,
+      top: 10,
+      left: 20
+    });
+    this.screenCapture = Ti.UI.createImageView({
+      width: 250,
+      height: 250,
+      top: 110,
+      left: 20,
+      image: ""
     });
     this.backBtn = Ti.UI.createLabel({
-      color: "#333",
-      width: 40,
-      height: 120,
-      top: 50,
-      left: 30,
+      color: this.baseColor.barColor,
+      textAlign: 'center',
+      width: 35,
+      height: 35,
+      top: 20,
+      borderWidth: 1,
+      borderRadius: 20,
+      borderColor: this.baseColor.barColor,
+      backgroundColor: "#44A5CB",
+      left: 20,
       font: {
         fontSize: 32,
         fontFamily: 'Rounded M+ 1p'
@@ -56,11 +68,16 @@ screen = (function() {
       text: "<"
     });
     this.nextBtn = Ti.UI.createLabel({
-      color: "#333",
-      width: 40,
-      height: 120,
-      top: 50,
-      right: 30,
+      color: this.baseColor.barColor,
+      textAlign: 'center',
+      width: 35,
+      height: 35,
+      borderWidth: 1,
+      borderRadius: 20,
+      borderColor: this.baseColor.barColor,
+      backgroundColor: "#44A5CB",
+      top: 20,
+      right: 20,
       font: {
         fontSize: 32,
         fontFamily: 'Rounded M+ 1p'
@@ -91,9 +108,9 @@ screen = (function() {
     });
     this.currentView = Ti.UI.createView({
       width: 300,
-      height: 300,
+      height: 400,
       backgroundColor: this.baseColor.backgroundColor,
-      top: 120,
+      top: 60,
       left: 10,
       zIndex: 1,
       borderRadius: 10
@@ -102,7 +119,7 @@ screen = (function() {
       width: 300,
       height: 300,
       backgroundColor: this.baseColor.backgroundColor,
-      top: 120,
+      top: 60,
       left: 120,
       zIndex: 2,
       visible: false,

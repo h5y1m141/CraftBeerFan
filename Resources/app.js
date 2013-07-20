@@ -1,10 +1,10 @@
 var Client, client, configurationWizard, mainController, startPoint;
 
-Ti.App.Properties.setBool("configurationWizard", true);
-
 configurationWizard = Ti.App.Properties.getBool("configurationWizard");
 
-if (configurationWizard === true) {
+Ti.API.info(configurationWizard);
+
+if (configurationWizard === null || typeof configurationWizard === "undefined") {
   Client = require("configurationWizard/client");
   client = new Client();
   startPoint = 0;
