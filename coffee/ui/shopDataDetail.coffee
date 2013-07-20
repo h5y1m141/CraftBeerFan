@@ -208,31 +208,20 @@ class shopDataDetail
         Ti.API.info "contents is #{contents}"
         ratings = ratings
         contents = contents
-        Cloud.Places.query
-          page: 1
-          per_page: 1
-          where:{name:shopName}
-        , (e) ->
-          if e.success
-            id = e.places[0].id
-            # Ti.API.info "ratings is #{ratings}"
-            Ti.API.info "id is #{id}"
-            Cloud.Reviews.create
-              rating:ratings
-              content:contents              
-              place_id:id
-              custom_fields:
-                place_id:id
-            , (e) ->
-              activityIndicator.hide()
-              if e.success
-                alert "お気に入りに登録しました"
-                modalWindow.close()
-              else
-                alert "すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした"
-                modalWindow.close()
+        KloudService = require("model/kloudService")
+        kloudService = new KloudService()
+        kloudService.reviewsCreate(ratings,contents,shopName,(value)->
+
+          activityIndicator.hide()
+          if value = "success"
+            alert "お気に入りに登録しました"
+            modalWindow.close()
           else
-            Ti.API.info "Error:\n"        
+            alert "すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした"
+            modalWindow.close()
+        )
+        
+
       )
       modalWindow.open(
         modal:true

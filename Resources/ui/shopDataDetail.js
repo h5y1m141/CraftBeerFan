@@ -206,40 +206,21 @@ shopDataDetail = (function() {
       modalWindow.add(textArea);
       modalWindow.add(label);
       addNewIcon.addEventListener('click', function(e) {
+        var KloudService, kloudService;
         activityIndicator.show();
         Ti.API.info("contents is " + contents);
         ratings = ratings;
         contents = contents;
-        return Cloud.Places.query({
-          page: 1,
-          per_page: 1,
-          where: {
-            name: shopName
-          }
-        }, function(e) {
-          var id;
-          if (e.success) {
-            id = e.places[0].id;
-            Ti.API.info("id is " + id);
-            return Cloud.Reviews.create({
-              rating: ratings,
-              content: contents,
-              place_id: id,
-              custom_fields: {
-                place_id: id
-              }
-            }, function(e) {
-              activityIndicator.hide();
-              if (e.success) {
-                alert("お気に入りに登録しました");
-                return modalWindow.close();
-              } else {
-                alert("すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした");
-                return modalWindow.close();
-              }
-            });
+        KloudService = require("model/kloudService");
+        kloudService = new KloudService();
+        return kloudService.reviewsCreate(ratings, contents, shopName, function(value) {
+          activityIndicator.hide();
+          if (value = "success") {
+            alert("お気に入りに登録しました");
+            return modalWindow.close();
           } else {
-            return Ti.API.info("Error:\n");
+            alert("すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした");
+            return modalWindow.close();
           }
         });
       });
