@@ -24,9 +24,9 @@ shopAreaDataWindow = (function() {
     shopDataRowTable.addEventListener('click', function(e) {
       var ShopDataDetailWindow, data, shopDataDetailWindow;
       data = {
-        shopName: e.row.placeData.name,
-        shopAddress: e.row.placeData.address,
-        phoneNumber: e.row.placeData.phone_number,
+        shopName: e.row.placeData.shopName,
+        shopAddress: e.row.placeData.shopAddress,
+        phoneNumber: e.row.placeData.phoneNumber,
         latitude: e.row.placeData.latitude,
         longitude: e.row.placeData.longitude
       };

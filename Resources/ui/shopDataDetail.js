@@ -12,7 +12,7 @@ shopDataDetail = (function() {
     });
     this.addressLabel = Ti.UI.createLabel({
       text: "",
-      textAlign: 'center',
+      textAlign: 'left',
       width: 280,
       color: "#333",
       left: 20,
@@ -46,7 +46,7 @@ shopDataDetail = (function() {
     });
     this.phoneLabel = Ti.UI.createLabel({
       text: "",
-      textAlign: 'center',
+      textAlign: 'left',
       left: 50,
       top: 10,
       width: 150,
@@ -64,6 +64,7 @@ shopDataDetail = (function() {
     });
     this.starIcon = Ti.UI.createButton({
       top: 5,
+      textAlign: 'center',
       left: 10,
       width: 30,
       height: 30,
@@ -299,7 +300,7 @@ shopDataDetail = (function() {
       fontSize: 32,
       fontFamily: 'LigatureSymbols'
     });
-    shopName = data.name;
+    shopName = data.shopName;
     this.starIcon.shopName = shopName;
     this.editLabel.setFont({
       fontFamily: 'Rounded M+ 1p'
@@ -307,7 +308,6 @@ shopDataDetail = (function() {
     this.editLabel.setText("お気に入り登録する");
     this.editLabel.textAlign = 'center';
     this.phoneIcon.addEventListener('click', function(e) {
-      alert("phone icon touch");
       return Titanium.Platform.openURL("tel:" + data.phoneNumber);
     });
   };
