@@ -44,13 +44,20 @@ listWindow = (function() {
       prefectureName = e.row.prefectureName;
       KloudService = require("model/kloudService");
       kloudService = new KloudService();
-      return kloudService.finsShopDataBy(prefectureName, function(items) {
+      return kloudService.findShopDataBy(prefectureName, function(items) {
         var ShopAreaDataWindow;
         that.activityIndicator.hide();
         if (items.length === 0) {
           return alert("選択した地域のお店がみつかりません");
         } else {
           Ti.API.info("kloudService success");
+          items.sort(function(a, b) {
+            if (a.shopAddress > b.shopAddress) {
+              return -1;
+            } else {
+              return 1;
+            }
+          });
           ShopAreaDataWindow = require("ui/shopAreaDataWindow");
           return new ShopAreaDataWindow(items);
         }
@@ -172,8 +179,7 @@ listWindow = (function() {
       width: 150,
       height: this.rowHeight,
       backgroundColor: "f3f3f3",
-      categoryName: "お気に入り",
-      hasChild: true
+      categoryName: "お気に入り"
     });
     favoriteIcon = Ti.UI.createLabel({
       width: 20,
