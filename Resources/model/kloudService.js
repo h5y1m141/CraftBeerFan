@@ -85,10 +85,45 @@ kloudService = (function() {
     }
   };
 
+  kloudService.prototype.reviewsCreate = function(ratings, contents, shopName, callback) {
+    var that;
+    that = this.Cloud;
+    this.Cloud.Places.query({
+      page: 1,
+      per_page: 1,
+      where: {
+        name: shopName
+      }
+    }, function(e) {
+      var id;
+      if (e.success) {
+        id = e.places[0].id;
+        Ti.API.info("id is " + id + ". and ratings is " + ratings + " and contents is " + contents);
+        return that.Reviews.create({
+          rating: ratings,
+          content: contents,
+          place_id: id,
+          custom_fields: {
+            place_id: id
+          }
+        }, function(e) {
+          if (e.success) {
+            return callback("success");
+          } else {
+            return callback("error");
+          }
+        });
+      } else {
+        return Ti.API.info("Error:\n");
+      }
+    });
+  };
+
   kloudService.prototype.reviewsQuery = function(userID, callback) {
-    var placeIDList, shopLists;
+    var placeIDList, shopLists, that;
     shopLists = [];
     placeIDList = [];
+    that = this.Cloud;
     return this.Cloud.Reviews.query({
       page: 1,
       per_page: 100,
@@ -112,7 +147,7 @@ kloudService = (function() {
         Ti.API.info("length is " + length);
         for (_i = 0, _len = placeIDList.length; _i < _len; _i++) {
           id = placeIDList[_i];
-          this.Cloud.Places.show({
+          that.Places.show({
             place_id: id
           }, function(e) {
             var data;

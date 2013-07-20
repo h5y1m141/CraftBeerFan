@@ -1,7 +1,7 @@
 class kloudService
   constructor:() ->
     @Cloud = require('ti.cloud')
-    
+  
   placesQuery:(latitude,longitude,callback) ->
     Ti.API.info "startplacesQuery"
     @Cloud.Places.query
@@ -67,11 +67,39 @@ class kloudService
     fb.authorize()  unless fb.loggedIn
 
     return
+  reviewsCreate:(ratings,contents,shopName,callback) ->
+    that = @Cloud
+    @Cloud.Places.query
+      page: 1
+      per_page: 1
+      where:{name:shopName}
+    , (e) ->
+      if e.success
+        id = e.places[0].id
+        Ti.API.info "id is #{id}. and ratings is #{ratings} and contents is #{contents}"
+        
+        that.Reviews.create
+          rating:ratings
+          content:contents              
+          place_id:id
+          custom_fields:
+            place_id:id
+            
+        , (e) ->
+          if e.success
+            callback("success")
+          else
+            callback("error")
+      else
+        Ti.API.info "Error:\n"
+        
+    return
 
+    
   reviewsQuery:(userID,callback) ->
     shopLists = []
     placeIDList = []
-
+    that = @Cloud
     # 該当するユーザのお気に入り情報を検索する
     @Cloud.Reviews.query
       page: 1
@@ -106,7 +134,7 @@ class kloudService
         placeQueryCounter = 0
         Ti.API.info "length is #{length}"
         for id in placeIDList
-          @Cloud.Places.show
+          that.Places.show
             place_id:id
           ,(e) ->
             placeQueryCounter++
