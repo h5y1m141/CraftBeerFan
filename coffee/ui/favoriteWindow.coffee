@@ -12,7 +12,11 @@ class favoriteWindow
       backgroundColor: @baseColor.backgroundColor
       tabBarHidden:false
       navBarHidden:false
-
+      
+    ActivityIndicator = require("ui/activityIndicator")
+    activityIndicator = new ActivityIndicator()
+    @favoriteWindow.add activityIndicator
+    activityIndicator.show()
     @_createNavbarElement()  
       
     @table = Ti.UI.createTableView
@@ -38,6 +42,7 @@ class favoriteWindow
     userID = Ti.App.Properties.getString "currentUserId"
 
     kloudService.reviewsQuery(userID,(items) =>
+      activityIndicator.hide()
       rows = []
       for item in items
         row = @_createShopDataRow(item)
@@ -91,30 +96,7 @@ class favoriteWindow
     return
     
   _createShopDataRow:(placeData) ->
-
-    titleLabel = Ti.UI.createLabel
-      width:240
-      height:30
-      top:5
-      left:5
-      color:'#333'
-      font:
-        fontSize:18
-        fontWeight:'bold'
-        fontFamily : 'Rounded M+ 1p'
-      text:"#{placeData.shopName}"
-      
-    addressLabel = Ti.UI.createLabel
-      width:240
-      height:30
-      top:30
-      left:20
-      color:'#444'
-      font:
-        fontSize:14
-        fontFamily : 'Rounded M+ 1p'
-      text:"#{placeData.shopAddress}"
-
+    
     row = Ti.UI.createTableViewRow
       width:'auto'
       height:60
@@ -123,9 +105,39 @@ class favoriteWindow
       placeData:placeData
       className:'shopData'
       backgroundColor:@baseColor.barColor
-      
+
+    titleLabel = Ti.UI.createLabel
+      width:240
+      height:30
+      top:5
+      left:5
+      color:'#333'
+      font:
+        fontSize:16
+        fontWeight:'bold'
+        fontFamily : 'Rounded M+ 1p'
+      text:"#{placeData.shopName}"
+
     row.add titleLabel
-    row.add addressLabel
+
+    leftPostion = [5, 35, 65, 95, 125]
+    for i in [0..placeData.rating]
+      starIcon = Ti.UI.createButton
+        top:35
+        left:leftPostion[i]
+        width:20
+        height:20
+        selected:false
+        backgroundColor:"#FFE600"
+        backgroundImage:"NONE"
+        borderWidth:0
+        borderRadius:5
+        color:'#fff'
+        font:
+          fontSize: 20
+          fontFamily:'LigatureSymbols'
+        title:String.fromCharCode("0xe121")
+      row.add starIcon
 
     return row
 

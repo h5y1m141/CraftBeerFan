@@ -3,7 +3,7 @@ var favoriteWindow;
 favoriteWindow = (function() {
 
   function favoriteWindow() {
-    var KloudService, ShopDataDetail, activeTab, keyColor, kloudService, shopDataDetail, shopDetailTable, userID,
+    var ActivityIndicator, KloudService, ShopDataDetail, activeTab, activityIndicator, keyColor, kloudService, shopDataDetail, shopDetailTable, userID,
       _this = this;
     keyColor = "#f9f9f9";
     this.baseColor = {
@@ -17,6 +17,10 @@ favoriteWindow = (function() {
       tabBarHidden: false,
       navBarHidden: false
     });
+    ActivityIndicator = require("ui/activityIndicator");
+    activityIndicator = new ActivityIndicator();
+    this.favoriteWindow.add(activityIndicator);
+    activityIndicator.show();
     this._createNavbarElement();
     this.table = Ti.UI.createTableView({
       backgroundColor: this.baseColor.backgroundColor,
@@ -43,6 +47,7 @@ favoriteWindow = (function() {
     userID = Ti.App.Properties.getString("currentUserId");
     kloudService.reviewsQuery(userID, function(items) {
       var item, row, rows, _i, _len;
+      activityIndicator.hide();
       rows = [];
       for (_i = 0, _len = items.length; _i < _len; _i++) {
         item = items[_i];
@@ -97,32 +102,7 @@ favoriteWindow = (function() {
   };
 
   favoriteWindow.prototype._createShopDataRow = function(placeData) {
-    var addressLabel, row, titleLabel;
-    titleLabel = Ti.UI.createLabel({
-      width: 240,
-      height: 30,
-      top: 5,
-      left: 5,
-      color: '#333',
-      font: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        fontFamily: 'Rounded M+ 1p'
-      },
-      text: "" + placeData.shopName
-    });
-    addressLabel = Ti.UI.createLabel({
-      width: 240,
-      height: 30,
-      top: 30,
-      left: 20,
-      color: '#444',
-      font: {
-        fontSize: 14,
-        fontFamily: 'Rounded M+ 1p'
-      },
-      text: "" + placeData.shopAddress
-    });
+    var i, leftPostion, row, starIcon, titleLabel, _i, _ref;
     row = Ti.UI.createTableViewRow({
       width: 'auto',
       height: 60,
@@ -132,8 +112,41 @@ favoriteWindow = (function() {
       className: 'shopData',
       backgroundColor: this.baseColor.barColor
     });
+    titleLabel = Ti.UI.createLabel({
+      width: 240,
+      height: 30,
+      top: 5,
+      left: 5,
+      color: '#333',
+      font: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        fontFamily: 'Rounded M+ 1p'
+      },
+      text: "" + placeData.shopName
+    });
     row.add(titleLabel);
-    row.add(addressLabel);
+    leftPostion = [5, 35, 65, 95, 125];
+    for (i = _i = 0, _ref = placeData.rating; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+      starIcon = Ti.UI.createButton({
+        top: 35,
+        left: leftPostion[i],
+        width: 20,
+        height: 20,
+        selected: false,
+        backgroundColor: "#FFE600",
+        backgroundImage: "NONE",
+        borderWidth: 0,
+        borderRadius: 5,
+        color: '#fff',
+        font: {
+          fontSize: 20,
+          fontFamily: 'LigatureSymbols'
+        },
+        title: String.fromCharCode("0xe121")
+      });
+      row.add(starIcon);
+    }
     return row;
   };
 
