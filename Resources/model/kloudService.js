@@ -130,15 +130,18 @@ kloudService = (function() {
       response_json_depth: 5,
       user: userID
     }, function(e) {
-      var i, id, length, placeID, placeQueryCounter, review, timerId, _i, _id, _len;
+      var i, item, length, placeQueryCounter, review, timerId, _i, _len;
       if (e.success) {
         i = 0;
         while (i < e.reviews.length) {
           review = e.reviews[i];
-          _id = review.id;
-          placeID = review.custom_fields.place_id;
-          if (typeof placeID !== "undefined") {
-            placeIDList.push(placeID);
+          item = {
+            placeID: review.custom_fields.place_id,
+            content: review.content,
+            rating: review.rating
+          };
+          if (typeof item.placeID !== "undefined") {
+            placeIDList.push(item);
           }
           i++;
         }
@@ -146,23 +149,30 @@ kloudService = (function() {
         placeQueryCounter = 0;
         Ti.API.info("length is " + length);
         for (_i = 0, _len = placeIDList.length; _i < _len; _i++) {
-          id = placeIDList[_i];
+          item = placeIDList[_i];
           that.Places.show({
-            place_id: id
+            place_id: item.placeID
           }, function(e) {
-            var data;
+            var data, _;
             placeQueryCounter++;
+            data = {};
             if (e.success) {
-              Ti.API.info(e.places[0].name);
-              data = {
-                shopName: e.places[0].name,
-                shopAddress: e.places[0].address,
-                phoneNumber: e.places[0].phone_number,
-                latitude: e.places[0].latitude,
-                longitude: e.places[0].longitude,
-                shopFlg: e.places[0].custom_fields.shopFlg
-              };
-              return shopLists.push(data);
+              _ = require("lib/underscore-1.4.3.min").each(placeIDList, function(v, key) {
+                if (v.placeID === e.places[0].id) {
+                  return data = {
+                    rating: v.rating,
+                    content: v.content,
+                    shopName: e.places[0].name,
+                    shopAddress: e.places[0].address,
+                    phoneNumber: e.places[0].phone_number,
+                    latitude: e.places[0].latitude,
+                    longitude: e.places[0].longitude,
+                    shopFlg: e.places[0].custom_fields.shopFlg
+                  };
+                }
+              });
+              shopLists.push(data);
+              return Ti.API.info(shopLists);
             } else {
               return Ti.API.info("no review data");
             }
@@ -175,7 +185,7 @@ kloudService = (function() {
           }
         }), 10);
       } else {
-        return Ti.API.info("Error:\n");
+        return alert("データ取得できませんでした");
       }
     });
   };

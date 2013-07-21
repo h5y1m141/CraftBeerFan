@@ -94,7 +94,6 @@ class kloudService
         Ti.API.info "Error:\n"
         
     return
-
     
   reviewsQuery:(userID,callback) ->
     shopLists = []
@@ -111,21 +110,20 @@ class kloudService
         i = 0
         while i < e.reviews.length
           review = e.reviews[i]
-          _id = review.id
           # custom_fieldsに、該当するお気に入りのお店に関するplace_idを
-          # 格納してあるのでそのIDを利用することでお店の住所、名前を取得することができる
-          placeID = review.custom_fields.place_id
-
-          if typeof placeID isnt "undefined"
-            placeIDList.push placeID    
+          # 格納してあるのでそのIDを利用することでお店の住所、名前を取得
+          # することができる
+          item =
+            placeID:review.custom_fields.place_id
+            content:review.content
+            rating:review.rating
+            
+          if typeof item.placeID isnt "undefined"
+            placeIDList.push item
           # whileのループカウンターを1つプラス  
           i++
               
         # end of loop
-
-        # Cloud.Reviews.queryのwhileループ内でCloud.Places.queryを投げるとなぜか
-        # place_idが固定されてしまうため一旦place_idを配列に格納してその後にお店の
-        # 情報を取得するクエリー発行
 
         # forループ内のCloud.Places.showは非同期処理されてしまう
         # そのため全部の値を取得してからcallback関数に渡すためには
@@ -133,28 +131,36 @@ class kloudService
         length = placeIDList.length
         placeQueryCounter = 0
         Ti.API.info "length is #{length}"
-        for id in placeIDList
-          that.Places.show
-            place_id:id
-          ,(e) ->
-            placeQueryCounter++
-            if e.success
-              Ti.API.info e.places[0].name
+        for item in placeIDList
 
-              data =
-                shopName:e.places[0].name
-                shopAddress:e.places[0].address
-                phoneNumber:e.places[0].phone_number
-                latitude:e.places[0].latitude
-                longitude:e.places[0].longitude
-                shopFlg:e.places[0].custom_fields.shopFlg
+          that.Places.show
+            place_id:item.placeID
+          ,(e) ->
+            
+            placeQueryCounter++
+            data = {}
+            if e.success
+              # お店の情報が見つかったらv.placeIDをキーにして
+              # placeIDList内に存在するratingとcontent情報を
+              # 取得した上で値を返す
+              _ =  require("lib/underscore-1.4.3.min")
+              .each placeIDList, (v,key) ->
+                if v.placeID is e.places[0].id
+                  data =
+                  rating:v.rating
+                  content:v.content
+                  shopName:e.places[0].name
+                  shopAddress:e.places[0].address
+                  phoneNumber:e.places[0].phone_number
+                  latitude:e.places[0].latitude
+                  longitude:e.places[0].longitude
+                  shopFlg:e.places[0].custom_fields.shopFlg
                 
               shopLists.push data
+              Ti.API.info shopLists
 
             else
               Ti.API.info "no review data"
-
-              
 
         timerId = setInterval (->
 
@@ -165,7 +171,7 @@ class kloudService
         
 
       else
-        Ti.API.info "Error:\n"
+        alert "データ取得できませんでした"
     
 
   _getAppID:() ->
