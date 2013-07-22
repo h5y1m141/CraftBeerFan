@@ -21,6 +21,7 @@ class favoriteWindow
       
     @table = Ti.UI.createTableView
       backgroundColor: @baseColor.backgroundColor
+      selectedColor:@baseColor.backgroundColor
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       width:'auto'
       height:'auto'
@@ -99,7 +100,7 @@ class favoriteWindow
     
     row = Ti.UI.createTableViewRow
       width:'auto'
-      height:60
+      height:75
       borderWidth:0
       hasChild:true
       placeData:placeData
@@ -107,8 +108,8 @@ class favoriteWindow
       backgroundColor:@baseColor.barColor
 
     titleLabel = Ti.UI.createLabel
-      width:240
-      height:30
+      width:200
+      height:20
       top:5
       left:5
       color:'#333'
@@ -119,11 +120,98 @@ class favoriteWindow
       text:"#{placeData.shopName}"
 
     row.add titleLabel
+    if placeData.content is "undefined"
+      content = ""
+    else
+      content = placeData.content
+    commentLabel = Ti.UI.createLabel
+      width:200
+      height:20
+      top:30
+      left:15
+      color:'#333'
+      font:
+        fontSize:12
+        fontFamily : 'Rounded M+ 1p'
+      text:content
+      
+    row.add commentLabel
+    
+    commentBtn = Ti.UI.createButton
+      top:5
+      left:230
+      width:40
+      height:40
+      content:placeData
+      selected:false
+      backgroundColor:@baseColor.barColor
+      backgroundImage:"NONE"
+      borderWidth:0
+      borderRadius:5
+      color:'#ddd'
+      font:
+        fontSize: 32
+        fontFamily:'LigatureSymbols'
+      title:String.fromCharCode("0xe034")
+      
+    t = Titanium.UI.create2DMatrix().scale(0.5)
+    
+    commentView = Ti.UI.createView
+      width:200
+      height:400
+      top:20
+      left:60
+      zIndex:10
+      transform:t
+      borderRadius:10
+      borderColor:"#ccc"
+      
+    closeBtn = Ti.UI.createButton
+      top:5
+      left:230
+      width:40
+      height:40
+      content:placeData
+      selected:false
+      backgroundColor:@baseColor.barColor
+      backgroundImage:"NONE"
+      borderWidth:0
+      borderRadius:5
+      color:'#ddd'
+      font:
+        fontSize: 32
+        fontFamily:'LigatureSymbols'
+      title:String.fromCharCode("0xe10f")
+    closeBtn.addEventListener('click',() ->
+      commentView.hide()
+          
+    )   
 
-    leftPostion = [5, 35, 65, 95, 125]
+
+      
+    commentBtn.addEventListener('click',(e)->
+      Ti.API.info "commentBtn click"
+      t1 = Titanium.UI.create2DMatrix().scale(0.0)
+      a = Titanium.UI.createAnimation()
+      a.transform = t1
+      a.duration = 400
+      a.addEventListener('complete',() ->
+        alert commentView
+        t2 = Titanium.UI.create2DMatrix()
+        commentView.animate
+          transform:t2
+          duration:400
+              
+        alert e.source.content.content
+      )
+    )
+    row.add commentBtn
+    
+
+    leftPostion = [15, 45, 75, 105, 135]
     for i in [0..placeData.rating]
       starIcon = Ti.UI.createButton
-        top:35
+        top:50
         left:leftPostion[i]
         width:20
         height:20
