@@ -185,17 +185,17 @@ class favoriteWindow
         # させる
         @table.opacity = 0.5
         @table.touchEnabled = false
-        t  = Titanium.UI.create2DMatrix().scale(0.8)
+        t  = Titanium.UI.create2DMatrix().scale(0.6)
         animationForTableView = Titanium.UI.createAnimation()
         animationForTableView.transform = t
-        animationForTableView.duration = 1000
+        animationForTableView.duration = 250
         @table.animate(animationForTableView)
         
         t1 = Titanium.UI.create2DMatrix()
         t1 = t1.scale(1.0)
         animation = Titanium.UI.createAnimation()
         animation.transform = t1
-        animation.duration = 1000
+        animation.duration = 250
         commentView.animate(animation)
 
       )        
@@ -249,14 +249,14 @@ class favoriteWindow
       t  = Titanium.UI.create2DMatrix().scale(1.0)
       animationForTableView = Titanium.UI.createAnimation()
       animationForTableView.transform = t
-      animationForTableView.duration = 1000
+      animationForTableView.duration = 250
       @table.animate(animationForTableView)
       
       t2 = Titanium.UI.create2DMatrix()
       t2 = t2.scale(0.0)
       animation = Titanium.UI.createAnimation()
       animation.transform = t2
-      animation.duration = 1000
+      animation.duration = 250
       commentView.animate(animation)
           
     )
