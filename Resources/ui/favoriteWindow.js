@@ -99,7 +99,8 @@ favoriteWindow = (function() {
       borderWidth: 0,
       placeData: placeData,
       className: 'shopData',
-      backgroundColor: this.baseColor.barColor
+      backgroundColor: this.baseColor.barColor,
+      selectedBackgroundColor: this.baseColor.backgroundColor
     });
     titleLabel = Ti.UI.createLabel({
       width: 200,
@@ -196,13 +197,13 @@ favoriteWindow = (function() {
         t = Titanium.UI.create2DMatrix().scale(0.8);
         animationForTableView = Titanium.UI.createAnimation();
         animationForTableView.transform = t;
-        animationForTableView.duration = 100;
+        animationForTableView.duration = 1000;
         _this.table.animate(animationForTableView);
         t1 = Titanium.UI.create2DMatrix();
         t1 = t1.scale(1.0);
         animation = Titanium.UI.createAnimation();
         animation.transform = t1;
-        animation.duration = 300;
+        animation.duration = 1000;
         return commentView.animate(animation);
       });
       row.add(memoBtn);
@@ -216,10 +217,10 @@ favoriteWindow = (function() {
     content = placeData.content;
     t = Titanium.UI.create2DMatrix().scale(0.0);
     commentView = Titanium.UI.createScrollView({
-      width: 280,
-      height: 400,
+      width: 240,
+      height: 240,
       top: 20,
-      left: 20,
+      left: 40,
       zIndex: 10,
       contentWidth: 'auto',
       contentHeight: 'auto',
@@ -255,13 +256,13 @@ favoriteWindow = (function() {
       t = Titanium.UI.create2DMatrix().scale(1.0);
       animationForTableView = Titanium.UI.createAnimation();
       animationForTableView.transform = t;
-      animationForTableView.duration = 100;
+      animationForTableView.duration = 1000;
       _this.table.animate(animationForTableView);
       t2 = Titanium.UI.create2DMatrix();
       t2 = t2.scale(0.0);
       animation = Titanium.UI.createAnimation();
       animation.transform = t2;
-      animation.duration = 500;
+      animation.duration = 1000;
       return commentView.animate(animation);
     });
     commentLabel = Ti.UI.createLabel({
