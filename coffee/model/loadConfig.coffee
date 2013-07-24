@@ -8,7 +8,7 @@ class loadConfig
     return @json.nend
 
   getGoogleAnalyticsKey:() ->
-    return @json.GoogleAnalytics
+    return @json.GoogleAnalytics.key
         
 
 module.exports = loadConfig 

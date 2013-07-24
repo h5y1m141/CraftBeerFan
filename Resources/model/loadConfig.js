@@ -14,7 +14,7 @@ loadConfig = (function() {
   };
 
   loadConfig.prototype.getGoogleAnalyticsKey = function() {
-    return this.json.GoogleAnalytics;
+    return this.json.GoogleAnalytics.key;
   };
 
   return loadConfig;
