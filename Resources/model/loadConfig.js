@@ -13,6 +13,10 @@ loadConfig = (function() {
     return this.json.nend;
   };
 
+  loadConfig.prototype.getGoogleAnalyticsKey = function() {
+    return this.json.GoogleAnalytics;
+  };
+
   return loadConfig;
 
 })();
