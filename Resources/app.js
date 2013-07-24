@@ -8,9 +8,17 @@ config = new Config();
 
 gaKey = config.getGoogleAnalyticsKey();
 
+Ti.API.info("gaKey is " + gaKey);
+
 gaModule = require('lib/Ti.Google.Analytics');
 
 analytics = new gaModule(gaKey);
+
+Ti.App.addEventListener("analytics_trackPageview", function(e) {
+  var path;
+  path = "/ft/" + Titanium.Platform.name;
+  return analytics.trackPageview(path + e.pageUrl);
+});
 
 Ti.App.addEventListener("analytics_trackEvent", function(e) {
   return analytics.trackEvent(e.category, e.action, e.label, e.value);

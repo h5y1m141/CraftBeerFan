@@ -7,9 +7,15 @@ configurationWizard = Ti.App.Properties.getBool "configurationWizard"
 Config = require("model/loadConfig")
 config = new Config()
 gaKey = config.getGoogleAnalyticsKey()
+Ti.API.info "gaKey is #{gaKey}"
 
 gaModule = require('lib/Ti.Google.Analytics')
 analytics = new gaModule(gaKey)
+
+Ti.App.addEventListener "analytics_trackPageview", (e) ->
+  path = "/ft/" + Titanium.Platform.name
+  analytics.trackPageview path + e.pageUrl
+
 Ti.App.addEventListener "analytics_trackEvent", (e) ->
   analytics.trackEvent e.category, e.action, e.label, e.value
 

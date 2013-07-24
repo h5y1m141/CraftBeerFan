@@ -151,6 +151,8 @@ class listWindow
     )
     return result
   _createNavbarElement:() ->
+    
+    
     listWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
       color:'#333'
