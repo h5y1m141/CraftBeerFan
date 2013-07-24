@@ -3,7 +3,7 @@ var shopAreaDataWindow;
 shopAreaDataWindow = (function() {
 
   function shopAreaDataWindow(items) {
-    var activeTab, item, keyColor, shopDataRow, shopDataRowTable, shopDataRows, _i, _len;
+    var activeTab, item, keyColor, searchBar, shopDataRow, shopDataRowTable, shopDataRows, _i, _len;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
@@ -16,9 +16,27 @@ shopAreaDataWindow = (function() {
       navBarHidden: false,
       tabBarHidden: false
     });
+    searchBar = Titanium.UI.createSearchBar({
+      barColor: "#f9f9f9",
+      showCancel: false,
+      hintText: "ここに住所入力すると絞り込めます"
+    });
+    searchBar.addEventListener("change", function(e) {
+      return e.value;
+    });
+    searchBar.addEventListener("return", function(e) {
+      return searchBar.blur();
+    });
+    searchBar.addEventListener("cancel", function(e) {
+      return searchBar.blur();
+    });
     shopDataRowTable = Ti.UI.createTableView({
       width: 'auto',
       height: 'auto',
+      top: 0,
+      left: 0,
+      search: searchBar,
+      filterAttribute: "shopAddress",
       backgroundColor: this.baseColor.barColor
     });
     shopDataRowTable.addEventListener('click', function(e) {
@@ -127,6 +145,7 @@ shopAreaDataWindow = (function() {
       borderWidth: 0,
       hasChild: true,
       placeData: placeData,
+      shopAddress: placeData.shopAddress,
       className: 'shopData',
       backgroundColor: this.baseColor.barColor
     });

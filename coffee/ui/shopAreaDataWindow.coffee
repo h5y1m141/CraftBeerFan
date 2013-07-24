@@ -12,10 +12,30 @@ class shopAreaDataWindow
       backgroundColor:@baseColor.backgroundColor
       navBarHidden:false
       tabBarHidden:false
+          
+    searchBar = Titanium.UI.createSearchBar
+      barColor:"#f9f9f9"
+      showCancel:false
+      hintText:"ここに住所入力すると絞り込めます"
+      
+    searchBar.addEventListener("change", (e) ->
+      e.value
+    )  
+    searchBar.addEventListener("return", (e) ->
+      searchBar.blur()
+    )
+    searchBar.addEventListener("cancel", (e) ->
+      searchBar.blur()
+    )
+
       
     shopDataRowTable = Ti.UI.createTableView
       width:'auto'
       height:'auto'
+      top:0
+      left:0
+      search:searchBar
+      filterAttribute: "shopAddress"
       backgroundColor:@baseColor.barColor
       
     shopDataRowTable.addEventListener('click',(e) ->
@@ -53,7 +73,8 @@ class shopAreaDataWindow
       
     backButton.addEventListener('click',(e) =>
       return @shopAreaDataWindow.close({animated:true})
-    )      
+    )
+
       
     @shopAreaDataWindow.leftNavButton = backButton
     shopAreaDataWindowTitle = Ti.UI.createLabel
@@ -119,6 +140,7 @@ class shopAreaDataWindow
       borderWidth:0
       hasChild:true
       placeData:placeData
+      shopAddress:placeData.shopAddress
       className:'shopData'
       backgroundColor:@baseColor.barColor
       
