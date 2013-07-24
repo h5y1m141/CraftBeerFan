@@ -14,15 +14,24 @@ class shopAreaDataWindow
       tabBarHidden:false
           
     searchBar = Titanium.UI.createSearchBar
-      barColor:"#f9f9f9"
+      barColor:@baseColor.barColor
+      backgroundColor:"#ccc"
       showCancel:false
       hintText:"ここに住所入力すると絞り込めます"
       
+    
+      
     searchBar.addEventListener("change", (e) ->
+      Ti.API.info "change event start. e.value is #{e.value}"
       e.value
     )  
     searchBar.addEventListener("return", (e) ->
+      Ti.App.Analytics.trackEvent('shopAreaDataWindow','search','searchBar',1)
       searchBar.blur()
+    )
+    searchBar.addEventListener("focus", (e) ->
+      searchBar.setShowCancel(false)
+
     )
     searchBar.addEventListener("cancel", (e) ->
       searchBar.blur()

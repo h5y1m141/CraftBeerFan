@@ -17,15 +17,21 @@ shopAreaDataWindow = (function() {
       tabBarHidden: false
     });
     searchBar = Titanium.UI.createSearchBar({
-      barColor: "#f9f9f9",
+      barColor: this.baseColor.barColor,
+      backgroundColor: "#ccc",
       showCancel: false,
       hintText: "ここに住所入力すると絞り込めます"
     });
     searchBar.addEventListener("change", function(e) {
+      Ti.API.info("change event start. e.value is " + e.value);
       return e.value;
     });
     searchBar.addEventListener("return", function(e) {
+      Ti.App.Analytics.trackEvent('shopAreaDataWindow', 'search', 'searchBar', 1);
       return searchBar.blur();
+    });
+    searchBar.addEventListener("focus", function(e) {
+      return searchBar.setShowCancel(false);
     });
     searchBar.addEventListener("cancel", function(e) {
       return searchBar.blur();
