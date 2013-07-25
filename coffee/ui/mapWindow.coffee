@@ -39,11 +39,6 @@ class mapWindow
       navBarHidden:false
       tabBarHidden:false
       
-    # ページビューを取得したいので以下を参考にしてイベントリスナー設定  
-    # http://hirofukami.com/2013/05/31/titanium-google-analytics/
-    mapWindow.addEventListener "focus", (e) ->
-      Ti.API.info "GoogleAnalyticsTracking start.window name is mapWindow"
-      Ti.App.Analytics.trackPageview "/update"
   
     # 1.0から0.001の間で縮尺尺度を示している。
     # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい

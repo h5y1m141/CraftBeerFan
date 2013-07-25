@@ -42,10 +42,6 @@ mapWindow = (function() {
       navBarHidden: false,
       tabBarHidden: false
     });
-    mapWindow.addEventListener("focus", function(e) {
-      Ti.API.info("GoogleAnalyticsTracking start.window name is mapWindow");
-      return Ti.App.Analytics.trackPageview("/update");
-    });
     this.mapView = Titanium.Map.createView({
       mapType: Titanium.Map.STANDARD_TYPE,
       region: {
