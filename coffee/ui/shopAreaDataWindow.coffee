@@ -71,6 +71,7 @@ class shopAreaDataWindow
 
     # 画面に遷移する
     activeTab = Ti.API._activeTab
+    Ti.App.Analytics.trackPageview "/window/shopAreaDataWindow"
     return activeTab.open(@shopAreaDataWindow)
     
 
@@ -81,6 +82,7 @@ class shopAreaDataWindow
       height:44
       
     backButton.addEventListener('click',(e) =>
+      Ti.App.Analytics.trackPageview "/window/listWindow"
       return @shopAreaDataWindow.close({animated:true})
     )
 
