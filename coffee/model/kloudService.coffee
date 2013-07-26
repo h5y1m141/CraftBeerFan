@@ -38,12 +38,11 @@ class kloudService
     fb.appid = @_getAppID()
     fb.permissions =  ['read_stream']
     fb.forceDialogAuth = true
-    fb.addEventListener('login', (e) ->
+    fb.addEventListener('login', (e) =>
       token = fb.accessToken
-      that = @
       if e.success
         if e.success
-          that.Cloud.SocialIntegrations.externalAccountLogin
+          @Cloud.SocialIntegrations.externalAccountLogin
             type: "facebook"
             token: token
           , (e) ->
@@ -174,14 +173,6 @@ class kloudService
         alert "データ取得できませんでした"
     
 
-  _getAppID:() ->
-    # Facebook appidを取得
-    config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json")
-    file = config.read().toString()
-    json = JSON.parse(file)
-    appid = json.facebook.appid
-    return appid
-    
   findShopDataBy:(prefectureName,callback) ->
     @Cloud.Places.query
       page: 1
@@ -209,6 +200,23 @@ class kloudService
         return callback(result)
       else
         Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
+        
+  signUP:(userID,password,callback) ->
+    @Cloud.Users.create
+      username:userID
+      email:userID
+      password:password
+      password_confirmation:password
+    , (e) ->
+      return callback(e)
+
+  _getAppID:() ->
+    # Facebook appidを取得
+    config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json")
+    file = config.read().toString()
+    json = JSON.parse(file)
+    appid = json.facebook.appid
+    return appid
     
 
 module.exports = kloudService
