@@ -46,14 +46,15 @@ class kloudService
             type: "facebook"
             token: token
           , (e) ->
-            if e.success
-              user = e.users[0]
+            callback(e)
+            # if e.success
+            #   user = e.users[0]
 
-              Ti.API.info "User  = " + JSON.stringify(user)
-              Ti.App.Properties.setString "currentUserId", user.id
-              callback(user.id)
-            else
-              alert "Error: " + ((e.error and e.message) or JSON.stringify(e))
+            #   Ti.API.info "User  = " + JSON.stringify(user)
+            #   Ti.App.Properties.setString "currentUserId", user.id
+            #   callback(user.id)
+            # else
+            #   alert "Error: " + ((e.error and e.message) or JSON.stringify(e))
         
       else if e.error
         alert e.error
@@ -207,9 +208,17 @@ class kloudService
       email:userID
       password:password
       password_confirmation:password
-    , (e) ->
-      return callback(e)
+    , (result) ->
+      return callback(result)
 
+      
+  getCurrentUserInfo:(currentUserId,callback) ->
+    @Cloud.Users.show
+      user_id:currentUserId
+    , (result) ->
+      return callback(result)
+
+  
   _getAppID:() ->
     # Facebook appidを取得
     config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json")

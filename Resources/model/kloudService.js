@@ -58,15 +58,7 @@ kloudService = (function() {
             type: "facebook",
             token: token
           }, function(e) {
-            var user;
-            if (e.success) {
-              user = e.users[0];
-              Ti.API.info("User  = " + JSON.stringify(user));
-              Ti.App.Properties.setString("currentUserId", user.id);
-              return callback(user.id);
-            } else {
-              return alert("Error: " + ((e.error && e.message) || JSON.stringify(e)));
-            }
+            return callback(e);
           });
         }
       } else if (e.error) {
@@ -228,8 +220,16 @@ kloudService = (function() {
       email: userID,
       password: password,
       password_confirmation: password
-    }, function(e) {
-      return callback(e);
+    }, function(result) {
+      return callback(result);
+    });
+  };
+
+  kloudService.prototype.getCurrentUserInfo = function(currentUserId, callback) {
+    return this.Cloud.Users.show({
+      user_id: currentUserId
+    }, function(result) {
+      return callback(result);
     });
   };
 
