@@ -5,8 +5,18 @@ mainController = (function() {
   function mainController() {}
 
   mainController.prototype.createTabGroup = function() {
-    var Cloud, ListWindow, MapWindow, MypageWindow, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
-    Cloud = require('ti.cloud');
+    var KloudService, ListWindow, MapWindow, MypageWindow, currentUserId, kloudService, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup,
+      _this = this;
+    currentUserId = Ti.App.Properties.getString("currentUserId");
+    KloudService = require("model/kloudService");
+    kloudService = new KloudService();
+    kloudService.getCurrentUserInfo(currentUserId, function(result) {
+      var user;
+      if (result.success) {
+        user = result.users[0];
+        return Ti.App.Properties.setString("currentUserName", "" + user.username);
+      }
+    });
     tabGroup = Ti.UI.createTabGroup({
       tabsBackgroundColor: "#f9f9f9",
       shadowImage: "ui/image/shadowimage.png",
@@ -59,9 +69,11 @@ mainController = (function() {
       var user;
       if (result.success) {
         user = result.users[0];
-        Ti.API.info("Success!!. userid:" + user.id);
+        Ti.App.Properties.setString("currentUserId", user.id);
+        Ti.App.Properties.setString("loginType", "craftbeer-fan");
         return _this.createTabGroup();
       } else {
+        alert("アカウント登録に失敗しました");
         return Ti.API.info("Error:\n" + ((result.error && result.message) || JSON.stringify(result)));
       }
     });
@@ -72,9 +84,16 @@ mainController = (function() {
       _this = this;
     KloudService = require("model/kloudService");
     kloudService = new KloudService();
-    kloudService.fbLogin(function(userid) {
-      alert("Facebookアカウントを使ってログインが出来ました");
-      return _this.createTabGroup();
+    kloudService.fbLogin(function(result) {
+      var user;
+      if (result.success) {
+        user = result.users[0];
+        Ti.App.Properties.setString("currentUserId", user.id);
+        Ti.App.Properties.setString("loginType", "facebook");
+        return _this.createTabGroup();
+      } else {
+        return alert("Facebookアカウントでログイン失敗しました");
+      }
     });
   };
 

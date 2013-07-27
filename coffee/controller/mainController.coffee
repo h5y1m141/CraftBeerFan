@@ -1,8 +1,17 @@
 class mainController
   constructor:() ->
-  createTabGroup:() ->  
-    Cloud = require('ti.cloud')
+  createTabGroup:() ->
+    # myPage用に現在のログインIDを収得した上でユーザ情報取得する
+    currentUserId = Ti.App.Properties.getString "currentUserId"
 
+    KloudService = require("model/kloudService")
+    kloudService = new KloudService()
+    kloudService.getCurrentUserInfo(currentUserId, (result) =>
+      if result.success
+        user = result.users[0]
+        Ti.App.Properties.setString "currentUserName","#{user.username}"
+    )
+    
     tabGroup = Ti.UI.createTabGroup
       tabsBackgroundColor:"#f9f9f9"
       shadowImage:"ui/image/shadowimage.png"
@@ -58,11 +67,14 @@ class mainController
     KloudService = require("model/kloudService")
     kloudService = new KloudService()
     kloudService.signUP(userID,password, (result) =>
+
       if result.success
         user = result.users[0]
-        Ti.API.info "Success!!. userid:#{user.id}"
+        Ti.App.Properties.setString "currentUserId",user.id
+        Ti.App.Properties.setString "loginType","craftbeer-fan"
         @createTabGroup()
       else
+        alert "アカウント登録に失敗しました"
         Ti.API.info "Error:\n" + ((result.error and result.message) or JSON.stringify(result))    
     )
     return
@@ -70,9 +82,14 @@ class mainController
   fbLogin:() ->
     KloudService = require("model/kloudService")
     kloudService = new KloudService()
-    kloudService.fbLogin( (userid) =>
-      alert "Facebookアカウントを使ってログインが出来ました"
-      @createTabGroup()
+    kloudService.fbLogin( (result) =>
+      if result.success
+        user = result.users[0]
+        Ti.App.Properties.setString "currentUserId",user.id
+        Ti.App.Properties.setString "loginType","facebook"
+        @createTabGroup()
+      else
+        alert "Facebookアカウントでログイン失敗しました"
     )
     return
   isLogin:() ->
