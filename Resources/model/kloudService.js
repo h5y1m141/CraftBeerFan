@@ -113,6 +113,7 @@ kloudService = (function() {
 
   kloudService.prototype.reviewsQuery = function(userID, callback) {
     var placeIDList, shopLists, that;
+    Ti.API.info("reviewsQuery start userID is " + userID);
     shopLists = [];
     placeIDList = [];
     that = this.Cloud;
@@ -120,7 +121,7 @@ kloudService = (function() {
       page: 1,
       per_page: 100,
       response_json_depth: 5,
-      user: userID
+      user_id: userID
     }, function(e) {
       var i, item, length, placeQueryCounter, review, timerId, _i, _len;
       if (e.success) {
@@ -163,8 +164,7 @@ kloudService = (function() {
                   };
                 }
               });
-              shopLists.push(data);
-              return Ti.API.info(shopLists);
+              return shopLists.push(data);
             } else {
               return Ti.API.info("no review data");
             }

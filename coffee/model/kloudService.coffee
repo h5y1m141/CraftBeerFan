@@ -96,6 +96,7 @@ class kloudService
     return
     
   reviewsQuery:(userID,callback) ->
+    Ti.API.info "reviewsQuery start userID is #{userID}"
     shopLists = []
     placeIDList = []
     that = @Cloud
@@ -104,9 +105,10 @@ class kloudService
       page: 1
       per_page:100
       response_json_depth:5
-      user:userID
+      user_id:userID
     , (e) ->
       if e.success
+
         i = 0
         while i < e.reviews.length
           review = e.reviews[i]
@@ -157,7 +159,6 @@ class kloudService
                   shopFlg:e.places[0].custom_fields.shopFlg
                 
               shopLists.push data
-              Ti.API.info shopLists
 
             else
               Ti.API.info "no review data"
