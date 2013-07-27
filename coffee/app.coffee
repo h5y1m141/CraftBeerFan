@@ -40,5 +40,6 @@ if configurationWizard is null or typeof configurationWizard is "undefined"
   startPoint = 0
   client.useMenu(startPoint)
 else
-  mainController = require("controller/mainController")
-  new mainController()
+  MainController = require("controller/mainController")
+  mainController = new MainController()
+  mainController.isLogin()

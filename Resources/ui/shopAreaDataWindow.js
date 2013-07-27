@@ -69,6 +69,7 @@ shopAreaDataWindow = (function() {
     shopDataRowTable.finishLayout();
     this.shopAreaDataWindow.add(shopDataRowTable);
     activeTab = Ti.API._activeTab;
+    Ti.App.Analytics.trackPageview("/window/shopAreaDataWindow");
     return activeTab.open(this.shopAreaDataWindow);
   }
 
@@ -81,6 +82,7 @@ shopAreaDataWindow = (function() {
       height: 44
     });
     backButton.addEventListener('click', function(e) {
+      Ti.App.Analytics.trackPageview("/window/listWindow");
       return _this.shopAreaDataWindow.close({
         animated: true
       });

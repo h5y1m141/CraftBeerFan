@@ -1,4 +1,4 @@
-var Client, Config, analytics, client, config, configurationWizard, gaKey, gaModule, mainController, startPoint;
+var Client, Config, MainController, analytics, client, config, configurationWizard, gaKey, gaModule, mainController, startPoint;
 
 configurationWizard = Ti.App.Properties.getBool("configurationWizard");
 
@@ -48,6 +48,7 @@ if (configurationWizard === null || typeof configurationWizard === "undefined") 
   startPoint = 0;
   client.useMenu(startPoint);
 } else {
-  mainController = require("controller/mainController");
-  new mainController();
+  MainController = require("controller/mainController");
+  mainController = new MainController();
+  mainController.isLogin();
 }

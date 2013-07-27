@@ -43,30 +43,22 @@ kloudService = (function() {
   };
 
   kloudService.prototype.fbLogin = function(callback) {
-    var fb;
+    var fb,
+      _this = this;
     fb = require('facebook');
     fb.appid = this._getAppID();
     fb.permissions = ['read_stream'];
     fb.forceDialogAuth = true;
     fb.addEventListener('login', function(e) {
-      var that, token;
+      var token;
       token = fb.accessToken;
-      that = this;
       if (e.success) {
         if (e.success) {
-          return that.Cloud.SocialIntegrations.externalAccountLogin({
+          return _this.Cloud.SocialIntegrations.externalAccountLogin({
             type: "facebook",
             token: token
           }, function(e) {
-            var user;
-            if (e.success) {
-              user = e.users[0];
-              Ti.API.info("User  = " + JSON.stringify(user));
-              Ti.App.Properties.setString("currentUserId", user.id);
-              return callback(user.id);
-            } else {
-              return alert("Error: " + ((e.error && e.message) || JSON.stringify(e)));
-            }
+            return callback(e);
           });
         }
       } else if (e.error) {
@@ -190,15 +182,6 @@ kloudService = (function() {
     });
   };
 
-  kloudService.prototype._getAppID = function() {
-    var appid, config, file, json;
-    config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json");
-    file = config.read().toString();
-    json = JSON.parse(file);
-    appid = json.facebook.appid;
-    return appid;
-  };
-
   kloudService.prototype.findShopDataBy = function(prefectureName, callback) {
     return this.Cloud.Places.query({
       page: 1,
@@ -229,6 +212,34 @@ kloudService = (function() {
         return Ti.API.info("Error:\n" + ((e.error && e.message) || JSON.stringify(e)));
       }
     });
+  };
+
+  kloudService.prototype.signUP = function(userID, password, callback) {
+    return this.Cloud.Users.create({
+      username: userID,
+      email: userID,
+      password: password,
+      password_confirmation: password
+    }, function(result) {
+      return callback(result);
+    });
+  };
+
+  kloudService.prototype.getCurrentUserInfo = function(currentUserId, callback) {
+    return this.Cloud.Users.show({
+      user_id: currentUserId
+    }, function(result) {
+      return callback(result);
+    });
+  };
+
+  kloudService.prototype._getAppID = function() {
+    var appid, config, file, json;
+    config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json");
+    file = config.read().toString();
+    json = JSON.parse(file);
+    appid = json.facebook.appid;
+    return appid;
   };
 
   return kloudService;
