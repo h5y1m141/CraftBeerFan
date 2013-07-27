@@ -69,7 +69,7 @@ mapWindow = (function() {
       Ti.API.info("map view click event");
       if (e.clicksource === "rightButton") {
         data = {
-          name: e.title,
+          shopName: e.title,
           shopAddress: e.annotation.shopAddress,
           phoneNumber: e.annotation.phoneNumber,
           latitude: e.annotation.latitude,
