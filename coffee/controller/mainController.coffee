@@ -1,16 +1,33 @@
 class mainController
   constructor:() ->
+    
   createTabGroup:() ->
     # myPage用に現在のログインIDを収得した上でユーザ情報取得する
     currentUserId = Ti.App.Properties.getString "currentUserId"
-
+    userName = Ti.App.Properties.getString "userName"
+    password = Ti.App.Properties.getString "currentUserPassword"
+    loginType = Ti.App.Properties.getString "loginType"
     KloudService = require("model/kloudService")
-    kloudService = new KloudService()
-    kloudService.getCurrentUserInfo(currentUserId, (result) =>
-      if result.success
-        user = result.users[0]
-        Ti.App.Properties.setString "currentUserName","#{user.username}"
-    )
+    @kloudService = new KloudService()
+    Ti.API.info "loginType is #{loginType} userName is #{userName} password is #{password}"
+    if loginType is "facebook"
+      @kloudService.fbLogin( (result) ->
+        if result.success
+          user = result.users[0]
+          Ti.App.Properties.setString "currentUserName","#{user.first_name} #{user.last_name}"
+      )
+    else
+      @kloudService.cbFanLogin(userName,password, (result) ->
+        if result.success
+          user = result.users[0]
+          Ti.App.Properties.setString "currentUserName","#{user.username}"
+      )
+    
+    # kloudService.getCurrentUserInfo(currentUserId, (result) =>
+    #   if result.success
+    #     user = result.users[0]
+    #     Ti.App.Properties.setString "currentUserName","#{user.username}"
+    # )
     
     tabGroup = Ti.UI.createTabGroup
       tabsBackgroundColor:"#f9f9f9"
@@ -71,6 +88,8 @@ class mainController
       if result.success
         user = result.users[0]
         Ti.App.Properties.setString "currentUserId",user.id
+        Ti.App.Properties.setString "userName",userID
+        Ti.App.Properties.setString "currentUserPassword",password
         Ti.App.Properties.setString "loginType","craftbeer-fan"
         @createTabGroup()
       else

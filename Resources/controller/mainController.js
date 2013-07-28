@@ -5,18 +5,31 @@ mainController = (function() {
   function mainController() {}
 
   mainController.prototype.createTabGroup = function() {
-    var KloudService, ListWindow, MapWindow, MypageWindow, currentUserId, kloudService, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup,
-      _this = this;
+    var KloudService, ListWindow, MapWindow, MypageWindow, currentUserId, listTab, listWindow, loginType, mapTab, mapWindow, mypageTab, mypageWindow, password, tabGroup, userName;
     currentUserId = Ti.App.Properties.getString("currentUserId");
+    userName = Ti.App.Properties.getString("userName");
+    password = Ti.App.Properties.getString("currentUserPassword");
+    loginType = Ti.App.Properties.getString("loginType");
     KloudService = require("model/kloudService");
-    kloudService = new KloudService();
-    kloudService.getCurrentUserInfo(currentUserId, function(result) {
-      var user;
-      if (result.success) {
-        user = result.users[0];
-        return Ti.App.Properties.setString("currentUserName", "" + user.username);
-      }
-    });
+    this.kloudService = new KloudService();
+    Ti.API.info("loginType is " + loginType + " userName is " + userName + " password is " + password);
+    if (loginType === "facebook") {
+      this.kloudService.fbLogin(function(result) {
+        var user;
+        if (result.success) {
+          user = result.users[0];
+          return Ti.App.Properties.setString("currentUserName", "" + user.first_name + " " + user.last_name);
+        }
+      });
+    } else {
+      this.kloudService.cbFanLogin(userName, password, function(result) {
+        var user;
+        if (result.success) {
+          user = result.users[0];
+          return Ti.App.Properties.setString("currentUserName", "" + user.username);
+        }
+      });
+    }
     tabGroup = Ti.UI.createTabGroup({
       tabsBackgroundColor: "#f9f9f9",
       shadowImage: "ui/image/shadowimage.png",
@@ -70,6 +83,8 @@ mainController = (function() {
       if (result.success) {
         user = result.users[0];
         Ti.App.Properties.setString("currentUserId", user.id);
+        Ti.App.Properties.setString("userName", userID);
+        Ti.App.Properties.setString("currentUserPassword", password);
         Ti.App.Properties.setString("loginType", "craftbeer-fan");
         return _this.createTabGroup();
       } else {
