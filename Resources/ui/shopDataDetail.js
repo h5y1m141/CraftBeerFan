@@ -206,14 +206,15 @@ shopDataDetail = (function() {
       modalWindow.add(textArea);
       modalWindow.add(label);
       addNewIcon.addEventListener('click', function(e) {
-        var KloudService, kloudService;
+        var KloudService, currentUserId, kloudService;
         activityIndicator.show();
         Ti.API.info("contents is " + contents);
         ratings = ratings;
         contents = contents;
         KloudService = require("model/kloudService");
         kloudService = new KloudService();
-        return kloudService.reviewsCreate(ratings, contents, shopName, function(value) {
+        currentUserId = Ti.App.Properties.getString("currentUserId");
+        return kloudService.reviewsCreate(ratings, contents, shopName, currentUserId, function(value) {
           activityIndicator.hide();
           if (value = "success") {
             alert("お気に入りに登録しました");

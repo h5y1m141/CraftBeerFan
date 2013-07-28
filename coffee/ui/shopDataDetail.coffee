@@ -210,7 +210,8 @@ class shopDataDetail
         contents = contents
         KloudService = require("model/kloudService")
         kloudService = new KloudService()
-        kloudService.reviewsCreate(ratings,contents,shopName,(value)->
+        currentUserId = Ti.App.Properties.getString "currentUserId"
+        kloudService.reviewsCreate(ratings,contents,shopName,currentUserId,(value)->
 
           activityIndicator.hide()
           if value = "success"
