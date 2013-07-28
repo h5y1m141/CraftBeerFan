@@ -1,8 +1,10 @@
-var kloudService;
+var kloudService,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 kloudService = (function() {
 
   function kloudService() {
+    this.reviewsCreate = __bind(this.reviewsCreate, this);
     this.Cloud = require('ti.cloud');
   }
 
@@ -42,6 +44,15 @@ kloudService = (function() {
     });
   };
 
+  kloudService.prototype.cbFanLogin = function(userID, password, callback) {
+    this.Cloud.Users.login({
+      login: userID,
+      password: password
+    }, function(result) {
+      return callback(result);
+    });
+  };
+
   kloudService.prototype.fbLogin = function(callback) {
     var fb,
       _this = this;
@@ -77,9 +88,10 @@ kloudService = (function() {
     }
   };
 
-  kloudService.prototype.reviewsCreate = function(ratings, contents, shopName, callback) {
+  kloudService.prototype.reviewsCreate = function(ratings, contents, shopName, currentUserId, callback) {
     var that;
     that = this.Cloud;
+    Ti.API.info("reviewsCreate start shopName is " + shopName);
     this.Cloud.Places.query({
       page: 1,
       per_page: 1,
@@ -95,10 +107,12 @@ kloudService = (function() {
           rating: ratings,
           content: contents,
           place_id: id,
+          user_id: currentUserId,
           custom_fields: {
             place_id: id
           }
         }, function(e) {
+          alert(e);
           if (e.success) {
             return callback("success");
           } else {

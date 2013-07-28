@@ -31,7 +31,15 @@ class kloudService
         return callback(result)
       else
         Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
-
+        
+  cbFanLogin:(userID,password,callback) ->
+    @Cloud.Users.login
+      login:userID
+      password:password
+    , (result) ->
+      return callback(result)
+    
+    return
   fbLogin:(callback) ->
 
     fb = require('facebook');
@@ -67,25 +75,30 @@ class kloudService
     fb.authorize()  unless fb.loggedIn
 
     return
-  reviewsCreate:(ratings,contents,shopName,callback) ->
+  reviewsCreate:(ratings,contents,shopName,currentUserId,callback) =>
     that = @Cloud
+    Ti.API.info "reviewsCreate start shopName is #{shopName}"
     @Cloud.Places.query
       page: 1
       per_page: 1
-      where:{name:shopName}
+      where:
+        name:shopName
     , (e) ->
       if e.success
         id = e.places[0].id
+        
         Ti.API.info "id is #{id}. and ratings is #{ratings} and contents is #{contents}"
         
         that.Reviews.create
           rating:ratings
           content:contents              
           place_id:id
+          user_id:currentUserId
           custom_fields:
             place_id:id
             
         , (e) ->
+
           if e.success
             callback("success")
           else
