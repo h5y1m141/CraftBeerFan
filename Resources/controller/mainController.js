@@ -1,8 +1,19 @@
-var mainController;
+var mainController,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 mainController = (function() {
 
-  function mainController() {}
+  function mainController() {
+    this._login = __bind(this._login, this);
+
+    this.getReviewInfo = __bind(this.getReviewInfo, this);
+
+    this.createReview = __bind(this.createReview, this);
+
+    var KloudService;
+    KloudService = require("model/kloudService");
+    this.kloudService = new KloudService();
+  }
 
   mainController.prototype.init = function() {
     var LoginForm, currentUserId, loginForm, win;
@@ -25,31 +36,7 @@ mainController = (function() {
   };
 
   mainController.prototype.createTabGroup = function() {
-    var KloudService, ListWindow, MapWindow, MypageWindow, currentUserId, listTab, listWindow, loginType, mapTab, mapWindow, mypageTab, mypageWindow, password, tabGroup, userName;
-    currentUserId = Ti.App.Properties.getString("currentUserId");
-    userName = Ti.App.Properties.getString("userName");
-    password = Ti.App.Properties.getString("currentUserPassword");
-    loginType = Ti.App.Properties.getString("loginType");
-    KloudService = require("model/kloudService");
-    this.kloudService = new KloudService();
-    Ti.API.info("loginType is " + loginType + " userName is " + userName + " password is " + password);
-    if (loginType === "facebook") {
-      this.kloudService.fbLogin(function(result) {
-        var user;
-        if (result.success) {
-          user = result.users[0];
-          return Ti.App.Properties.setString("currentUserName", "" + user.first_name + " " + user.last_name);
-        }
-      });
-    } else {
-      this.kloudService.cbFanLogin(userName, password, function(result) {
-        var user;
-        if (result.success) {
-          user = result.users[0];
-          return Ti.App.Properties.setString("currentUserName", "" + user.username);
-        }
-      });
-    }
+    var ListWindow, MapWindow, MypageWindow, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
     tabGroup = Ti.UI.createTabGroup({
       tabsBackgroundColor: "#f9f9f9",
       shadowImage: "ui/image/shadowimage.png",
@@ -130,6 +117,62 @@ mainController = (function() {
         return alert("Facebookアカウントでログイン失敗しました");
       }
     });
+  };
+
+  mainController.prototype.createReview = function(ratings, contents, shopName, currentUserId, callback) {
+    var that;
+    that = this;
+    return this._login(function(loginResult) {
+      if (loginResult.success) {
+        return that.kloudService.reviewsCreate(ratings, contents, shopName, currentUserId, function(reviewResutl) {
+          return callback(reviewResutl);
+        });
+      } else {
+        return alert("登録されているユーザ情報でサーバにログインできませんでした");
+      }
+    });
+  };
+
+  mainController.prototype.getReviewInfo = function(callback) {
+    var that;
+    that = this;
+    this._login(function(result) {
+      if (result.success) {
+        return that.kloudService.reviewsQuery(function(result) {
+          return callback(result);
+        });
+      } else {
+        return alert("登録されているユーザ情報でサーバにログインできませんでした");
+      }
+    });
+  };
+
+  mainController.prototype._login = function(callback) {
+    var currentUserId, loginType, password, userName;
+    currentUserId = Ti.App.Properties.getString("currentUserId");
+    userName = Ti.App.Properties.getString("userName");
+    password = Ti.App.Properties.getString("currentUserPassword");
+    loginType = Ti.App.Properties.getString("loginType");
+    Ti.API.info("loginType is " + loginType + " userName is " + userName + " password is " + password);
+    if (loginType === "facebook") {
+      return this.kloudService.fbLogin(function(result) {
+        var user;
+        if (result.success) {
+          user = result.users[0];
+          Ti.App.Properties.setString("currentUserName", "" + user.first_name + " " + user.last_name);
+          return callback(result);
+        }
+      });
+    } else {
+      return this.kloudService.cbFanLogin(userName, password, function(result) {
+        var user;
+        if (result.success) {
+          user = result.users[0];
+          Ti.App.Properties.setString("currentUserName", "" + user.username);
+          return callback(result);
+        }
+      });
+    }
   };
 
   return mainController;

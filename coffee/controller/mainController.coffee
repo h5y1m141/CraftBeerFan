@@ -1,5 +1,7 @@
 class mainController
   constructor:() ->
+    KloudService = require("model/kloudService")
+    @kloudService = new KloudService()
     
   init:() ->
     
@@ -23,32 +25,6 @@ class mainController
 
     return    
   createTabGroup:() ->
-    # myPage用に現在のログインIDを収得した上でユーザ情報取得する
-    currentUserId = Ti.App.Properties.getString "currentUserId"
-    userName = Ti.App.Properties.getString "userName"
-    password = Ti.App.Properties.getString "currentUserPassword"
-    loginType = Ti.App.Properties.getString "loginType"
-    KloudService = require("model/kloudService")
-    @kloudService = new KloudService()
-    Ti.API.info "loginType is #{loginType} userName is #{userName} password is #{password}"
-    if loginType is "facebook"
-      @kloudService.fbLogin( (result) ->
-        if result.success
-          user = result.users[0]
-          Ti.App.Properties.setString "currentUserName","#{user.first_name} #{user.last_name}"
-      )
-    else
-      @kloudService.cbFanLogin(userName,password, (result) ->
-        if result.success
-          user = result.users[0]
-          Ti.App.Properties.setString "currentUserName","#{user.username}"
-      )
-    
-    # kloudService.getCurrentUserInfo(currentUserId, (result) =>
-    #   if result.success
-    #     user = result.users[0]
-    #     Ti.App.Properties.setString "currentUserName","#{user.username}"
-    # )
     
     tabGroup = Ti.UI.createTabGroup
       tabsBackgroundColor:"#f9f9f9"
@@ -132,5 +108,55 @@ class mainController
         alert "Facebookアカウントでログイン失敗しました"
     )
     return
+  createReview:(ratings,contents,shopName,currentUserId,callback) =>
+    # review情報を取得する際には念のため最初にログインした上で
+    # 該当のクエリ発行する
+    that = @
+    @_login( (loginResult) ->
+      if loginResult.success
+        that.kloudService.reviewsCreate(ratings,contents,shopName,currentUserId,(reviewResutl) ->
+          callback(reviewResutl)
+        )
+      else
+        alert "登録されているユーザ情報でサーバにログインできませんでした"
+    )
+  getReviewInfo:(callback) =>
+    # review情報を取得する際には念のため最初にログインした上で
+    # 該当のクエリ発行する
+    that = @
+    @_login( (result) ->
 
+      if result.success
+        that.kloudService.reviewsQuery((result) ->
+          callback(result)
+        )
+      else
+        alert "登録されているユーザ情報でサーバにログインできませんでした"
+    )
+    return
+
+      
+        
+  _login:(callback) =>
+    # 現在のログインIDを収得した上でユーザ情報取得する
+    currentUserId = Ti.App.Properties.getString "currentUserId"
+    userName = Ti.App.Properties.getString "userName"
+    password = Ti.App.Properties.getString "currentUserPassword"
+    loginType = Ti.App.Properties.getString "loginType"
+    Ti.API.info "loginType is #{loginType} userName is #{userName} password is #{password}"
+    if loginType is "facebook"
+      @kloudService.fbLogin( (result) ->
+        if result.success
+          user = result.users[0]
+          Ti.App.Properties.setString "currentUserName","#{user.first_name} #{user.last_name}"
+          return callback result
+      )
+    else
+      @kloudService.cbFanLogin(userName,password, (result) ->
+        if result.success
+          user = result.users[0]
+          Ti.App.Properties.setString "currentUserName","#{user.username}"
+          return callback result          
+      )
+    
 module.exports = mainController  
