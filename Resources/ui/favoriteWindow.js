@@ -3,7 +3,7 @@ var favoriteWindow;
 favoriteWindow = (function() {
 
   function favoriteWindow() {
-    var ActivityIndicator, KloudService, ShopDataDetail, activeTab, activityIndicator, keyColor, kloudService, shopDataDetail, shopDetailTable, userID,
+    var ActivityIndicator, MainController, ShopDataDetail, activeTab, activityIndicator, keyColor, mainController, shopDataDetail, shopDetailTable,
       _this = this;
     keyColor = "#f9f9f9";
     this.baseColor = {
@@ -31,10 +31,9 @@ favoriteWindow = (function() {
       top: 0,
       left: 0
     });
-    KloudService = require("model/kloudService");
-    kloudService = new KloudService();
-    userID = Ti.App.Properties.getString("currentUserId");
-    kloudService.reviewsQuery(userID, function(items) {
+    MainController = require("controller/mainController");
+    mainController = new MainController();
+    mainController.getReviewInfo(function(items) {
       var item, row, rows, titleLabel, _i, _len;
       activityIndicator.hide();
       rows = [];

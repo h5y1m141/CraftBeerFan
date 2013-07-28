@@ -28,12 +28,14 @@ class favoriteWindow
       top:0
       left:0
 
-    KloudService = require("model/kloudService")
-    kloudService = new KloudService()
-    userID = Ti.App.Properties.getString "currentUserId"
-
-    kloudService.reviewsQuery(userID,(items) =>
-
+    # KloudService = require("model/kloudService")
+    # kloudService = new KloudService()
+    # userID = Ti.App.Properties.getString "currentUserId"
+    
+    # kloudService.reviewsQuery(userID,(items) =>
+    MainController = require("controller/mainController")
+    mainController = new MainController()
+    mainController.getReviewInfo( (items) =>
       activityIndicator.hide()
       rows = []
       if items.length is 0

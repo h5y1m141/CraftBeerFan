@@ -108,7 +108,7 @@ class kloudService
         
     return
     
-  reviewsQuery:(callback) ->
+  reviewsQuery:(callback) =>
     userID = Ti.App.Properties.getString "currentUserId"
     Ti.API.info "reviewsQuery start.userID is #{userID}"
     shopLists = []
@@ -117,11 +117,13 @@ class kloudService
     # 該当するユーザのお気に入り情報を検索する
     @Cloud.Reviews.query
       page: 1
-      per_page:100
+      per_page:50
       response_json_depth:5
-      user_id:userID
+      where:
+        user_id:userID
+      # user_id:userID
     , (e) ->
-      if e.success
+
         Ti.API.info "お気に入り情報が見つかったのでお店のデータを取得。お店の件数:#{e.reviews.length}"
         i = 0
         while i < e.reviews.length
@@ -184,9 +186,6 @@ class kloudService
             clearInterval(timerId)
         ),10
         
-
-      else
-        alert "データ取得できませんでした"
     
 
   findShopDataBy:(prefectureName,callback) ->
