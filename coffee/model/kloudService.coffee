@@ -87,7 +87,7 @@ class kloudService
       if e.success
         id = e.places[0].id
         
-        Ti.API.info "id is #{id}. and ratings is #{ratings} and contents is #{contents}"
+        Ti.API.info "placeID is #{id}. and ratings is #{ratings} and contents is #{contents}"
         
         that.Reviews.create
           rating:ratings
@@ -97,19 +97,20 @@ class kloudService
           custom_fields:
             place_id:id
             
-        , (e) ->
+        , (result) ->
 
           if e.success
-            callback("success")
+            callback(result)
           else
-            callback("error")
+            callback(result)
       else
         Ti.API.info "Error:\n"
         
     return
     
-  reviewsQuery:(userID,callback) ->
-    Ti.API.info "reviewsQuery start userID is #{userID}"
+  reviewsQuery:(callback) ->
+    userID = Ti.App.Properties.getString "currentUserId"
+    Ti.API.info "reviewsQuery start.userID is #{userID}"
     shopLists = []
     placeIDList = []
     that = @Cloud
@@ -121,7 +122,7 @@ class kloudService
       user_id:userID
     , (e) ->
       if e.success
-
+        Ti.API.info "お気に入り情報が見つかったのでお店のデータを取得。お店の件数:#{e.reviews.length}"
         i = 0
         while i < e.reviews.length
           review = e.reviews[i]

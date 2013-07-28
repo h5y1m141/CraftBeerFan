@@ -102,7 +102,7 @@ kloudService = (function() {
       var id;
       if (e.success) {
         id = e.places[0].id;
-        Ti.API.info("id is " + id + ". and ratings is " + ratings + " and contents is " + contents);
+        Ti.API.info("placeID is " + id + ". and ratings is " + ratings + " and contents is " + contents);
         return that.Reviews.create({
           rating: ratings,
           content: contents,
@@ -111,12 +111,11 @@ kloudService = (function() {
           custom_fields: {
             place_id: id
           }
-        }, function(e) {
-          alert(e);
+        }, function(result) {
           if (e.success) {
-            return callback("success");
+            return callback(result);
           } else {
-            return callback("error");
+            return callback(result);
           }
         });
       } else {
@@ -125,9 +124,10 @@ kloudService = (function() {
     });
   };
 
-  kloudService.prototype.reviewsQuery = function(userID, callback) {
-    var placeIDList, shopLists, that;
-    Ti.API.info("reviewsQuery start userID is " + userID);
+  kloudService.prototype.reviewsQuery = function(callback) {
+    var placeIDList, shopLists, that, userID;
+    userID = Ti.App.Properties.getString("currentUserId");
+    Ti.API.info("reviewsQuery start.userID is " + userID);
     shopLists = [];
     placeIDList = [];
     that = this.Cloud;
@@ -139,6 +139,7 @@ kloudService = (function() {
     }, function(e) {
       var i, item, length, placeQueryCounter, review, timerId, _i, _len;
       if (e.success) {
+        Ti.API.info("お気に入り情報が見つかったのでお店のデータを取得。お店の件数:" + e.reviews.length);
         i = 0;
         while (i < e.reviews.length) {
           review = e.reviews[i];
