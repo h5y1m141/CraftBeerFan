@@ -18,29 +18,33 @@ Titanium Mobile(Titanium SDK 3.1.0.GA)にて開発しており、2013年6月28�
 
 おそらくこの機能を使うことが多いかと思い、起動直後にこの画面が開くようになってます
 
-![起動時の画面](https://s3-ap-northeast-1.amazonaws.com/craftbeer-fan/mainMap.jpg)
+![起動時の地図](https://s3-ap-northeast-1.amazonaws.com/craftbeer-fan.info/image/map01.png)
 
 地図上にお店の場所にピンがたっており、それをタッチすることでお店の詳細情報に画面遷移します
 
-![起動時の画面](https://s3-ap-northeast-1.amazonaws.com/craftbeer-fan/shopDetail.jpg)
+![お店の詳細情報](https://s3-ap-northeast-1.amazonaws.com/craftbeer-fan.info/image/shopdata01.png)
 
 
 ### 都道府県別に確認する
 
-こちらの機能については出張・旅行などで土地勘のない地域に行くけど折角なのでクラフトビールが飲めるお店がどの程度あるのか事前に下調べしたいという状況を想定して実装しました。
+出張・旅行などで土地勘のない地域に行くけど折角なのでクラフトビールが飲めるお店がどの程度あるのか事前に下調べしたいという状況を想定して実装しました。
 
 タブをタッチすると、以下のように都道府県名のリストが標示されます
-![起動時の画面](https://s3-ap-northeast-1.amazonaws.com/craftbeer-fan/areList.jpg)
+
+![リスト情報一覧](https://s3-ap-northeast-1.amazonaws.com/craftbeer-fan.info/image/list04.png)
 
 
+任意のエリアを選択するとそのエリアに該当する都道府県名が標示されます
 
-任意の都道府県を選択するとその地域のお店情報がリスト表示されます
+![都道府県表示](https://s3-ap-northeast-1.amazonaws.com/craftbeer-fan.info/image/list03.png)
 
-![起動時の画面](https://s3-ap-northeast-1.amazonaws.com/craftbeer-fan/shopList.jpg)
+東京を選択するとこのように東京都にあるお店が標示されます
 
-任意のお店をタッチすることで詳細情報に画面遷移します
+![都内のお店リスト](https://s3-ap-northeast-1.amazonaws.com/craftbeer-fan.info/image/list02.png)
 
-![起動時の画面](https://s3-ap-northeast-1.amazonaws.com/craftbeer-fan/shopDetail.jpg)
+都内のようにお店が多数ある場合に、閲覧性に欠ける部分があるため、住所による絞り込みもできます
+
+![都内のお店リスト](https://s3-ap-northeast-1.amazonaws.com/craftbeer-fan.info/image/list01.png)
 
 
 
