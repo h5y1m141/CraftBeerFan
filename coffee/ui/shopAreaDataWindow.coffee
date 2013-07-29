@@ -12,10 +12,39 @@ class shopAreaDataWindow
       backgroundColor:@baseColor.backgroundColor
       navBarHidden:false
       tabBarHidden:false
+          
+    searchBar = Titanium.UI.createSearchBar
+      barColor:@baseColor.barColor
+      backgroundColor:"#ccc"
+      showCancel:false
+      hintText:"ここに住所入力すると絞り込めます"
+      
+    
+      
+    searchBar.addEventListener("change", (e) ->
+      Ti.API.info "change event start. e.value is #{e.value}"
+      e.value
+    )  
+    searchBar.addEventListener("return", (e) ->
+      Ti.App.Analytics.trackEvent('shopAreaDataWindow','search','searchBar',1)
+      searchBar.blur()
+    )
+    searchBar.addEventListener("focus", (e) ->
+      searchBar.setShowCancel(false)
+
+    )
+    searchBar.addEventListener("cancel", (e) ->
+      searchBar.blur()
+    )
+
       
     shopDataRowTable = Ti.UI.createTableView
       width:'auto'
       height:'auto'
+      top:0
+      left:0
+      search:searchBar
+      filterAttribute: "shopAddress"
       backgroundColor:@baseColor.barColor
       
     shopDataRowTable.addEventListener('click',(e) ->
@@ -42,6 +71,7 @@ class shopAreaDataWindow
 
     # 画面に遷移する
     activeTab = Ti.API._activeTab
+    Ti.App.Analytics.trackPageview "/window/shopAreaDataWindow"
     return activeTab.open(@shopAreaDataWindow)
     
 
@@ -52,8 +82,10 @@ class shopAreaDataWindow
       height:44
       
     backButton.addEventListener('click',(e) =>
+      Ti.App.Analytics.trackPageview "/window/listWindow"
       return @shopAreaDataWindow.close({animated:true})
-    )      
+    )
+
       
     @shopAreaDataWindow.leftNavButton = backButton
     shopAreaDataWindowTitle = Ti.UI.createLabel
@@ -119,6 +151,7 @@ class shopAreaDataWindow
       borderWidth:0
       hasChild:true
       placeData:placeData
+      shopAddress:placeData.shopAddress
       className:'shopData'
       backgroundColor:@baseColor.barColor
       

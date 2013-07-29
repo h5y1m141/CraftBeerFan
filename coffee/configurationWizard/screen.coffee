@@ -108,8 +108,10 @@ class screen
 
     @endPointBtn.addEventListener('click',(e)->
       Ti.App.Properties.setBool "configurationWizard", false
-      mainController = require("controller/mainController")
-      new mainController()
+      MainController = require("controller/mainController")
+      mainController = new MainController()
+      mainController.init()
+
     )    
       
     @currentView = Ti.UI.createView

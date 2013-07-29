@@ -87,7 +87,7 @@ class listWindow
       that = @
       if categoryName is "お気に入り"
         FavoriteWindow = require("ui/favoriteWindow")
-        favoriteWindow = new FavoriteWindow()
+        new FavoriteWindow()
         
       else
         selectedColor = @prefectureColorSet.name[categoryName]
@@ -151,6 +151,8 @@ class listWindow
     )
     return result
   _createNavbarElement:() ->
+    
+    
     listWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
       color:'#333'

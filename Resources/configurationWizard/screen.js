@@ -101,10 +101,11 @@ screen = (function() {
       text: "START"
     });
     this.endPointBtn.addEventListener('click', function(e) {
-      var mainController;
+      var MainController, mainController;
       Ti.App.Properties.setBool("configurationWizard", false);
-      mainController = require("controller/mainController");
-      return new mainController();
+      MainController = require("controller/mainController");
+      mainController = new MainController();
+      return mainController.init();
     });
     this.currentView = Ti.UI.createView({
       width: 300,

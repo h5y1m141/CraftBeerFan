@@ -206,41 +206,22 @@ shopDataDetail = (function() {
       modalWindow.add(textArea);
       modalWindow.add(label);
       addNewIcon.addEventListener('click', function(e) {
+        var MainController, currentUserId, mainController;
         activityIndicator.show();
         Ti.API.info("contents is " + contents);
         ratings = ratings;
         contents = contents;
-        return Cloud.Places.query({
-          page: 1,
-          per_page: 1,
-          where: {
-            name: shopName
-          }
-        }, function(e) {
-          var id;
-          if (e.success) {
-            id = e.places[0].id;
-            Ti.API.info("id is " + id);
-            return Cloud.Reviews.create({
-              rating: ratings,
-              content: contents,
-              place_id: id,
-              custom_fields: {
-                place_id: id
-              }
-            }, function(e) {
-              activityIndicator.hide();
-              if (e.success) {
-                alert("お気に入りに登録しました");
-                return modalWindow.close();
-              } else {
-                alert("すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした");
-                return modalWindow.close();
-              }
-            });
+        currentUserId = Ti.App.Properties.getString("currentUserId");
+        MainController = require("controller/mainController");
+        mainController = new MainController();
+        return mainController.createReview(ratings, contents, shopName, currentUserId, function(result) {
+          activityIndicator.hide();
+          if (result.success) {
+            alert("お気に入りに登録しました");
           } else {
-            return Ti.API.info("Error:\n");
+            alert("すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした");
           }
+          return modalWindow.close();
         });
       });
       return modalWindow.open({

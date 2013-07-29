@@ -1,7 +1,31 @@
 class mainController
   constructor:() ->
-    Cloud = require('ti.cloud')
+    KloudService = require("model/kloudService")
+    @kloudService = new KloudService()
+    
+  init:() ->
+    
+    currentUserId = Ti.App.Properties.getString "currentUserId"
 
+    if currentUserId is null or typeof currentUserId is "undefined"
+      win = Ti.UI.createWindow
+        title:"ユーザ登録画面"
+        barColor:"#f9f9f9"
+        backgroundColor: "#f3f3f3"
+        tabBarHidden:false
+        navBarHidden:false
+      
+      LoginForm = require("ui/loginForm")
+      loginForm = new LoginForm()
+      win.add loginForm
+      win.open()      
+      
+    else
+      @createTabGroup()
+
+    return    
+  createTabGroup:() ->
+    
     tabGroup = Ti.UI.createTabGroup
       tabsBackgroundColor:"#f9f9f9"
       shadowImage:"ui/image/shadowimage.png"
@@ -16,7 +40,11 @@ class mainController
         return
 
       Ti.API._activeTab = tabGroup._activeTab;
-      Ti.API.info tabGroup._activeTab
+
+      # ページビューを取得したいので以下を参考にしてイベントリスナー設定  
+      # http://hirofukami.com/2013/05/31/titanium-google-analytics/
+
+      Ti.App.Analytics.trackPageview "/tab/#{tabGroup._activeTab.windowName}"
       return
     )
 
@@ -25,12 +53,14 @@ class mainController
     mapTab = Titanium.UI.createTab
       window:mapWindow
       icon:"ui/image/light_pin.png"
+      windowName:"mapWindow"
 
     MypageWindow = require("ui/mypageWindow")
     mypageWindow = new MypageWindow()
     mypageTab = Titanium.UI.createTab
       window:mypageWindow
       icon:"ui/image/light_gears.png"
+      windowName:"mypageWindow"      
 
 
 
@@ -39,12 +69,94 @@ class mainController
     listTab = Titanium.UI.createTab
       window:listWindow
       icon:"ui/image/light_list.png"
-
+      windowName:"listWindow"      
 
     tabGroup.addTab mapTab
     tabGroup.addTab listTab
     tabGroup.addTab mypageTab
-    tabGroup.open()    
+    tabGroup.open()
+    return
+    
+  signUP:(userID,password) ->
+    KloudService = require("model/kloudService")
+    kloudService = new KloudService()
+    kloudService.signUP(userID,password, (result) =>
 
+      if result.success
+        user = result.users[0]
+        Ti.App.Properties.setString "currentUserId",user.id
+        Ti.App.Properties.setString "userName",userID
+        Ti.App.Properties.setString "currentUserPassword",password
+        Ti.App.Properties.setString "loginType","craftbeer-fan"
+        @createTabGroup()
+      else
+        alert "アカウント登録に失敗しました"
+        Ti.API.info "Error:\n" + ((result.error and result.message) or JSON.stringify(result))    
+    )
+    return
+    
+  fbLogin:() ->
+    KloudService = require("model/kloudService")
+    kloudService = new KloudService()
+    kloudService.fbLogin( (result) =>
+      if result.success
+        user = result.users[0]
+        Ti.App.Properties.setString "currentUserId",user.id
+        Ti.App.Properties.setString "loginType","facebook"
+        @createTabGroup()
+      else
+        alert "Facebookアカウントでログイン失敗しました"
+    )
+    return
+  createReview:(ratings,contents,shopName,currentUserId,callback) =>
+    # review情報を取得する際には念のため最初にログインした上で
+    # 該当のクエリ発行する
+    that = @
+    @_login( (loginResult) ->
+      if loginResult.success
+        that.kloudService.reviewsCreate(ratings,contents,shopName,currentUserId,(reviewResutl) ->
+          callback(reviewResutl)
+        )
+      else
+        alert "登録されているユーザ情報でサーバにログインできませんでした"
+    )
+  getReviewInfo:(callback) =>
+    # review情報を取得する際には念のため最初にログインした上で
+    # 該当のクエリ発行する
+    that = @
+    @_login( (result) ->
+
+      if result.success
+        that.kloudService.reviewsQuery((result) ->
+          callback(result)
+        )
+      else
+        alert "登録されているユーザ情報でサーバにログインできませんでした"
+    )
+    return
+
+      
+        
+  _login:(callback) =>
+    # 現在のログインIDを収得した上でユーザ情報取得する
+    currentUserId = Ti.App.Properties.getString "currentUserId"
+    userName = Ti.App.Properties.getString "userName"
+    password = Ti.App.Properties.getString "currentUserPassword"
+    loginType = Ti.App.Properties.getString "loginType"
+    Ti.API.info "loginType is #{loginType} userName is #{userName} password is #{password}"
+    if loginType is "facebook"
+      @kloudService.fbLogin( (result) ->
+        if result.success
+          user = result.users[0]
+          Ti.App.Properties.setString "currentUserName","#{user.first_name} #{user.last_name}"
+          return callback result
+      )
+    else
+      @kloudService.cbFanLogin(userName,password, (result) ->
+        if result.success
+          user = result.users[0]
+          Ti.App.Properties.setString "currentUserName","#{user.username}"
+          return callback result          
+      )
     
 module.exports = mainController  

@@ -38,8 +38,8 @@ class mapWindow
       backgroundColor:@baseColor.backgroundColor
       navBarHidden:false
       tabBarHidden:false
-
-
+      
+  
     # 1.0から0.001の間で縮尺尺度を示している。
     # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
     
@@ -70,7 +70,7 @@ class mapWindow
       if e.clicksource is "rightButton"
 
         data =
-          name:e.title
+          shopName:e.title
           shopAddress:e.annotation.shopAddress
           phoneNumber:e.annotation.phoneNumber
           latitude: e.annotation.latitude

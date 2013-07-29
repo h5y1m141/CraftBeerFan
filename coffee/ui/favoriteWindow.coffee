@@ -12,36 +12,61 @@ class favoriteWindow
       backgroundColor: @baseColor.backgroundColor
       tabBarHidden:false
       navBarHidden:false
-
+      
+    ActivityIndicator = require("ui/activityIndicator")
+    activityIndicator = new ActivityIndicator()
+    @favoriteWindow.add activityIndicator
+    activityIndicator.show()
     @_createNavbarElement()  
       
     @table = Ti.UI.createTableView
       backgroundColor: @baseColor.backgroundColor
+      selectedBackgroundColor:@baseColor.backgroundColor
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       width:'auto'
       height:'auto'
       top:0
       left:0
-    @table.addEventListener('click',(e) ->
-      data =
-        shopName:e.row.placeData.name
-        shopAddress:e.row.placeData.address
-        phoneNumber:e.row.placeData.phone_number
-        latitude:e.row.placeData.latitude
-        longitude:e.row.placeData.longitude
-        
-      ShopDataDetailWindow = require("ui/shopDataDetailWindow")
-      new ShopDataDetailWindow(data)
-    )  
-    KloudService = require("model/kloudService")
-    kloudService = new KloudService()
-    userID = Ti.App.Properties.getString "currentUserId"
 
-    kloudService.reviewsQuery(userID,(items) =>
+    # KloudService = require("model/kloudService")
+    # kloudService = new KloudService()
+    # userID = Ti.App.Properties.getString "currentUserId"
+    
+    # kloudService.reviewsQuery(userID,(items) =>
+    MainController = require("controller/mainController")
+    mainController = new MainController()
+    mainController.getReviewInfo( (items) =>
+      activityIndicator.hide()
       rows = []
-      for item in items
-        row = @_createShopDataRow(item)
-        rows.push(row)
+      if items.length is 0
+        row = Ti.UI.createTableViewRow
+          width:'auto'
+          height:60
+          borderWidth:0
+          backgroundColor:@baseColor.barColor
+          selectedBackgroundColor:@baseColor.backgroundColor
+
+          color:"#333"
+        titleLabel = Ti.UI.createLabel
+          width:'auto'
+          height:'auto'
+          top:10
+          left:10
+          color:'#333'
+          font:
+            fontSize:16
+            fontWeight:'bold'
+            fontFamily : 'Rounded M+ 1p'
+          text:'登録されたお店がありません'            
+
+        row.add titleLabel
+        rows.push row
+
+      else  
+        
+        for item in items
+          row = @_createShopDataRow(item)
+          rows.push(row)
         
       @table.setData rows  
 
@@ -91,43 +116,190 @@ class favoriteWindow
     return
     
   _createShopDataRow:(placeData) ->
-
-    titleLabel = Ti.UI.createLabel
-      width:240
-      height:30
-      top:5
-      left:5
-      color:'#333'
-      font:
-        fontSize:18
-        fontWeight:'bold'
-        fontFamily : 'Rounded M+ 1p'
-      text:"#{placeData.shopName}"
-      
-    addressLabel = Ti.UI.createLabel
-      width:240
-      height:30
-      top:30
-      left:20
-      color:'#444'
-      font:
-        fontSize:14
-        fontFamily : 'Rounded M+ 1p'
-      text:"#{placeData.shopAddress}"
-
+    
     row = Ti.UI.createTableViewRow
       width:'auto'
       height:60
       borderWidth:0
-      hasChild:true
       placeData:placeData
       className:'shopData'
       backgroundColor:@baseColor.barColor
-      
+      selectedBackgroundColor:@baseColor.backgroundColor
+
+    titleLabel = Ti.UI.createLabel
+      width:200
+      height:20
+      top:10
+      left:50
+      color:'#333'
+      font:
+        fontSize:16
+        fontWeight:'bold'
+        fontFamily : 'Rounded M+ 1p'
+      text:"#{placeData.shopName}"
+
     row.add titleLabel
-    row.add addressLabel
+    moveNextWindowBtn = Ti.UI.createButton
+      top:10
+      right:5
+      width:40
+      height:40
+      content:placeData
+      selected:false
+      backgroundImage:"NONE"
+      borderWidth:0
+      borderRadius:20
+      color:'#bbb'
+      font:
+        fontSize: 24
+        fontFamily:'LigatureSymbols'
+      title:String.fromCharCode("0xe112")
+      
+    moveNextWindowBtn.addEventListener('click',(e) =>
+
+      data =
+        shopName:row.placeData.name
+        shopAddress:row.placeData.address
+        phoneNumber:row.placeData.phone_number
+        latitude:row.placeData.latitude
+        longitude:row.placeData.longitude
+        
+      ShopDataDetailWindow = require("ui/shopDataDetailWindow")
+      new ShopDataDetailWindow(data)
+    )
+    row.add moveNextWindowBtn
+    leftPostion = [50, 75, 100, 125, 150]
+    for i in [0..placeData.rating]
+      starIcon = Ti.UI.createButton
+        top:30
+        left:leftPostion[i]
+        width:20
+        height:20
+        selected:false
+        backgroundColor:@baseColor.barColor
+        backgroundImage:"NONE"
+        borderWidth:0
+        borderRadius:5
+        color:"#FFEE55"
+        font:
+          fontSize: 20
+          fontFamily:'LigatureSymbols'
+        title:String.fromCharCode("0xe121")
+      row.add starIcon
+
+    if typeof placeData.content is "undefined" or placeData.content is null
+      content = ""
+    else
+      commentView = @_createCommentView(placeData)
+      @favoriteWindow.add commentView
+      memoBtn = Ti.UI.createButton
+        top:5
+        left:5
+        width:40
+        height:40
+        content:placeData
+        selected:false
+        backgroundImage:"NONE"
+        borderWidth:0
+        borderRadius:0
+        color:'#ccc'
+        backgroundColor:@baseColor.barColor
+        font:
+          fontSize:28
+          fontFamily:'LigatureSymbols'
+        title:String.fromCharCode("0xe097")
+        
+      memoBtn.addEventListener('click',(e)=>
+        # tableViewは奥の方に下がったように見せたいので少しだけアニメーション
+        # させる
+        @table.opacity = 0.5
+        @table.touchEnabled = false
+        t  = Titanium.UI.create2DMatrix().scale(0.6)
+        animationForTableView = Titanium.UI.createAnimation()
+        animationForTableView.transform = t
+        animationForTableView.duration = 250
+        @table.animate(animationForTableView)
+        
+        t1 = Titanium.UI.create2DMatrix()
+        t1 = t1.scale(1.0)
+        animation = Titanium.UI.createAnimation()
+        animation.transform = t1
+        animation.duration = 250
+        commentView.animate(animation)
+
+      )        
+      
+      row.add memoBtn
+
 
     return row
 
-
+  _createCommentView:(placeData)->
+    content = placeData.content
+    t = Titanium.UI.create2DMatrix().scale(0.0)
+    
+    commentView = Titanium.UI.createScrollView
+      width:240
+      height:240
+      top:20
+      left:40
+      zIndex:10
+      contentWidth:'auto'
+      contentHeight:'auto'
+      showVerticalScrollIndicator:true
+      showHorizontalScrollIndicator:true        
+      transform:t
+      backgroundColor:@baseColor.barColor
+      borderRadius:10
+      borderColor:"#ccc"
+  
+      
+    closeBtn = Ti.UI.createButton
+      top:5
+      right:5
+      width:40
+      height:40
+      content:placeData
+      selected:false
+      backgroundColor:@baseColor.barColor
+      backgroundImage:"NONE"
+      borderWidth:0
+      borderRadius:5
+      color:'#ccc'
+      font:
+        fontSize: 32
+        fontFamily:'LigatureSymbols'
+      title:String.fromCharCode("0xe10f")
+      
+    closeBtn.addEventListener('click',(e) =>
+      # tableViewのレイアウトをもとに戻す
+      @table.opacity = 1.0
+      @table.touchEnabled = true
+      t  = Titanium.UI.create2DMatrix().scale(1.0)
+      animationForTableView = Titanium.UI.createAnimation()
+      animationForTableView.transform = t
+      animationForTableView.duration = 250
+      @table.animate(animationForTableView)
+      
+      t2 = Titanium.UI.create2DMatrix()
+      t2 = t2.scale(0.0)
+      animation = Titanium.UI.createAnimation()
+      animation.transform = t2
+      animation.duration = 250
+      commentView.animate(animation)
+          
+    )
+    commentLabel = Ti.UI.createLabel
+      font:
+        fontSize:16
+        fontFamily:'Rounded M+ 1p'
+        fontWeight:'bold'
+      text:content
+      width:'auto'
+      top:50
+      left:5
+      
+    commentView.add commentLabel
+    commentView.add closeBtn
+    return commentView
 module.exports = favoriteWindow  

@@ -3,7 +3,7 @@ var shopAreaDataWindow;
 shopAreaDataWindow = (function() {
 
   function shopAreaDataWindow(items) {
-    var activeTab, item, keyColor, shopDataRow, shopDataRowTable, shopDataRows, _i, _len;
+    var activeTab, item, keyColor, searchBar, shopDataRow, shopDataRowTable, shopDataRows, _i, _len;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
@@ -16,9 +16,33 @@ shopAreaDataWindow = (function() {
       navBarHidden: false,
       tabBarHidden: false
     });
+    searchBar = Titanium.UI.createSearchBar({
+      barColor: this.baseColor.barColor,
+      backgroundColor: "#ccc",
+      showCancel: false,
+      hintText: "ここに住所入力すると絞り込めます"
+    });
+    searchBar.addEventListener("change", function(e) {
+      Ti.API.info("change event start. e.value is " + e.value);
+      return e.value;
+    });
+    searchBar.addEventListener("return", function(e) {
+      Ti.App.Analytics.trackEvent('shopAreaDataWindow', 'search', 'searchBar', 1);
+      return searchBar.blur();
+    });
+    searchBar.addEventListener("focus", function(e) {
+      return searchBar.setShowCancel(false);
+    });
+    searchBar.addEventListener("cancel", function(e) {
+      return searchBar.blur();
+    });
     shopDataRowTable = Ti.UI.createTableView({
       width: 'auto',
       height: 'auto',
+      top: 0,
+      left: 0,
+      search: searchBar,
+      filterAttribute: "shopAddress",
       backgroundColor: this.baseColor.barColor
     });
     shopDataRowTable.addEventListener('click', function(e) {
@@ -45,6 +69,7 @@ shopAreaDataWindow = (function() {
     shopDataRowTable.finishLayout();
     this.shopAreaDataWindow.add(shopDataRowTable);
     activeTab = Ti.API._activeTab;
+    Ti.App.Analytics.trackPageview("/window/shopAreaDataWindow");
     return activeTab.open(this.shopAreaDataWindow);
   }
 
@@ -57,6 +82,7 @@ shopAreaDataWindow = (function() {
       height: 44
     });
     backButton.addEventListener('click', function(e) {
+      Ti.App.Analytics.trackPageview("/window/listWindow");
       return _this.shopAreaDataWindow.close({
         animated: true
       });
@@ -127,6 +153,7 @@ shopAreaDataWindow = (function() {
       borderWidth: 0,
       hasChild: true,
       placeData: placeData,
+      shopAddress: placeData.shopAddress,
       className: 'shopData',
       backgroundColor: this.baseColor.barColor
     });
