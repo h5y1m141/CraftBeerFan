@@ -110,7 +110,7 @@ class screen
       Ti.App.Properties.setBool "configurationWizard", false
       MainController = require("controller/mainController")
       mainController = new MainController()
-      mainController.isLogin()
+      mainController.init()
 
     )    
       
