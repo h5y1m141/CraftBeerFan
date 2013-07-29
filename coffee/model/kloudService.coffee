@@ -121,7 +121,7 @@ class kloudService
       response_json_depth:5
       where:
         user_id:userID
-      # user_id:userID
+
     , (e) ->
 
         Ti.API.info "お気に入り情報が見つかったのでお店のデータを取得。お店の件数:#{e.reviews.length}"
