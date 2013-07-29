@@ -31,7 +31,15 @@ class kloudService
         return callback(result)
       else
         Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
-
+        
+  cbFanLogin:(userID,password,callback) ->
+    @Cloud.Users.login
+      login:userID
+      password:password
+    , (result) ->
+      return callback(result)
+    
+    return
   fbLogin:(callback) ->
 
     fb = require('facebook');
@@ -67,46 +75,56 @@ class kloudService
     fb.authorize()  unless fb.loggedIn
 
     return
-  reviewsCreate:(ratings,contents,shopName,callback) ->
+  reviewsCreate:(ratings,contents,shopName,currentUserId,callback) =>
     that = @Cloud
+    Ti.API.info "reviewsCreate start shopName is #{shopName}"
     @Cloud.Places.query
       page: 1
       per_page: 1
-      where:{name:shopName}
+      where:
+        name:shopName
     , (e) ->
       if e.success
         id = e.places[0].id
-        Ti.API.info "id is #{id}. and ratings is #{ratings} and contents is #{contents}"
+        
+        Ti.API.info "placeID is #{id}. and ratings is #{ratings} and contents is #{contents}"
         
         that.Reviews.create
           rating:ratings
           content:contents              
           place_id:id
+          user_id:currentUserId
           custom_fields:
             place_id:id
             
-        , (e) ->
+        , (result) ->
+
           if e.success
-            callback("success")
+            callback(result)
           else
-            callback("error")
+            callback(result)
       else
         Ti.API.info "Error:\n"
         
     return
     
-  reviewsQuery:(userID,callback) ->
+  reviewsQuery:(callback) =>
+    userID = Ti.App.Properties.getString "currentUserId"
+    Ti.API.info "reviewsQuery start.userID is #{userID}"
     shopLists = []
     placeIDList = []
     that = @Cloud
     # 該当するユーザのお気に入り情報を検索する
     @Cloud.Reviews.query
       page: 1
-      per_page:100
+      per_page:50
       response_json_depth:5
-      user:userID
+      where:
+        user_id:userID
+
     , (e) ->
-      if e.success
+
+        Ti.API.info "お気に入り情報が見つかったのでお店のデータを取得。お店の件数:#{e.reviews.length}"
         i = 0
         while i < e.reviews.length
           review = e.reviews[i]
@@ -157,7 +175,6 @@ class kloudService
                   shopFlg:e.places[0].custom_fields.shopFlg
                 
               shopLists.push data
-              Ti.API.info shopLists
 
             else
               Ti.API.info "no review data"
@@ -169,9 +186,6 @@ class kloudService
             clearInterval(timerId)
         ),10
         
-
-      else
-        alert "データ取得できませんでした"
     
 
   findShopDataBy:(prefectureName,callback) ->

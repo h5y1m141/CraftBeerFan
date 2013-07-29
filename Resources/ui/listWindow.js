@@ -96,12 +96,12 @@ listWindow = (function() {
       }
     };
     this.subMenu.addEventListener('click', function(e) {
-      var FavoriteWindow, a, categoryName, curretRowIndex　, favoriteWindow, selectedColor, selectedSubColor, t1, table, that;
+      var FavoriteWindow, a, categoryName, curretRowIndex　, selectedColor, selectedSubColor, t1, table, that;
       categoryName = e.row.categoryName;
       that = _this;
       if (categoryName === "お気に入り") {
         FavoriteWindow = require("ui/favoriteWindow");
-        return favoriteWindow = new FavoriteWindow();
+        return new FavoriteWindow();
       } else {
         selectedColor = _this.prefectureColorSet.name[categoryName];
         selectedSubColor = "#FFF";

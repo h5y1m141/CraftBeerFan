@@ -1,22 +1,42 @@
-var mainController;
+var mainController,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 mainController = (function() {
 
-  function mainController() {}
+  function mainController() {
+    this._login = __bind(this._login, this);
+
+    this.getReviewInfo = __bind(this.getReviewInfo, this);
+
+    this.createReview = __bind(this.createReview, this);
+
+    var KloudService;
+    KloudService = require("model/kloudService");
+    this.kloudService = new KloudService();
+  }
+
+  mainController.prototype.init = function() {
+    var LoginForm, currentUserId, loginForm, win;
+    currentUserId = Ti.App.Properties.getString("currentUserId");
+    if (currentUserId === null || typeof currentUserId === "undefined") {
+      win = Ti.UI.createWindow({
+        title: "ユーザ登録画面",
+        barColor: "#f9f9f9",
+        backgroundColor: "#f3f3f3",
+        tabBarHidden: false,
+        navBarHidden: false
+      });
+      LoginForm = require("ui/loginForm");
+      loginForm = new LoginForm();
+      win.add(loginForm);
+      win.open();
+    } else {
+      this.createTabGroup();
+    }
+  };
 
   mainController.prototype.createTabGroup = function() {
-    var KloudService, ListWindow, MapWindow, MypageWindow, currentUserId, kloudService, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup,
-      _this = this;
-    currentUserId = Ti.App.Properties.getString("currentUserId");
-    KloudService = require("model/kloudService");
-    kloudService = new KloudService();
-    kloudService.getCurrentUserInfo(currentUserId, function(result) {
-      var user;
-      if (result.success) {
-        user = result.users[0];
-        return Ti.App.Properties.setString("currentUserName", "" + user.username);
-      }
-    });
+    var ListWindow, MapWindow, MypageWindow, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
     tabGroup = Ti.UI.createTabGroup({
       tabsBackgroundColor: "#f9f9f9",
       shadowImage: "ui/image/shadowimage.png",
@@ -70,6 +90,8 @@ mainController = (function() {
       if (result.success) {
         user = result.users[0];
         Ti.App.Properties.setString("currentUserId", user.id);
+        Ti.App.Properties.setString("userName", userID);
+        Ti.App.Properties.setString("currentUserPassword", password);
         Ti.App.Properties.setString("loginType", "craftbeer-fan");
         return _this.createTabGroup();
       } else {
@@ -97,23 +119,59 @@ mainController = (function() {
     });
   };
 
-  mainController.prototype.isLogin = function() {
-    var LoginForm, currentUserId, loginForm, win;
+  mainController.prototype.createReview = function(ratings, contents, shopName, currentUserId, callback) {
+    var that;
+    that = this;
+    return this._login(function(loginResult) {
+      if (loginResult.success) {
+        return that.kloudService.reviewsCreate(ratings, contents, shopName, currentUserId, function(reviewResutl) {
+          return callback(reviewResutl);
+        });
+      } else {
+        return alert("登録されているユーザ情報でサーバにログインできませんでした");
+      }
+    });
+  };
+
+  mainController.prototype.getReviewInfo = function(callback) {
+    var that;
+    that = this;
+    this._login(function(result) {
+      if (result.success) {
+        return that.kloudService.reviewsQuery(function(result) {
+          return callback(result);
+        });
+      } else {
+        return alert("登録されているユーザ情報でサーバにログインできませんでした");
+      }
+    });
+  };
+
+  mainController.prototype._login = function(callback) {
+    var currentUserId, loginType, password, userName;
     currentUserId = Ti.App.Properties.getString("currentUserId");
-    if (currentUserId === null || typeof currentUserId === "undefined") {
-      win = Ti.UI.createWindow({
-        title: "ユーザ登録画面",
-        barColor: "#f9f9f9",
-        backgroundColor: "#f3f3f3",
-        tabBarHidden: false,
-        navBarHidden: false
+    userName = Ti.App.Properties.getString("userName");
+    password = Ti.App.Properties.getString("currentUserPassword");
+    loginType = Ti.App.Properties.getString("loginType");
+    Ti.API.info("loginType is " + loginType + " userName is " + userName + " password is " + password);
+    if (loginType === "facebook") {
+      return this.kloudService.fbLogin(function(result) {
+        var user;
+        if (result.success) {
+          user = result.users[0];
+          Ti.App.Properties.setString("currentUserName", "" + user.first_name + " " + user.last_name);
+          return callback(result);
+        }
       });
-      LoginForm = require("ui/loginForm");
-      loginForm = new LoginForm();
-      win.add(loginForm);
-      win.open();
     } else {
-      this.createTabGroup();
+      return this.kloudService.cbFanLogin(userName, password, function(result) {
+        var user;
+        if (result.success) {
+          user = result.users[0];
+          Ti.App.Properties.setString("currentUserName", "" + user.username);
+          return callback(result);
+        }
+      });
     }
   };
 

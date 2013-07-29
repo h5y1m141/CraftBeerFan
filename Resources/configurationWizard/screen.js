@@ -105,7 +105,7 @@ screen = (function() {
       Ti.App.Properties.setBool("configurationWizard", false);
       MainController = require("controller/mainController");
       mainController = new MainController();
-      return mainController.isLogin();
+      return mainController.init();
     });
     this.currentView = Ti.UI.createView({
       width: 300,

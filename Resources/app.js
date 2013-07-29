@@ -50,5 +50,5 @@ if (configurationWizard === null || typeof configurationWizard === "undefined") 
 } else {
   MainController = require("controller/mainController");
   mainController = new MainController();
-  mainController.isLogin();
+  mainController.init();
 }

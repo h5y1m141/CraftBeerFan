@@ -70,7 +70,7 @@ class mapWindow
       if e.clicksource is "rightButton"
 
         data =
-          name:e.title
+          shopName:e.title
           shopAddress:e.annotation.shopAddress
           phoneNumber:e.annotation.phoneNumber
           latitude: e.annotation.latitude

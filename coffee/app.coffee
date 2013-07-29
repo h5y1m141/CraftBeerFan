@@ -42,4 +42,4 @@ if configurationWizard is null or typeof configurationWizard is "undefined"
 else
   MainController = require("controller/mainController")
   mainController = new MainController()
-  mainController.isLogin()
+  mainController.init()

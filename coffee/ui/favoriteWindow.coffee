@@ -28,16 +28,45 @@ class favoriteWindow
       top:0
       left:0
 
-    KloudService = require("model/kloudService")
-    kloudService = new KloudService()
-    userID = Ti.App.Properties.getString "currentUserId"
-
-    kloudService.reviewsQuery(userID,(items) =>
+    # KloudService = require("model/kloudService")
+    # kloudService = new KloudService()
+    # userID = Ti.App.Properties.getString "currentUserId"
+    
+    # kloudService.reviewsQuery(userID,(items) =>
+    MainController = require("controller/mainController")
+    mainController = new MainController()
+    mainController.getReviewInfo( (items) =>
       activityIndicator.hide()
       rows = []
-      for item in items
-        row = @_createShopDataRow(item)
-        rows.push(row)
+      if items.length is 0
+        row = Ti.UI.createTableViewRow
+          width:'auto'
+          height:60
+          borderWidth:0
+          backgroundColor:@baseColor.barColor
+          selectedBackgroundColor:@baseColor.backgroundColor
+
+          color:"#333"
+        titleLabel = Ti.UI.createLabel
+          width:'auto'
+          height:'auto'
+          top:10
+          left:10
+          color:'#333'
+          font:
+            fontSize:16
+            fontWeight:'bold'
+            fontFamily : 'Rounded M+ 1p'
+          text:'登録されたお店がありません'            
+
+        row.add titleLabel
+        rows.push row
+
+      else  
+        
+        for item in items
+          row = @_createShopDataRow(item)
+          rows.push(row)
         
       @table.setData rows  
 

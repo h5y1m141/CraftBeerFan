@@ -206,22 +206,22 @@ shopDataDetail = (function() {
       modalWindow.add(textArea);
       modalWindow.add(label);
       addNewIcon.addEventListener('click', function(e) {
-        var KloudService, kloudService;
+        var MainController, currentUserId, mainController;
         activityIndicator.show();
         Ti.API.info("contents is " + contents);
         ratings = ratings;
         contents = contents;
-        KloudService = require("model/kloudService");
-        kloudService = new KloudService();
-        return kloudService.reviewsCreate(ratings, contents, shopName, function(value) {
+        currentUserId = Ti.App.Properties.getString("currentUserId");
+        MainController = require("controller/mainController");
+        mainController = new MainController();
+        return mainController.createReview(ratings, contents, shopName, currentUserId, function(result) {
           activityIndicator.hide();
-          if (value = "success") {
+          if (result.success) {
             alert("お気に入りに登録しました");
-            return modalWindow.close();
           } else {
             alert("すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした");
-            return modalWindow.close();
           }
+          return modalWindow.close();
         });
       });
       return modalWindow.open({

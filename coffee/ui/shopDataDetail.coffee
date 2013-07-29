@@ -208,18 +208,32 @@ class shopDataDetail
         Ti.API.info "contents is #{contents}"
         ratings = ratings
         contents = contents
-        KloudService = require("model/kloudService")
-        kloudService = new KloudService()
-        kloudService.reviewsCreate(ratings,contents,shopName,(value)->
-
+        currentUserId = Ti.App.Properties.getString "currentUserId"
+        # KloudService = require("model/kloudService")
+        # kloudService = new KloudService()
+        MainController = require("controller/mainController")
+        mainController = new MainController()
+        mainController.createReview(ratings,contents,shopName,currentUserId,(result) ->
           activityIndicator.hide()
-          if value = "success"
+          if result.success
             alert "お気に入りに登録しました"
-            modalWindow.close()
           else
             alert "すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした"
-            modalWindow.close()
+            
+          modalWindow.close()
+
         )
+          
+        # kloudService.reviewsCreate(ratings,contents,shopName,currentUserId,(value)->
+
+        #   activityIndicator.hide()
+        #   if value = "success"
+        #     alert "お気に入りに登録しました"
+        #     modalWindow.close()
+        #   else
+        #     alert "すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした"
+        #     modalWindow.close()
+        # )
         
 
       )
