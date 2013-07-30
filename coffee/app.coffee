@@ -35,11 +35,11 @@ Ti.App.Analytics =
 
 analytics.start 10, true
 if configurationWizard is null or typeof configurationWizard is "undefined"
-  Client = require("configurationWizard/client")
-  client = new Client()
-  startPoint = 0
-  client.useMenu(startPoint)
+
+  StartupWindow = require("ui/startupWindow")
+  startupWindow = new StartupWindow()  
+  startupWindow.open()
 else
   MainController = require("controller/mainController")
   mainController = new MainController()
-  mainController.init()
+  mainController.createTabGroup()

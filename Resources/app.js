@@ -1,4 +1,4 @@
-var Client, Config, MainController, analytics, client, config, configurationWizard, gaKey, gaModule, mainController, startPoint;
+var Config, MainController, StartupWindow, analytics, config, configurationWizard, gaKey, gaModule, mainController, startupWindow;
 
 configurationWizard = Ti.App.Properties.getBool("configurationWizard");
 
@@ -43,12 +43,11 @@ Ti.App.Analytics = {
 analytics.start(10, true);
 
 if (configurationWizard === null || typeof configurationWizard === "undefined") {
-  Client = require("configurationWizard/client");
-  client = new Client();
-  startPoint = 0;
-  client.useMenu(startPoint);
+  StartupWindow = require("ui/startupWindow");
+  startupWindow = new StartupWindow();
+  startupWindow.open();
 } else {
   MainController = require("controller/mainController");
   mainController = new MainController();
-  mainController.init();
+  mainController.createTabGroup();
 }
