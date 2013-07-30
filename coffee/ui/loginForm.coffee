@@ -3,7 +3,8 @@ class loginForm
     @baseColor =
       barColor:"#f9f9f9"
       backgroundColor:"#f3f3f3"
-      keyColor:"#44A5CB"
+      # keyColor:"#44A5CB"
+      keyColor:"#DA5019"
       textColor:"#333"
     @userID = ""
     @password = ""
@@ -12,10 +13,10 @@ class loginForm
 
     
     loginForm  = Ti.UI.createView
-      width:300
-      height:400
-      left:5
-      top:5
+      width:240
+      height:240
+      top:100      
+      left:30
       backgroundColor:@baseColor.backgroundColor
       
     userIDField = Ti.UI.createTextField
@@ -59,49 +60,53 @@ class loginForm
       @password = e.value
       
     )
-    craftBeerFanIconLogo = Ti.UI.createImageView
-      image:"ui/image/simpleicon.png"
-      width:45
-      height:70
-      top:20
-      left:10
+    
+    facebookBox = Ti.UI.createView
+      left:0
+      top:10
+      backgroundColor:"#3B5998"
+      width:220
+      height:50   
       
     facebookIcon = Ti.UI.createLabel
-      width:48
-      height:48
-      backgroundColor:@baseColor.textColor
-      left:10
-      top:200
+      width:30
+      height:30
+      backgroundColor:"#fff"
+      left:0
+      top:10
       textAlign:'center'
-      color:@baseColor.barColor
+      color:"#3B5998"
+      borderColor:"#3B5998"
       font:
-        fontSize: 72
+        fontSize:54
         fontFamily:'LigatureSymbols'
       text:String.fromCharCode("0xe047")
-      
-    facebookLoginLabel = Ti.UI.createLabel
-      top:200
-      left:60
-      width:250
-      height:40
-      borderWidth:1
-      borderColor:@baseColor.barColor
-      color:@baseColor.textColor
-      font:
-        fontSize:14
-        fontFamily : 'Rounded M+ 1p'
-      text:"Facebookアカウントを使ってログインする場合には"
       
     facebookIcon.addEventListener('click',(e) =>
       @mainController.fbLogin()
     )
+    
+    facebookLabel  = Ti.UI.createLabel
+      top:10
+      left:40
+      width:160
+      height:30
+      color:@baseColor.barColor
+      font:
+        fontSize:14
+        fontFamily:'Rounded M+ 1p'
+      text:"Facebookアカウント利用"
+      
+    facebookBox.add facebookLabel  
+    facebookBox.add facebookIcon
 
+        
     signUpBox = Ti.UI.createView
-      left:60
+      left:0
       top:100
       backgroundColor:@baseColor.keyColor
       borderColor:@baseColor.keyColor
-      width:200
+      width:220
       height:50
       
     signUpBox.addEventListener('click',(e) =>
@@ -119,31 +124,28 @@ class loginForm
       font:
         fontSize:36
         fontFamily:'LigatureSymbols'
-      text:String.fromCharCode("0xe087")
+      text:String.fromCharCode("0xe029")
       
     
     signUpLabel  = Ti.UI.createLabel
       top:10
-      left:60
-      width:100
+      left:40
+      textAlign:'center'
+      width:150
       height:30
       color:@baseColor.barColor
       font:
-        fontSize:16
-        fontFamily : 'Rounded M+ 1p'
+        fontSize:14
+        fontFamily:'Rounded M+ 1p'
       text:"新規登録する"
-       
+      
+
     signUpBox.add signUpIcon
     signUpBox.add signUpLabel
     
-    loginForm.add facebookIcon
-    loginForm.add craftBeerFanIconLogo
-    loginForm.add facebookLoginLabel
-    loginForm.add userIDField
-    loginForm.add passwordField
+    loginForm.add facebookBox
     loginForm.add signUpBox
     
-
     return loginForm
     
 
