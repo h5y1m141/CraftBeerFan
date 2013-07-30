@@ -7,7 +7,6 @@ configurationWizard = Ti.App.Properties.getBool "configurationWizard"
 Config = require("model/loadConfig")
 config = new Config()
 gaKey = config.getGoogleAnalyticsKey()
-Ti.API.info "gaKey is #{gaKey}"
 
 gaModule = require('lib/Ti.Google.Analytics')
 analytics = new gaModule(gaKey)
@@ -34,7 +33,7 @@ Ti.App.Analytics =
 
 
 analytics.start 10, true
-if configurationWizard is null or typeof configurationWizard is "undefined"
+if configurationWizard is null or typeof configurationWizard is "undefined" or configurationWizard is false
 
   StartupWindow = require("ui/startupWindow")
   startupWindow = new StartupWindow()  

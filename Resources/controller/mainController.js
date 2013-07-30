@@ -68,6 +68,7 @@ mainController = (function() {
     kloudService.signUP(userID, password, function(result) {
       var user;
       if (result.success) {
+        Ti.App.Properties.setBool("configurationWizard", true);
         user = result.users[0];
         Ti.App.Properties.setString("currentUserId", user.id);
         Ti.App.Properties.setString("userName", userID);

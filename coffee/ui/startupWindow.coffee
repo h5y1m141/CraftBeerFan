@@ -92,29 +92,7 @@ class startupWindow
         LoginForm = require("ui/loginForm")
         loginForm = new LoginForm()
         view.add loginForm
-        # endPointBtn = Ti.UI.createLabel
-        #   color:@baseColor.barColor
-        #   backgroundColor:"#DA5019"
-        #   width:150
-        #   height:50
-        #   top:150
-        #   textAlign:"center"
-        #   left:75
-        #   borderWidth:0
-        #   borderRadius:10
-        #   font:
-        #     fontSize:24
-        #     fontFamily:'Rounded M+ 1p'
-        #   text:"START"
-    
-        # endPointBtn.addEventListener('click',(e)->
-        #   Ti.App.Properties.setBool "configurationWizard", false
-        #   MainController = require("controller/mainController")
-        #   mainController = new MainController()
-        #   mainController.init()
-    
-        # )    
-        # view.add endPointBtn
+
         
       @scrollView.addView view
       

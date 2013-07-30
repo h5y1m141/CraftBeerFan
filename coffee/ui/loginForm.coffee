@@ -10,19 +10,23 @@ class loginForm
     @password = ""
     MainController = require("controller/mainController")
     @mainController = new MainController()
-
     
+    # ベースとなるViewを生成。
     loginForm  = Ti.UI.createView
       width:240
       height:240
       top:100      
       left:30
       backgroundColor:@baseColor.backgroundColor
+      zIndex:0
       
+    # アカウント登録用のフィールドを準備して
+    # 新規登録ボタンがタッチされた時にアニメーション表示される
+    # viewにこれらフィールドを付ける
     userIDField = Ti.UI.createTextField
       color:@baseColor.textColor
-      top:20
-      left:60
+      top:10
+      left:10
       width:200
       height:30
       hintText:"メールアドレスを入力してください"
@@ -41,8 +45,8 @@ class loginForm
 
     passwordField = Ti.UI.createTextField
       color:@baseColor.textColor
-      top:60
-      left:60
+      top:50
+      left:10
       width:200
       height:30
       hintText:"パスワードを設定してください"
@@ -60,6 +64,33 @@ class loginForm
       @password = e.value
       
     )
+    t = Titanium.UI.create2DMatrix().scale(0.0)
+    accountSignUpView = Ti.UI.createView
+      width:240
+      height:240
+      top:0
+      left:0
+      transform:t
+      backgroundColor:@baseColor.barColor
+      zIndex:10
+      
+    registBtn = Ti.UI.createButton
+      width:100
+      height:30
+      top:100
+      left:60
+      font:
+        fontSize:14
+        fontFamily:'Rounded M+ 1p'
+      title:"登録する"
+    registBtn.addEventListener('click',(e)=>
+      Ti.API.info "signup start userid: #{@userID} and password:#{@password}"
+      @mainController.signUP(@userID,@password)
+    )
+    accountSignUpView.add userIDField
+    accountSignUpView.add passwordField
+    accountSignUpView.add registBtn
+    loginForm.add accountSignUpView
     
     facebookBox = Ti.UI.createView
       left:0
@@ -109,9 +140,15 @@ class loginForm
       width:220
       height:50
       
-    signUpBox.addEventListener('click',(e) =>
-      Ti.API.info "signup start userid: #{@userID} and password:#{@password}"
-      @mainController.signUP(@userID,@password)
+    signUpBox.addEventListener('click',(e) ->
+      t1 = Titanium.UI.create2DMatrix()
+      t1 = t1.scale(1.0)
+      animation = Titanium.UI.createAnimation()
+      animation.transform = t1
+      animation.duration = 250
+      accountSignUpView.animate(animation)
+      
+
     )      
     signUpIcon = Ti.UI.createLabel
       top:5
