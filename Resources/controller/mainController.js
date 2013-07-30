@@ -15,26 +15,6 @@ mainController = (function() {
     this.kloudService = new KloudService();
   }
 
-  mainController.prototype.init = function() {
-    var LoginForm, currentUserId, loginForm, win;
-    currentUserId = Ti.App.Properties.getString("currentUserId");
-    if (currentUserId === null || typeof currentUserId === "undefined") {
-      win = Ti.UI.createWindow({
-        title: "ユーザ登録画面",
-        barColor: "#f9f9f9",
-        backgroundColor: "#f3f3f3",
-        tabBarHidden: false,
-        navBarHidden: false
-      });
-      LoginForm = require("ui/loginForm");
-      loginForm = new LoginForm();
-      win.add(loginForm);
-      win.open();
-    } else {
-      this.createTabGroup();
-    }
-  };
-
   mainController.prototype.createTabGroup = function() {
     var ListWindow, MapWindow, MypageWindow, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
     tabGroup = Ti.UI.createTabGroup({

@@ -3,27 +3,6 @@ class mainController
     KloudService = require("model/kloudService")
     @kloudService = new KloudService()
     
-  init:() ->
-    
-    currentUserId = Ti.App.Properties.getString "currentUserId"
-
-    if currentUserId is null or typeof currentUserId is "undefined"
-      win = Ti.UI.createWindow
-        title:"ユーザ登録画面"
-        barColor:"#f9f9f9"
-        backgroundColor: "#f3f3f3"
-        tabBarHidden:false
-        navBarHidden:false
-      
-      LoginForm = require("ui/loginForm")
-      loginForm = new LoginForm()
-      win.add loginForm
-      win.open()      
-      
-    else
-      @createTabGroup()
-
-    return    
   createTabGroup:() ->
     
     tabGroup = Ti.UI.createTabGroup
