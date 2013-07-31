@@ -3,7 +3,7 @@ var loginForm;
 loginForm = (function() {
 
   function loginForm() {
-    var MainController, accountSignUpView, facebookBox, facebookIcon, facebookLabel, passwordField, registBtn, signUpBox, signUpIcon, signUpLabel, t, userIDField,
+    var MainController, accountSignUpView, fb, fbLoginBtn, passwordField, registBtn, signUpBox, signUpIcon, signUpLabel, t, userIDField,
       _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
@@ -91,45 +91,6 @@ loginForm = (function() {
     accountSignUpView.add(passwordField);
     accountSignUpView.add(registBtn);
     loginForm.add(accountSignUpView);
-    facebookBox = Ti.UI.createView({
-      left: 0,
-      top: 10,
-      backgroundColor: "#3B5998",
-      width: 220,
-      height: 50
-    });
-    facebookIcon = Ti.UI.createLabel({
-      width: 30,
-      height: 30,
-      backgroundColor: "#fff",
-      left: 0,
-      top: 10,
-      textAlign: 'center',
-      color: "#3B5998",
-      borderColor: "#3B5998",
-      font: {
-        fontSize: 54,
-        fontFamily: 'LigatureSymbols'
-      },
-      text: String.fromCharCode("0xe047")
-    });
-    facebookIcon.addEventListener('click', function(e) {
-      return _this.mainController.fbLogin();
-    });
-    facebookLabel = Ti.UI.createLabel({
-      top: 10,
-      left: 40,
-      width: 160,
-      height: 30,
-      color: this.baseColor.barColor,
-      font: {
-        fontSize: 14,
-        fontFamily: 'Rounded M+ 1p'
-      },
-      text: "Facebookアカウント利用"
-    });
-    facebookBox.add(facebookLabel);
-    facebookBox.add(facebookIcon);
     signUpBox = Ti.UI.createView({
       left: 0,
       top: 100,
@@ -176,10 +137,62 @@ loginForm = (function() {
     });
     signUpBox.add(signUpIcon);
     signUpBox.add(signUpLabel);
-    loginForm.add(facebookBox);
+    fb = require('facebook');
+    fbLoginBtn = fb.createLoginButton({
+      top: 50,
+      style: fb.BUTTON_STYLE_WIDE
+    });
+    fb = require('facebook');
+    fb.appid = this._getAppID();
+    fb.permissions = ['read_stream'];
+    fb.forceDialogAuth = true;
+    fb.addEventListener('login', function(e) {
+      var Cloud, that, token;
+      that = _this;
+      token = fb.accessToken;
+      Ti.API.info("token is " + token);
+      if (e.success) {
+        if (e.success) {
+          Cloud = require('ti.cloud');
+          return Cloud.SocialIntegrations.externalAccountLogin({
+            type: "facebook",
+            token: token
+          }, function(result) {
+            var user;
+            if (result.success) {
+              user = result.users[0];
+              Ti.App.Properties.setBool("configurationWizard", true);
+              Ti.App.Properties.setString("currentUserId", user.id);
+              Ti.App.Properties.setString("userName", user.first_name + " " + user.last_name);
+              Ti.App.Properties.setString("loginType", "facebook");
+              return that.mainController.createTabGroup();
+            }
+          });
+        }
+      } else if (e.error) {
+        return alert(e.error);
+      } else {
+        if (e.cancelled) {
+          return alert("Canceled");
+        }
+      }
+    });
+    fb.addEventListener('logout', function(e) {
+      return alert('logout');
+    });
+    loginForm.add(fbLoginBtn);
     loginForm.add(signUpBox);
     return loginForm;
   }
+
+  loginForm.prototype._getAppID = function() {
+    var appid, config, file, json;
+    config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json");
+    file = config.read().toString();
+    json = JSON.parse(file);
+    appid = json.facebook.appid;
+    return appid;
+  };
 
   return loginForm;
 

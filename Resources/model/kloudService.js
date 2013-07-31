@@ -55,36 +55,9 @@ kloudService = (function() {
     });
   };
 
-  kloudService.prototype.fbLogin = function(callback) {
-    var fb,
-      _this = this;
+  kloudService.prototype.fbLogin = function() {
+    var fb;
     fb = require('facebook');
-    fb.appid = this._getAppID();
-    fb.permissions = ['read_stream'];
-    fb.forceDialogAuth = true;
-    fb.addEventListener('login', function(e) {
-      var token;
-      token = fb.accessToken;
-      if (e.success) {
-        if (e.success) {
-          return _this.Cloud.SocialIntegrations.externalAccountLogin({
-            type: "facebook",
-            token: token
-          }, function(e) {
-            return callback(e);
-          });
-        }
-      } else if (e.error) {
-        return alert(e.error);
-      } else {
-        if (e.cancelled) {
-          return alert("Canceled");
-        }
-      }
-    });
-    fb.addEventListener('logout', function(e) {
-      return alert('logout');
-    });
     if (!fb.loggedIn) {
       fb.authorize();
     }

@@ -79,9 +79,12 @@ class mainController
     KloudService = require("model/kloudService")
     kloudService = new KloudService()
     kloudService.fbLogin( (result) =>
+      Ti.API.info "kloudService fbLogin click. result is #{result}"
       if result.success
+        Ti.App.Properties.setBool "configurationWizard",true
         user = result.users[0]
         Ti.App.Properties.setString "currentUserId",user.id
+        Ti.App.Properties.setString "userName",user.first_name + " "+ user.last_name
         Ti.App.Properties.setString "loginType","facebook"
         @createTabGroup()
       else
@@ -105,7 +108,7 @@ class mainController
     # 該当のクエリ発行する
     that = @
     @_login( (result) ->
-
+      Ti.API.info "getReviewInfo start result is #{result.success}"
       if result.success
         that.kloudService.reviewsQuery((result) ->
           callback(result)
@@ -123,19 +126,22 @@ class mainController
     userName = Ti.App.Properties.getString "userName"
     password = Ti.App.Properties.getString "currentUserPassword"
     loginType = Ti.App.Properties.getString "loginType"
-    Ti.API.info "loginType is #{loginType} userName is #{userName} password is #{password}"
+    Ti.API.info "loginType is #{loginType}"
     if loginType is "facebook"
-      @kloudService.fbLogin( (result) ->
-        if result.success
-          user = result.users[0]
-          Ti.App.Properties.setString "currentUserName","#{user.first_name} #{user.last_name}"
-          return callback result
-      )
+      # @kloudService.fbLogin( (result) ->
+      #   return callback result
+      # )
+      @kloudService.fbLogin()
+      
+      result = {}
+      result.success = true
+      Ti.API.info "_login done result is #{result}"
+      return callback(result)
     else
       @kloudService.cbFanLogin(userName,password, (result) ->
         if result.success
           user = result.users[0]
-          Ti.App.Properties.setString "currentUserName","#{user.username}"
+          Ti.App.Properties.setString "userName","#{user.username}"
           return callback result          
       )
     

@@ -40,39 +40,18 @@ class kloudService
       return callback(result)
     
     return
-  fbLogin:(callback) ->
+  fbLogin:() ->
 
-    fb = require('facebook');
-    fb.appid = @_getAppID()
-    fb.permissions =  ['read_stream']
-    fb.forceDialogAuth = true
-    fb.addEventListener('login', (e) =>
-      token = fb.accessToken
-      if e.success
-        if e.success
-          @Cloud.SocialIntegrations.externalAccountLogin
-            type: "facebook"
-            token: token
-          , (e) ->
-            callback(e)
-            # if e.success
-            #   user = e.users[0]
+    fb = require('facebook')
 
-            #   Ti.API.info "User  = " + JSON.stringify(user)
-            #   Ti.App.Properties.setString "currentUserId", user.id
-            #   callback(user.id)
-            # else
-            #   alert "Error: " + ((e.error and e.message) or JSON.stringify(e))
-        
-      else if e.error
-        alert e.error
-      else alert "Canceled"  if e.cancelled
-    )
-    fb.addEventListener('logout',(e)->
-      alert 'logout'
-    )
-    
-    fb.authorize()  unless fb.loggedIn
+    fb.authorize()  unless fb.loggedIn    
+    # fb.appid = @_getAppID()
+    # fb.permissions =  ['read_stream']
+    # fb.forceDialogAuth = false
+    # fb.authorize()
+    # fb.reauthorize( ["publish_stream"], "me", (result) ->
+    #   callback(result)
+    # )
 
     return
   reviewsCreate:(ratings,contents,shopName,currentUserId,callback) =>

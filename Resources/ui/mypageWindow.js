@@ -3,7 +3,7 @@ var mypageWindow;
 mypageWindow = (function() {
 
   function mypageWindow() {
-    var currentUserName, loginType, mypageWindowTitle, rows, table;
+    var loginType, mypageWindowTitle, rows, table, userName;
     this.baseColor = {
       barColor: "#f9f9f9",
       backgroundColor: "#f3f3f3",
@@ -39,10 +39,10 @@ mypageWindow = (function() {
       left: 0,
       top: 0
     });
-    currentUserName = Ti.App.Properties.getString("currentUserName");
+    userName = Ti.App.Properties.getString("userName");
     loginType = Ti.App.Properties.getString("loginType");
     rows = [];
-    rows.push(this._userSection(currentUserName, loginType));
+    rows.push(this._userSection(userName, loginType));
     table.setData(rows);
     mypageWindow.add(table);
     return mypageWindow;
