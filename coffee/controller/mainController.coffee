@@ -128,9 +128,6 @@ class mainController
     loginType = Ti.App.Properties.getString "loginType"
     Ti.API.info "loginType is #{loginType}"
     if loginType is "facebook"
-      # @kloudService.fbLogin( (result) ->
-      #   return callback result
-      # )
       @kloudService.fbLogin()
       
       result = {}

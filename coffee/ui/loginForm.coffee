@@ -94,12 +94,12 @@ class loginForm
     
         
     signUpBox = Ti.UI.createView
-      left:0
+      left:40
       top:100
       backgroundColor:@baseColor.keyColor
       borderColor:@baseColor.keyColor
-      width:220
-      height:50
+      width:160
+      height:25
       
     signUpBox.addEventListener('click',(e) ->
       t1 = Titanium.UI.create2DMatrix()
@@ -114,23 +114,23 @@ class loginForm
     signUpIcon = Ti.UI.createLabel
       top:5
       left:5
-      width:40
-      height:40
+      width:20
+      height:20
       textAlign:'center'
       backgroundColor:@baseColor.keyColor
       color:"#fff"
       font:
-        fontSize:36
+        fontSize:20
         fontFamily:'LigatureSymbols'
       text:String.fromCharCode("0xe029")
       
     
     signUpLabel  = Ti.UI.createLabel
-      top:10
-      left:40
+      top:5
+      left:25
       textAlign:'center'
-      width:150
-      height:30
+      width:130
+      height:20
       color:@baseColor.barColor
       font:
         fontSize:14

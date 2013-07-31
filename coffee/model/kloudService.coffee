@@ -41,17 +41,8 @@ class kloudService
     
     return
   fbLogin:() ->
-
     fb = require('facebook')
-
     fb.authorize()  unless fb.loggedIn    
-    # fb.appid = @_getAppID()
-    # fb.permissions =  ['read_stream']
-    # fb.forceDialogAuth = false
-    # fb.authorize()
-    # fb.reauthorize( ["publish_stream"], "me", (result) ->
-    #   callback(result)
-    # )
 
     return
   reviewsCreate:(ratings,contents,shopName,currentUserId,callback) =>
