@@ -15,26 +15,6 @@ mainController = (function() {
     this.kloudService = new KloudService();
   }
 
-  mainController.prototype.init = function() {
-    var LoginForm, currentUserId, loginForm, win;
-    currentUserId = Ti.App.Properties.getString("currentUserId");
-    if (currentUserId === null || typeof currentUserId === "undefined") {
-      win = Ti.UI.createWindow({
-        title: "ユーザ登録画面",
-        barColor: "#f9f9f9",
-        backgroundColor: "#f3f3f3",
-        tabBarHidden: false,
-        navBarHidden: false
-      });
-      LoginForm = require("ui/loginForm");
-      loginForm = new LoginForm();
-      win.add(loginForm);
-      win.open();
-    } else {
-      this.createTabGroup();
-    }
-  };
-
   mainController.prototype.createTabGroup = function() {
     var ListWindow, MapWindow, MypageWindow, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
     tabGroup = Ti.UI.createTabGroup({
@@ -88,6 +68,7 @@ mainController = (function() {
     kloudService.signUP(userID, password, function(result) {
       var user;
       if (result.success) {
+        Ti.App.Properties.setBool("configurationWizard", true);
         user = result.users[0];
         Ti.App.Properties.setString("currentUserId", user.id);
         Ti.App.Properties.setString("userName", userID);
@@ -108,9 +89,12 @@ mainController = (function() {
     kloudService = new KloudService();
     kloudService.fbLogin(function(result) {
       var user;
+      Ti.API.info("kloudService fbLogin click. result is " + result);
       if (result.success) {
+        Ti.App.Properties.setBool("configurationWizard", true);
         user = result.users[0];
         Ti.App.Properties.setString("currentUserId", user.id);
+        Ti.App.Properties.setString("userName", user.first_name + " " + user.last_name);
         Ti.App.Properties.setString("loginType", "facebook");
         return _this.createTabGroup();
       } else {
@@ -137,6 +121,7 @@ mainController = (function() {
     var that;
     that = this;
     this._login(function(result) {
+      Ti.API.info("getReviewInfo start result is " + result.success);
       if (result.success) {
         return that.kloudService.reviewsQuery(function(result) {
           return callback(result);
@@ -148,27 +133,24 @@ mainController = (function() {
   };
 
   mainController.prototype._login = function(callback) {
-    var currentUserId, loginType, password, userName;
+    var currentUserId, loginType, password, result, userName;
     currentUserId = Ti.App.Properties.getString("currentUserId");
     userName = Ti.App.Properties.getString("userName");
     password = Ti.App.Properties.getString("currentUserPassword");
     loginType = Ti.App.Properties.getString("loginType");
-    Ti.API.info("loginType is " + loginType + " userName is " + userName + " password is " + password);
+    Ti.API.info("loginType is " + loginType);
     if (loginType === "facebook") {
-      return this.kloudService.fbLogin(function(result) {
-        var user;
-        if (result.success) {
-          user = result.users[0];
-          Ti.App.Properties.setString("currentUserName", "" + user.first_name + " " + user.last_name);
-          return callback(result);
-        }
-      });
+      this.kloudService.fbLogin();
+      result = {};
+      result.success = true;
+      Ti.API.info("_login done result is " + result);
+      return callback(result);
     } else {
       return this.kloudService.cbFanLogin(userName, password, function(result) {
         var user;
         if (result.success) {
           user = result.users[0];
-          Ti.App.Properties.setString("currentUserName", "" + user.username);
+          Ti.App.Properties.setString("userName", "" + user.username);
           return callback(result);
         }
       });

@@ -3,12 +3,12 @@ var loginForm;
 loginForm = (function() {
 
   function loginForm() {
-    var MainController, craftBeerFanIconLogo, facebookIcon, facebookLoginLabel, passwordField, signUpBox, signUpIcon, signUpLabel, userIDField,
+    var MainController, accountSignUpView, fb, fbLoginBtn, passwordField, registBtn, signUpBox, signUpIcon, signUpLabel, t, userIDField,
       _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
       backgroundColor: "#f3f3f3",
-      keyColor: "#44A5CB",
+      keyColor: "#DA5019",
       textColor: "#333"
     };
     this.userID = "";
@@ -16,16 +16,17 @@ loginForm = (function() {
     MainController = require("controller/mainController");
     this.mainController = new MainController();
     loginForm = Ti.UI.createView({
-      width: 300,
-      height: 400,
-      left: 5,
-      top: 5,
-      backgroundColor: this.baseColor.backgroundColor
+      width: 240,
+      height: 240,
+      top: 100,
+      left: 30,
+      backgroundColor: this.baseColor.backgroundColor,
+      zIndex: 0
     });
     userIDField = Ti.UI.createTextField({
       color: this.baseColor.textColor,
-      top: 20,
-      left: 60,
+      top: 10,
+      left: 10,
       width: 200,
       height: 30,
       hintText: "メールアドレスを入力してください",
@@ -43,8 +44,8 @@ loginForm = (function() {
     });
     passwordField = Ti.UI.createTextField({
       color: this.baseColor.textColor,
-      top: 60,
-      left: 60,
+      top: 50,
+      left: 10,
       width: 200,
       height: 30,
       hintText: "パスワードを設定してください",
@@ -61,92 +62,137 @@ loginForm = (function() {
     passwordField.addEventListener('change', function(e) {
       return _this.password = e.value;
     });
-    craftBeerFanIconLogo = Ti.UI.createImageView({
-      image: "ui/image/simpleicon.png",
-      width: 45,
-      height: 70,
-      top: 20,
-      left: 10
+    t = Titanium.UI.create2DMatrix().scale(0.0);
+    accountSignUpView = Ti.UI.createView({
+      width: 240,
+      height: 240,
+      top: 0,
+      left: 0,
+      transform: t,
+      backgroundColor: this.baseColor.barColor,
+      zIndex: 10
     });
-    facebookIcon = Ti.UI.createLabel({
-      width: 48,
-      height: 48,
-      backgroundColor: this.baseColor.textColor,
-      left: 10,
-      top: 200,
-      textAlign: 'center',
-      color: this.baseColor.barColor,
-      font: {
-        fontSize: 72,
-        fontFamily: 'LigatureSymbols'
-      },
-      text: String.fromCharCode("0xe047")
-    });
-    facebookLoginLabel = Ti.UI.createLabel({
-      top: 200,
+    registBtn = Ti.UI.createButton({
+      width: 100,
+      height: 30,
+      top: 100,
       left: 60,
-      width: 250,
-      height: 40,
-      borderWidth: 1,
-      borderColor: this.baseColor.barColor,
-      color: this.baseColor.textColor,
       font: {
         fontSize: 14,
         fontFamily: 'Rounded M+ 1p'
       },
-      text: "Facebookアカウントを使ってログインする場合には"
+      title: "登録する"
     });
-    facebookIcon.addEventListener('click', function(e) {
-      return _this.mainController.fbLogin();
+    registBtn.addEventListener('click', function(e) {
+      Ti.API.info("signup start userid: " + _this.userID + " and password:" + _this.password);
+      return _this.mainController.signUP(_this.userID, _this.password);
     });
+    accountSignUpView.add(userIDField);
+    accountSignUpView.add(passwordField);
+    accountSignUpView.add(registBtn);
+    loginForm.add(accountSignUpView);
     signUpBox = Ti.UI.createView({
-      left: 60,
+      left: 40,
       top: 100,
       backgroundColor: this.baseColor.keyColor,
       borderColor: this.baseColor.keyColor,
-      width: 200,
-      height: 50
+      width: 160,
+      height: 25
     });
     signUpBox.addEventListener('click', function(e) {
-      Ti.API.info("signup start userid: " + _this.userID + " and password:" + _this.password);
-      return _this.mainController.signUP(_this.userID, _this.password);
+      var animation, t1;
+      t1 = Titanium.UI.create2DMatrix();
+      t1 = t1.scale(1.0);
+      animation = Titanium.UI.createAnimation();
+      animation.transform = t1;
+      animation.duration = 250;
+      return accountSignUpView.animate(animation);
     });
     signUpIcon = Ti.UI.createLabel({
       top: 5,
       left: 5,
-      width: 40,
-      height: 40,
+      width: 20,
+      height: 20,
       textAlign: 'center',
       backgroundColor: this.baseColor.keyColor,
       color: "#fff",
       font: {
-        fontSize: 36,
+        fontSize: 20,
         fontFamily: 'LigatureSymbols'
       },
-      text: String.fromCharCode("0xe087")
+      text: String.fromCharCode("0xe029")
     });
     signUpLabel = Ti.UI.createLabel({
-      top: 10,
-      left: 60,
-      width: 100,
-      height: 30,
+      top: 5,
+      left: 25,
+      textAlign: 'center',
+      width: 130,
+      height: 20,
       color: this.baseColor.barColor,
       font: {
-        fontSize: 16,
+        fontSize: 14,
         fontFamily: 'Rounded M+ 1p'
       },
       text: "新規登録する"
     });
     signUpBox.add(signUpIcon);
     signUpBox.add(signUpLabel);
-    loginForm.add(facebookIcon);
-    loginForm.add(craftBeerFanIconLogo);
-    loginForm.add(facebookLoginLabel);
-    loginForm.add(userIDField);
-    loginForm.add(passwordField);
+    fb = require('facebook');
+    fbLoginBtn = fb.createLoginButton({
+      top: 50,
+      style: fb.BUTTON_STYLE_WIDE
+    });
+    fb = require('facebook');
+    fb.appid = this._getAppID();
+    fb.permissions = ['read_stream'];
+    fb.forceDialogAuth = true;
+    fb.addEventListener('login', function(e) {
+      var Cloud, that, token;
+      that = _this;
+      token = fb.accessToken;
+      Ti.API.info("token is " + token);
+      if (e.success) {
+        if (e.success) {
+          Cloud = require('ti.cloud');
+          return Cloud.SocialIntegrations.externalAccountLogin({
+            type: "facebook",
+            token: token
+          }, function(result) {
+            var user;
+            if (result.success) {
+              user = result.users[0];
+              Ti.App.Properties.setBool("configurationWizard", true);
+              Ti.App.Properties.setString("currentUserId", user.id);
+              Ti.App.Properties.setString("userName", user.first_name + " " + user.last_name);
+              Ti.App.Properties.setString("loginType", "facebook");
+              return that.mainController.createTabGroup();
+            }
+          });
+        }
+      } else if (e.error) {
+        return alert(e.error);
+      } else {
+        if (e.cancelled) {
+          return alert("Canceled");
+        }
+      }
+    });
+    fb.addEventListener('logout', function(e) {
+      return alert('logout');
+    });
+    loginForm.add(fbLoginBtn);
     loginForm.add(signUpBox);
     return loginForm;
   }
+
+  loginForm.prototype._getAppID = function() {
+    var appid, config, file, json;
+    config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json");
+    file = config.read().toString();
+    json = JSON.parse(file);
+    appid = json.facebook.appid;
+    return appid;
+  };
 
   return loginForm;
 

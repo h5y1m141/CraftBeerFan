@@ -36,11 +36,11 @@ class mypageWindow
       left:0
       top:0
       
-    currentUserName = Ti.App.Properties.getString "currentUserName"
+    userName = Ti.App.Properties.getString "userName"
     loginType  = Ti.App.Properties.getString "loginType"
       
     rows =[]
-    rows.push @_userSection(currentUserName,loginType)  
+    rows.push @_userSection(userName,loginType)  
     table.setData rows
     mypageWindow.add table
     
