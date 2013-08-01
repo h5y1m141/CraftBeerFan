@@ -15,10 +15,11 @@ class startupWindow
       text:"CraftBeerFan"
       
     @scrollView = Titanium.UI.createScrollableView
+      backgroundColor:@baseColor.backgroundColor
       height:460
       showPagingControl:true
       pagingControlHeight:30
-      
+
     @_createView()
     
     win = Ti.UI.createWindow
@@ -30,29 +31,41 @@ class startupWindow
       
     if Ti.Platform.osname is 'iphone'
       win.setTitleControl winTitle
-      
+
     win.add @scrollView  
     return win
     
   _createView:() =>
     menuList = [
-      description:"このアプリケーションは日本全国のクラフトビールが飲める/買えるお店を探すことが出来ます"
+      description:"CraftBeerFanはクラフトビールが買える/飲めるお店を探すことが出来るアプリケーションです"
       screenCapture:"ui/image/logo.png"
+      back:null
+      next:1
     ,
       description:"現在の位置から近い所のお店を探すことができます。"
-      screenCapture:"ui/image/map.png"      
+      screenCapture:"ui/image/map.png"
+      back:0
+      next:2
     ,
       description:"飲めるお店はタンブラーのアイコン、買えるお店はボトルのアイコンで表現してます"
-      screenCapture:"ui/image/iconImage.png"      
+      screenCapture:"ui/image/iconImage.png"
+      back:1
+      next:3
     ,
     
-      description:"リストからもお店を探すことができますので、これから出張や旅行先などでクラフトビールが飲める・買えるお店の下調べにも活用することができます"
+      description:"出張や旅行先でクラフトビールが飲める・買えるお店の下調べする時にはリスト機能を使うと便利です"
       screenCapture:"ui/image/list.png"
+      back:2
+      next:4
     ,
-      description:"気になったお店があったら、お気に入りに登録することもできます"
+      description:"もしも気になるお店があったら、お気に入りに登録しておくことをオススメします"
       screenCapture:"ui/image/favorite.png"
+      back:3
+      next:5      
     ,
-      description:"アカウントを登録してアプリケーションを起動してください。\nEnjoy!"
+      description:"以上でアプリケーションの説明は終了です。アカウントを登録してからご利用ください。\nEnjoy!"
+      next:null
+      back:4
       screenCapture:null
 
     ]
@@ -80,12 +93,48 @@ class startupWindow
         text:menu.description
       view.add label
       
+      # menu.backや、menu.nextの値を、backBtn/nextBtnのイベントリスナ
+      # で直接参照しようとすると、ループ完了した時の値が設定されてしまうため
+      # backBtn/nextBtnのそれぞれbackIndex/nextIndexプロパティというものを
+      # 作成しておき、それに値を紐付けておくことでスクロール時に前・次へのページ遷移が
+      # 実現できる
+
+      backBtn = Ti.UI.createImageView
+        image:'ui/image/backButton.png'
+        left:5
+        top:200
+        zIndex:10
+        backIndex:menu.back
+        
+      backBtn.addEventListener('click',(e)  =>
+        Ti.API.info "backIndex is #{e.source.backIndex}"
+        @scrollView.scrollToView(e.source.backIndex)
+           
+      )  
+      nextBtn =Ti.UI.createImageView
+        image:'ui/image/backButton.png'
+        right:5
+        top:200
+        zIndex:10
+        nextIndex:menu.next  
+        transform:Ti.UI.create2DMatrix().rotate(180)
+        
+      nextBtn.addEventListener('click',(e)  =>
+        Ti.API.info "nextIndex is #{e.source.nextIndex}"
+        @scrollView.scrollToView(e.source.nextIndex)
+      )
+    
+      if menu.back isnt null  
+        view.add backBtn
+      if menu.next isnt null  
+        view.add nextBtn
+            
       if menu.screenCapture isnt null
         screenCapture = Ti.UI.createImageView
-          width:240
-          height:240
-          top:100
-          left:30
+          width:200
+          height:200
+          top:120
+          left:50
           image:menu.screenCapture
         view.add screenCapture
       else

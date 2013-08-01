@@ -24,6 +24,7 @@ startupWindow = (function() {
       text: "CraftBeerFan"
     });
     this.scrollView = Titanium.UI.createScrollableView({
+      backgroundColor: this.baseColor.backgroundColor,
       height: 460,
       showPagingControl: true,
       pagingControlHeight: 30
@@ -44,25 +45,38 @@ startupWindow = (function() {
   }
 
   startupWindow.prototype._createView = function() {
-    var LoginForm, label, loginForm, menu, menuList, screenCapture, view, _i, _len;
+    var LoginForm, backBtn, label, loginForm, menu, menuList, nextBtn, screenCapture, view, _i, _len,
+      _this = this;
     menuList = [
       {
-        description: "このアプリケーションは日本全国のクラフトビールが飲める/買えるお店を探すことが出来ます",
-        screenCapture: "ui/image/logo.png"
+        description: "CraftBeerFanはクラフトビールが買える/飲めるお店を探すことが出来るアプリケーションです",
+        screenCapture: "ui/image/logo.png",
+        back: null,
+        next: 1
       }, {
         description: "現在の位置から近い所のお店を探すことができます。",
-        screenCapture: "ui/image/map.png"
+        screenCapture: "ui/image/map.png",
+        back: 0,
+        next: 2
       }, {
         description: "飲めるお店はタンブラーのアイコン、買えるお店はボトルのアイコンで表現してます",
-        screenCapture: "ui/image/iconImage.png"
+        screenCapture: "ui/image/iconImage.png",
+        back: 1,
+        next: 3
       }, {
-        description: "リストからもお店を探すことができますので、これから出張や旅行先などでクラフトビールが飲める・買えるお店の下調べにも活用することができます",
-        screenCapture: "ui/image/list.png"
+        description: "出張や旅行先でクラフトビールが飲める・買えるお店の下調べする時にはリスト機能を使うと便利です",
+        screenCapture: "ui/image/list.png",
+        back: 2,
+        next: 4
       }, {
-        description: "気になったお店があったら、お気に入りに登録することもできます",
-        screenCapture: "ui/image/favorite.png"
+        description: "もしも気になるお店があったら、お気に入りに登録しておくことをオススメします",
+        screenCapture: "ui/image/favorite.png",
+        back: 3,
+        next: 5
       }, {
-        description: "アカウントを登録してアプリケーションを起動してください。\nEnjoy!",
+        description: "以上でアプリケーションの説明は終了です。アカウントを登録してからご利用ください。\nEnjoy!",
+        next: null,
+        back: 4,
         screenCapture: null
       }
     ];
@@ -92,12 +106,41 @@ startupWindow = (function() {
         text: menu.description
       });
       view.add(label);
+      backBtn = Ti.UI.createImageView({
+        image: 'ui/image/backButton.png',
+        left: 5,
+        top: 200,
+        zIndex: 10,
+        backIndex: menu.back
+      });
+      backBtn.addEventListener('click', function(e) {
+        Ti.API.info("backIndex is " + e.source.backIndex);
+        return _this.scrollView.scrollToView(e.source.backIndex);
+      });
+      nextBtn = Ti.UI.createImageView({
+        image: 'ui/image/backButton.png',
+        right: 5,
+        top: 200,
+        zIndex: 10,
+        nextIndex: menu.next,
+        transform: Ti.UI.create2DMatrix().rotate(180)
+      });
+      nextBtn.addEventListener('click', function(e) {
+        Ti.API.info("nextIndex is " + e.source.nextIndex);
+        return _this.scrollView.scrollToView(e.source.nextIndex);
+      });
+      if (menu.back !== null) {
+        view.add(backBtn);
+      }
+      if (menu.next !== null) {
+        view.add(nextBtn);
+      }
       if (menu.screenCapture !== null) {
         screenCapture = Ti.UI.createImageView({
-          width: 240,
-          height: 240,
-          top: 100,
-          left: 30,
+          width: 200,
+          height: 200,
+          top: 120,
+          left: 50,
           image: menu.screenCapture
         });
         view.add(screenCapture);
