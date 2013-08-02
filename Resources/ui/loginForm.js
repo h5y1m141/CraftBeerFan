@@ -60,7 +60,11 @@ loginForm = (function() {
       autocorrect: false
     });
     passwordField.addEventListener('change', function(e) {
-      return _this.password = e.value;
+      if (e.value.length === 20) {
+        return alert("パスワードは20文字以内にて設定してください");
+      } else {
+        return _this.password = e.value;
+      }
     });
     t = Titanium.UI.create2DMatrix().scale(0.0);
     accountSignUpView = Ti.UI.createView({
@@ -142,42 +146,42 @@ loginForm = (function() {
       top: 50,
       style: fb.BUTTON_STYLE_WIDE
     });
-    fb = require('facebook');
     fb.appid = this._getAppID();
     fb.permissions = ['read_stream'];
     fb.forceDialogAuth = true;
     fb.addEventListener('login', function(e) {
       var Cloud, that, token;
       that = _this;
-      token = fb.accessToken;
-      Ti.API.info("token is " + token);
       if (e.success) {
-        if (e.success) {
-          Cloud = require('ti.cloud');
-          return Cloud.SocialIntegrations.externalAccountLogin({
-            type: "facebook",
-            token: token
-          }, function(result) {
-            var user;
-            if (result.success) {
-              user = result.users[0];
-              Ti.App.Properties.setBool("configurationWizard", true);
-              Ti.App.Properties.setString("currentUserId", user.id);
-              Ti.App.Properties.setString("userName", user.first_name + " " + user.last_name);
-              Ti.App.Properties.setString("loginType", "facebook");
-              return that.mainController.createTabGroup();
-            }
-          });
-        }
+        token = fb.accessToken;
+        Ti.App.Analytics.trackEvent('startupWindow', 'loginSuccess', 'loginSuccess', 1);
+        Cloud = require('ti.cloud');
+        return Cloud.SocialIntegrations.externalAccountLogin({
+          type: "facebook",
+          token: token
+        }, function(result) {
+          var user;
+          if (result.success) {
+            user = result.users[0];
+            Ti.App.Properties.setBool("configurationWizard", true);
+            Ti.App.Properties.setString("currentUserId", user.id);
+            Ti.App.Properties.setString("userName", user.first_name + " " + user.last_name);
+            Ti.App.Properties.setString("loginType", "facebook");
+            return that.mainController.createTabGroup();
+          }
+        });
+      } else if (e.cancelled) {
+        alert("ログイン処理がキャンセルされました");
+        return Ti.App.Analytics.trackEvent('startupWindow', 'loginCanceled', 'loginCanceled', 1);
       } else if (e.error) {
-        return alert(e.error);
+        Ti.App.Analytics.trackEvent('startupWindow', 'loginError', 'loginError', 1);
+        return alert("ログイン処理中にエラーが発生しました");
       } else {
-        if (e.cancelled) {
-          return alert("Canceled");
-        }
+        return Ti.App.Analytics.trackEvent('startupWindow', 'otherLogin', 'otherLogin', 1);
       }
     });
     fb.addEventListener('logout', function(e) {
+      Ti.App.Analytics.trackEvent('startupWindow', 'logout', 'logout', 1);
       return alert('logout');
     });
     loginForm.add(fbLoginBtn);

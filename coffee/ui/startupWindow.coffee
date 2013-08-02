@@ -3,8 +3,9 @@ class startupWindow
     keyColor = "#f9f9f9"
     @baseColor =
       barColor:keyColor
-      color:"#333"
+      color:"#222"
       backgroundColor:keyColor
+      
     winTitle = Ti.UI.createLabel
       textAlign: 'center'
       color:"#333"

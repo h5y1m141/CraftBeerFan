@@ -10,7 +10,7 @@ startupWindow = (function() {
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
-      color: "#333",
+      color: "#222",
       backgroundColor: keyColor
     };
     winTitle = Ti.UI.createLabel({
