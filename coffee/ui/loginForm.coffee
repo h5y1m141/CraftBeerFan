@@ -17,7 +17,7 @@ class loginForm
       height:240
       top:100      
       left:30
-      backgroundColor:@baseColor.backgroundColor
+      backgroundColor:@baseColor.barColor
       zIndex:0
       
     # アカウント登録用のフィールドを準備して

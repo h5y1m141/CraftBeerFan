@@ -20,7 +20,7 @@ loginForm = (function() {
       height: 240,
       top: 100,
       left: 30,
-      backgroundColor: this.baseColor.backgroundColor,
+      backgroundColor: this.baseColor.barColor,
       zIndex: 0
     });
     userIDField = Ti.UI.createTextField({

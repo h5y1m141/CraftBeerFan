@@ -64,7 +64,7 @@ class startupWindow
       back:3
       next:5      
     ,
-      description:"以上でアプリケーションの説明は終了です。アカウントを登録してからご利用ください。\nEnjoy!"
+      description:"以上でアプリケーションの説明は終了です。アカウントを登録してからご利用ください。"
       next:null
       back:4
       screenCapture:null
@@ -99,32 +99,36 @@ class startupWindow
       # backBtn/nextBtnのそれぞれbackIndex/nextIndexプロパティというものを
       # 作成しておき、それに値を紐付けておくことでスクロール時に前・次へのページ遷移が
       # 実現できる
-
+      # 
       backBtn = Ti.UI.createImageView
-        image:'ui/image/backButton.png'
-        left:5
-        top:200
-        zIndex:10
+        width:40
+        height:200
+        left:0
+        top:120
         backIndex:menu.back
+        zIndex:10
+        image:"ui/image/backArrow.png"
         
       backBtn.addEventListener('click',(e)  =>
         Ti.API.info "backIndex is #{e.source.backIndex}"
         @scrollView.scrollToView(e.source.backIndex)
            
       )  
-      nextBtn =Ti.UI.createImageView
-        image:'ui/image/backButton.png'
-        right:5
-        top:200
-        zIndex:10
+      
+      nextBtn = Ti.UI.createImageView
+        width:40
+        height:200
+        right:0
+        top:120
         nextIndex:menu.next  
-        transform:Ti.UI.create2DMatrix().rotate(180)
+        zIndex:10
+        image:"ui/image/nextArrow.png"
         
       nextBtn.addEventListener('click',(e)  =>
         Ti.API.info "nextIndex is #{e.source.nextIndex}"
         @scrollView.scrollToView(e.source.nextIndex)
       )
-    
+        
       if menu.back isnt null  
         view.add backBtn
       if menu.next isnt null  
@@ -143,9 +147,10 @@ class startupWindow
         loginForm = new LoginForm()
         view.add loginForm
 
-        
+
       @scrollView.addView view
-      
+      Ti.API.info "scrollView.addView done"
+              
     return
 
          

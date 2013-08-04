@@ -74,7 +74,7 @@ startupWindow = (function() {
         back: 3,
         next: 5
       }, {
-        description: "以上でアプリケーションの説明は終了です。アカウントを登録してからご利用ください。\nEnjoy!",
+        description: "以上でアプリケーションの説明は終了です。アカウントを登録してからご利用ください。",
         next: null,
         back: 4,
         screenCapture: null
@@ -107,23 +107,26 @@ startupWindow = (function() {
       });
       view.add(label);
       backBtn = Ti.UI.createImageView({
-        image: 'ui/image/backButton.png',
-        left: 5,
-        top: 200,
+        width: 40,
+        height: 200,
+        left: 0,
+        top: 120,
+        backIndex: menu.back,
         zIndex: 10,
-        backIndex: menu.back
+        image: "ui/image/backArrow.png"
       });
       backBtn.addEventListener('click', function(e) {
         Ti.API.info("backIndex is " + e.source.backIndex);
         return _this.scrollView.scrollToView(e.source.backIndex);
       });
       nextBtn = Ti.UI.createImageView({
-        image: 'ui/image/backButton.png',
-        right: 5,
-        top: 200,
-        zIndex: 10,
+        width: 40,
+        height: 200,
+        right: 0,
+        top: 120,
         nextIndex: menu.next,
-        transform: Ti.UI.create2DMatrix().rotate(180)
+        zIndex: 10,
+        image: "ui/image/nextArrow.png"
       });
       nextBtn.addEventListener('click', function(e) {
         Ti.API.info("nextIndex is " + e.source.nextIndex);
@@ -150,6 +153,7 @@ startupWindow = (function() {
         view.add(loginForm);
       }
       this.scrollView.addView(view);
+      Ti.API.info("scrollView.addView done");
     }
   };
 
