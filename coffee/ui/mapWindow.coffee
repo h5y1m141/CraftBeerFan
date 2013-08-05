@@ -75,6 +75,7 @@ class mapWindow
           phoneNumber:e.annotation.phoneNumber
           latitude: e.annotation.latitude
           longitude: e.annotation.longitude
+          favoriteButtonEnable:true
           
         ShopDataDetailWindow = require("ui/shopDataDetailWindow")
         shopDataDetailWindow = new ShopDataDetailWindow(data)

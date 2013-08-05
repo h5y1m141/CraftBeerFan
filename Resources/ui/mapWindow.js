@@ -73,7 +73,8 @@ mapWindow = (function() {
           shopAddress: e.annotation.shopAddress,
           phoneNumber: e.annotation.phoneNumber,
           latitude: e.annotation.latitude,
-          longitude: e.annotation.longitude
+          longitude: e.annotation.longitude,
+          favoriteButtonEnable: true
         };
         ShopDataDetailWindow = require("ui/shopDataDetailWindow");
         return shopDataDetailWindow = new ShopDataDetailWindow(data);

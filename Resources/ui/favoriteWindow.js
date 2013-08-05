@@ -3,7 +3,7 @@ var favoriteWindow;
 favoriteWindow = (function() {
 
   function favoriteWindow() {
-    var ActivityIndicator, MainController, ShopDataDetail, activeTab, activityIndicator, keyColor, mainController, shopDataDetail, shopDetailTable,
+    var ActivityIndicator, MainController, activeTab, activityIndicator, keyColor, mainController,
       _this = this;
     keyColor = "#f9f9f9";
     this.baseColor = {
@@ -30,6 +30,19 @@ favoriteWindow = (function() {
       height: 'auto',
       top: 0,
       left: 0
+    });
+    this.table.addEventListener('click', function(e) {
+      var ShopDataDetailWindow, data;
+      data = {
+        shopName: e.row.placeData.shopName,
+        shopAddress: e.row.placeData.shopAddress,
+        phoneNumber: e.row.placeData.phone_number,
+        latitude: e.row.placeData.latitude,
+        longitude: e.row.placeData.longitude,
+        favoriteButtonEnable: false
+      };
+      ShopDataDetailWindow = require("ui/shopDataDetailWindow");
+      return new ShopDataDetailWindow(data);
     });
     MainController = require("controller/mainController");
     mainController = new MainController();
@@ -69,17 +82,6 @@ favoriteWindow = (function() {
         }
       }
       return _this.table.setData(rows);
-    });
-    ShopDataDetail = require("ui/shopDataDetail");
-    shopDataDetail = new ShopDataDetail();
-    shopDetailTable = shopDataDetail.getTable();
-    this.table.addEventListener('click', function(e) {
-      var ShopDataDetailWindow, data, shopDataDetailWindow;
-      if (e.row.className === "shopName") {
-        data = e.row.data;
-        ShopDataDetailWindow = require("ui/shopDataDetailWindow");
-        return shopDataDetailWindow = new ShopDataDetailWindow(data);
-      }
     });
     this.favoriteWindow.add(this.table);
     activeTab = Ti.API._activeTab;
@@ -157,18 +159,6 @@ favoriteWindow = (function() {
         fontFamily: 'LigatureSymbols'
       },
       title: String.fromCharCode("0xe112")
-    });
-    moveNextWindowBtn.addEventListener('click', function(e) {
-      var ShopDataDetailWindow, data;
-      data = {
-        shopName: row.placeData.name,
-        shopAddress: row.placeData.address,
-        phoneNumber: row.placeData.phone_number,
-        latitude: row.placeData.latitude,
-        longitude: row.placeData.longitude
-      };
-      ShopDataDetailWindow = require("ui/shopDataDetailWindow");
-      return new ShopDataDetailWindow(data);
     });
     row.add(moveNextWindowBtn);
     leftPostion = [50, 75, 100, 125, 150];
