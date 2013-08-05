@@ -133,18 +133,16 @@ mainController = (function() {
   };
 
   mainController.prototype._login = function(callback) {
-    var currentUserId, loginType, password, result, userName;
+    var currentUserId, loginType, password, userName;
     currentUserId = Ti.App.Properties.getString("currentUserId");
     userName = Ti.App.Properties.getString("userName");
     password = Ti.App.Properties.getString("currentUserPassword");
     loginType = Ti.App.Properties.getString("loginType");
     Ti.API.info("loginType is " + loginType);
     if (loginType === "facebook") {
-      this.kloudService.fbLogin();
-      result = {};
-      result.success = true;
-      Ti.API.info("_login done result is " + result);
-      return callback(result);
+      return this.kloudService.fbLogin(function(result) {
+        return callback(result);
+      });
     } else {
       return this.kloudService.cbFanLogin(userName, password, function(result) {
         var user;

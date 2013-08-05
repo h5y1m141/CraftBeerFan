@@ -55,12 +55,15 @@ kloudService = (function() {
     });
   };
 
-  kloudService.prototype.fbLogin = function() {
+  kloudService.prototype.fbLogin = function(callback) {
     var fb;
     fb = require('facebook');
-    if (!fb.loggedIn) {
-      fb.authorize();
-    }
+    return this.Cloud.SocialIntegrations.externalAccountLogin({
+      type: "facebook",
+      token: fb.accessToken
+    }, function(result) {
+      return callback(result);
+    });
   };
 
   kloudService.prototype.reviewsCreate = function(ratings, contents, shopName, currentUserId, callback) {
@@ -77,7 +80,13 @@ kloudService = (function() {
       var id;
       if (e.success) {
         id = e.places[0].id;
-        Ti.API.info("placeID is " + id + ". and ratings is " + ratings + " and contents is " + contents);
+        Ti.API.info("placeID is " + id + ". and ratings is " + ratings + " and contents is " + contents + " and currentUserId is " + currentUserId);
+        if (ratings === void 0) {
+          ratings = 0;
+        }
+        if (contents === "" || contents === null) {
+          contents = "no data";
+        }
         return that.Reviews.create({
           rating: ratings,
           content: contents,

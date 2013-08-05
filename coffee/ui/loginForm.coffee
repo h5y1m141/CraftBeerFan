@@ -17,7 +17,7 @@ class loginForm
       height:240
       top:100      
       left:30
-      backgroundColor:@baseColor.backgroundColor
+      backgroundColor:@baseColor.barColor
       zIndex:0
       
     # アカウント登録用のフィールドを準備して
@@ -61,7 +61,10 @@ class loginForm
       autocorrect:false
       
     passwordField.addEventListener('change',(e) =>
-      @password = e.value
+      if e.value.length is 20
+        alert "パスワードは20文字以内にて設定してください"
+      else
+        @password = e.value
       
     )
     t = Titanium.UI.create2DMatrix().scale(0.0)
@@ -145,40 +148,45 @@ class loginForm
     fbLoginBtn = fb.createLoginButton
       top:50
       style:fb.BUTTON_STYLE_WIDE
-    fb = require('facebook');
+
     fb.appid = @_getAppID()
     fb.permissions =  ['read_stream']
     fb.forceDialogAuth = true
+
     fb.addEventListener('login', (e) =>
       that = @
-      token = fb.accessToken
-      Ti.API.info "token is #{token}"      
       if e.success
-        if e.success
-          Cloud = require('ti.cloud')
-          Cloud.SocialIntegrations.externalAccountLogin
-            type: "facebook"
-            token: token
-          , (result) ->
-            if result.success
-              user = result.users[0]
-              Ti.App.Properties.setBool "configurationWizard",true
-              Ti.App.Properties.setString "currentUserId",user.id
-              Ti.App.Properties.setString "userName",user.first_name + " "+ user.last_name
-              Ti.App.Properties.setString "loginType","facebook"
-              
-              that.mainController.createTabGroup()
+        token = fb.accessToken
+        Ti.App.Analytics.trackEvent('startupWindow','loginSuccess','loginSuccess',1)
+        Cloud = require('ti.cloud')
+        Cloud.SocialIntegrations.externalAccountLogin
+          type: "facebook"
+          token: token
+        , (result) ->
+          if result.success
+            user = result.users[0]
+            Ti.App.Properties.setBool "configurationWizard",true
+            Ti.App.Properties.setString "currentUserId",user.id
+            Ti.App.Properties.setString "userName",user.first_name + " "+ user.last_name
+            Ti.App.Properties.setString "loginType","facebook"
+            
+            that.mainController.createTabGroup()
 
-        
+      else if e.cancelled
+        alert "ログイン処理がキャンセルされました"
+        Ti.App.Analytics.trackEvent('startupWindow','loginCanceled','loginCanceled',1)        
       else if e.error
-        alert e.error
-      else alert "Canceled"  if e.cancelled
+        Ti.App.Analytics.trackEvent('startupWindow','loginError','loginError',1)
+        alert "ログイン処理中にエラーが発生しました"
+
+      else
+        Ti.App.Analytics.trackEvent('startupWindow','otherLogin','otherLogin',1)
     )
     fb.addEventListener('logout',(e)->
+      Ti.App.Analytics.trackEvent('startupWindow','logout','logout',1)
       alert 'logout'
     )
-          
-    # loginForm.add facebookBox
+
     loginForm.add fbLoginBtn
     loginForm.add signUpBox
     
