@@ -1,9 +1,15 @@
 class shopDataDetail
   constructor: (data) ->
-
-    shopData = []
+    @baseColor =
+      barColor:"#f9f9f9"
+      backgroundColor:"#f3f3f3"
+      keyColor:"#DA5019"
+      textColor:"#333"
+      phoneColor:"#3261AB"
+      starColor:"#DA5019"
+      separatorColor:'#cccccc'
     
-
+    shopData = []
     addressRow = Ti.UI.createTableViewRow
       width:'auto'
       height:40
@@ -14,7 +20,7 @@ class shopDataDetail
       text:"#{data.shopAddress}"
       textAlign:'left'      
       width:280
-      color:"#333"
+      color:@baseColor.textColor
       left:20
       top:10
       font:
@@ -34,11 +40,11 @@ class shopDataDetail
       left:10
       width:30
       height:30
-      backgroundColor:"#3261AB"
+      backgroundColor:@baseColor.phoneColor
       backgroundImage:"NONE"
       borderWidth:0
       borderRadius:0
-      color:'#fff'      
+      color:@baseColor.barColor
       font:
         fontSize: 24
         fontFamily:'FontAwesome'
@@ -51,7 +57,7 @@ class shopDataDetail
       left:50
       top:10
       width:150
-      color:"#333"
+      color:@baseColor.textColor
       font:
         fontSize:18
         fontFamily:'Rounded M+ 1p'
@@ -72,11 +78,11 @@ class shopDataDetail
       left:10
       width:30
       height:30
-      backgroundColor:"#DA5019"
+      backgroundColor:@baseColor.starColor
       backgroundImage:"NONE"
       borderWidth:0
       borderRadius:0
-      color:'#fff'      
+      color:@baseColor.barColor
       font:
         fontSize: 28
         fontFamily:'LigatureSymbols'
@@ -87,7 +93,7 @@ class shopDataDetail
       left:50
       width: 200
       height: 30
-      color: "#000"
+      color:@baseColor.textColor
       font:
         fontSize:16
         fontFamily:'Rounded M+ 1p'
@@ -101,8 +107,8 @@ class shopDataDetail
       top:200
       left:0
       data:shopData
-      backgroundColor:"#f3f3f3"
-      separatorColor: '#cccccc'
+      backgroundColor:@baseColor.backgroundColor
+      separatorColor:@baseColor.separatorColor
       borderRadius:5
       
     # お気に入り一覧画面から遷移する場合などは、お気に入り登録ボタンを
@@ -113,8 +119,8 @@ class shopDataDetail
           shopName = e.row.shopName
           @_createModalWindow(shopName)
         else if e.row.rowID is 1
-          alert e.row.phoneNumber
-          Titanium.Platform.openURL("tel:#{e.row.phoneNumber}")  
+          @_createPhoneDialog(e.row.phoneNumber)
+          # Titanium.Platform.openURL("tel:#{e.row.phoneNumber}")  
       )
       
       addressRow.add @addressLabel
@@ -158,8 +164,8 @@ class shopDataDetail
     
   _createModalWindow:(shopName) ->
     modalWindow = Ti.UI.createWindow
-      backgroundColor:"#f3f3f3"
-      barColor:"#f9f9f9"
+      backgroundColor:@baseColor.backgroundColor
+      barColor:@baseColor.barColor
       
     closeButton = Titanium.UI.createButton
       backgroundImage:"ui/image/backButton.png"
@@ -177,7 +183,7 @@ class shopDataDetail
     
     _winTitle = Ti.UI.createLabel
       textAlign: 'center'
-      color:'#333'
+      color:@baseColor.textColor
       font:
         fontSize:18
         fontFamily : 'Rounded M+ 1p'
@@ -193,16 +199,14 @@ class shopDataDetail
       text: "登録したくなった理由をメモに残しておきましょう!"
       width:300
       height:40
-      color:"#333"
+      color:@baseColor.textColor
       left:10
       top:55
       font:
         fontSize:14
         fontFamily :'Rounded M+ 1p'
         fontWeight:'bold'
-    label.addEventListener('click',(e) ->
-      # alert ratings
-    )
+        
     contents = ""
     textArea = Titanium.UI.createTextArea
       value:''
@@ -214,7 +218,7 @@ class shopDataDetail
         fontSize:12
         fontFamily :'Rounded M+ 1p'
         fontWeight:'bold'
-      color:'#222',
+      color:@baseColor.textColor
       textAlign:'left'
       borderWidth:2
       borderColor:"#dfdfdf"
@@ -232,11 +236,11 @@ class shopDataDetail
       left:110
       width:100
       height:40
-      backgroundColor:"#DA5019"
+      backgroundColor:@baseColor.starColor
       backgroundImage:"NONE"
       borderWidth:0
       borderRadius:5
-      color:'#fff'
+      color:@baseColor.barColor
       font:
         fontSize: 32
         fontFamily:'LigatureSymbols'
@@ -292,7 +296,7 @@ class shopDataDetail
         backgroundImage:"NONE"
         borderWidth:0
         borderRadius:5
-        color:'#fff'
+        color:@baseColor.barColor
         font:
           fontSize: 24
           fontFamily:'LigatureSymbols'
@@ -311,5 +315,14 @@ class shopDataDetail
       modalWindow.add starIcon
       
     return    
-      
+  _createPhoneDialog:(phoneNumber) ->
+    phoneDialog = Ti.UI.createView
+      width:240
+      height:240
+      top:100      
+      left:30
+      backgroundColor:@baseColor.barColor
+      zIndex:0
+    alert phoneNumber
+    return phoneDialog
 module.exports = shopDataDetail    

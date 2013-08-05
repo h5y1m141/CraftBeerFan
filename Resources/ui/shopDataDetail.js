@@ -5,6 +5,15 @@ shopDataDetail = (function() {
   function shopDataDetail(data) {
     var addressRow, phoneRow, shopData, starIcon,
       _this = this;
+    this.baseColor = {
+      barColor: "#f9f9f9",
+      backgroundColor: "#f3f3f3",
+      keyColor: "#DA5019",
+      textColor: "#333",
+      phoneColor: "#3261AB",
+      starColor: "#DA5019",
+      separatorColor: '#cccccc'
+    };
     shopData = [];
     addressRow = Ti.UI.createTableViewRow({
       width: 'auto',
@@ -15,7 +24,7 @@ shopDataDetail = (function() {
       text: "" + data.shopAddress,
       textAlign: 'left',
       width: 280,
-      color: "#333",
+      color: this.baseColor.textColor,
       left: 20,
       top: 10,
       font: {
@@ -36,11 +45,11 @@ shopDataDetail = (function() {
       left: 10,
       width: 30,
       height: 30,
-      backgroundColor: "#3261AB",
+      backgroundColor: this.baseColor.phoneColor,
       backgroundImage: "NONE",
       borderWidth: 0,
       borderRadius: 0,
-      color: '#fff',
+      color: this.baseColor.barColor,
       font: {
         fontSize: 24,
         fontFamily: 'FontAwesome'
@@ -53,7 +62,7 @@ shopDataDetail = (function() {
       left: 50,
       top: 10,
       width: 150,
-      color: "#333",
+      color: this.baseColor.textColor,
       font: {
         fontSize: 18,
         fontFamily: 'Rounded M+ 1p',
@@ -73,11 +82,11 @@ shopDataDetail = (function() {
       left: 10,
       width: 30,
       height: 30,
-      backgroundColor: "#DA5019",
+      backgroundColor: this.baseColor.starColor,
       backgroundImage: "NONE",
       borderWidth: 0,
       borderRadius: 0,
-      color: '#fff',
+      color: this.baseColor.barColor,
       font: {
         fontSize: 28,
         fontFamily: 'LigatureSymbols'
@@ -89,7 +98,7 @@ shopDataDetail = (function() {
       left: 50,
       width: 200,
       height: 30,
-      color: "#000",
+      color: this.baseColor.textColor,
       font: {
         fontSize: 16,
         fontFamily: 'Rounded M+ 1p'
@@ -103,8 +112,8 @@ shopDataDetail = (function() {
       top: 200,
       left: 0,
       data: shopData,
-      backgroundColor: "#f3f3f3",
-      separatorColor: '#cccccc',
+      backgroundColor: this.baseColor.backgroundColor,
+      separatorColor: this.baseColor.separatorColor,
       borderRadius: 5
     });
     if (data.favoriteButtonEnable === true) {
@@ -114,8 +123,7 @@ shopDataDetail = (function() {
           shopName = e.row.shopName;
           return _this._createModalWindow(shopName);
         } else if (e.row.rowID === 1) {
-          alert(e.row.phoneNumber);
-          return Titanium.Platform.openURL("tel:" + e.row.phoneNumber);
+          return _this._createPhoneDialog(e.row.phoneNumber);
         }
       });
       addressRow.add(this.addressLabel);
@@ -155,8 +163,8 @@ shopDataDetail = (function() {
   shopDataDetail.prototype._createModalWindow = function(shopName) {
     var ActivityIndicator, activityIndicator, addNewIcon, closeButton, contents, label, modalWindow, textArea, _winTitle;
     modalWindow = Ti.UI.createWindow({
-      backgroundColor: "#f3f3f3",
-      barColor: "#f9f9f9"
+      backgroundColor: this.baseColor.backgroundColor,
+      barColor: this.baseColor.barColor
     });
     closeButton = Titanium.UI.createButton({
       backgroundImage: "ui/image/backButton.png",
@@ -174,7 +182,7 @@ shopDataDetail = (function() {
     modalWindow.add(activityIndicator);
     _winTitle = Ti.UI.createLabel({
       textAlign: 'center',
-      color: '#333',
+      color: this.baseColor.textColor,
       font: {
         fontSize: 18,
         fontFamily: 'Rounded M+ 1p',
@@ -190,7 +198,7 @@ shopDataDetail = (function() {
       text: "登録したくなった理由をメモに残しておきましょう!",
       width: 300,
       height: 40,
-      color: "#333",
+      color: this.baseColor.textColor,
       left: 10,
       top: 55,
       font: {
@@ -199,7 +207,6 @@ shopDataDetail = (function() {
         fontWeight: 'bold'
       }
     });
-    label.addEventListener('click', function(e) {});
     contents = "";
     textArea = Titanium.UI.createTextArea({
       value: '',
@@ -212,7 +219,7 @@ shopDataDetail = (function() {
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       },
-      color: '#222',
+      color: this.baseColor.textColor,
       textAlign: 'left',
       borderWidth: 2,
       borderColor: "#dfdfdf",
@@ -229,11 +236,11 @@ shopDataDetail = (function() {
       left: 110,
       width: 100,
       height: 40,
-      backgroundColor: "#DA5019",
+      backgroundColor: this.baseColor.starColor,
       backgroundImage: "NONE",
       borderWidth: 0,
       borderRadius: 5,
-      color: '#fff',
+      color: this.baseColor.barColor,
       font: {
         fontSize: 32,
         fontFamily: 'LigatureSymbols'
@@ -286,7 +293,7 @@ shopDataDetail = (function() {
         backgroundImage: "NONE",
         borderWidth: 0,
         borderRadius: 5,
-        color: '#fff',
+        color: this.baseColor.barColor,
         font: {
           fontSize: 24,
           fontFamily: 'LigatureSymbols'
@@ -306,6 +313,20 @@ shopDataDetail = (function() {
       });
       modalWindow.add(starIcon);
     }
+  };
+
+  shopDataDetail.prototype._createPhoneDialog = function(phoneNumber) {
+    var phoneDialog;
+    phoneDialog = Ti.UI.createView({
+      width: 240,
+      height: 240,
+      top: 100,
+      left: 30,
+      backgroundColor: this.baseColor.barColor,
+      zIndex: 0
+    });
+    alert(phoneNumber);
+    return phoneDialog;
   };
 
   return shopDataDetail;
