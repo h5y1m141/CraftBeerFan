@@ -12,7 +12,7 @@ shopDataDetail = (function() {
       selectedColor: 'transparent'
     });
     this.addressLabel = Ti.UI.createLabel({
-      text: "",
+      text: "" + data.shopAddress,
       textAlign: 'left',
       width: 280,
       color: "#333",
@@ -28,7 +28,8 @@ shopDataDetail = (function() {
       width: 'auto',
       height: 40,
       selectedColor: 'transparent',
-      rowID: 1
+      rowID: 1,
+      phoneNumber: data.phoneNumber
     });
     this.phoneIcon = Ti.UI.createButton({
       top: 5,
@@ -47,7 +48,7 @@ shopDataDetail = (function() {
       title: String.fromCharCode("0xf095")
     });
     this.phoneLabel = Ti.UI.createLabel({
-      text: "",
+      text: "電話する",
       textAlign: 'left',
       left: 50,
       top: 10,
@@ -63,7 +64,8 @@ shopDataDetail = (function() {
       width: 'auto',
       height: 40,
       selectedColor: 'transparent',
-      rowID: 2
+      rowID: 2,
+      shopName: "" + data.shopName
     });
     starIcon = Ti.UI.createButton({
       top: 5,
@@ -89,20 +91,12 @@ shopDataDetail = (function() {
       height: 30,
       color: "#000",
       font: {
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: 'Rounded M+ 1p'
       },
-      text: ''
+      text: "お気に入り登録する",
+      textAlign: 'left'
     });
-    addressRow.add(this.addressLabel);
-    phoneRow.add(this.phoneIcon);
-    phoneRow.add(this.phoneLabel);
-    this.reviewRow.add(starIcon);
-    this.reviewRow.add(this.editLabel);
-    shopData.push(this.section);
-    shopData.push(addressRow);
-    shopData.push(phoneRow);
-    shopData.push(this.reviewRow);
     this.tableView = Ti.UI.createTableView({
       width: 'auto',
       height: 'auto',
@@ -113,13 +107,40 @@ shopDataDetail = (function() {
       separatorColor: '#cccccc',
       borderRadius: 5
     });
-    this.tableView.addEventListener('click', function(e) {
-      var shopName;
-      if (e.row.rowID === 2) {
-        shopName = e.row.shopName;
-        return _this._createModalWindow(shopName);
-      }
-    });
+    if (data.favoriteButtonEnable === true) {
+      this.tableView.addEventListener('click', function(e) {
+        var shopName;
+        if (e.row.rowID === 2) {
+          shopName = e.row.shopName;
+          return _this._createModalWindow(shopName);
+        } else if (e.row.rowID === 1) {
+          alert(e.row.phoneNumber);
+          return Titanium.Platform.openURL("tel:" + e.row.phoneNumber);
+        }
+      });
+      addressRow.add(this.addressLabel);
+      phoneRow.add(this.phoneIcon);
+      phoneRow.add(this.phoneLabel);
+      this.reviewRow.add(starIcon);
+      this.reviewRow.add(this.editLabel);
+      shopData.push(this.section);
+      shopData.push(addressRow);
+      shopData.push(phoneRow);
+      shopData.push(this.reviewRow);
+    } else {
+      this.tableView.addEventListener('click', function(e) {
+        if (e.row.rowID === 1) {
+          return Titanium.Platform.openURL("tel:" + data.phoneNumber);
+        }
+      });
+      addressRow.add(this.addressLabel);
+      phoneRow.add(this.phoneIcon);
+      phoneRow.add(this.phoneLabel);
+      shopData.push(this.section);
+      shopData.push(addressRow);
+      shopData.push(phoneRow);
+    }
+    this.tableView.setData(shopData);
     return;
   }
 
@@ -129,27 +150,6 @@ shopDataDetail = (function() {
 
   shopDataDetail.prototype.getTable = function() {
     return this.tableView;
-  };
-
-  shopDataDetail.prototype.setData = function(data) {
-    var shopName;
-    this.addressLabel.setText(data.shopAddress);
-    this.phoneLabel.setText("電話する");
-    this.phoneLabel.textAlign = 'center';
-    this.editLabel.setFont({
-      fontSize: 32,
-      fontFamily: 'LigatureSymbols'
-    });
-    shopName = data.shopName;
-    this.reviewRow.shopName = shopName;
-    this.editLabel.setFont({
-      fontFamily: 'Rounded M+ 1p'
-    });
-    this.editLabel.setText("お気に入り登録する");
-    this.editLabel.textAlign = 'center';
-    this.phoneIcon.addEventListener('click', function(e) {
-      return Titanium.Platform.openURL("tel:" + data.phoneNumber);
-    });
   };
 
   shopDataDetail.prototype._createModalWindow = function(shopName) {

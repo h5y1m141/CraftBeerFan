@@ -1,5 +1,6 @@
 class shopDataDetail
   constructor: (data) ->
+
     shopData = []
     
 
@@ -10,7 +11,7 @@ class shopDataDetail
 
       
     @addressLabel = Ti.UI.createLabel
-      text: ""
+      text:"#{data.shopAddress}"
       textAlign:'left'      
       width:280
       color:"#333"
@@ -26,6 +27,7 @@ class shopDataDetail
       height:40
       selectedColor:'transparent'
       rowID:1
+      phoneNumber:data.phoneNumber
 
     @phoneIcon = Ti.UI.createButton
       top:5
@@ -42,8 +44,9 @@ class shopDataDetail
         fontFamily:'FontAwesome'
       title:String.fromCharCode("0xf095")
       
+      
     @phoneLabel = Ti.UI.createLabel
-      text: ""
+      text:"電話する"
       textAlign:'left'
       left:50
       top:10
@@ -61,6 +64,7 @@ class shopDataDetail
       height:40
       selectedColor:'transparent'
       rowID:2
+      shopName:"#{data.shopName}"
       
     starIcon = Ti.UI.createButton
       top:5
@@ -85,20 +89,11 @@ class shopDataDetail
       height: 30
       color: "#000"
       font:
-        fontSize:18
+        fontSize:16
         fontFamily:'Rounded M+ 1p'
-      text: ''
+      text:"お気に入り登録する"
+      textAlign:'left'
 
-    addressRow.add @addressLabel
-    phoneRow.add @phoneIcon
-    phoneRow.add @phoneLabel
-    @reviewRow.add starIcon
-    @reviewRow.add @editLabel
-    
-    shopData.push @section  
-    shopData.push addressRow
-    shopData.push phoneRow
-    shopData.push @reviewRow
 
     @tableView = Ti.UI.createTableView
       width:'auto'
@@ -110,13 +105,50 @@ class shopDataDetail
       separatorColor: '#cccccc'
       borderRadius:5
       
-    @tableView.addEventListener('click',(e) =>
+    # お気に入り一覧画面から遷移する場合などは、お気に入り登録ボタンを
+    # 非表示にしたいので、favoriteButtonEnableの値をチェックする
+    if data.favoriteButtonEnable is true
+      @tableView.addEventListener('click',(e) =>
+        if e.row.rowID is 2
+          shopName = e.row.shopName
+          @_createModalWindow(shopName)
+        else if e.row.rowID is 1
+          alert e.row.phoneNumber
+          Titanium.Platform.openURL("tel:#{e.row.phoneNumber}")  
+      )
+      
+      addressRow.add @addressLabel
+      
+      phoneRow.add @phoneIcon
+      phoneRow.add @phoneLabel
+      
+      @reviewRow.add starIcon
+      @reviewRow.add @editLabel
+      
+      shopData.push @section  
+      shopData.push addressRow
+      shopData.push phoneRow
+      shopData.push @reviewRow
 
-      if e.row.rowID is 2
-        shopName = e.row.shopName
-        @_createModalWindow(shopName)
-        
-    ) 
+      
+      
+    else
+      @tableView.addEventListener('click',(e) =>
+        if e.row.rowID is 1
+          Titanium.Platform.openURL("tel:#{data.phoneNumber}")  
+      )
+    
+      addressRow.add @addressLabel
+      
+      phoneRow.add @phoneIcon
+      phoneRow.add @phoneLabel
+      
+      shopData.push @section  
+      shopData.push addressRow
+      shopData.push phoneRow
+
+    @tableView.setData shopData
+    
     return
   show: () ->
     return @tableView.show()
@@ -124,24 +156,6 @@ class shopDataDetail
   getTable:() ->
     return @tableView
     
-  setData: (data) ->
-
-    @addressLabel.setText(data.shopAddress)
-
-    @phoneLabel.setText("電話する")
-    @phoneLabel.textAlign ='center'
-    @editLabel.setFont({fontSize: 32,fontFamily: 'LigatureSymbols'})
-    shopName = data.shopName
-    @reviewRow.shopName =  shopName
-    @editLabel.setFont({fontFamily :'Rounded M+ 1p'})
-    @editLabel.setText("お気に入り登録する")
-    @editLabel.textAlign ='center'
-
-    @phoneIcon.addEventListener('click',(e)->
-      Titanium.Platform.openURL("tel:#{data.phoneNumber}")
-    )
-    
-    return
   _createModalWindow:(shopName) ->
     modalWindow = Ti.UI.createWindow
       backgroundColor:"#f3f3f3"

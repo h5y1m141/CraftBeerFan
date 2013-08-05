@@ -52,7 +52,8 @@ shopAreaDataWindow = (function() {
         shopAddress: e.row.placeData.shopAddress,
         phoneNumber: e.row.placeData.phoneNumber,
         latitude: e.row.placeData.latitude,
-        longitude: e.row.placeData.longitude
+        longitude: e.row.placeData.longitude,
+        favoriteButtonEnable: true
       };
       ShopDataDetailWindow = require("ui/shopDataDetailWindow");
       return shopDataDetailWindow = new ShopDataDetailWindow(data);

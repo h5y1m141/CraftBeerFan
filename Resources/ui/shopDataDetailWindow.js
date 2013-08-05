@@ -19,8 +19,7 @@ shopDataDetailWindow = (function() {
     this._createNavbarElement();
     this._createMapView(data);
     ShopDataDetail = require("ui/shopDataDetail");
-    shopDataDetail = new ShopDataDetail();
-    shopDataDetail.setData(data);
+    shopDataDetail = new ShopDataDetail(data);
     shopDataTable = shopDataDetail.getTable();
     this.shopDataDetailWindow.add(shopDataTable);
     activeTab = Ti.API._activeTab;

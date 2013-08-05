@@ -54,6 +54,7 @@ class shopAreaDataWindow
         phoneNumber:e.row.placeData.phoneNumber
         latitude:e.row.placeData.latitude
         longitude:e.row.placeData.longitude
+        favoriteButtonEnable:true
         
       ShopDataDetailWindow = require("ui/shopDataDetailWindow")
       shopDataDetailWindow = new ShopDataDetailWindow(data)

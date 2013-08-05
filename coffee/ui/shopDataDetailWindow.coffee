@@ -1,12 +1,15 @@
 class shopDataDetailWindow
   constructor:(data)->
     # 引数に渡されるdataの構造は以下のとおり
+    # favoriteButtonEnableは、お気に入り登録するボタンを表示するか
+    # どうか決める
     # data =
     #   name:"お店の名前"
     #   shopAddress:"お店の住所"
     #   phoneNumber:"お店の電話番号"
     #   latitude:
     #   longitude:
+    #   favoriteButtonEnable:true/false
     keyColor = "#f9f9f9"
     @baseColor =
       barColor:keyColor
@@ -24,8 +27,8 @@ class shopDataDetailWindow
     @_createMapView(data)
 
     ShopDataDetail = require("ui/shopDataDetail")
-    shopDataDetail = new ShopDataDetail()
-    shopDataDetail.setData(data)
+
+    shopDataDetail = new ShopDataDetail(data)
     shopDataTable = shopDataDetail.getTable()
     @shopDataDetailWindow.add shopDataTable
     
