@@ -30,6 +30,65 @@ class shopDataDetailWindow
       
     @_createNavbarElement()
     @_createMapView(data)
+    @_createTableView(data)
+
+
+    # 詳細情報の画面に遷移する
+    activeTab = Ti.API._activeTab
+    return activeTab.open(@shopDataDetailWindow)
+    
+  _createNavbarElement:() ->
+    backButton = Titanium.UI.createButton
+      backgroundImage:"ui/image/backButton.png"
+      width:44
+      height:44
+      
+    backButton.addEventListener('click',(e) =>
+      return @shopDataDetailWindow.close({animated:true})
+    )
+    
+    @shopDataDetailWindow.leftNavButton = backButton
+      
+    shopDataDetailWindowTitle = Ti.UI.createLabel
+      textAlign: 'center'
+      color:'#333'
+      font:
+        fontSize:18
+        fontFamily : 'Rounded M+ 1p'
+        fontWeight:'bold'
+      text:"お店の詳細情報"
+      
+    if Ti.Platform.osname is 'iphone'  
+      @shopDataDetailWindow.setTitleControl shopDataDetailWindowTitle
+      
+    return
+  _createMapView:(data) ->
+    mapView = Titanium.Map.createView
+      mapType: Titanium.Map.STANDARD_TYPE
+      region: 
+        latitude:data.latitude
+        longitude:data.longitude
+        latitudeDelta:0.005
+        longitudeDelta:0.005
+      animate:true
+      regionFit:true
+      userLocation:true
+      zIndex:0
+      top:0
+      left:0
+      height:200
+      width:'auto'
+
+    annotation = Titanium.Map.createAnnotation
+      pincolor:Titanium.Map.ANNOTATION_PURPLE
+      animate: false
+      latitude:data.latitude
+      longitude:data.longitude
+
+    mapView.addAnnotation annotation
+    return @shopDataDetailWindow.add mapView
+    
+  _createTableView:(data) ->
     shopData = []
     addressRow = Ti.UI.createTableViewRow
       width:'auto'
@@ -132,6 +191,10 @@ class shopDataDetailWindow
       separatorColor:@baseColor.separatorColor
       borderRadius:5
       
+    # 電話するのrowをタッチした際にアラートダイアログを表示するための処理
+    phoneDialog = @_createPhoneDialog(data.phoneNumber)
+    @shopDataDetailWindow.add phoneDialog
+      
     # お気に入り一覧画面から遷移する場合などは、お気に入り登録ボタンを
     # 非表示にしたいので、favoriteButtonEnableの値をチェックする
     if data.favoriteButtonEnable is true
@@ -140,16 +203,12 @@ class shopDataDetailWindow
           shopName = e.row.shopName
           @_createModalWindow(shopName)
         else if e.row.rowID is 1
-          phoneDialog = @_createPhoneDialog(e.row.phoneNumber)
-          
-          # Titanium.Platform.openURL("tel:#{e.row.phoneNumber}")
-      # t1 = Titanium.UI.create2DMatrix()
-      # t1 = t1.scale(1.0)
-      # animation = Titanium.UI.createAnimation()
-      # animation.transform = t1
-      # animation.duration = 250
-      # accountSignUpView.animate(animation)
-
+          t1 = Titanium.UI.create2DMatrix()
+          t1 = t1.scale(1.0)
+          animation = Titanium.UI.createAnimation()
+          animation.transform = t1
+          animation.duration = 250
+          phoneDialog.animate(animation)
       )
       
       addressRow.add @addressLabel
@@ -165,12 +224,15 @@ class shopDataDetailWindow
       shopData.push phoneRow
       shopData.push @reviewRow
 
-      
-      
     else
       @tableView.addEventListener('click',(e) =>
         if e.row.rowID is 1
-          Titanium.Platform.openURL("tel:#{data.phoneNumber}")  
+          t1 = Titanium.UI.create2DMatrix()
+          t1 = t1.scale(1.0)
+          animation = Titanium.UI.createAnimation()
+          animation.transform = t1
+          animation.duration = 500
+          phoneDialog.animate(animation)
       )
     
       addressRow.add @addressLabel
@@ -183,62 +245,8 @@ class shopDataDetailWindow
       shopData.push phoneRow
 
     @tableView.setData shopData
-    @shopDataDetailWindow.add @tableView
-
-    # 詳細情報の画面に遷移する
-    activeTab = Ti.API._activeTab
-    return activeTab.open(@shopDataDetailWindow)
-    
-  _createNavbarElement:() ->
-    backButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/backButton.png"
-      width:44
-      height:44
-      
-    backButton.addEventListener('click',(e) =>
-      return @shopDataDetailWindow.close({animated:true})
-    )
-    
-    @shopDataDetailWindow.leftNavButton = backButton
-      
-    shopDataDetailWindowTitle = Ti.UI.createLabel
-      textAlign: 'center'
-      color:'#333'
-      font:
-        fontSize:18
-        fontFamily : 'Rounded M+ 1p'
-        fontWeight:'bold'
-      text:"お店の詳細情報"
-      
-    if Ti.Platform.osname is 'iphone'  
-      @shopDataDetailWindow.setTitleControl shopDataDetailWindowTitle
-      
-    return
-  _createMapView:(data) ->
-    mapView = Titanium.Map.createView
-      mapType: Titanium.Map.STANDARD_TYPE
-      region: 
-        latitude:data.latitude
-        longitude:data.longitude
-        latitudeDelta:0.005
-        longitudeDelta:0.005
-      animate:true
-      regionFit:true
-      userLocation:true
-      zIndex:0
-      top:0
-      left:0
-      height:200
-      width:'auto'
-
-    annotation = Titanium.Map.createAnnotation
-      pincolor:Titanium.Map.ANNOTATION_PURPLE
-      animate: false
-      latitude:data.latitude
-      longitude:data.longitude
-
-    mapView.addAnnotation annotation
-    return @shopDataDetailWindow.add mapView
+    return @shopDataDetailWindow.add @tableView
+            
   _createModalWindow:(shopName) ->
     modalWindow = Ti.UI.createWindow
       backgroundColor:@baseColor.backgroundColor
@@ -393,28 +401,80 @@ class shopDataDetailWindow
     return
     
   _createPhoneDialog:(phoneNumber) ->
+    t = Titanium.UI.create2DMatrix().scale(0.0)
     phoneDialog = Ti.UI.createView
       width:240
-      height:240
-      top:100      
-      left:30
+      height:160
+      top:120
+      left:40
+      borderRadius:10
       backgroundColor:@baseColor.barColor
-      zIndex:0
-      t = Titanium.UI.create2DMatrix().scale(0.0)
+      zIndex:20
+      transform:t
       
-    confirmLabel = Ti.UI.createLabel
-      top:5
-      left:5
-      textAlign:'left'
-      width:220
-      height:20
-      color:@baseColor.textColor
+    callBtn = Ti.UI.createLabel
+      width:80
+      height:40
+      left:20
+      bottom:20
+      borderRadius:5      
+      color:@baseColor.barColor      
+      backgroundColor:"#4cda64"
       font:
-        fontSize:14
+        fontSize:18
+        fontFamily :'Rounded M+ 1p'
+      text:'はい'
+      textAlign:"center"
+
+    callBtn.addEventListener('click',(e) ->
+      t1 = Titanium.UI.create2DMatrix()
+      t1 = t1.scale(0.0)
+      animation = Titanium.UI.createAnimation()
+      animation.transform = t1
+      animation.duration = 10
+      phoneDialog.animate(animation)
+      Titanium.Platform.openURL("tel:#{phoneNumber}")
+      
+    ) 
+    cancelleBtn =  Ti.UI.createLabel
+      width:80
+      height:40
+      right:20
+      bottom:20
+      borderRadius:5
+      backgroundColor:"#d8514b"
+      color:@baseColor.barColor
+      font:
+        fontSize:18
+        fontFamily :'Rounded M+ 1p'
+      text:'いいえ'
+      textAlign:"center"
+      
+    cancelleBtn.addEventListener('click',(e) ->
+      t1 = Titanium.UI.create2DMatrix()
+      t1 = t1.scale(0.0)
+      animation = Titanium.UI.createAnimation()
+      animation.transform = t1
+      animation.duration = 250
+      phoneDialog.animate(animation)
+      
+    ) 
+    confirmLabel = Ti.UI.createLabel
+      top:10
+      left:5
+      textAlign:'center'
+      width:220
+      height:50
+      color:"#222"
+      font:
+        fontSize:16
         fontFamily:'Rounded M+ 1p'
-      text:"#{phoneNumber}に電話しますか？"
+      text:"#{phoneNumber}\nに電話しますか？"
       
     phoneDialog.add confirmLabel
+    phoneDialog.add cancelleBtn
+    phoneDialog.add callBtn
     
     return phoneDialog
+    
 module.exports = shopDataDetailWindow  

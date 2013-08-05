@@ -27,12 +27,21 @@ class favoriteWindow
       height:'auto'
       top:0
       left:0
+      
+    @table.addEventListener('click',(e) ->
 
-    # KloudService = require("model/kloudService")
-    # kloudService = new KloudService()
-    # userID = Ti.App.Properties.getString "currentUserId"
-    
-    # kloudService.reviewsQuery(userID,(items) =>
+      data =
+        shopName:e.row.placeData.shopName
+        shopAddress:e.row.placeData.shopAddress
+        phoneNumber:e.row.placeData.phone_number
+        latitude:e.row.placeData.latitude
+        longitude:e.row.placeData.longitude
+        favoriteButtonEnable:false
+        
+      ShopDataDetailWindow = require("ui/shopDataDetailWindow")
+      new ShopDataDetailWindow(data)
+
+    )  
     MainController = require("controller/mainController")
     mainController = new MainController()
     mainController.getReviewInfo( (items) =>
@@ -45,7 +54,6 @@ class favoriteWindow
           borderWidth:0
           backgroundColor:@baseColor.barColor
           selectedBackgroundColor:@baseColor.backgroundColor
-
           color:"#333"
         titleLabel = Ti.UI.createLabel
           width:'auto'
@@ -65,6 +73,7 @@ class favoriteWindow
       else  
         
         for item in items
+
           row = @_createShopDataRow(item)
           rows.push(row)
         
@@ -72,15 +81,6 @@ class favoriteWindow
 
     )
       
-    ShopDataDetail = require("ui/shopDataDetail")
-    shopDataDetail = new ShopDataDetail()
-    shopDetailTable = shopDataDetail.getTable()    
-    @table.addEventListener('click',(e)=>
-      if e.row.className is "shopName"
-        data = e.row.data
-        ShopDataDetailWindow = require("ui/shopDataDetailWindow")
-        shopDataDetailWindow = new ShopDataDetailWindow(data)        
-    )
 
 
     @favoriteWindow.add @table
@@ -155,18 +155,6 @@ class favoriteWindow
         fontFamily:'LigatureSymbols'
       title:String.fromCharCode("0xe112")
       
-    moveNextWindowBtn.addEventListener('click',(e) =>
-
-      data =
-        shopName:row.placeData.name
-        shopAddress:row.placeData.address
-        phoneNumber:row.placeData.phone_number
-        latitude:row.placeData.latitude
-        longitude:row.placeData.longitude
-        
-      ShopDataDetailWindow = require("ui/shopDataDetailWindow")
-      new ShopDataDetailWindow(data)
-    )
     row.add moveNextWindowBtn
     leftPostion = [50, 75, 100, 125, 150]
     for i in [0..placeData.rating]

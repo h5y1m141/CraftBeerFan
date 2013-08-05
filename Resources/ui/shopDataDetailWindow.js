@@ -3,8 +3,7 @@ var shopDataDetailWindow;
 shopDataDetailWindow = (function() {
 
   function shopDataDetailWindow(data) {
-    var activeTab, addressRow, keyColor, phoneRow, shopData, starIcon,
-      _this = this;
+    var activeTab, keyColor;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
@@ -24,6 +23,72 @@ shopDataDetailWindow = (function() {
     });
     this._createNavbarElement();
     this._createMapView(data);
+    this._createTableView(data);
+    activeTab = Ti.API._activeTab;
+    return activeTab.open(this.shopDataDetailWindow);
+  }
+
+  shopDataDetailWindow.prototype._createNavbarElement = function() {
+    var backButton, shopDataDetailWindowTitle,
+      _this = this;
+    backButton = Titanium.UI.createButton({
+      backgroundImage: "ui/image/backButton.png",
+      width: 44,
+      height: 44
+    });
+    backButton.addEventListener('click', function(e) {
+      return _this.shopDataDetailWindow.close({
+        animated: true
+      });
+    });
+    this.shopDataDetailWindow.leftNavButton = backButton;
+    shopDataDetailWindowTitle = Ti.UI.createLabel({
+      textAlign: 'center',
+      color: '#333',
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p',
+        fontWeight: 'bold'
+      },
+      text: "お店の詳細情報"
+    });
+    if (Ti.Platform.osname === 'iphone') {
+      this.shopDataDetailWindow.setTitleControl(shopDataDetailWindowTitle);
+    }
+  };
+
+  shopDataDetailWindow.prototype._createMapView = function(data) {
+    var annotation, mapView;
+    mapView = Titanium.Map.createView({
+      mapType: Titanium.Map.STANDARD_TYPE,
+      region: {
+        latitude: data.latitude,
+        longitude: data.longitude,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005
+      },
+      animate: true,
+      regionFit: true,
+      userLocation: true,
+      zIndex: 0,
+      top: 0,
+      left: 0,
+      height: 200,
+      width: 'auto'
+    });
+    annotation = Titanium.Map.createAnnotation({
+      pincolor: Titanium.Map.ANNOTATION_PURPLE,
+      animate: false,
+      latitude: data.latitude,
+      longitude: data.longitude
+    });
+    mapView.addAnnotation(annotation);
+    return this.shopDataDetailWindow.add(mapView);
+  };
+
+  shopDataDetailWindow.prototype._createTableView = function(data) {
+    var addressRow, phoneDialog, phoneRow, shopData, starIcon,
+      _this = this;
     shopData = [];
     addressRow = Ti.UI.createTableViewRow({
       width: 'auto',
@@ -126,14 +191,21 @@ shopDataDetailWindow = (function() {
       separatorColor: this.baseColor.separatorColor,
       borderRadius: 5
     });
+    phoneDialog = this._createPhoneDialog(data.phoneNumber);
+    this.shopDataDetailWindow.add(phoneDialog);
     if (data.favoriteButtonEnable === true) {
       this.tableView.addEventListener('click', function(e) {
-        var phoneDialog, shopName;
+        var animation, shopName, t1;
         if (e.row.rowID === 2) {
           shopName = e.row.shopName;
           return _this._createModalWindow(shopName);
         } else if (e.row.rowID === 1) {
-          return phoneDialog = _this._createPhoneDialog(e.row.phoneNumber);
+          t1 = Titanium.UI.create2DMatrix();
+          t1 = t1.scale(1.0);
+          animation = Titanium.UI.createAnimation();
+          animation.transform = t1;
+          animation.duration = 250;
+          return phoneDialog.animate(animation);
         }
       });
       addressRow.add(this.addressLabel);
@@ -147,8 +219,14 @@ shopDataDetailWindow = (function() {
       shopData.push(this.reviewRow);
     } else {
       this.tableView.addEventListener('click', function(e) {
+        var animation, t1;
         if (e.row.rowID === 1) {
-          return Titanium.Platform.openURL("tel:" + data.phoneNumber);
+          t1 = Titanium.UI.create2DMatrix();
+          t1 = t1.scale(1.0);
+          animation = Titanium.UI.createAnimation();
+          animation.transform = t1;
+          animation.duration = 500;
+          return phoneDialog.animate(animation);
         }
       });
       addressRow.add(this.addressLabel);
@@ -159,67 +237,7 @@ shopDataDetailWindow = (function() {
       shopData.push(phoneRow);
     }
     this.tableView.setData(shopData);
-    this.shopDataDetailWindow.add(this.tableView);
-    activeTab = Ti.API._activeTab;
-    return activeTab.open(this.shopDataDetailWindow);
-  }
-
-  shopDataDetailWindow.prototype._createNavbarElement = function() {
-    var backButton, shopDataDetailWindowTitle,
-      _this = this;
-    backButton = Titanium.UI.createButton({
-      backgroundImage: "ui/image/backButton.png",
-      width: 44,
-      height: 44
-    });
-    backButton.addEventListener('click', function(e) {
-      return _this.shopDataDetailWindow.close({
-        animated: true
-      });
-    });
-    this.shopDataDetailWindow.leftNavButton = backButton;
-    shopDataDetailWindowTitle = Ti.UI.createLabel({
-      textAlign: 'center',
-      color: '#333',
-      font: {
-        fontSize: 18,
-        fontFamily: 'Rounded M+ 1p',
-        fontWeight: 'bold'
-      },
-      text: "お店の詳細情報"
-    });
-    if (Ti.Platform.osname === 'iphone') {
-      this.shopDataDetailWindow.setTitleControl(shopDataDetailWindowTitle);
-    }
-  };
-
-  shopDataDetailWindow.prototype._createMapView = function(data) {
-    var annotation, mapView;
-    mapView = Titanium.Map.createView({
-      mapType: Titanium.Map.STANDARD_TYPE,
-      region: {
-        latitude: data.latitude,
-        longitude: data.longitude,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005
-      },
-      animate: true,
-      regionFit: true,
-      userLocation: true,
-      zIndex: 0,
-      top: 0,
-      left: 0,
-      height: 200,
-      width: 'auto'
-    });
-    annotation = Titanium.Map.createAnnotation({
-      pincolor: Titanium.Map.ANNOTATION_PURPLE,
-      animate: false,
-      latitude: data.latitude,
-      longitude: data.longitude
-    });
-    mapView.addAnnotation(annotation);
-    return this.shopDataDetailWindow.add(mapView);
+    return this.shopDataDetailWindow.add(this.tableView);
   };
 
   shopDataDetailWindow.prototype._createModalWindow = function(shopName) {
@@ -378,29 +396,83 @@ shopDataDetailWindow = (function() {
   };
 
   shopDataDetailWindow.prototype._createPhoneDialog = function(phoneNumber) {
-    var confirmLabel, phoneDialog, t;
+    var callBtn, cancelleBtn, confirmLabel, phoneDialog, t;
+    t = Titanium.UI.create2DMatrix().scale(0.0);
     phoneDialog = Ti.UI.createView({
       width: 240,
-      height: 240,
-      top: 100,
-      left: 30,
+      height: 160,
+      top: 120,
+      left: 40,
+      borderRadius: 10,
       backgroundColor: this.baseColor.barColor,
-      zIndex: 0
-    }, t = Titanium.UI.create2DMatrix().scale(0.0));
-    confirmLabel = Ti.UI.createLabel({
-      top: 5,
-      left: 5,
-      textAlign: 'left',
-      width: 220,
-      height: 20,
-      color: this.baseColor.textColor,
+      zIndex: 20,
+      transform: t
+    });
+    callBtn = Ti.UI.createLabel({
+      width: 80,
+      height: 40,
+      left: 20,
+      bottom: 20,
+      borderRadius: 5,
+      color: this.baseColor.barColor,
+      backgroundColor: "#4cda64",
       font: {
-        fontSize: 14,
+        fontSize: 18,
         fontFamily: 'Rounded M+ 1p'
       },
-      text: "" + phoneNumber + "に電話しますか？"
+      text: 'はい',
+      textAlign: "center"
+    });
+    callBtn.addEventListener('click', function(e) {
+      var animation, t1;
+      t1 = Titanium.UI.create2DMatrix();
+      t1 = t1.scale(0.0);
+      animation = Titanium.UI.createAnimation();
+      animation.transform = t1;
+      animation.duration = 10;
+      phoneDialog.animate(animation);
+      return Titanium.Platform.openURL("tel:" + phoneNumber);
+    });
+    cancelleBtn = Ti.UI.createLabel({
+      width: 80,
+      height: 40,
+      right: 20,
+      bottom: 20,
+      borderRadius: 5,
+      backgroundColor: "#d8514b",
+      color: this.baseColor.barColor,
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p'
+      },
+      text: 'いいえ',
+      textAlign: "center"
+    });
+    cancelleBtn.addEventListener('click', function(e) {
+      var animation, t1;
+      t1 = Titanium.UI.create2DMatrix();
+      t1 = t1.scale(0.0);
+      animation = Titanium.UI.createAnimation();
+      animation.transform = t1;
+      animation.duration = 250;
+      return phoneDialog.animate(animation);
+    });
+    confirmLabel = Ti.UI.createLabel({
+      top: 10,
+      left: 5,
+      textAlign: 'center',
+      width: 220,
+      height: 50,
+      color: "#222",
+      font: {
+        fontSize: 16,
+        fontFamily: 'Rounded M+ 1p'
+      },
+      text: "" + phoneNumber + "\nに電話しますか？"
     });
     phoneDialog.add(confirmLabel);
+    phoneDialog.add(cancelleBtn);
+    phoneDialog.add(callBtn);
     return phoneDialog;
   };
 
