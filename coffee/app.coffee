@@ -11,6 +11,9 @@ gaKey = config.getGoogleAnalyticsKey()
 gaModule = require('lib/Ti.Google.Analytics')
 analytics = new gaModule(gaKey)
 
+
+
+
 Ti.App.addEventListener "analytics_trackPageview", (e) ->
   path = "/ft/" + Titanium.Platform.name
   analytics.trackPageview path + e.pageUrl
