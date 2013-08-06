@@ -205,7 +205,7 @@ class shopDataDetailWindow
           @_createModalWindow(shopName)
         else if e.row.rowID is 1
           
-          @mapView.rasterizationScale = 0.3
+          @mapView.rasterizationScale = 0.1
           @mapView.shouldRasterize =true
           @mapView.kCAFilterTrilinear= true
           

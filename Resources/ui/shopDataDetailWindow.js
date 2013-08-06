@@ -201,7 +201,7 @@ shopDataDetailWindow = (function() {
           shopName = e.row.shopName;
           return _this._createModalWindow(shopName);
         } else if (e.row.rowID === 1) {
-          _this.mapView.rasterizationScale = 0.3;
+          _this.mapView.rasterizationScale = 0.1;
           _this.mapView.shouldRasterize = true;
           _this.mapView.kCAFilterTrilinear = true;
           t1 = Titanium.UI.create2DMatrix();
