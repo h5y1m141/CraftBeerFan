@@ -417,7 +417,7 @@ shopDataDetailWindow = (function() {
     callBtn = Ti.UI.createLabel({
       width: 120,
       height: 40,
-      left: 20,
+      right: 20,
       bottom: 40,
       borderRadius: 5,
       color: this.baseColor.barColor,
@@ -445,7 +445,7 @@ shopDataDetailWindow = (function() {
     cancelleBtn = Ti.UI.createLabel({
       width: 120,
       height: 40,
-      right: 20,
+      left: 20,
       bottom: 40,
       borderRadius: 5,
       backgroundColor: "#d8514b",
