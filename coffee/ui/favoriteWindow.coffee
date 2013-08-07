@@ -28,20 +28,7 @@ class favoriteWindow
       top:0
       left:0
       
-    @table.addEventListener('click',(e) ->
 
-      data =
-        shopName:e.row.placeData.shopName
-        shopAddress:e.row.placeData.shopAddress
-        phoneNumber:e.row.placeData.phoneNumber
-        latitude:e.row.placeData.latitude
-        longitude:e.row.placeData.longitude
-        favoriteButtonEnable:false
-
-      ShopDataDetailWindow = require("ui/shopDataDetailWindow")
-      new ShopDataDetailWindow(data)
-
-    )  
     MainController = require("controller/mainController")
     mainController = new MainController()
     mainController.getReviewInfo( (items) =>
@@ -153,6 +140,19 @@ class favoriteWindow
         fontSize: 24
         fontFamily:'LigatureSymbols'
       title:String.fromCharCode("0xe112")
+      
+    moveNextWindowBtn.addEventListener('click',()  ->
+      data =
+        shopName:row.placeData.shopName
+        shopAddress:row.placeData.shopAddress
+        phoneNumber:row.placeData.phoneNumber
+        latitude:row.placeData.latitude
+        longitude:row.placeData.longitude
+        favoriteButtonEnable:false
+
+      ShopDataDetailWindow = require("ui/shopDataDetailWindow")
+      new ShopDataDetailWindow(data)      
+    )  
       
     row.add moveNextWindowBtn
     leftPostion = [50, 75, 100, 125, 150]
