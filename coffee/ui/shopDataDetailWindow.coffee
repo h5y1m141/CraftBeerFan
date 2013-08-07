@@ -233,12 +233,17 @@ class shopDataDetailWindow
     else
       @tableView.addEventListener('click',(e) =>
         if e.row.rowID is 1
+          @mapView.rasterizationScale = 0.1
+          @mapView.shouldRasterize =true
+          @mapView.kCAFilterTrilinear= true
+          
           t1 = Titanium.UI.create2DMatrix()
           t1 = t1.scale(1.0)
           animation = Titanium.UI.createAnimation()
           animation.transform = t1
-          animation.duration = 500
+          animation.duration = 250
           phoneDialog.animate(animation)
+
       )
     
       addressRow.add @addressLabel

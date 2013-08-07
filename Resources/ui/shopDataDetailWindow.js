@@ -225,11 +225,14 @@ shopDataDetailWindow = (function() {
       this.tableView.addEventListener('click', function(e) {
         var animation, t1;
         if (e.row.rowID === 1) {
+          _this.mapView.rasterizationScale = 0.1;
+          _this.mapView.shouldRasterize = true;
+          _this.mapView.kCAFilterTrilinear = true;
           t1 = Titanium.UI.create2DMatrix();
           t1 = t1.scale(1.0);
           animation = Titanium.UI.createAnimation();
           animation.transform = t1;
-          animation.duration = 500;
+          animation.duration = 250;
           return phoneDialog.animate(animation);
         }
       });
