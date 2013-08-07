@@ -36,7 +36,7 @@ favoriteWindow = (function() {
       data = {
         shopName: e.row.placeData.shopName,
         shopAddress: e.row.placeData.shopAddress,
-        phoneNumber: e.row.placeData.phone_number,
+        phoneNumber: e.row.placeData.phoneNumber,
         latitude: e.row.placeData.latitude,
         longitude: e.row.placeData.longitude,
         favoriteButtonEnable: false

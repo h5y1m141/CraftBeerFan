@@ -33,11 +33,11 @@ class favoriteWindow
       data =
         shopName:e.row.placeData.shopName
         shopAddress:e.row.placeData.shopAddress
-        phoneNumber:e.row.placeData.phone_number
+        phoneNumber:e.row.placeData.phoneNumber
         latitude:e.row.placeData.latitude
         longitude:e.row.placeData.longitude
         favoriteButtonEnable:false
-        
+
       ShopDataDetailWindow = require("ui/shopDataDetailWindow")
       new ShopDataDetailWindow(data)
 
@@ -73,7 +73,6 @@ class favoriteWindow
       else  
         
         for item in items
-
           row = @_createShopDataRow(item)
           rows.push(row)
         
