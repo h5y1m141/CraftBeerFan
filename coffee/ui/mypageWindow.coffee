@@ -38,11 +38,16 @@ class mypageWindow
       
     userName = Ti.App.Properties.getString "userName"
     loginType  = Ti.App.Properties.getString "loginType"
-      
-    rows =[]
-    rows.push @_userSection(userName,loginType)  
-    table.setData rows
-    mypageWindow.add table
+    currentUserId  =Ti.App.Properties.getString "currentUserId"
+    if typeof currentUserId is "undefined" or currentUserId is null
+      LoginForm = require("ui/loginForm")
+      loginForm = new LoginForm()
+      mypageWindow.add loginForm
+    else
+      rows =[]
+      rows.push @_userSection(userName,loginType)  
+      table.setData rows
+      mypageWindow.add table
     
       
     return mypageWindow

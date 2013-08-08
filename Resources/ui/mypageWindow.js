@@ -3,7 +3,7 @@ var mypageWindow;
 mypageWindow = (function() {
 
   function mypageWindow() {
-    var loginType, mypageWindowTitle, rows, table, userName;
+    var LoginForm, currentUserId, loginForm, loginType, mypageWindowTitle, rows, table, userName;
     this.baseColor = {
       barColor: "#f9f9f9",
       backgroundColor: "#f3f3f3",
@@ -41,10 +41,17 @@ mypageWindow = (function() {
     });
     userName = Ti.App.Properties.getString("userName");
     loginType = Ti.App.Properties.getString("loginType");
-    rows = [];
-    rows.push(this._userSection(userName, loginType));
-    table.setData(rows);
-    mypageWindow.add(table);
+    currentUserId = Ti.App.Properties.getString("currentUserId");
+    if (typeof currentUserId === "undefined" || currentUserId === null) {
+      LoginForm = require("ui/loginForm");
+      loginForm = new LoginForm();
+      mypageWindow.add(loginForm);
+    } else {
+      rows = [];
+      rows.push(this._userSection(userName, loginType));
+      table.setData(rows);
+      mypageWindow.add(table);
+    }
     return mypageWindow;
   }
 
