@@ -65,16 +65,22 @@ mapWindow = (function() {
       this.mapView.height = 452;
     }
     this.mapView.addEventListener('click', function(e) {
-      var ShopDataDetailWindow, data, shopDataDetailWindow;
+      var ShopDataDetailWindow, currentUserId, data, favoriteButtonEnable, shopDataDetailWindow;
       Ti.API.info("map view click event");
       if (e.clicksource === "rightButton") {
+        currentUserId = Ti.App.Properties.getString("currentUserId");
+        if (typeof currentUserId === "undefined" || currentUserId === null) {
+          favoriteButtonEnable = false;
+        } else {
+          favoriteButtonEnable = true;
+        }
         data = {
           shopName: e.title,
           shopAddress: e.annotation.shopAddress,
           phoneNumber: e.annotation.phoneNumber,
           latitude: e.annotation.latitude,
           longitude: e.annotation.longitude,
-          favoriteButtonEnable: true
+          favoriteButtonEnable: favoriteButtonEnable
         };
         ShopDataDetailWindow = require("ui/shopDataDetailWindow");
         return shopDataDetailWindow = new ShopDataDetailWindow(data);

@@ -1,15 +1,22 @@
-var loginForm;
+var loginForm,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 loginForm = (function() {
 
   function loginForm() {
-    var MainController, accountSignUpView, fb, fbLoginBtn, passwordField, registBtn, signUpBox, signUpIcon, signUpLabel, t, userIDField,
+    this._createSignUPBox = __bind(this._createSignUPBox, this);
+
+    this._createSkipBox = __bind(this._createSkipBox, this);
+
+    var MainController, cancelleBtn, fb, fbLoginBtn, passwordField, registBtn, signUpBox, skipBox, t, userIDField,
       _this = this;
     this.baseColor = {
       barColor: "#f9f9f9",
       backgroundColor: "#f3f3f3",
       keyColor: "#DA5019",
-      textColor: "#333"
+      textColor: "#333",
+      signUpBackgroundColor: "#4cda64",
+      skipBackgroundColor: "#d8514b"
     };
     this.userID = "";
     this.password = "";
@@ -29,7 +36,7 @@ loginForm = (function() {
       left: 10,
       width: 200,
       height: 30,
-      hintText: "メールアドレスを入力してください",
+      hintText: "メールアドレスを入力",
       font: {
         fontSize: 14
       },
@@ -48,7 +55,7 @@ loginForm = (function() {
       left: 10,
       width: 200,
       height: 30,
-      hintText: "パスワードを設定してください",
+      hintText: "パスワードを設定",
       font: {
         fontSize: 14
       },
@@ -67,7 +74,7 @@ loginForm = (function() {
       }
     });
     t = Titanium.UI.create2DMatrix().scale(0.0);
-    accountSignUpView = Ti.UI.createView({
+    this.accountSignUpView = Ti.UI.createView({
       width: 240,
       height: 240,
       top: 0,
@@ -76,71 +83,58 @@ loginForm = (function() {
       backgroundColor: this.baseColor.barColor,
       zIndex: 10
     });
-    registBtn = Ti.UI.createButton({
-      width: 100,
+    registBtn = Ti.UI.createLabel({
+      width: 80,
       height: 30,
       top: 100,
-      left: 60,
+      left: 120,
+      borderRadius: 5,
+      color: this.baseColor.barColor,
+      backgroundColor: "#4cda64",
       font: {
         fontSize: 14,
         fontFamily: 'Rounded M+ 1p'
       },
-      title: "登録する"
+      text: "登録する",
+      textAlign: 'center'
     });
     registBtn.addEventListener('click', function(e) {
-      Ti.API.info("signup start userid: " + _this.userID + " and password:" + _this.password);
-      return _this.mainController.signUP(_this.userID, _this.password);
+      if (_this.userID === "" || _this.password === "") {
+        return alert("メールアドレスかパスワードが空白になってます");
+      } else {
+        Ti.API.info("signup start userid: " + _this.userID + " and password:" + _this.password);
+        return _this.mainController.signUP(_this.userID, _this.password);
+      }
     });
-    accountSignUpView.add(userIDField);
-    accountSignUpView.add(passwordField);
-    accountSignUpView.add(registBtn);
-    loginForm.add(accountSignUpView);
-    signUpBox = Ti.UI.createView({
-      left: 40,
+    cancelleBtn = Ti.UI.createLabel({
+      width: 80,
+      height: 30,
+      left: 20,
       top: 100,
-      backgroundColor: this.baseColor.keyColor,
-      borderColor: this.baseColor.keyColor,
-      width: 160,
-      height: 25
-    });
-    signUpBox.addEventListener('click', function(e) {
-      var animation, t1;
-      t1 = Titanium.UI.create2DMatrix();
-      t1 = t1.scale(1.0);
-      animation = Titanium.UI.createAnimation();
-      animation.transform = t1;
-      animation.duration = 250;
-      return accountSignUpView.animate(animation);
-    });
-    signUpIcon = Ti.UI.createLabel({
-      top: 5,
-      left: 5,
-      width: 20,
-      height: 20,
-      textAlign: 'center',
-      backgroundColor: this.baseColor.keyColor,
-      color: "#fff",
-      font: {
-        fontSize: 20,
-        fontFamily: 'LigatureSymbols'
-      },
-      text: String.fromCharCode("0xe029")
-    });
-    signUpLabel = Ti.UI.createLabel({
-      top: 5,
-      left: 25,
-      textAlign: 'center',
-      width: 130,
-      height: 20,
+      borderRadius: 5,
+      backgroundColor: "#d8514b",
       color: this.baseColor.barColor,
       font: {
         fontSize: 14,
         fontFamily: 'Rounded M+ 1p'
       },
-      text: "新規登録する"
+      text: '登録中止',
+      textAlign: "center"
     });
-    signUpBox.add(signUpIcon);
-    signUpBox.add(signUpLabel);
+    cancelleBtn.addEventListener('click', function(e) {
+      var animation, t1;
+      t1 = Titanium.UI.create2DMatrix();
+      t1 = t1.scale(0.0);
+      animation = Titanium.UI.createAnimation();
+      animation.transform = t1;
+      animation.duration = 250;
+      return _this.accountSignUpView.animate(animation);
+    });
+    this.accountSignUpView.add(userIDField);
+    this.accountSignUpView.add(passwordField);
+    this.accountSignUpView.add(registBtn);
+    this.accountSignUpView.add(cancelleBtn);
+    loginForm.add(this.accountSignUpView);
     fb = require('facebook');
     fbLoginBtn = fb.createLoginButton({
       top: 50,
@@ -184,8 +178,11 @@ loginForm = (function() {
       Ti.App.Analytics.trackEvent('startupWindow', 'logout', 'logout', 1);
       return alert('logout');
     });
+    signUpBox = this._createSignUPBox();
+    skipBox = this._createSkipBox();
     loginForm.add(fbLoginBtn);
     loginForm.add(signUpBox);
+    loginForm.add(skipBox);
     return loginForm;
   }
 
@@ -196,6 +193,109 @@ loginForm = (function() {
     json = JSON.parse(file);
     appid = json.facebook.appid;
     return appid;
+  };
+
+  loginForm.prototype._createSkipBox = function() {
+    var skipBox, skipIcon, skipLabel,
+      _this = this;
+    skipBox = Ti.UI.createView({
+      left: 40,
+      top: 150,
+      backgroundColor: this.baseColor.skipBackgroundColor,
+      borderColor: this.baseColor.skipBackgroundColor,
+      width: 160,
+      height: 25,
+      borderRadius: 5
+    });
+    skipBox.addEventListener('click', function(e) {
+      Ti.App.Analytics.trackEvent('startupWindow', 'accountRegistSkip', 'accountRegistSkip', 1);
+      Ti.App.Properties.setBool("configurationWizard", true);
+      return _this.mainController.createTabGroup();
+    });
+    skipIcon = Ti.UI.createLabel({
+      top: 5,
+      left: 5,
+      width: 20,
+      height: 20,
+      textAlign: 'center',
+      backgroundColor: this.baseColor.skipBackgroundColor,
+      color: this.baseColor.barColor,
+      font: {
+        fontSize: 20,
+        fontFamily: 'LigatureSymbols'
+      },
+      text: String.fromCharCode("0xe087")
+    });
+    skipLabel = Ti.UI.createLabel({
+      top: 5,
+      left: 25,
+      textAlign: 'center',
+      width: 130,
+      height: 20,
+      color: this.baseColor.barColor,
+      font: {
+        fontSize: 12,
+        fontFamily: 'Rounded M+ 1p'
+      },
+      text: "登録せずに利用"
+    });
+    skipBox.add(skipIcon);
+    skipBox.add(skipLabel);
+    return skipBox;
+  };
+
+  loginForm.prototype._createSignUPBox = function() {
+    var signUpBox, signUpIcon, signUpLabel,
+      _this = this;
+    signUpBox = Ti.UI.createView({
+      left: 40,
+      top: 100,
+      backgroundColor: this.baseColor.signUpBackgroundColor,
+      borderColor: this.baseColor.signUpBackgroundColor,
+      width: 160,
+      height: 25,
+      borderRadius: 5
+    });
+    signUpBox.addEventListener('click', function(e) {
+      var animation, t1;
+      Ti.App.Analytics.trackEvent('startupWindow', 'accountRegist', 'accountRegist', 1);
+      t1 = Titanium.UI.create2DMatrix();
+      t1 = t1.scale(1.0);
+      animation = Titanium.UI.createAnimation();
+      animation.transform = t1;
+      animation.duration = 250;
+      return _this.accountSignUpView.animate(animation);
+    });
+    signUpIcon = Ti.UI.createLabel({
+      top: 5,
+      left: 5,
+      width: 20,
+      height: 20,
+      textAlign: 'center',
+      backgroundColor: this.baseColor.signUpBackgroundColor,
+      color: this.baseColor.barColor,
+      font: {
+        fontSize: 20,
+        fontFamily: 'LigatureSymbols'
+      },
+      text: String.fromCharCode("0xe029")
+    });
+    signUpLabel = Ti.UI.createLabel({
+      top: 5,
+      left: 25,
+      textAlign: 'center',
+      width: 130,
+      height: 20,
+      color: this.baseColor.barColor,
+      font: {
+        fontSize: 14,
+        fontFamily: 'Rounded M+ 1p'
+      },
+      text: "新規登録する"
+    });
+    signUpBox.add(signUpIcon);
+    signUpBox.add(signUpLabel);
+    return signUpBox;
   };
 
   return loginForm;

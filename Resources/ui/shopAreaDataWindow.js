@@ -46,14 +46,20 @@ shopAreaDataWindow = (function() {
       backgroundColor: this.baseColor.barColor
     });
     shopDataRowTable.addEventListener('click', function(e) {
-      var ShopDataDetailWindow, data, shopDataDetailWindow;
+      var ShopDataDetailWindow, currentUserId, data, favoriteButtonEnable, shopDataDetailWindow;
+      currentUserId = Ti.App.Properties.getString("currentUserId");
+      if (typeof currentUserId === "undefined" || currentUserId === null) {
+        favoriteButtonEnable = false;
+      } else {
+        favoriteButtonEnable = true;
+      }
       data = {
         shopName: e.row.placeData.shopName,
         shopAddress: e.row.placeData.shopAddress,
         phoneNumber: e.row.placeData.phoneNumber,
         latitude: e.row.placeData.latitude,
         longitude: e.row.placeData.longitude,
-        favoriteButtonEnable: true
+        favoriteButtonEnable: favoriteButtonEnable
       };
       ShopDataDetailWindow = require("ui/shopDataDetailWindow");
       return shopDataDetailWindow = new ShopDataDetailWindow(data);

@@ -4,7 +4,6 @@ class mainController
     @kloudService = new KloudService()
     
   createTabGroup:() ->
-    
     tabGroup = Ti.UI.createTabGroup
       tabsBackgroundColor:"#f9f9f9"
       shadowImage:"ui/image/shadowimage.png"
@@ -26,7 +25,7 @@ class mainController
       Ti.App.Analytics.trackPageview "/tab/#{tabGroup._activeTab.windowName}"
       return
     )
-
+    
     MapWindow = require("ui/mapWindow")
     mapWindow = new MapWindow()
     mapTab = Titanium.UI.createTab
@@ -53,6 +52,8 @@ class mainController
     tabGroup.addTab mapTab
     tabGroup.addTab listTab
     tabGroup.addTab mypageTab
+    
+
     tabGroup.open()
     return
     

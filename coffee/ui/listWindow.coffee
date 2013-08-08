@@ -14,7 +14,6 @@ class listWindow
       tabBarHidden:false
       navBarHidden:false
       
-      
     @_createNavbarElement()
 
     t = Titanium.UI.create2DMatrix().scale(0)    
@@ -121,9 +120,17 @@ class listWindow
       row = @_createSubMenuRow("#{categoryName}")
       subMenuRows.push row
 
-      
-    favoriteRow = @_createFavoriteRow()
-    subMenuRows.push favoriteRow
+    # アカウント登録をスキップして利用する人がいるため、
+    # currentUserIdの値をチェックして、存在しない場合にはお気に入り
+    # rowを配置しない
+    currentUserId  =Ti.App.Properties.getString "currentUserId"
+    Ti.API.info "check if favoriteRow should be created. currentUserId is #{currentUserId}"
+    
+    if typeof currentUserId is "undefined" or currentUserId is null
+      Ti.API.info "お気に入り画面に遷移するrowは生成しない"
+    else  
+      favoriteRow = @_createFavoriteRow()
+      subMenuRows.push favoriteRow
     
     @subMenu.setData subMenuRows
 
@@ -168,6 +175,7 @@ class listWindow
     return
     
   _createFavoriteRow:() ->
+    Ti.API.info "_createFavoriteRow start"
     favoriteRow = Ti.UI.createTableViewRow
       width:150
       height:@rowHeight

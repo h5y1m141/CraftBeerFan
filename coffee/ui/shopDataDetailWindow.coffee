@@ -10,6 +10,7 @@ class shopDataDetailWindow
     #   latitude:
     #   longitude:
     #   favoriteButtonEnable:true/false
+    filterView = require("net.uchidak.tigfview")
     keyColor = "#f9f9f9"
     @baseColor =
       barColor:keyColor
@@ -19,6 +20,21 @@ class shopDataDetailWindow
       phoneColor:"#3261AB"
       starColor:"#DA5019"
       separatorColor:'#cccccc'
+    @mapView = Titanium.Map.createView
+      mapType: Titanium.Map.STANDARD_TYPE
+      region: 
+        latitude:data.latitude
+        longitude:data.longitude
+        latitudeDelta:0.005
+        longitudeDelta:0.005
+      animate:true
+      regionFit:true
+      userLocation:true
+      zIndex:0
+      top:0
+      left:0
+      height:200
+      width:'auto'
 
       
     @shopDataDetailWindow = Ti.UI.createWindow
@@ -63,21 +79,6 @@ class shopDataDetailWindow
       
     return
   _createMapView:(data) ->
-    mapView = Titanium.Map.createView
-      mapType: Titanium.Map.STANDARD_TYPE
-      region: 
-        latitude:data.latitude
-        longitude:data.longitude
-        latitudeDelta:0.005
-        longitudeDelta:0.005
-      animate:true
-      regionFit:true
-      userLocation:true
-      zIndex:0
-      top:0
-      left:0
-      height:200
-      width:'auto'
 
     annotation = Titanium.Map.createAnnotation
       pincolor:Titanium.Map.ANNOTATION_PURPLE
@@ -85,8 +86,8 @@ class shopDataDetailWindow
       latitude:data.latitude
       longitude:data.longitude
 
-    mapView.addAnnotation annotation
-    return @shopDataDetailWindow.add mapView
+    @mapView.addAnnotation annotation
+    return @shopDataDetailWindow.add @mapView
     
   _createTableView:(data) ->
     shopData = []
@@ -192,7 +193,7 @@ class shopDataDetailWindow
       borderRadius:5
       
     # 電話するのrowをタッチした際にアラートダイアログを表示するための処理
-    phoneDialog = @_createPhoneDialog(data.phoneNumber)
+    phoneDialog = @_createPhoneDialog(data.phoneNumber,data.shopName)
     @shopDataDetailWindow.add phoneDialog
       
     # お気に入り一覧画面から遷移する場合などは、お気に入り登録ボタンを
@@ -203,6 +204,11 @@ class shopDataDetailWindow
           shopName = e.row.shopName
           @_createModalWindow(shopName)
         else if e.row.rowID is 1
+          
+          @mapView.rasterizationScale = 0.1
+          @mapView.shouldRasterize =true
+          @mapView.kCAFilterTrilinear= true
+          
           t1 = Titanium.UI.create2DMatrix()
           t1 = t1.scale(1.0)
           animation = Titanium.UI.createAnimation()
@@ -227,12 +233,17 @@ class shopDataDetailWindow
     else
       @tableView.addEventListener('click',(e) =>
         if e.row.rowID is 1
+          @mapView.rasterizationScale = 0.1
+          @mapView.shouldRasterize =true
+          @mapView.kCAFilterTrilinear= true
+          
           t1 = Titanium.UI.create2DMatrix()
           t1 = t1.scale(1.0)
           animation = Titanium.UI.createAnimation()
           animation.transform = t1
-          animation.duration = 500
+          animation.duration = 250
           phoneDialog.animate(animation)
+
       )
     
       addressRow.add @addressLabel
@@ -400,23 +411,24 @@ class shopDataDetailWindow
       modalWindow.add starIcon
     return
     
-  _createPhoneDialog:(phoneNumber) ->
+  _createPhoneDialog:(phoneNumber,shopName) ->
     t = Titanium.UI.create2DMatrix().scale(0.0)
     phoneDialog = Ti.UI.createView
-      width:240
-      height:160
-      top:120
-      left:40
+      width:300
+      height:240
+      top:0
+      left:10
       borderRadius:10
-      backgroundColor:@baseColor.barColor
+      opacity:0.8
+      backgroundColor:@baseColor.textColor
       zIndex:20
       transform:t
       
     callBtn = Ti.UI.createLabel
-      width:80
+      width:120
       height:40
-      left:20
-      bottom:20
+      right:20
+      bottom:40
       borderRadius:5      
       color:@baseColor.barColor      
       backgroundColor:"#4cda64"
@@ -426,7 +438,11 @@ class shopDataDetailWindow
       text:'はい'
       textAlign:"center"
 
-    callBtn.addEventListener('click',(e) ->
+    callBtn.addEventListener('click',(e) =>
+      @mapView.rasterizationScale = 1.0
+      @mapView.shouldRasterize =false
+      @mapView.kCAFilterTrilinear= false
+      
       t1 = Titanium.UI.create2DMatrix()
       t1 = t1.scale(0.0)
       animation = Titanium.UI.createAnimation()
@@ -437,10 +453,10 @@ class shopDataDetailWindow
       
     ) 
     cancelleBtn =  Ti.UI.createLabel
-      width:80
+      width:120
       height:40
-      right:20
-      bottom:20
+      left:20
+      bottom:40
       borderRadius:5
       backgroundColor:"#d8514b"
       color:@baseColor.barColor
@@ -450,7 +466,11 @@ class shopDataDetailWindow
       text:'いいえ'
       textAlign:"center"
       
-    cancelleBtn.addEventListener('click',(e) ->
+    cancelleBtn.addEventListener('click',(e) =>
+      @mapView.rasterizationScale = 1.0
+      @mapView.shouldRasterize =false
+      @mapView.kCAFilterTrilinear= false
+      
       t1 = Titanium.UI.create2DMatrix()
       t1 = t1.scale(0.0)
       animation = Titanium.UI.createAnimation()
@@ -460,16 +480,16 @@ class shopDataDetailWindow
       
     ) 
     confirmLabel = Ti.UI.createLabel
-      top:10
-      left:5
+      top:20
+      left:10
       textAlign:'center'
-      width:220
-      height:50
-      color:"#222"
+      width:300
+      height:150
+      color:@baseColor.barColor
       font:
         fontSize:16
         fontFamily:'Rounded M+ 1p'
-      text:"#{phoneNumber}\nに電話しますか？"
+      text:"#{shopName}の電話番号は\n#{phoneNumber}です。\n電話しますか？"
       
     phoneDialog.add confirmLabel
     phoneDialog.add cancelleBtn
