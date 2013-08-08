@@ -3,11 +3,10 @@ var mypageWindow;
 mypageWindow = (function() {
 
   function mypageWindow() {
-    var LoginForm, currentUserId, loginForm, loginType, mypageWindowTitle, rows, table, userName;
+    var LoginForm, currentUserId, description, loginForm, loginType, mypageWindowTitle, rows, table, title, userName;
     this.baseColor = {
       barColor: "#f9f9f9",
-      backgroundColor: "#f3f3f3",
-      backgroundDarkColor: "#dfdfdf",
+      backgroundColor: "#f9f9f9",
       keyColor: "#44A5CB"
     };
     mypageWindow = Ti.UI.createWindow({
@@ -45,6 +44,36 @@ mypageWindow = (function() {
     if (typeof currentUserId === "undefined" || currentUserId === null) {
       LoginForm = require("ui/loginForm");
       loginForm = new LoginForm();
+      loginForm.left = 40;
+      loginForm.top = 80;
+      title = Ti.UI.createLabel({
+        top: 10,
+        left: 30,
+        width: 260,
+        height: 20,
+        color: '#000',
+        font: {
+          fontSize: 16,
+          fontFamily: 'Rounded M+ 1p'
+        },
+        text: 'アカウント未登録',
+        textAlign: 'left'
+      });
+      description = Ti.UI.createLabel({
+        top: 35,
+        left: 30,
+        width: 260,
+        height: 40,
+        color: '#333',
+        font: {
+          fontSize: 12,
+          fontFamily: 'Rounded M+ 1p'
+        },
+        text: '※アカウント設定すると気になるお店を「お気に入り」として登録出来るようになります',
+        textAlign: 'left'
+      });
+      mypageWindow.add(title);
+      mypageWindow.add(description);
       mypageWindow.add(loginForm);
     } else {
       rows = [];
