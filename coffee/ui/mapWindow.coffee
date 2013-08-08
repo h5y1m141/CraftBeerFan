@@ -68,6 +68,14 @@ class mapWindow
     @mapView.addEventListener('click',(e)=>
       Ti.API.info "map view click event"
       if e.clicksource is "rightButton"
+        # アカウント登録をスキップして利用する人がいるため、
+        # currentUserIdの値をチェックして、存在しない場合にはお気に入り
+        # を非表示にする
+        currentUserId = Ti.App.Properties.getString "currentUserId"
+        if typeof currentUserId is "undefined" or currentUserId is null
+          favoriteButtonEnable = false
+        else
+          favoriteButtonEnable = true
 
         data =
           shopName:e.title
@@ -75,7 +83,7 @@ class mapWindow
           phoneNumber:e.annotation.phoneNumber
           latitude: e.annotation.latitude
           longitude: e.annotation.longitude
-          favoriteButtonEnable:true
+          favoriteButtonEnable:favoriteButtonEnable
           
         ShopDataDetailWindow = require("ui/shopDataDetailWindow")
         shopDataDetailWindow = new ShopDataDetailWindow(data)

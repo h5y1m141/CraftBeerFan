@@ -6,6 +6,8 @@ class loginForm
       # keyColor:"#44A5CB"
       keyColor:"#DA5019"
       textColor:"#333"
+      signUpBackgroundColor:"#4cda64"
+      skipBackgroundColor:"#d8514b"
     @userID = ""
     @password = ""
     MainController = require("controller/mainController")
@@ -29,7 +31,7 @@ class loginForm
       left:10
       width:200
       height:30
-      hintText:"メールアドレスを入力してください"
+      hintText:"メールアドレスを入力"
       font:
         fontSize:14
 
@@ -49,7 +51,7 @@ class loginForm
       left:10
       width:200
       height:30
-      hintText:"パスワードを設定してください"
+      hintText:"パスワードを設定"
       font:
         fontSize:14
 
@@ -68,7 +70,7 @@ class loginForm
       
     )
     t = Titanium.UI.create2DMatrix().scale(0.0)
-    accountSignUpView = Ti.UI.createView
+    @accountSignUpView = Ti.UI.createView
       width:240
       height:240
       top:0
@@ -77,72 +79,59 @@ class loginForm
       backgroundColor:@baseColor.barColor
       zIndex:10
       
-    registBtn = Ti.UI.createButton
-      width:100
+    registBtn = Ti.UI.createLabel
+      width:80
       height:30
       top:100
-      left:60
+      left:120
+      borderRadius:5      
+      color:@baseColor.barColor      
+      backgroundColor:"#4cda64"
       font:
         fontSize:14
-        fontFamily:'Rounded M+ 1p'
-      title:"登録する"
+        fontFamily :'Rounded M+ 1p'
+      text:"登録する"
+      textAlign:'center'
+      
     registBtn.addEventListener('click',(e)=>
-      Ti.API.info "signup start userid: #{@userID} and password:#{@password}"
-      @mainController.signUP(@userID,@password)
+      if @userID is "" or @password is ""
+        alert "メールアドレスかパスワードが空白になってます"
+      else
+        Ti.API.info "signup start userid: #{@userID} and password:#{@password}"
+        @mainController.signUP(@userID,@password)
     )
-    accountSignUpView.add userIDField
-    accountSignUpView.add passwordField
-    accountSignUpView.add registBtn
-    loginForm.add accountSignUpView
-    
-        
-    signUpBox = Ti.UI.createView
-      left:40
+    cancelleBtn =  Ti.UI.createLabel
+      width:80
+      height:30
+      left:20
       top:100
-      backgroundColor:@baseColor.keyColor
-      borderColor:@baseColor.keyColor
-      width:160
-      height:25
-      
-    signUpBox.addEventListener('click',(e) ->
-      t1 = Titanium.UI.create2DMatrix()
-      t1 = t1.scale(1.0)
-      animation = Titanium.UI.createAnimation()
-      animation.transform = t1
-      animation.duration = 250
-      accountSignUpView.animate(animation)
-      
-
-    )      
-    signUpIcon = Ti.UI.createLabel
-      top:5
-      left:5
-      width:20
-      height:20
-      textAlign:'center'
-      backgroundColor:@baseColor.keyColor
-      color:"#fff"
-      font:
-        fontSize:20
-        fontFamily:'LigatureSymbols'
-      text:String.fromCharCode("0xe029")
-      
-    
-    signUpLabel  = Ti.UI.createLabel
-      top:5
-      left:25
-      textAlign:'center'
-      width:130
-      height:20
+      borderRadius:5
+      backgroundColor:"#d8514b"
       color:@baseColor.barColor
       font:
         fontSize:14
-        fontFamily:'Rounded M+ 1p'
-      text:"新規登録する"
+        fontFamily :'Rounded M+ 1p'
+      text:'登録中止'
+      textAlign:"center"
       
-
-    signUpBox.add signUpIcon
-    signUpBox.add signUpLabel
+    cancelleBtn.addEventListener('click',(e) =>
+      # アカウント登録用のフォームを非表示にする
+      t1 = Titanium.UI.create2DMatrix()
+      t1 = t1.scale(0.0)
+      animation = Titanium.UI.createAnimation()
+      animation.transform = t1
+      animation.duration = 250
+      @accountSignUpView.animate(animation)
+      
+    )
+    
+    @accountSignUpView.add userIDField
+    @accountSignUpView.add passwordField
+    @accountSignUpView.add registBtn
+    @accountSignUpView.add cancelleBtn
+    loginForm.add @accountSignUpView
+    
+        
     
     fb = require('facebook')
     fbLoginBtn = fb.createLoginButton
@@ -186,10 +175,11 @@ class loginForm
       Ti.App.Analytics.trackEvent('startupWindow','logout','logout',1)
       alert 'logout'
     )
-
+    signUpBox = @_createSignUPBox()
+    skipBox = @_createSkipBox()
     loginForm.add fbLoginBtn
     loginForm.add signUpBox
-    
+    loginForm.add skipBox
     return loginForm
     
   _getAppID:() ->
@@ -199,5 +189,102 @@ class loginForm
     json = JSON.parse(file)
     appid = json.facebook.appid
     return appid
+  _createSkipBox:() =>
+    skipBox = Ti.UI.createView
+      left:40
+      top:150
+      backgroundColor:@baseColor.skipBackgroundColor
+      borderColor:@baseColor.skipBackgroundColor
+      width:160
+      height:25
+      borderRadius:5
+      
+    skipBox.addEventListener('click',(e) =>
+      Ti.App.Analytics.trackEvent('startupWindow','accountRegistSkip','accountRegistSkip',1)
+      Ti.App.Properties.setBool "configurationWizard",true
+      return @mainController.createTabGroup()
+    )      
+    skipIcon = Ti.UI.createLabel
+      top:5
+      left:5
+      width:20
+      height:20
+      textAlign:'center'
+      backgroundColor:@baseColor.skipBackgroundColor
+      color:@baseColor.barColor
+      font:
+        fontSize:20
+        fontFamily:'LigatureSymbols'
+      text:String.fromCharCode("0xe087")
+      
+    
+    skipLabel  = Ti.UI.createLabel
+      top:5
+      left:25
+      textAlign:'center'
+      width:130
+      height:20
+      color:@baseColor.barColor
+      font:
+        fontSize:12
+        fontFamily:'Rounded M+ 1p'
+      text:"登録せずに利用"
+      
 
+    skipBox.add skipIcon
+    skipBox.add skipLabel
+    return skipBox
+        
+  _createSignUPBox:() =>
+    signUpBox = Ti.UI.createView
+      left:40
+      top:100
+      backgroundColor:@baseColor.signUpBackgroundColor
+      borderColor:@baseColor.signUpBackgroundColor
+      width:160
+      height:25
+      borderRadius:5
+            
+    signUpBox.addEventListener('click',(e) =>
+      Ti.App.Analytics.trackEvent('startupWindow','accountRegist','accountRegist',1)
+      t1 = Titanium.UI.create2DMatrix()
+      t1 = t1.scale(1.0)
+      animation = Titanium.UI.createAnimation()
+      animation.transform = t1
+      animation.duration = 250
+      @accountSignUpView.animate(animation)
+      
+
+    )      
+    signUpIcon = Ti.UI.createLabel
+      top:5
+      left:5
+      width:20
+      height:20
+      textAlign:'center'
+      backgroundColor:@baseColor.signUpBackgroundColor
+      color:@baseColor.barColor
+      font:
+        fontSize:20
+        fontFamily:'LigatureSymbols'
+      text:String.fromCharCode("0xe029")
+      
+    
+    signUpLabel  = Ti.UI.createLabel
+      top:5
+      left:25
+      textAlign:'center'
+      width:130
+      height:20
+      color:@baseColor.barColor
+      font:
+        fontSize:14
+        fontFamily:'Rounded M+ 1p'
+      text:"新規登録する"
+      
+
+    signUpBox.add signUpIcon
+    signUpBox.add signUpLabel
+    return signUpBox
+    
 module.exports = loginForm  
