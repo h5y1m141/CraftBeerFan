@@ -6,7 +6,7 @@ listWindow = (function() {
   function listWindow() {
     this.refreshTableData = __bind(this.refreshTableData, this);
 
-    var ActivityIndicator, PrefectureCategory, categoryName, favoriteRow, row, subMenuRows, t,
+    var ActivityIndicator, PrefectureCategory, categoryName, currentUserId, favoriteRow, row, subMenuRows, t,
       _this = this;
     ActivityIndicator = require("ui/activityIndicator");
     this.activityIndicator = new ActivityIndicator();
@@ -130,8 +130,14 @@ listWindow = (function() {
       row = this._createSubMenuRow("" + categoryName);
       subMenuRows.push(row);
     }
-    favoriteRow = this._createFavoriteRow();
-    subMenuRows.push(favoriteRow);
+    currentUserId = Ti.App.Properties.getString("currentUserId");
+    Ti.API.info("check if favoriteRow should be created. currentUserId is " + currentUserId);
+    if (typeof currentUserId === "undefined" || currentUserId === null) {
+      Ti.API.info("お気に入り画面に遷移するrowは生成しない");
+    } else {
+      favoriteRow = this._createFavoriteRow();
+      subMenuRows.push(favoriteRow);
+    }
     this.subMenu.setData(subMenuRows);
     this.listWindow.add(this.subMenu);
     this.listWindow.add(this.table);
@@ -175,6 +181,7 @@ listWindow = (function() {
 
   listWindow.prototype._createFavoriteRow = function() {
     var favoriteIcon, favoriteLabel, favoriteRow;
+    Ti.API.info("_createFavoriteRow start");
     favoriteRow = Ti.UI.createTableViewRow({
       width: 150,
       height: this.rowHeight,
