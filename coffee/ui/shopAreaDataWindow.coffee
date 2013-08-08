@@ -48,13 +48,24 @@ class shopAreaDataWindow
       backgroundColor:@baseColor.barColor
       
     shopDataRowTable.addEventListener('click',(e) ->
+      # アカウント登録をスキップして利用する人がいるため、
+      # currentUserIdの値をチェックして、存在しない場合にはお気に入り
+      # を非表示にする
+
+      currentUserId = Ti.App.Properties.getString "currentUserId"
+      
+      if typeof currentUserId is "undefined" or currentUserId is null
+        favoriteButtonEnable = false
+      else
+        favoriteButtonEnable = true
+        
       data =
         shopName:e.row.placeData.shopName
         shopAddress:e.row.placeData.shopAddress
         phoneNumber:e.row.placeData.phoneNumber
         latitude:e.row.placeData.latitude
         longitude:e.row.placeData.longitude
-        favoriteButtonEnable:true
+        favoriteButtonEnable:favoriteButtonEnable
         
       ShopDataDetailWindow = require("ui/shopDataDetailWindow")
       shopDataDetailWindow = new ShopDataDetailWindow(data)
