@@ -18,6 +18,7 @@ class shopDataDetailWindow
       keyColor:"#DA5019"
       textColor:"#333"
       phoneColor:"#3261AB"
+      favoriteColor:"#DA5019"
       starColor:"#DA5019"
       separatorColor:'#cccccc'
     @mapView = Titanium.Map.createView
@@ -44,11 +45,16 @@ class shopDataDetailWindow
       navBarHidden:false
       tabBarHidden:false
       
+    
+    
     @_createNavbarElement()
     @_createMapView(data)
     @_createTableView(data)
 
-
+    ActivityIndicator = require("ui/activityIndicator")
+    activityIndicator = new ActivityIndicator()
+    @shopDataDetailWindow.add activityIndicator
+    
     # 詳細情報の画面に遷移する
     activeTab = Ti.API._activeTab
     return activeTab.open(@shopDataDetailWindow)
@@ -178,7 +184,7 @@ class shopDataDetailWindow
       font:
         fontSize:16
         fontFamily:'Rounded M+ 1p'
-      text:"お気に入り登録する"
+      text:"メモを残す"
       textAlign:'left'
 
 
@@ -194,15 +200,28 @@ class shopDataDetailWindow
       
     # 電話するのrowをタッチした際にアラートダイアログを表示するための処理
     phoneDialog = @_createPhoneDialog(data.phoneNumber,data.shopName)
+    favoriteDialog = @_createfavoriteDialog()
     @shopDataDetailWindow.add phoneDialog
+    @shopDataDetailWindow.add favoriteDialog
       
     # お気に入り一覧画面から遷移する場合などは、お気に入り登録ボタンを
     # 非表示にしたいので、favoriteButtonEnableの値をチェックする
     if data.favoriteButtonEnable is true
       @tableView.addEventListener('click',(e) =>
         if e.row.rowID is 2
+
           shopName = e.row.shopName
-          @_createModalWindow(shopName)
+          @mapView.rasterizationScale = 0.1
+          @mapView.shouldRasterize =true
+          @mapView.kCAFilterTrilinear= true
+          
+          t1 = Titanium.UI.create2DMatrix()
+          t1 = t1.scale(1.0)
+          animation = Titanium.UI.createAnimation()
+          animation.transform = t1
+          animation.duration = 250
+          favoriteDialog.animate(animation)
+
         else if e.row.rowID is 1
           
           @mapView.rasterizationScale = 0.1
@@ -258,46 +277,87 @@ class shopDataDetailWindow
     @tableView.setData shopData
     return @shopDataDetailWindow.add @tableView
             
-  _createModalWindow:(shopName) ->
-    modalWindow = Ti.UI.createWindow
-      backgroundColor:@baseColor.backgroundColor
-      barColor:@baseColor.barColor
-      
-    closeButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/backButton.png"
-      width:44
-      height:44
-      
-      
-    closeButton.addEventListener('click',(e) ->
-      return modalWindow.close({animated:true})
-    )
-    ActivityIndicator = require("ui/activityIndicator")
-    activityIndicator = new ActivityIndicator()
-    modalWindow.leftNavButton = closeButton
-    modalWindow.add activityIndicator
+
+  _createfavoriteDialog:() ->
+    t = Titanium.UI.create2DMatrix().scale(0.0)
+    loveEmpty = String.fromCharCode("0xe06f")
+    love = String.fromCharCode("0xe06e")
+    unselectedColor = "#666"
+    selectedColor = "#222"
+    selectedValue = false
+    favoriteDialog = Ti.UI.createView
+      width:300
+      height:280
+      top:0
+      left:10
+      borderRadius:10
+      opacity:0.8
+      backgroundColor:"#333"      
+      zIndex:20
+      transform:t
+
+    viewForWantToGo = Ti.UI.createView
+      width:120
+      height:40
+      top:10
+      left:10
+      borderRadius:10
+      opacity:0.8
+      backgroundColor:"#FFEE55"      
+      zIndex:20
+      selected:selectedValue
+            
+    iconForWantToGo = Ti.UI.createLabel
+      top:5
+      left:5
+      width:30
+      height:30
+      color:"#FFEE55"
+      font:
+        fontSize:28
+        fontFamily:'LigatureSymbols'
+      text:loveEmpty
     
-    _winTitle = Ti.UI.createLabel
-      textAlign: 'center'
-      color:@baseColor.textColor
+    
+    titleForWantToGo = Ti.UI.createLabel
+      textAlign:'left'
+      color:@baseColor.barColor
       font:
         fontSize:18
-        fontFamily : 'Rounded M+ 1p'
-        fontWeight:'bold'
-      text:"お気に入り登録:#{shopName}"
+        fontFamily:'Rounded M+ 1p'
+      text:"行きたい"
+      top:5
+      left:40
+      width:80
+      height:30
+
       
-    if Ti.Platform.osname is 'iphone'  
-      modalWindow.setTitleControl _winTitle
+    viewForWantToGo.addEventListener('click',(e) ->
+      alert e
+      if e.source.selcted is false 
+        iconForWantToGo.title = loveEmpty
+        e.source.selcted = true
+
+
+      else
+        iconForWantToGo.title = love
+        e.source.selcted = false
+        
+      Ti.API.info e.source.selcted
       
-    @_createStarIcon(modalWindow)
+    )     
+      
+    viewForWantToGo.add iconForWantToGo
+    viewForWantToGo.add titleForWantToGo
+
     
-    label = Ti.UI.createLabel
-      text: "登録したくなった理由をメモに残しておきましょう!"
+    titleForMemo = Ti.UI.createLabel
+      text: "メモ欄"
       width:300
       height:40
-      color:@baseColor.textColor
+      color:@baseColor.barColor
       left:10
-      top:55
+      top:5
       font:
         fontSize:14
         fontFamily :'Rounded M+ 1p'
@@ -307,9 +367,9 @@ class shopDataDetailWindow
     textArea = Titanium.UI.createTextArea
       value:''
       height:150
-      width:300
-      top:100
-      left:5
+      width:280
+      top:50
+      left:10
       font:
         fontSize:12
         fontFamily :'Rounded M+ 1p'
@@ -324,29 +384,31 @@ class shopDataDetailWindow
     # 入力完了後、キーボードを消す  
     textArea.addEventListener('return',(e)->
       contents = e.value
-      Ti.API.info "e.value is #{e.value}"
+      Ti.API.info "登録しようとしてるメモの内容は is #{contents}です"
       textArea.blur()
     )  
-    addNewIcon = Ti.UI.createButton
-      top:270
-      left:110
-      width:100
+    registMemoBtn = Ti.UI.createLabel
+      top:210
+      right:20
+      width:120
       height:40
-      backgroundColor:@baseColor.starColor
       backgroundImage:"NONE"
       borderWidth:0
       borderRadius:5
-      color:@baseColor.barColor
+      color:@baseColor.barColor      
+      backgroundColor:"#4cda64"
       font:
-        fontSize: 32
-        fontFamily:'LigatureSymbols'
-      title:String.fromCharCode("0xe041")
+        fontSize:18
+        fontFamily :'Rounded M+ 1p'
+      text:"メモを残す"
+      textAlign:'center'
 
+    registMemoBtn.addEventListener('click',(e) =>
+      @mapView.rasterizationScale = 1.0
+      @mapView.shouldRasterize =false
+      @mapView.kCAFilterTrilinear= false
       
-    modalWindow.add addNewIcon
-    modalWindow.add textArea
-    modalWindow.add label
-    addNewIcon.addEventListener('click',(e)->
+      # ACSにメモを登録
       activityIndicator.show()
       # 次のCloud.Places.queryからはaddNewIconの外側にある
       # 変数参照できないはずなのでここでローカル変数として格納しておく
@@ -363,53 +425,50 @@ class shopDataDetailWindow
           alert "お気に入りに登録しました"
         else
           alert "すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした"
-          
-        modalWindow.close()
-      )
-    )
-    modalWindow.open(
-      modal:true
-      modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL
-      modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
-    )
-    
-  _createStarIcon:(modalWindow) ->
-    # ratingsを１から５までで管理できるので星印を使って表現
-    # 選択されていない状態を意図するのがdisableColorとする
-    enableColor  = "#FFE600"
-    disableColor = "#FFFBD5"
-    ratings = 0
-    leftPostion = [5, 45, 85, 125, 165]
-    for i in [0..4]
+        t1 = Titanium.UI.create2DMatrix()
+        t1 = t1.scale(0.0)
+        animation = Titanium.UI.createAnimation()
+        animation.transform = t1
+        animation.duration = 10
+        favoriteDialog.animate(animation)
 
-      starIcon = Ti.UI.createButton
-        top:5
-        left:leftPostion[i]
-        width:30
-        height:30
-        selected:false
-        backgroundColor:disableColor
-        backgroundImage:"NONE"
-        borderWidth:0
-        borderRadius:5
-        color:@baseColor.barColor
-        font:
-          fontSize: 24
-          fontFamily:'LigatureSymbols'
-        title:String.fromCharCode("0xe121")
-        
-      starIcon.addEventListener('click',(e) ->
-        if e.source.selected is false
-          e.source.backgroundColor = enableColor
-          e.source.selected = true
-          ratings++
-        else
-          e.source.backgroundColor = disableColor
-          e.source.selected = false
-          ratings--            
-      )  
-      modalWindow.add starIcon
-    return
+      )
+      
+    ) 
+    cancelleBtn =  Ti.UI.createLabel
+      width:120
+      height:40
+      left:20
+      top:210
+      borderRadius:5
+      backgroundColor:"#d8514b"
+      color:@baseColor.barColor
+      font:
+        fontSize:18
+        fontFamily :'Rounded M+ 1p'
+      text:'中止する'
+      textAlign:"center"
+      
+    cancelleBtn.addEventListener('click',(e) =>
+      @mapView.rasterizationScale = 1.0
+      @mapView.shouldRasterize =false
+      @mapView.kCAFilterTrilinear= false
+      
+      t1 = Titanium.UI.create2DMatrix()
+      t1 = t1.scale(0.0)
+      animation = Titanium.UI.createAnimation()
+      animation.transform = t1
+      animation.duration = 250
+      favoriteDialog.animate(animation)
+      
+    )       
+    favoriteDialog.add textArea
+    favoriteDialog.add titleForMemo
+    favoriteDialog.add registMemoBtn
+    favoriteDialog.add cancelleBtn
+    
+    
+    return favoriteDialog
     
   _createPhoneDialog:(phoneNumber,shopName) ->
     t = Titanium.UI.create2DMatrix().scale(0.0)
