@@ -52,8 +52,8 @@ class shopDataDetailWindow
     @_createTableView(data)
 
     ActivityIndicator = require("ui/activityIndicator")
-    activityIndicator = new ActivityIndicator()
-    @shopDataDetailWindow.add activityIndicator
+    @activityIndicator = new ActivityIndicator()
+    @shopDataDetailWindow.add @activityIndicator
     
     # 詳細情報の画面に遷移する
     activeTab = Ti.API._activeTab
@@ -186,7 +186,42 @@ class shopDataDetailWindow
         fontFamily:'Rounded M+ 1p'
       text:"メモを残す"
       textAlign:'left'
+      
+    wantToGoRow = Ti.UI.createTableViewRow
+      width:'auto'
+      height:40
+      selectedColor:'transparent'
+      rowID:3
+      shopName:"#{data.shopName}"
+      
+    loveEmpty = String.fromCharCode("0xe06f")
+    love = String.fromCharCode("0xe06e")
 
+    wantToGoIcon = Ti.UI.createLabel
+      top:5
+      left:10
+      width:30
+      height:30
+      backgroundColor:"#FFEE55"
+      backgroundImage:"NONE"
+      color:@baseColor.barColor
+      font:
+        fontSize:28
+        fontFamily:'LigatureSymbols'
+      text:loveEmpty
+    
+    wantToGoIconLabel = Ti.UI.createLabel
+      color:@baseColor.textColor
+      font:
+        fontSize:18
+        fontFamily:'Rounded M+ 1p'
+      text:"行きたい"
+      textAlign:'left'
+      top:5
+      left:50
+      width:200
+      height:30
+      
 
     @tableView = Ti.UI.createTableView
       width:'auto'
@@ -200,7 +235,7 @@ class shopDataDetailWindow
       
     # 電話するのrowをタッチした際にアラートダイアログを表示するための処理
     phoneDialog = @_createPhoneDialog(data.phoneNumber,data.shopName)
-    favoriteDialog = @_createfavoriteDialog()
+    favoriteDialog = @_createfavoriteDialog(data.shopName)
     @shopDataDetailWindow.add phoneDialog
     @shopDataDetailWindow.add favoriteDialog
       
@@ -243,11 +278,14 @@ class shopDataDetailWindow
       
       @reviewRow.add starIcon
       @reviewRow.add @editLabel
+      wantToGoRow.add wantToGoIconLabel
+      wantToGoRow.add wantToGoIcon      
       
       shopData.push @section  
       shopData.push addressRow
       shopData.push phoneRow
       shopData.push @reviewRow
+      shopData.push wantToGoRow
 
     else
       @tableView.addEventListener('click',(e) =>
@@ -278,10 +316,8 @@ class shopDataDetailWindow
     return @shopDataDetailWindow.add @tableView
             
 
-  _createfavoriteDialog:() ->
+  _createfavoriteDialog:(shopName) ->
     t = Titanium.UI.create2DMatrix().scale(0.0)
-    loveEmpty = String.fromCharCode("0xe06f")
-    love = String.fromCharCode("0xe06e")
     unselectedColor = "#666"
     selectedColor = "#222"
     selectedValue = false
@@ -296,59 +332,6 @@ class shopDataDetailWindow
       zIndex:20
       transform:t
 
-    viewForWantToGo = Ti.UI.createView
-      width:120
-      height:40
-      top:10
-      left:10
-      borderRadius:10
-      opacity:0.8
-      backgroundColor:"#FFEE55"      
-      zIndex:20
-      selected:selectedValue
-            
-    iconForWantToGo = Ti.UI.createLabel
-      top:5
-      left:5
-      width:30
-      height:30
-      color:"#FFEE55"
-      font:
-        fontSize:28
-        fontFamily:'LigatureSymbols'
-      text:loveEmpty
-    
-    
-    titleForWantToGo = Ti.UI.createLabel
-      textAlign:'left'
-      color:@baseColor.barColor
-      font:
-        fontSize:18
-        fontFamily:'Rounded M+ 1p'
-      text:"行きたい"
-      top:5
-      left:40
-      width:80
-      height:30
-
-      
-    viewForWantToGo.addEventListener('click',(e) ->
-      alert e
-      if e.source.selcted is false 
-        iconForWantToGo.title = loveEmpty
-        e.source.selcted = true
-
-
-      else
-        iconForWantToGo.title = love
-        e.source.selcted = false
-        
-      Ti.API.info e.source.selcted
-      
-    )     
-      
-    viewForWantToGo.add iconForWantToGo
-    viewForWantToGo.add titleForWantToGo
 
     
     titleForMemo = Ti.UI.createLabel
@@ -404,12 +387,14 @@ class shopDataDetailWindow
       textAlign:'center'
 
     registMemoBtn.addEventListener('click',(e) =>
+      _activityIndicator = @activityIndicator 
       @mapView.rasterizationScale = 1.0
       @mapView.shouldRasterize =false
       @mapView.kCAFilterTrilinear= false
       
+      
+      _activityIndicator.show()
       # ACSにメモを登録
-      activityIndicator.show()
       # 次のCloud.Places.queryからはaddNewIconの外側にある
       # 変数参照できないはずなのでここでローカル変数として格納しておく
       Ti.API.info "contents is #{contents}"
@@ -420,7 +405,7 @@ class shopDataDetailWindow
       MainController = require("controller/mainController")
       mainController = new MainController()
       mainController.createReview(ratings,contents,shopName,currentUserId,(result) ->
-        activityIndicator.hide()
+        _activityIndicator.hide()
         if result.success
           alert "お気に入りに登録しました"
         else

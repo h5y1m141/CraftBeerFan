@@ -3,7 +3,7 @@ var shopDataDetailWindow;
 shopDataDetailWindow = (function() {
 
   function shopDataDetailWindow(data) {
-    var ActivityIndicator, activeTab, activityIndicator, filterView, keyColor;
+    var ActivityIndicator, activeTab, filterView, keyColor;
     filterView = require("net.uchidak.tigfview");
     keyColor = "#f9f9f9";
     this.baseColor = {
@@ -44,8 +44,8 @@ shopDataDetailWindow = (function() {
     this._createMapView(data);
     this._createTableView(data);
     ActivityIndicator = require("ui/activityIndicator");
-    activityIndicator = new ActivityIndicator();
-    this.shopDataDetailWindow.add(activityIndicator);
+    this.activityIndicator = new ActivityIndicator();
+    this.shopDataDetailWindow.add(this.activityIndicator);
     activeTab = Ti.API._activeTab;
     return activeTab.open(this.shopDataDetailWindow);
   }
@@ -92,7 +92,7 @@ shopDataDetailWindow = (function() {
   };
 
   shopDataDetailWindow.prototype._createTableView = function(data) {
-    var addressRow, favoriteDialog, phoneDialog, phoneRow, shopData, starIcon,
+    var addressRow, favoriteDialog, love, loveEmpty, phoneDialog, phoneRow, shopData, starIcon, wantToGoIcon, wantToGoIconLabel, wantToGoRow,
       _this = this;
     shopData = [];
     addressRow = Ti.UI.createTableViewRow({
@@ -186,6 +186,42 @@ shopDataDetailWindow = (function() {
       text: "メモを残す",
       textAlign: 'left'
     });
+    wantToGoRow = Ti.UI.createTableViewRow({
+      width: 'auto',
+      height: 40,
+      selectedColor: 'transparent',
+      rowID: 3,
+      shopName: "" + data.shopName
+    });
+    loveEmpty = String.fromCharCode("0xe06f");
+    love = String.fromCharCode("0xe06e");
+    wantToGoIcon = Ti.UI.createLabel({
+      top: 5,
+      left: 10,
+      width: 30,
+      height: 30,
+      backgroundColor: "#FFEE55",
+      backgroundImage: "NONE",
+      color: this.baseColor.barColor,
+      font: {
+        fontSize: 28,
+        fontFamily: 'LigatureSymbols'
+      },
+      text: loveEmpty
+    });
+    wantToGoIconLabel = Ti.UI.createLabel({
+      color: this.baseColor.textColor,
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p'
+      },
+      text: "行きたい",
+      textAlign: 'left',
+      top: 5,
+      left: 50,
+      width: 200,
+      height: 30
+    });
     this.tableView = Ti.UI.createTableView({
       width: 'auto',
       height: 'auto',
@@ -197,7 +233,7 @@ shopDataDetailWindow = (function() {
       borderRadius: 5
     });
     phoneDialog = this._createPhoneDialog(data.phoneNumber, data.shopName);
-    favoriteDialog = this._createfavoriteDialog();
+    favoriteDialog = this._createfavoriteDialog(data.shopName);
     this.shopDataDetailWindow.add(phoneDialog);
     this.shopDataDetailWindow.add(favoriteDialog);
     if (data.favoriteButtonEnable === true) {
@@ -231,10 +267,13 @@ shopDataDetailWindow = (function() {
       phoneRow.add(this.phoneLabel);
       this.reviewRow.add(starIcon);
       this.reviewRow.add(this.editLabel);
+      wantToGoRow.add(wantToGoIconLabel);
+      wantToGoRow.add(wantToGoIcon);
       shopData.push(this.section);
       shopData.push(addressRow);
       shopData.push(phoneRow);
       shopData.push(this.reviewRow);
+      shopData.push(wantToGoRow);
     } else {
       this.tableView.addEventListener('click', function(e) {
         var animation, t1;
@@ -261,12 +300,10 @@ shopDataDetailWindow = (function() {
     return this.shopDataDetailWindow.add(this.tableView);
   };
 
-  shopDataDetailWindow.prototype._createfavoriteDialog = function() {
-    var cancelleBtn, contents, favoriteDialog, iconForWantToGo, love, loveEmpty, registMemoBtn, selectedColor, selectedValue, t, textArea, titleForMemo, titleForWantToGo, unselectedColor, viewForWantToGo,
+  shopDataDetailWindow.prototype._createfavoriteDialog = function(shopName) {
+    var cancelleBtn, contents, favoriteDialog, registMemoBtn, selectedColor, selectedValue, t, textArea, titleForMemo, unselectedColor,
       _this = this;
     t = Titanium.UI.create2DMatrix().scale(0.0);
-    loveEmpty = String.fromCharCode("0xe06f");
-    love = String.fromCharCode("0xe06e");
     unselectedColor = "#666";
     selectedColor = "#222";
     selectedValue = false;
@@ -281,55 +318,6 @@ shopDataDetailWindow = (function() {
       zIndex: 20,
       transform: t
     });
-    viewForWantToGo = Ti.UI.createView({
-      width: 120,
-      height: 40,
-      top: 10,
-      left: 10,
-      borderRadius: 10,
-      opacity: 0.8,
-      backgroundColor: "#FFEE55",
-      zIndex: 20,
-      selected: selectedValue
-    });
-    iconForWantToGo = Ti.UI.createLabel({
-      top: 5,
-      left: 5,
-      width: 30,
-      height: 30,
-      color: "#FFEE55",
-      font: {
-        fontSize: 28,
-        fontFamily: 'LigatureSymbols'
-      },
-      text: loveEmpty
-    });
-    titleForWantToGo = Ti.UI.createLabel({
-      textAlign: 'left',
-      color: this.baseColor.barColor,
-      font: {
-        fontSize: 18,
-        fontFamily: 'Rounded M+ 1p'
-      },
-      text: "行きたい",
-      top: 5,
-      left: 40,
-      width: 80,
-      height: 30
-    });
-    viewForWantToGo.addEventListener('click', function(e) {
-      alert(e);
-      if (e.source.selcted === false) {
-        iconForWantToGo.title = loveEmpty;
-        e.source.selcted = true;
-      } else {
-        iconForWantToGo.title = love;
-        e.source.selcted = false;
-      }
-      return Ti.API.info(e.source.selcted);
-    });
-    viewForWantToGo.add(iconForWantToGo);
-    viewForWantToGo.add(titleForWantToGo);
     titleForMemo = Ti.UI.createLabel({
       text: "メモ欄",
       width: 300,
@@ -385,11 +373,12 @@ shopDataDetailWindow = (function() {
       textAlign: 'center'
     });
     registMemoBtn.addEventListener('click', function(e) {
-      var MainController, currentUserId, mainController, ratings;
+      var MainController, currentUserId, mainController, ratings, _activityIndicator;
+      _activityIndicator = _this.activityIndicator;
       _this.mapView.rasterizationScale = 1.0;
       _this.mapView.shouldRasterize = false;
       _this.mapView.kCAFilterTrilinear = false;
-      activityIndicator.show();
+      _activityIndicator.show();
       Ti.API.info("contents is " + contents);
       ratings = ratings;
       contents = contents;
@@ -398,7 +387,7 @@ shopDataDetailWindow = (function() {
       mainController = new MainController();
       return mainController.createReview(ratings, contents, shopName, currentUserId, function(result) {
         var animation, t1;
-        activityIndicator.hide();
+        _activityIndicator.hide();
         if (result.success) {
           alert("お気に入りに登録しました");
         } else {
