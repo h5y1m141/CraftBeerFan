@@ -208,7 +208,8 @@ class shopDataDetailWindow
       font:
         fontSize:28
         fontFamily:'LigatureSymbols'
-      text:loveEmpty
+      text:love
+      textAlign:'center'
     
     wantToGoIconLabel = Ti.UI.createLabel
       color:@baseColor.textColor
@@ -233,42 +234,28 @@ class shopDataDetailWindow
       separatorColor:@baseColor.separatorColor
       borderRadius:5
       
-    # 電話するのrowをタッチした際にアラートダイアログを表示するための処理
+    # rowをタッチした際にダイアログを表示するための処理
     phoneDialog = @_createPhoneDialog(data.phoneNumber,data.shopName)
-    favoriteDialog = @_createfavoriteDialog(data.shopName)
+    memoDialog = @_createMemoDialog(data.shopName)
+    favoriteDialog = @_createFavoriteDialog(data.shopName)
     @shopDataDetailWindow.add phoneDialog
+    @shopDataDetailWindow.add memoDialog
     @shopDataDetailWindow.add favoriteDialog
       
     # お気に入り一覧画面から遷移する場合などは、お気に入り登録ボタンを
     # 非表示にしたいので、favoriteButtonEnableの値をチェックする
     if data.favoriteButtonEnable is true
       @tableView.addEventListener('click',(e) =>
-        if e.row.rowID is 2
+        if e.row.rowID is 1
+          @_setTiGFviewToMapView()
+          @_showDialog(phoneDialog)
+        else if e.row.rowID is 2
+          @_setTiGFviewToMapView()
+          @_showDialog(memoDialog)
+        else if e.row.rowID is 3
+          @_setTiGFviewToMapView()
+          @_showDialog(favoriteDialog)
 
-          shopName = e.row.shopName
-          @mapView.rasterizationScale = 0.1
-          @mapView.shouldRasterize =true
-          @mapView.kCAFilterTrilinear= true
-          
-          t1 = Titanium.UI.create2DMatrix()
-          t1 = t1.scale(1.0)
-          animation = Titanium.UI.createAnimation()
-          animation.transform = t1
-          animation.duration = 250
-          favoriteDialog.animate(animation)
-
-        else if e.row.rowID is 1
-          
-          @mapView.rasterizationScale = 0.1
-          @mapView.shouldRasterize =true
-          @mapView.kCAFilterTrilinear= true
-          
-          t1 = Titanium.UI.create2DMatrix()
-          t1 = t1.scale(1.0)
-          animation = Titanium.UI.createAnimation()
-          animation.transform = t1
-          animation.duration = 250
-          phoneDialog.animate(animation)
       )
       
       addressRow.add @addressLabel
@@ -290,16 +277,8 @@ class shopDataDetailWindow
     else
       @tableView.addEventListener('click',(e) =>
         if e.row.rowID is 1
-          @mapView.rasterizationScale = 0.1
-          @mapView.shouldRasterize =true
-          @mapView.kCAFilterTrilinear= true
-          
-          t1 = Titanium.UI.create2DMatrix()
-          t1 = t1.scale(1.0)
-          animation = Titanium.UI.createAnimation()
-          animation.transform = t1
-          animation.duration = 250
-          phoneDialog.animate(animation)
+          @_setTiGFviewToMapView()
+          @_showDialog(phoneDialog)
 
       )
     
@@ -316,12 +295,12 @@ class shopDataDetailWindow
     return @shopDataDetailWindow.add @tableView
             
 
-  _createfavoriteDialog:(shopName) ->
+  _createMemoDialog:(shopName) ->
     t = Titanium.UI.create2DMatrix().scale(0.0)
     unselectedColor = "#666"
     selectedColor = "#222"
     selectedValue = false
-    favoriteDialog = Ti.UI.createView
+    memoDialog = Ti.UI.createView
       width:300
       height:280
       top:0
@@ -387,13 +366,11 @@ class shopDataDetailWindow
       textAlign:'center'
 
     registMemoBtn.addEventListener('click',(e) =>
-      _activityIndicator = @activityIndicator 
+      that = @
       @mapView.rasterizationScale = 1.0
       @mapView.shouldRasterize =false
       @mapView.kCAFilterTrilinear= false
-      
-      
-      _activityIndicator.show()
+      that.activityIndicator.show()
       # ACSにメモを登録
       # 次のCloud.Places.queryからはaddNewIconの外側にある
       # 変数参照できないはずなのでここでローカル変数として格納しておく
@@ -404,18 +381,13 @@ class shopDataDetailWindow
 
       MainController = require("controller/mainController")
       mainController = new MainController()
-      mainController.createReview(ratings,contents,shopName,currentUserId,(result) ->
-        _activityIndicator.hide()
+      mainController.createReview(ratings,contents,shopName,currentUserId,(result) =>
+        that.activityIndicator.hide()
         if result.success
-          alert "お気に入りに登録しました"
+          alert "登録しました"
         else
-          alert "すでにお気に入りに登録されているか\nサーバーがダウンしているために登録することができませんでした"
-        t1 = Titanium.UI.create2DMatrix()
-        t1 = t1.scale(0.0)
-        animation = Titanium.UI.createAnimation()
-        animation.transform = t1
-        animation.duration = 10
-        favoriteDialog.animate(animation)
+          alert "すでに登録されているか\nサーバーがダウンしているために登録することができませんでした"
+        that._hideDialog(memoDialog)
 
       )
       
@@ -444,16 +416,16 @@ class shopDataDetailWindow
       animation = Titanium.UI.createAnimation()
       animation.transform = t1
       animation.duration = 250
-      favoriteDialog.animate(animation)
+      memoDialog.animate(animation)
       
     )       
-    favoriteDialog.add textArea
-    favoriteDialog.add titleForMemo
-    favoriteDialog.add registMemoBtn
-    favoriteDialog.add cancelleBtn
+    memoDialog.add textArea
+    memoDialog.add titleForMemo
+    memoDialog.add registMemoBtn
+    memoDialog.add cancelleBtn
     
     
-    return favoriteDialog
+    return memoDialog
     
   _createPhoneDialog:(phoneNumber,shopName) ->
     t = Titanium.UI.create2DMatrix().scale(0.0)
@@ -540,5 +512,107 @@ class shopDataDetailWindow
     phoneDialog.add callBtn
     
     return phoneDialog
+
+  _createFavoriteDialog:(shopName) ->
+    t = Titanium.UI.create2DMatrix().scale(0.0)
+    favoriteDialog = Ti.UI.createView
+      width:300
+      height:240
+      top:0
+      left:10
+      borderRadius:10
+      opacity:0.8
+      backgroundColor:@baseColor.textColor
+      zIndex:20
+      transform:t
+      
+    registBtn = Ti.UI.createLabel
+      width:120
+      height:40
+      right:20
+      bottom:40
+      borderRadius:5      
+      color:@baseColor.barColor      
+      backgroundColor:"#4cda64"
+      font:
+        fontSize:18
+        fontFamily :'Rounded M+ 1p'
+      text:'はい'
+      textAlign:"center"
+
+    registBtn.addEventListener('click',(e) =>
+      @_setDefaultMapViewStyle()
+      @_hideDialog(favoriteDialog)
+    ) 
+    cancelleBtn =  Ti.UI.createLabel
+      width:120
+      height:40
+      left:20
+      bottom:40
+      borderRadius:5
+      backgroundColor:"#d8514b"
+      color:@baseColor.barColor
+      font:
+        fontSize:18
+        fontFamily :'Rounded M+ 1p'
+      text:'いいえ'
+      textAlign:"center"
+      
+    cancelleBtn.addEventListener('click',(e) =>
+      @_setDefaultMapViewStyle()
+      @_hideDialog(favoriteDialog)
+      
+    ) 
+    confirmLabel = Ti.UI.createLabel
+      top:20
+      left:10
+      textAlign:'center'
+      width:300
+      height:150
+      color:@baseColor.barColor
+      font:
+        fontSize:16
+        fontFamily:'Rounded M+ 1p'
+      text:"#{shopName}を\n行きたいお店に登録しますか？"
+      
+    favoriteDialog.add confirmLabel
+    favoriteDialog.add cancelleBtn
+    favoriteDialog.add registBtn
     
+    return favoriteDialog
+
+  # ダイアログ表示する際に、背景部分となるmapViewに対して
+  # フィルタを掛けることで奥行きある状態を表現する
+  _setTiGFviewToMapView:() ->
+    @mapView.rasterizationScale = 0.1
+    @mapView.shouldRasterize = true
+    @mapView.kCAFilterTrilinear= true
+    return
+        
+  _setDefaultMapViewStyle:() ->
+    @mapView.rasterizationScale = 1.0
+    @mapView.shouldRasterize =false
+    @mapView.kCAFilterTrilinear= false
+    return
+
+  # 引数に取ったviewに対してせり出すようにするアニメーションを適用
+  _showDialog:(view) ->
+    t1 = Titanium.UI.create2DMatrix()
+    t1 = t1.scale(1.0)
+    animation = Titanium.UI.createAnimation()
+    animation.transform = t1
+    animation.duration = 250
+    return view.animate(animation)
+    
+  # 引数に取ったviewに対してズームインするようなアニメーションを適用
+  # することで非表示のように見せる
+  _hideDialog:(view) ->        
+    t1 = Titanium.UI.create2DMatrix()
+    t1 = t1.scale(0.0)
+    animation = Titanium.UI.createAnimation()
+    animation.transform = t1
+    animation.duration = 250
+    return view.animate(animation)    
+    
+        
 module.exports = shopDataDetailWindow  
