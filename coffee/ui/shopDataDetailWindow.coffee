@@ -151,47 +151,12 @@ class shopDataDetailWindow
         fontWeight:'bold'
 
 
-
-    @reviewRow = Ti.UI.createTableViewRow
-      width:'auto'
-      height:40
-      selectedColor:'transparent'
-      rowID:2
-      shopName:"#{data.shopName}"
-      
-    starIcon = Ti.UI.createButton
-      top:5
-      textAlign:'center'
-      left:10
-      width:30
-      height:30
-      backgroundColor:@baseColor.starColor
-      backgroundImage:"NONE"
-      borderWidth:0
-      borderRadius:0
-      color:@baseColor.barColor
-      font:
-        fontSize: 28
-        fontFamily:'LigatureSymbols'
-      title:String.fromCharCode("0xe041")
-      
-    @editLabel = Ti.UI.createLabel
-      top: 5
-      left:50
-      width: 200
-      height: 30
-      color:@baseColor.textColor
-      font:
-        fontSize:16
-        fontFamily:'Rounded M+ 1p'
-      text:"メモを残す"
-      textAlign:'left'
       
     wantToGoRow = Ti.UI.createTableViewRow
       width:'auto'
       height:40
       selectedColor:'transparent'
-      rowID:3
+      rowID:2
       shopName:"#{data.shopName}"
       
     loveEmpty = String.fromCharCode("0xe06f")
@@ -236,10 +201,8 @@ class shopDataDetailWindow
       
     # rowをタッチした際にダイアログを表示するための処理
     phoneDialog = @_createPhoneDialog(data.phoneNumber,data.shopName)
-    memoDialog = @_createMemoDialog(data.shopName)
     favoriteDialog = @_createFavoriteDialog(data.shopName)
     @shopDataDetailWindow.add phoneDialog
-    @shopDataDetailWindow.add memoDialog
     @shopDataDetailWindow.add favoriteDialog
       
     # お気に入り一覧画面から遷移する場合などは、お気に入り登録ボタンを
@@ -251,9 +214,6 @@ class shopDataDetailWindow
           @_showDialog(phoneDialog)
         else if e.row.rowID is 2
           @_setTiGFviewToMapView()
-          @_showDialog(memoDialog)
-        else if e.row.rowID is 3
-          @_setTiGFviewToMapView()
           @_showDialog(favoriteDialog)
 
       )
@@ -263,15 +223,12 @@ class shopDataDetailWindow
       phoneRow.add @phoneIcon
       phoneRow.add @phoneLabel
       
-      @reviewRow.add starIcon
-      @reviewRow.add @editLabel
       wantToGoRow.add wantToGoIconLabel
       wantToGoRow.add wantToGoIcon      
       
       shopData.push @section  
       shopData.push addressRow
       shopData.push phoneRow
-      shopData.push @reviewRow
       shopData.push wantToGoRow
 
     else
@@ -294,13 +251,12 @@ class shopDataDetailWindow
     @tableView.setData shopData
     return @shopDataDetailWindow.add @tableView
             
-
-  _createMemoDialog:(shopName) ->
+  _createFavoriteDialog:(shopName) ->
     t = Titanium.UI.create2DMatrix().scale(0.0)
     unselectedColor = "#666"
     selectedColor = "#222"
     selectedValue = false
-    memoDialog = Ti.UI.createView
+    favoriteDialog = Ti.UI.createView
       width:300
       height:280
       top:0
@@ -362,14 +318,12 @@ class shopDataDetailWindow
       font:
         fontSize:18
         fontFamily :'Rounded M+ 1p'
-      text:"メモを残す"
+      text:"登録する"
       textAlign:'center'
 
     registMemoBtn.addEventListener('click',(e) =>
       that = @
-      @mapView.rasterizationScale = 1.0
-      @mapView.shouldRasterize =false
-      @mapView.kCAFilterTrilinear= false
+      that._setDefaultMapViewStyle()
       that.activityIndicator.show()
       # ACSにメモを登録
       # 次のCloud.Places.queryからはaddNewIconの外側にある
@@ -387,7 +341,7 @@ class shopDataDetailWindow
           alert "登録しました"
         else
           alert "すでに登録されているか\nサーバーがダウンしているために登録することができませんでした"
-        that._hideDialog(memoDialog)
+        that._hideDialog(favoriteDialog)
 
       )
       
@@ -407,25 +361,16 @@ class shopDataDetailWindow
       textAlign:"center"
       
     cancelleBtn.addEventListener('click',(e) =>
-      @mapView.rasterizationScale = 1.0
-      @mapView.shouldRasterize =false
-      @mapView.kCAFilterTrilinear= false
-      
-      t1 = Titanium.UI.create2DMatrix()
-      t1 = t1.scale(0.0)
-      animation = Titanium.UI.createAnimation()
-      animation.transform = t1
-      animation.duration = 250
-      memoDialog.animate(animation)
+      @_setDefaultMapViewStyle()
+      @_hideDialog(favoriteDialog)
       
     )       
-    memoDialog.add textArea
-    memoDialog.add titleForMemo
-    memoDialog.add registMemoBtn
-    memoDialog.add cancelleBtn
+    favoriteDialog.add textArea
+    favoriteDialog.add titleForMemo
+    favoriteDialog.add registMemoBtn
+    favoriteDialog.add cancelleBtn
     
-    
-    return memoDialog
+    return favoriteDialog
     
   _createPhoneDialog:(phoneNumber,shopName) ->
     t = Titanium.UI.create2DMatrix().scale(0.0)
@@ -455,16 +400,8 @@ class shopDataDetailWindow
       textAlign:"center"
 
     callBtn.addEventListener('click',(e) =>
-      @mapView.rasterizationScale = 1.0
-      @mapView.shouldRasterize =false
-      @mapView.kCAFilterTrilinear= false
-      
-      t1 = Titanium.UI.create2DMatrix()
-      t1 = t1.scale(0.0)
-      animation = Titanium.UI.createAnimation()
-      animation.transform = t1
-      animation.duration = 10
-      phoneDialog.animate(animation)
+      @_setDefaultMapViewStyle()
+      @_hideDialog(phoneDialog)
       Titanium.Platform.openURL("tel:#{phoneNumber}")
       
     ) 
@@ -483,16 +420,8 @@ class shopDataDetailWindow
       textAlign:"center"
       
     cancelleBtn.addEventListener('click',(e) =>
-      @mapView.rasterizationScale = 1.0
-      @mapView.shouldRasterize =false
-      @mapView.kCAFilterTrilinear= false
-      
-      t1 = Titanium.UI.create2DMatrix()
-      t1 = t1.scale(0.0)
-      animation = Titanium.UI.createAnimation()
-      animation.transform = t1
-      animation.duration = 250
-      phoneDialog.animate(animation)
+      @_setDefaultMapViewStyle()
+      @_hideDialog(phoneDialog)
       
     ) 
     confirmLabel = Ti.UI.createLabel
@@ -513,73 +442,6 @@ class shopDataDetailWindow
     
     return phoneDialog
 
-  _createFavoriteDialog:(shopName) ->
-    t = Titanium.UI.create2DMatrix().scale(0.0)
-    favoriteDialog = Ti.UI.createView
-      width:300
-      height:240
-      top:0
-      left:10
-      borderRadius:10
-      opacity:0.8
-      backgroundColor:@baseColor.textColor
-      zIndex:20
-      transform:t
-      
-    registBtn = Ti.UI.createLabel
-      width:120
-      height:40
-      right:20
-      bottom:40
-      borderRadius:5      
-      color:@baseColor.barColor      
-      backgroundColor:"#4cda64"
-      font:
-        fontSize:18
-        fontFamily :'Rounded M+ 1p'
-      text:'はい'
-      textAlign:"center"
-
-    registBtn.addEventListener('click',(e) =>
-      @_setDefaultMapViewStyle()
-      @_hideDialog(favoriteDialog)
-    ) 
-    cancelleBtn =  Ti.UI.createLabel
-      width:120
-      height:40
-      left:20
-      bottom:40
-      borderRadius:5
-      backgroundColor:"#d8514b"
-      color:@baseColor.barColor
-      font:
-        fontSize:18
-        fontFamily :'Rounded M+ 1p'
-      text:'いいえ'
-      textAlign:"center"
-      
-    cancelleBtn.addEventListener('click',(e) =>
-      @_setDefaultMapViewStyle()
-      @_hideDialog(favoriteDialog)
-      
-    ) 
-    confirmLabel = Ti.UI.createLabel
-      top:20
-      left:10
-      textAlign:'center'
-      width:300
-      height:150
-      color:@baseColor.barColor
-      font:
-        fontSize:16
-        fontFamily:'Rounded M+ 1p'
-      text:"#{shopName}を\n行きたいお店に登録しますか？"
-      
-    favoriteDialog.add confirmLabel
-    favoriteDialog.add cancelleBtn
-    favoriteDialog.add registBtn
-    
-    return favoriteDialog
 
   # ダイアログ表示する際に、背景部分となるmapViewに対して
   # フィルタを掛けることで奥行きある状態を表現する

@@ -92,7 +92,7 @@ shopDataDetailWindow = (function() {
   };
 
   shopDataDetailWindow.prototype._createTableView = function(data) {
-    var addressRow, favoriteDialog, love, loveEmpty, memoDialog, phoneDialog, phoneRow, shopData, starIcon, wantToGoIcon, wantToGoIconLabel, wantToGoRow,
+    var addressRow, favoriteDialog, love, loveEmpty, phoneDialog, phoneRow, shopData, wantToGoIcon, wantToGoIconLabel, wantToGoRow,
       _this = this;
     shopData = [];
     addressRow = Ti.UI.createTableViewRow({
@@ -149,48 +149,11 @@ shopDataDetailWindow = (function() {
         fontWeight: 'bold'
       }
     });
-    this.reviewRow = Ti.UI.createTableViewRow({
-      width: 'auto',
-      height: 40,
-      selectedColor: 'transparent',
-      rowID: 2,
-      shopName: "" + data.shopName
-    });
-    starIcon = Ti.UI.createButton({
-      top: 5,
-      textAlign: 'center',
-      left: 10,
-      width: 30,
-      height: 30,
-      backgroundColor: this.baseColor.starColor,
-      backgroundImage: "NONE",
-      borderWidth: 0,
-      borderRadius: 0,
-      color: this.baseColor.barColor,
-      font: {
-        fontSize: 28,
-        fontFamily: 'LigatureSymbols'
-      },
-      title: String.fromCharCode("0xe041")
-    });
-    this.editLabel = Ti.UI.createLabel({
-      top: 5,
-      left: 50,
-      width: 200,
-      height: 30,
-      color: this.baseColor.textColor,
-      font: {
-        fontSize: 16,
-        fontFamily: 'Rounded M+ 1p'
-      },
-      text: "メモを残す",
-      textAlign: 'left'
-    });
     wantToGoRow = Ti.UI.createTableViewRow({
       width: 'auto',
       height: 40,
       selectedColor: 'transparent',
-      rowID: 3,
+      rowID: 2,
       shopName: "" + data.shopName
     });
     loveEmpty = String.fromCharCode("0xe06f");
@@ -234,10 +197,8 @@ shopDataDetailWindow = (function() {
       borderRadius: 5
     });
     phoneDialog = this._createPhoneDialog(data.phoneNumber, data.shopName);
-    memoDialog = this._createMemoDialog(data.shopName);
     favoriteDialog = this._createFavoriteDialog(data.shopName);
     this.shopDataDetailWindow.add(phoneDialog);
-    this.shopDataDetailWindow.add(memoDialog);
     this.shopDataDetailWindow.add(favoriteDialog);
     if (data.favoriteButtonEnable === true) {
       this.tableView.addEventListener('click', function(e) {
@@ -246,23 +207,17 @@ shopDataDetailWindow = (function() {
           return _this._showDialog(phoneDialog);
         } else if (e.row.rowID === 2) {
           _this._setTiGFviewToMapView();
-          return _this._showDialog(memoDialog);
-        } else if (e.row.rowID === 3) {
-          _this._setTiGFviewToMapView();
           return _this._showDialog(favoriteDialog);
         }
       });
       addressRow.add(this.addressLabel);
       phoneRow.add(this.phoneIcon);
       phoneRow.add(this.phoneLabel);
-      this.reviewRow.add(starIcon);
-      this.reviewRow.add(this.editLabel);
       wantToGoRow.add(wantToGoIconLabel);
       wantToGoRow.add(wantToGoIcon);
       shopData.push(this.section);
       shopData.push(addressRow);
       shopData.push(phoneRow);
-      shopData.push(this.reviewRow);
       shopData.push(wantToGoRow);
     } else {
       this.tableView.addEventListener('click', function(e) {
@@ -282,14 +237,14 @@ shopDataDetailWindow = (function() {
     return this.shopDataDetailWindow.add(this.tableView);
   };
 
-  shopDataDetailWindow.prototype._createMemoDialog = function(shopName) {
-    var cancelleBtn, contents, memoDialog, registMemoBtn, selectedColor, selectedValue, t, textArea, titleForMemo, unselectedColor,
+  shopDataDetailWindow.prototype._createFavoriteDialog = function(shopName) {
+    var cancelleBtn, contents, favoriteDialog, registMemoBtn, selectedColor, selectedValue, t, textArea, titleForMemo, unselectedColor,
       _this = this;
     t = Titanium.UI.create2DMatrix().scale(0.0);
     unselectedColor = "#666";
     selectedColor = "#222";
     selectedValue = false;
-    memoDialog = Ti.UI.createView({
+    favoriteDialog = Ti.UI.createView({
       width: 300,
       height: 280,
       top: 0,
@@ -351,15 +306,13 @@ shopDataDetailWindow = (function() {
         fontSize: 18,
         fontFamily: 'Rounded M+ 1p'
       },
-      text: "メモを残す",
+      text: "登録する",
       textAlign: 'center'
     });
     registMemoBtn.addEventListener('click', function(e) {
       var MainController, currentUserId, mainController, ratings, that;
       that = _this;
-      _this.mapView.rasterizationScale = 1.0;
-      _this.mapView.shouldRasterize = false;
-      _this.mapView.kCAFilterTrilinear = false;
+      that._setDefaultMapViewStyle();
       that.activityIndicator.show();
       Ti.API.info("contents is " + contents);
       ratings = ratings;
@@ -374,7 +327,7 @@ shopDataDetailWindow = (function() {
         } else {
           alert("すでに登録されているか\nサーバーがダウンしているために登録することができませんでした");
         }
-        return that._hideDialog(memoDialog);
+        return that._hideDialog(favoriteDialog);
       });
     });
     cancelleBtn = Ti.UI.createLabel({
@@ -393,22 +346,14 @@ shopDataDetailWindow = (function() {
       textAlign: "center"
     });
     cancelleBtn.addEventListener('click', function(e) {
-      var animation, t1;
-      _this.mapView.rasterizationScale = 1.0;
-      _this.mapView.shouldRasterize = false;
-      _this.mapView.kCAFilterTrilinear = false;
-      t1 = Titanium.UI.create2DMatrix();
-      t1 = t1.scale(0.0);
-      animation = Titanium.UI.createAnimation();
-      animation.transform = t1;
-      animation.duration = 250;
-      return memoDialog.animate(animation);
+      _this._setDefaultMapViewStyle();
+      return _this._hideDialog(favoriteDialog);
     });
-    memoDialog.add(textArea);
-    memoDialog.add(titleForMemo);
-    memoDialog.add(registMemoBtn);
-    memoDialog.add(cancelleBtn);
-    return memoDialog;
+    favoriteDialog.add(textArea);
+    favoriteDialog.add(titleForMemo);
+    favoriteDialog.add(registMemoBtn);
+    favoriteDialog.add(cancelleBtn);
+    return favoriteDialog;
   };
 
   shopDataDetailWindow.prototype._createPhoneDialog = function(phoneNumber, shopName) {
@@ -442,16 +387,8 @@ shopDataDetailWindow = (function() {
       textAlign: "center"
     });
     callBtn.addEventListener('click', function(e) {
-      var animation, t1;
-      _this.mapView.rasterizationScale = 1.0;
-      _this.mapView.shouldRasterize = false;
-      _this.mapView.kCAFilterTrilinear = false;
-      t1 = Titanium.UI.create2DMatrix();
-      t1 = t1.scale(0.0);
-      animation = Titanium.UI.createAnimation();
-      animation.transform = t1;
-      animation.duration = 10;
-      phoneDialog.animate(animation);
+      _this._setDefaultMapViewStyle();
+      _this._hideDialog(phoneDialog);
       return Titanium.Platform.openURL("tel:" + phoneNumber);
     });
     cancelleBtn = Ti.UI.createLabel({
@@ -470,16 +407,8 @@ shopDataDetailWindow = (function() {
       textAlign: "center"
     });
     cancelleBtn.addEventListener('click', function(e) {
-      var animation, t1;
-      _this.mapView.rasterizationScale = 1.0;
-      _this.mapView.shouldRasterize = false;
-      _this.mapView.kCAFilterTrilinear = false;
-      t1 = Titanium.UI.create2DMatrix();
-      t1 = t1.scale(0.0);
-      animation = Titanium.UI.createAnimation();
-      animation.transform = t1;
-      animation.duration = 250;
-      return phoneDialog.animate(animation);
+      _this._setDefaultMapViewStyle();
+      return _this._hideDialog(phoneDialog);
     });
     confirmLabel = Ti.UI.createLabel({
       top: 20,
@@ -498,78 +427,6 @@ shopDataDetailWindow = (function() {
     phoneDialog.add(cancelleBtn);
     phoneDialog.add(callBtn);
     return phoneDialog;
-  };
-
-  shopDataDetailWindow.prototype._createFavoriteDialog = function(shopName) {
-    var cancelleBtn, confirmLabel, favoriteDialog, registBtn, t,
-      _this = this;
-    t = Titanium.UI.create2DMatrix().scale(0.0);
-    favoriteDialog = Ti.UI.createView({
-      width: 300,
-      height: 240,
-      top: 0,
-      left: 10,
-      borderRadius: 10,
-      opacity: 0.8,
-      backgroundColor: this.baseColor.textColor,
-      zIndex: 20,
-      transform: t
-    });
-    registBtn = Ti.UI.createLabel({
-      width: 120,
-      height: 40,
-      right: 20,
-      bottom: 40,
-      borderRadius: 5,
-      color: this.baseColor.barColor,
-      backgroundColor: "#4cda64",
-      font: {
-        fontSize: 18,
-        fontFamily: 'Rounded M+ 1p'
-      },
-      text: 'はい',
-      textAlign: "center"
-    });
-    registBtn.addEventListener('click', function(e) {
-      _this._setDefaultMapViewStyle();
-      return _this._hideDialog(favoriteDialog);
-    });
-    cancelleBtn = Ti.UI.createLabel({
-      width: 120,
-      height: 40,
-      left: 20,
-      bottom: 40,
-      borderRadius: 5,
-      backgroundColor: "#d8514b",
-      color: this.baseColor.barColor,
-      font: {
-        fontSize: 18,
-        fontFamily: 'Rounded M+ 1p'
-      },
-      text: 'いいえ',
-      textAlign: "center"
-    });
-    cancelleBtn.addEventListener('click', function(e) {
-      _this._setDefaultMapViewStyle();
-      return _this._hideDialog(favoriteDialog);
-    });
-    confirmLabel = Ti.UI.createLabel({
-      top: 20,
-      left: 10,
-      textAlign: 'center',
-      width: 300,
-      height: 150,
-      color: this.baseColor.barColor,
-      font: {
-        fontSize: 16,
-        fontFamily: 'Rounded M+ 1p'
-      },
-      text: "" + shopName + "を\n行きたいお店に登録しますか？"
-    });
-    favoriteDialog.add(confirmLabel);
-    favoriteDialog.add(cancelleBtn);
-    favoriteDialog.add(registBtn);
-    return favoriteDialog;
   };
 
   shopDataDetailWindow.prototype._setTiGFviewToMapView = function() {

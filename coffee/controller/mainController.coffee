@@ -104,6 +104,7 @@ class mainController
       else
         alert "登録されているユーザ情報でサーバにログインできませんでした"
     )
+
   getReviewInfo:(callback) =>
     # review情報を取得する際には念のため最初にログインした上で
     # 該当のクエリ発行する

@@ -47,7 +47,8 @@ class kloudService
       token:fb.accessToken
     , (result) ->
       return callback(result)
-
+      
+        
   reviewsCreate:(ratings,contents,shopName,currentUserId,callback) =>
     that = @Cloud
     Ti.API.info "reviewsCreate start shopName is #{shopName}"
@@ -61,13 +62,11 @@ class kloudService
         id = e.places[0].id
         
         Ti.API.info "placeID is #{id}. and ratings is #{ratings} and contents is #{contents} and currentUserId is #{currentUserId}"
-        if ratings is undefined
-          ratings = 0
         if contents is "" or contents is null
-          contents =  "no data"
+          contents = null
            
         that.Reviews.create
-          rating:ratings
+          rating:1
           content:contents              
           place_id:id
           user_id:currentUserId

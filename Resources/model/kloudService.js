@@ -81,14 +81,11 @@ kloudService = (function() {
       if (e.success) {
         id = e.places[0].id;
         Ti.API.info("placeID is " + id + ". and ratings is " + ratings + " and contents is " + contents + " and currentUserId is " + currentUserId);
-        if (ratings === void 0) {
-          ratings = 0;
-        }
         if (contents === "" || contents === null) {
-          contents = "no data";
+          contents = null;
         }
         return that.Reviews.create({
-          rating: ratings,
+          rating: 1,
           content: contents,
           place_id: id,
           user_id: currentUserId,
