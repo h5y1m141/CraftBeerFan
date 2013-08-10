@@ -84,7 +84,7 @@ class listWindow
     @subMenu.addEventListener('click',(e)=>
       categoryName = e.row.categoryName
       that = @
-      if categoryName is "お気に入り"
+      if categoryName is "行きたいお店"
         FavoriteWindow = require("ui/favoriteWindow")
         new FavoriteWindow()
         
@@ -180,18 +180,19 @@ class listWindow
       width:150
       height:@rowHeight
       backgroundColor:"f3f3f3"
-      categoryName:"お気に入り"
+      categoryName:"行きたいお店"
 
-      
+    love = String.fromCharCode("0xe06e")      
     favoriteIcon = Ti.UI.createLabel
       width:20
       left:10
       top:5
-      color:"#FFE600"
+      color:"#FFEE55"
       font:
         fontSize: 24
         fontFamily:'LigatureSymbols'
-      text:String.fromCharCode("0xe121")
+      text:love
+      textAlign:'left'
       
     
     favoriteLabel = Ti.UI.createLabel
@@ -205,7 +206,7 @@ class listWindow
         fontSize:16
         fontFamily : 'Rounded M+ 1p'
         fontWeight:'bold'
-      text:"お気に入り"
+      text:"行きたいお店"
       
     favoriteRow.add favoriteIcon
     favoriteRow.add favoriteLabel

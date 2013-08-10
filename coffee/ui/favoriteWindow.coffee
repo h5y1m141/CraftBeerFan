@@ -7,7 +7,7 @@ class favoriteWindow
     
         
     @favoriteWindow = Ti.UI.createWindow
-      title:"お気に入り"
+      title:"行きたいお店"
       barColor:@baseColor.barColor
       backgroundColor: @baseColor.backgroundColor
       tabBarHidden:false
@@ -109,7 +109,7 @@ class favoriteWindow
         fontSize:18
         fontFamily : 'Rounded M+ 1p'
         fontWeight:'bold'
-      text:"お気に入り"
+      text:"行きたいお店"
       
     if Ti.Platform.osname is 'iphone'  
       @favoriteWindow.setTitleControl favoriteWindowTitle

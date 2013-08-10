@@ -11,7 +11,7 @@ favoriteWindow = (function() {
       backgroundColor: keyColor
     };
     this.favoriteWindow = Ti.UI.createWindow({
-      title: "お気に入り",
+      title: "行きたいお店",
       barColor: this.baseColor.barColor,
       backgroundColor: this.baseColor.backgroundColor,
       tabBarHidden: false,
@@ -112,7 +112,7 @@ favoriteWindow = (function() {
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       },
-      text: "お気に入り"
+      text: "行きたいお店"
     });
     if (Ti.Platform.osname === 'iphone') {
       this.favoriteWindow.setTitleControl(favoriteWindowTitle);

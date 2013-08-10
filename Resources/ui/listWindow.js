@@ -99,7 +99,7 @@ listWindow = (function() {
       var FavoriteWindow, a, categoryName, curretRowIndex　, selectedColor, selectedSubColor, t1, table, that;
       categoryName = e.row.categoryName;
       that = _this;
-      if (categoryName === "お気に入り") {
+      if (categoryName === "行きたいお店") {
         FavoriteWindow = require("ui/favoriteWindow");
         return new FavoriteWindow();
       } else {
@@ -180,24 +180,26 @@ listWindow = (function() {
   };
 
   listWindow.prototype._createFavoriteRow = function() {
-    var favoriteIcon, favoriteLabel, favoriteRow;
+    var favoriteIcon, favoriteLabel, favoriteRow, love;
     Ti.API.info("_createFavoriteRow start");
     favoriteRow = Ti.UI.createTableViewRow({
       width: 150,
       height: this.rowHeight,
       backgroundColor: "f3f3f3",
-      categoryName: "お気に入り"
+      categoryName: "行きたいお店"
     });
+    love = String.fromCharCode("0xe06e");
     favoriteIcon = Ti.UI.createLabel({
       width: 20,
       left: 10,
       top: 5,
-      color: "#FFE600",
+      color: "#FFEE55",
       font: {
         fontSize: 24,
         fontFamily: 'LigatureSymbols'
       },
-      text: String.fromCharCode("0xe121")
+      text: love,
+      textAlign: 'left'
     });
     favoriteLabel = Ti.UI.createLabel({
       width: 240,
@@ -211,7 +213,7 @@ listWindow = (function() {
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       },
-      text: "お気に入り"
+      text: "行きたいお店"
     });
     favoriteRow.add(favoriteIcon);
     favoriteRow.add(favoriteLabel);
