@@ -31,6 +31,21 @@ favoriteWindow = (function() {
       top: 0,
       left: 0
     });
+    this.table.addEventListener('click', function(e) {
+      var ShopDataDetailWindow, data;
+      if (typeof e.row.placeData !== "undefined") {
+        data = {
+          shopName: e.row.placeData.shopName,
+          shopAddress: e.row.placeData.shopAddress,
+          phoneNumber: e.row.placeData.phoneNumber,
+          latitude: e.row.placeData.latitude,
+          longitude: e.row.placeData.longitude,
+          favoriteButtonEnable: false
+        };
+        ShopDataDetailWindow = require("ui/shopDataDetailWindow");
+        return new ShopDataDetailWindow(data);
+      }
+    });
     MainController = require("controller/mainController");
     mainController = new MainController();
     mainController.getReviewInfo(function(items) {
@@ -105,23 +120,23 @@ favoriteWindow = (function() {
   };
 
   favoriteWindow.prototype._createShopDataRow = function(placeData) {
-    var commentView, content, i, leftPostion, memoBtn, moveNextWindowBtn, row, starIcon, titleLabel, _i, _ref,
-      _this = this;
+    var content, contentLabel, row, titleLabel;
     row = Ti.UI.createTableViewRow({
       width: 'auto',
-      height: 60,
+      height: 'auto',
       borderWidth: 0,
       placeData: placeData,
       className: 'shopData',
       backgroundColor: this.baseColor.barColor,
-      selectedBackgroundColor: this.baseColor.backgroundColor
+      selectedBackgroundColor: this.baseColor.backgroundColor,
+      hasChild: true
     });
     titleLabel = Ti.UI.createLabel({
       width: 200,
       height: 20,
       top: 10,
-      left: 50,
-      color: '#333',
+      left: 10,
+      color: '#000',
       font: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -130,170 +145,26 @@ favoriteWindow = (function() {
       text: "" + placeData.shopName
     });
     row.add(titleLabel);
-    moveNextWindowBtn = Ti.UI.createButton({
-      top: 10,
-      right: 5,
-      width: 40,
-      height: 40,
-      content: placeData,
-      selected: false,
-      backgroundImage: "NONE",
-      borderWidth: 0,
-      borderRadius: 20,
-      color: '#bbb',
-      font: {
-        fontSize: 24,
-        fontFamily: 'LigatureSymbols'
-      },
-      title: String.fromCharCode("0xe112")
-    });
-    moveNextWindowBtn.addEventListener('click', function() {
-      var ShopDataDetailWindow, data;
-      data = {
-        shopName: row.placeData.shopName,
-        shopAddress: row.placeData.shopAddress,
-        phoneNumber: row.placeData.phoneNumber,
-        latitude: row.placeData.latitude,
-        longitude: row.placeData.longitude,
-        favoriteButtonEnable: false
-      };
-      ShopDataDetailWindow = require("ui/shopDataDetailWindow");
-      return new ShopDataDetailWindow(data);
-    });
-    row.add(moveNextWindowBtn);
-    leftPostion = [50, 75, 100, 125, 150];
-    for (i = _i = 0, _ref = placeData.rating; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-      starIcon = Ti.UI.createButton({
-        top: 30,
-        left: leftPostion[i],
-        width: 20,
-        height: 20,
-        selected: false,
-        backgroundColor: this.baseColor.barColor,
-        backgroundImage: "NONE",
-        borderWidth: 0,
-        borderRadius: 5,
-        color: "#FFEE55",
-        font: {
-          fontSize: 20,
-          fontFamily: 'LigatureSymbols'
-        },
-        title: String.fromCharCode("0xe121")
-      });
-      row.add(starIcon);
-    }
     if (typeof placeData.content === "undefined" || placeData.content === null) {
       content = "";
     } else {
-      commentView = this._createCommentView(placeData);
-      this.favoriteWindow.add(commentView);
-      memoBtn = Ti.UI.createButton({
-        top: 5,
-        left: 5,
-        width: 40,
-        height: 40,
-        content: placeData,
-        selected: false,
-        backgroundImage: "NONE",
-        borderWidth: 0,
-        borderRadius: 0,
-        color: '#ccc',
-        backgroundColor: this.baseColor.barColor,
-        font: {
-          fontSize: 28,
-          fontFamily: 'LigatureSymbols'
-        },
-        title: String.fromCharCode("0xe097")
-      });
-      memoBtn.addEventListener('click', function(e) {
-        var animation, animationForTableView, t, t1;
-        _this.table.opacity = 0.5;
-        _this.table.touchEnabled = false;
-        t = Titanium.UI.create2DMatrix().scale(0.6);
-        animationForTableView = Titanium.UI.createAnimation();
-        animationForTableView.transform = t;
-        animationForTableView.duration = 250;
-        _this.table.animate(animationForTableView);
-        t1 = Titanium.UI.create2DMatrix();
-        t1 = t1.scale(1.0);
-        animation = Titanium.UI.createAnimation();
-        animation.transform = t1;
-        animation.duration = 250;
-        return commentView.animate(animation);
-      });
-      row.add(memoBtn);
+      content = placeData.content;
     }
+    contentLabel = Ti.UI.createLabel({
+      width: 200,
+      height: 'auto',
+      top: 40,
+      left: 30,
+      color: '#333',
+      font: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        fontFamily: 'Rounded M+ 1p'
+      },
+      text: "" + content
+    });
+    row.add(contentLabel);
     return row;
-  };
-
-  favoriteWindow.prototype._createCommentView = function(placeData) {
-    var closeBtn, commentLabel, commentView, content, t,
-      _this = this;
-    content = placeData.content;
-    t = Titanium.UI.create2DMatrix().scale(0.0);
-    commentView = Titanium.UI.createScrollView({
-      width: 240,
-      height: 240,
-      top: 20,
-      left: 40,
-      zIndex: 10,
-      contentWidth: 'auto',
-      contentHeight: 'auto',
-      showVerticalScrollIndicator: true,
-      showHorizontalScrollIndicator: true,
-      transform: t,
-      backgroundColor: this.baseColor.barColor,
-      borderRadius: 10,
-      borderColor: "#ccc"
-    });
-    closeBtn = Ti.UI.createButton({
-      top: 5,
-      right: 5,
-      width: 40,
-      height: 40,
-      content: placeData,
-      selected: false,
-      backgroundColor: this.baseColor.barColor,
-      backgroundImage: "NONE",
-      borderWidth: 0,
-      borderRadius: 5,
-      color: '#ccc',
-      font: {
-        fontSize: 32,
-        fontFamily: 'LigatureSymbols'
-      },
-      title: String.fromCharCode("0xe10f")
-    });
-    closeBtn.addEventListener('click', function(e) {
-      var animation, animationForTableView, t2;
-      _this.table.opacity = 1.0;
-      _this.table.touchEnabled = true;
-      t = Titanium.UI.create2DMatrix().scale(1.0);
-      animationForTableView = Titanium.UI.createAnimation();
-      animationForTableView.transform = t;
-      animationForTableView.duration = 250;
-      _this.table.animate(animationForTableView);
-      t2 = Titanium.UI.create2DMatrix();
-      t2 = t2.scale(0.0);
-      animation = Titanium.UI.createAnimation();
-      animation.transform = t2;
-      animation.duration = 250;
-      return commentView.animate(animation);
-    });
-    commentLabel = Ti.UI.createLabel({
-      font: {
-        fontSize: 16,
-        fontFamily: 'Rounded M+ 1p',
-        fontWeight: 'bold'
-      },
-      text: content,
-      width: 'auto',
-      top: 50,
-      left: 5
-    });
-    commentView.add(commentLabel);
-    commentView.add(closeBtn);
-    return commentView;
   };
 
   return favoriteWindow;
