@@ -24,6 +24,7 @@ class kloudService
             shopAddress: place.address
             phoneNumber: place.phone_number
             shopFlg:place.custom_fields.shopFlg
+            shopInfo:place.custom_fields.shopInfo
             
           result.push(data)
           i++
@@ -47,7 +48,8 @@ class kloudService
       token:fb.accessToken
     , (result) ->
       return callback(result)
-
+      
+        
   reviewsCreate:(ratings,contents,shopName,currentUserId,callback) =>
     that = @Cloud
     Ti.API.info "reviewsCreate start shopName is #{shopName}"
@@ -61,13 +63,11 @@ class kloudService
         id = e.places[0].id
         
         Ti.API.info "placeID is #{id}. and ratings is #{ratings} and contents is #{contents} and currentUserId is #{currentUserId}"
-        if ratings is undefined
-          ratings = 0
         if contents is "" or contents is null
-          contents =  "no data"
+          contents = null
            
         that.Reviews.create
-          rating:ratings
+          rating:1
           content:contents              
           place_id:id
           user_id:currentUserId
@@ -141,15 +141,17 @@ class kloudService
               _ =  require("lib/underscore-1.4.3.min")
               .each placeIDList, (v,key) ->
                 if v.placeID is e.places[0].id
+
                   data =
-                  rating:v.rating
-                  content:v.content
-                  shopName:e.places[0].name
-                  shopAddress:e.places[0].address
-                  phoneNumber:e.places[0].phone_number
-                  latitude:e.places[0].latitude
-                  longitude:e.places[0].longitude
-                  shopFlg:e.places[0].custom_fields.shopFlg
+                    rating:v.rating
+                    content:v.content
+                    shopName:e.places[0].name
+                    shopAddress:e.places[0].address
+                    phoneNumber:e.places[0].phone_number
+                    latitude:e.places[0].latitude
+                    longitude:e.places[0].longitude
+                    shopFlg:e.places[0].custom_fields.shopFlg
+                    shopInfo:e.places[0].custom_fields.shopInfo
                 
               shopLists.push data
 
@@ -178,6 +180,7 @@ class kloudService
         i = 0
         while i < e.places.length
           place = e.places[i]
+
           data =
             latitude: place.latitude
             longitude: place.longitude
@@ -185,7 +188,9 @@ class kloudService
             shopAddress: place.address
             phoneNumber: place.phone_number
             shopFlg:place.custom_fields.shopFlg
+            shopInfo:place.custom_fields.shopInfo
             
+
           result.push(data)
           i++
 

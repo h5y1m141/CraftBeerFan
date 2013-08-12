@@ -37,22 +37,25 @@ mainController = (function() {
     mapWindow = new MapWindow();
     mapTab = Titanium.UI.createTab({
       window: mapWindow,
-      icon: "ui/image/light_pin.png",
+      icon: "ui/image/grayPin.png",
+      activeIcon: "ui/image/pin.png",
       windowName: "mapWindow"
-    });
-    MypageWindow = require("ui/mypageWindow");
-    mypageWindow = new MypageWindow();
-    mypageTab = Titanium.UI.createTab({
-      window: mypageWindow,
-      icon: "ui/image/light_gears.png",
-      windowName: "mypageWindow"
     });
     ListWindow = require("ui/listWindow");
     listWindow = new ListWindow();
     listTab = Titanium.UI.createTab({
       window: listWindow,
-      icon: "ui/image/light_list.png",
+      icon: "ui/image/listIcon.png",
+      activeIcon: "ui/image/listIconActive.png",
       windowName: "listWindow"
+    });
+    MypageWindow = require("ui/mypageWindow");
+    mypageWindow = new MypageWindow();
+    mypageTab = Titanium.UI.createTab({
+      window: mypageWindow,
+      icon: "ui/image/settingIcon.png",
+      activeIcon: "ui/image/activeSettingIcon.png",
+      windowName: "mypageWindow"
     });
     tabGroup.addTab(mapTab);
     tabGroup.addTab(listTab);
