@@ -218,18 +218,16 @@ shopDataDetailWindow = (function() {
         selectedColor: 'transparent'
       });
       shopInfoIcon = Ti.UI.createLabel({
-        top: 5,
+        top: 10,
         left: 10,
         width: 30,
         height: 30,
-        backgroundColor: "#FFEE55",
-        backgroundImage: "NONE",
-        color: this.baseColor.barColor,
+        color: "#ccc",
         font: {
-          fontSize: 28,
+          fontSize: 24,
           fontFamily: 'LigatureSymbols'
         },
-        text: String.fromCharCode("0xf095"),
+        text: String.fromCharCode("0xe075"),
         textAlign: 'center'
       });
       shopInfoLabel = Ti.UI.createLabel({
@@ -241,7 +239,7 @@ shopDataDetailWindow = (function() {
         left: 50,
         top: 10,
         font: {
-          fontSize: 18,
+          fontSize: 14,
           fontFamily: 'Rounded M+ 1p'
         }
       });
