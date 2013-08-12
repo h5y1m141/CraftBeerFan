@@ -92,7 +92,7 @@ shopDataDetailWindow = (function() {
   };
 
   shopDataDetailWindow.prototype._createTableView = function(data) {
-    var addressRow, favoriteDialog, love, loveEmpty, phoneDialog, phoneRow, shopData, wantToGoIcon, wantToGoIconLabel, wantToGoRow,
+    var addressRow, favoriteDialog, love, loveEmpty, phoneDialog, phoneRow, shopData, shopInfoIcon, shopInfoLabel, shopInfoRow, wantToGoIcon, wantToGoIconLabel, wantToGoRow,
       _this = this;
     shopData = [];
     addressRow = Ti.UI.createTableViewRow({
@@ -211,6 +211,43 @@ shopDataDetailWindow = (function() {
         return Ti.API.info("no action");
       }
     });
+    if (typeof data.shopInfo !== "undefined") {
+      shopInfoRow = Ti.UI.createTableViewRow({
+        width: 'auto',
+        height: 'auto',
+        selectedColor: 'transparent'
+      });
+      shopInfoIcon = Ti.UI.createLabel({
+        top: 5,
+        left: 10,
+        width: 30,
+        height: 30,
+        backgroundColor: "#FFEE55",
+        backgroundImage: "NONE",
+        color: this.baseColor.barColor,
+        font: {
+          fontSize: 28,
+          fontFamily: 'LigatureSymbols'
+        },
+        text: String.fromCharCode("0xf095"),
+        textAlign: 'center'
+      });
+      shopInfoLabel = Ti.UI.createLabel({
+        text: "" + data.shopInfo,
+        textAlign: 'left',
+        width: 250,
+        height: 'auto',
+        color: this.baseColor.textColor,
+        left: 50,
+        top: 10,
+        font: {
+          fontSize: 18,
+          fontFamily: 'Rounded M+ 1p'
+        }
+      });
+      shopInfoRow.add(shopInfoLabel);
+      shopInfoRow.add(shopInfoIcon);
+    }
     if (data.favoriteButtonEnable === true) {
       addressRow.add(this.addressLabel);
       phoneRow.add(this.phoneIcon);
@@ -221,6 +258,9 @@ shopDataDetailWindow = (function() {
       shopData.push(addressRow);
       shopData.push(phoneRow);
       shopData.push(wantToGoRow);
+      if (typeof shopInfoRow !== 'undefined') {
+        shopData.push(shopInfoRow);
+      }
     } else {
       addressRow.add(this.addressLabel);
       phoneRow.add(this.phoneIcon);
@@ -228,6 +268,9 @@ shopDataDetailWindow = (function() {
       shopData.push(this.section);
       shopData.push(addressRow);
       shopData.push(phoneRow);
+      if (typeof shopInfoRow !== 'undefined') {
+        shopData.push(shopInfoRow);
+      }
     }
     this.tableView.setData(shopData);
     return this.shopDataDetailWindow.add(this.tableView);

@@ -34,7 +34,8 @@ kloudService = (function() {
             shopName: place.name,
             shopAddress: place.address,
             phoneNumber: place.phone_number,
-            shopFlg: place.custom_fields.shopFlg
+            shopFlg: place.custom_fields.shopFlg,
+            shopInfo: place.custom_fields.shopInfo
           };
           result.push(data);
           i++;
@@ -157,7 +158,8 @@ kloudService = (function() {
                   phoneNumber: e.places[0].phone_number,
                   latitude: e.places[0].latitude,
                   longitude: e.places[0].longitude,
-                  shopFlg: e.places[0].custom_fields.shopFlg
+                  shopFlg: e.places[0].custom_fields.shopFlg,
+                  shopInfo: e.places[0].custom_fields.shopInfo
                 };
               }
             });
@@ -196,7 +198,8 @@ kloudService = (function() {
             shopName: place.name,
             shopAddress: place.address,
             phoneNumber: place.phone_number,
-            shopFlg: place.custom_fields.shopFlg
+            shopFlg: place.custom_fields.shopFlg,
+            shopInfo: place.custom_fields.shopInfo
           };
           result.push(data);
           i++;

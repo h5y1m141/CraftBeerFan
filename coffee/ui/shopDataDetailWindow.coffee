@@ -1,5 +1,6 @@
 class shopDataDetailWindow
   constructor:(data)->
+
     # 引数に渡されるdataの構造は以下のとおり
     # favoriteButtonEnableは、お気に入り登録するボタンを表示するか
     # どうか決める
@@ -97,6 +98,7 @@ class shopDataDetailWindow
     
   _createTableView:(data) ->
     shopData = []
+    
     addressRow = Ti.UI.createTableViewRow
       width:'auto'
       height:40
@@ -214,6 +216,39 @@ class shopDataDetailWindow
         Ti.API.info "no action"
 
     )
+    if typeof data.shopInfo isnt "undefined"
+      shopInfoRow = Ti.UI.createTableViewRow
+        width:'auto'
+        height:'auto'
+        selectedColor:'transparent'
+      shopInfoIcon = Ti.UI.createLabel
+        top:5
+        left:10
+        width:30
+        height:30
+        backgroundColor:"#FFEE55"
+        backgroundImage:"NONE"
+        color:@baseColor.barColor
+        font:
+          fontSize:28
+          fontFamily:'LigatureSymbols'
+        text:String.fromCharCode("0xf095")
+        textAlign:'center'
+        
+      shopInfoLabel = Ti.UI.createLabel
+        text:"#{data.shopInfo}"
+        textAlign:'left'      
+        width:250
+        height:'auto'
+        color:@baseColor.textColor
+        left:50
+        top:10
+        font:
+          fontSize:18
+          fontFamily :'Rounded M+ 1p'
+          
+      shopInfoRow.add shopInfoLabel
+      shopInfoRow.add shopInfoIcon
       
     # お気に入り一覧画面から遷移する場合などは、お気に入り登録ボタンを
     # 非表示にしたいので、favoriteButtonEnableの値をチェックする
@@ -231,17 +266,18 @@ class shopDataDetailWindow
       shopData.push addressRow
       shopData.push phoneRow
       shopData.push wantToGoRow
-
+      shopData.push shopInfoRow unless typeof shopInfoRow is 'undefined'
+      
     else
       addressRow.add @addressLabel
-      
+
       phoneRow.add @phoneIcon
       phoneRow.add @phoneLabel
       
       shopData.push @section  
       shopData.push addressRow
       shopData.push phoneRow
-
+      shopData.push shopInfoRow unless typeof shopInfoRow is 'undefined'
     @tableView.setData shopData
     return @shopDataDetailWindow.add @tableView
             

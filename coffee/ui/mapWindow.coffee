@@ -83,6 +83,7 @@ class mapWindow
           phoneNumber:e.annotation.phoneNumber
           latitude: e.annotation.latitude
           longitude: e.annotation.longitude
+          shopInfo: e.annotation.shopInfo
           favoriteButtonEnable:favoriteButtonEnable
           
         ShopDataDetailWindow = require("ui/shopDataDetailWindow")
@@ -186,6 +187,7 @@ class mapWindow
           title: data.shopName
           phoneNumber: data.phoneNumber
           shopAddress: data.shopAddress
+          shopInfo:data.shopInfo
           subtitle: ""
           image:"ui/image/bottle.png"
           animate: false
@@ -199,6 +201,7 @@ class mapWindow
           title: data.shopName
           phoneNumber: data.phoneNumber
           shopAddress: data.shopAddress
+          shopInfo:data.shopInfo
           subtitle: ""
           image:"ui/image/tumblrIcon.png"
           animate: false

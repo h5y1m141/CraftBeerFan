@@ -24,6 +24,7 @@ class kloudService
             shopAddress: place.address
             phoneNumber: place.phone_number
             shopFlg:place.custom_fields.shopFlg
+            shopInfo:place.custom_fields.shopInfo
             
           result.push(data)
           i++
@@ -140,15 +141,17 @@ class kloudService
               _ =  require("lib/underscore-1.4.3.min")
               .each placeIDList, (v,key) ->
                 if v.placeID is e.places[0].id
+
                   data =
-                  rating:v.rating
-                  content:v.content
-                  shopName:e.places[0].name
-                  shopAddress:e.places[0].address
-                  phoneNumber:e.places[0].phone_number
-                  latitude:e.places[0].latitude
-                  longitude:e.places[0].longitude
-                  shopFlg:e.places[0].custom_fields.shopFlg
+                    rating:v.rating
+                    content:v.content
+                    shopName:e.places[0].name
+                    shopAddress:e.places[0].address
+                    phoneNumber:e.places[0].phone_number
+                    latitude:e.places[0].latitude
+                    longitude:e.places[0].longitude
+                    shopFlg:e.places[0].custom_fields.shopFlg
+                    shopInfo:e.places[0].custom_fields.shopInfo
                 
               shopLists.push data
 
@@ -177,6 +180,7 @@ class kloudService
         i = 0
         while i < e.places.length
           place = e.places[i]
+
           data =
             latitude: place.latitude
             longitude: place.longitude
@@ -184,7 +188,9 @@ class kloudService
             shopAddress: place.address
             phoneNumber: place.phone_number
             shopFlg:place.custom_fields.shopFlg
+            shopInfo:place.custom_fields.shopInfo
             
+
           result.push(data)
           i++
 
