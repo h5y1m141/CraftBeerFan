@@ -101,7 +101,6 @@ class shopDataDetailWindow
       width:'auto'
       height:40
       selectedColor:'transparent'
-
       
     @addressLabel = Ti.UI.createLabel
       text:"#{data.shopAddress}"
@@ -188,6 +187,10 @@ class shopDataDetailWindow
       width:200
       height:30
       
+    phoneDialog = @_createPhoneDialog(data.phoneNumber,data.shopName)
+    favoriteDialog = @_createFavoriteDialog(data.shopName)
+    @shopDataDetailWindow.add phoneDialog
+    @shopDataDetailWindow.add favoriteDialog
 
     @tableView = Ti.UI.createTableView
       width:'auto'
@@ -199,25 +202,23 @@ class shopDataDetailWindow
       separatorColor:@baseColor.separatorColor
       borderRadius:5
       
-    # rowをタッチした際にダイアログを表示するための処理
-    phoneDialog = @_createPhoneDialog(data.phoneNumber,data.shopName)
-    favoriteDialog = @_createFavoriteDialog(data.shopName)
-    @shopDataDetailWindow.add phoneDialog
-    @shopDataDetailWindow.add favoriteDialog
+    @tableView.addEventListener('click',(e) =>
+      if e.row.rowID is 1
+        @_setTiGFviewToMapView()
+        @_showDialog(phoneDialog)
+
+      else if e.row.rowID is 2
+        @_setTiGFviewToMapView()
+        @_showDialog(favoriteDialog)
+      else
+        Ti.API.info "no action"
+
+    )
       
     # お気に入り一覧画面から遷移する場合などは、お気に入り登録ボタンを
     # 非表示にしたいので、favoriteButtonEnableの値をチェックする
     if data.favoriteButtonEnable is true
-      @tableView.addEventListener('click',(e) =>
-        if e.row.rowID is 1
-          @_setTiGFviewToMapView()
-          @_showDialog(phoneDialog)
-        else if e.row.rowID is 2
-          @_setTiGFviewToMapView()
-          @_showDialog(favoriteDialog)
-
-      )
-      
+      # rowをタッチした際にダイアログを表示するための処理
       addressRow.add @addressLabel
       
       phoneRow.add @phoneIcon
@@ -232,13 +233,6 @@ class shopDataDetailWindow
       shopData.push wantToGoRow
 
     else
-      @tableView.addEventListener('click',(e) =>
-        if e.row.rowID is 1
-          @_setTiGFviewToMapView()
-          @_showDialog(phoneDialog)
-
-      )
-    
       addressRow.add @addressLabel
       
       phoneRow.add @phoneIcon
@@ -266,8 +260,6 @@ class shopDataDetailWindow
       backgroundColor:"#333"      
       zIndex:20
       transform:t
-
-
     
     titleForMemo = Ti.UI.createLabel
       text: "メモ欄"
@@ -304,9 +296,15 @@ class shopDataDetailWindow
       contents = e.value
       Ti.API.info "登録しようとしてるメモの内容は is #{contents}です"
       textArea.blur()
+    )
+    
+    textArea.addEventListener('blur',(e)->
+      contents = e.value
+      Ti.API.info "blur event fire.content is #{contents}です"
     )  
+    
     registMemoBtn = Ti.UI.createLabel
-      top:210
+      bottom:30
       right:20
       width:120
       height:40
@@ -341,7 +339,7 @@ class shopDataDetailWindow
           alert "登録しました"
         else
           alert "すでに登録されているか\nサーバーがダウンしているために登録することができませんでした"
-        that._hideDialog(favoriteDialog)
+        that._hideDialog(favoriteDialog,Ti.API.info "done")
 
       )
       
@@ -350,7 +348,7 @@ class shopDataDetailWindow
       width:120
       height:40
       left:20
-      top:210
+      bottom:30      
       borderRadius:5
       backgroundColor:"#d8514b"
       color:@baseColor.barColor
@@ -362,9 +360,9 @@ class shopDataDetailWindow
       
     cancelleBtn.addEventListener('click',(e) =>
       @_setDefaultMapViewStyle()
-      @_hideDialog(favoriteDialog)
-      
-    )       
+      @_hideDialog(favoriteDialog,Ti.API.info "done")
+    )
+    
     favoriteDialog.add textArea
     favoriteDialog.add titleForMemo
     favoriteDialog.add registMemoBtn
@@ -373,8 +371,9 @@ class shopDataDetailWindow
     return favoriteDialog
     
   _createPhoneDialog:(phoneNumber,shopName) ->
+    that = @
     t = Titanium.UI.create2DMatrix().scale(0.0)
-    phoneDialog = Ti.UI.createView
+    _view = Ti.UI.createView
       width:300
       height:240
       top:0
@@ -399,13 +398,13 @@ class shopDataDetailWindow
       text:'はい'
       textAlign:"center"
 
-    callBtn.addEventListener('click',(e) =>
-      @_setDefaultMapViewStyle()
-      @_hideDialog(phoneDialog)
-      Titanium.Platform.openURL("tel:#{phoneNumber}")
-      
-    ) 
-    cancelleBtn =  Ti.UI.createLabel
+    callBtn.addEventListener('click',(e) ->
+      that._setDefaultMapViewStyle()
+      that._hideDialog(_view,Titanium.Platform.openURL("tel:#{phoneNumber}"))
+
+    )
+    
+    cancelleBtn = Ti.UI.createLabel
       width:120
       height:40
       left:20
@@ -419,9 +418,9 @@ class shopDataDetailWindow
       text:'いいえ'
       textAlign:"center"
       
-    cancelleBtn.addEventListener('click',(e) =>
-      @_setDefaultMapViewStyle()
-      @_hideDialog(phoneDialog)
+    cancelleBtn.addEventListener('click',(e) ->
+      that._setDefaultMapViewStyle()
+      that._hideDialog(_view,Ti.API.info "cancelleBtn hide")
       
     ) 
     confirmLabel = Ti.UI.createLabel
@@ -436,11 +435,11 @@ class shopDataDetailWindow
         fontFamily:'Rounded M+ 1p'
       text:"#{shopName}の電話番号は\n#{phoneNumber}です。\n電話しますか？"
       
-    phoneDialog.add confirmLabel
-    phoneDialog.add cancelleBtn
-    phoneDialog.add callBtn
+    _view.add confirmLabel
+    _view.add cancelleBtn
+    _view.add callBtn
     
-    return phoneDialog
+    return _view
 
 
   # ダイアログ表示する際に、背景部分となるmapViewに対して
@@ -458,23 +457,25 @@ class shopDataDetailWindow
     return
 
   # 引数に取ったviewに対してせり出すようにするアニメーションを適用
-  _showDialog:(view) ->
+  _showDialog:(_view) ->
     t1 = Titanium.UI.create2DMatrix()
     t1 = t1.scale(1.0)
     animation = Titanium.UI.createAnimation()
     animation.transform = t1
     animation.duration = 250
-    return view.animate(animation)
+    return _view.animate(animation)
     
   # 引数に取ったviewに対してズームインするようなアニメーションを適用
   # することで非表示のように見せる
-  _hideDialog:(view) ->        
+  _hideDialog:(_view,callback) ->        
     t1 = Titanium.UI.create2DMatrix()
     t1 = t1.scale(0.0)
     animation = Titanium.UI.createAnimation()
     animation.transform = t1
     animation.duration = 250
-    return view.animate(animation)    
+    _view.animate(animation)
     
-        
+    animation.addEventListener('complete',(e) ->
+      return callback
+    )        
 module.exports = shopDataDetailWindow  

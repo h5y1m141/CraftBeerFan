@@ -186,6 +186,10 @@ shopDataDetailWindow = (function() {
       width: 200,
       height: 30
     });
+    phoneDialog = this._createPhoneDialog(data.phoneNumber, data.shopName);
+    favoriteDialog = this._createFavoriteDialog(data.shopName);
+    this.shopDataDetailWindow.add(phoneDialog);
+    this.shopDataDetailWindow.add(favoriteDialog);
     this.tableView = Ti.UI.createTableView({
       width: 'auto',
       height: 'auto',
@@ -196,20 +200,18 @@ shopDataDetailWindow = (function() {
       separatorColor: this.baseColor.separatorColor,
       borderRadius: 5
     });
-    phoneDialog = this._createPhoneDialog(data.phoneNumber, data.shopName);
-    favoriteDialog = this._createFavoriteDialog(data.shopName);
-    this.shopDataDetailWindow.add(phoneDialog);
-    this.shopDataDetailWindow.add(favoriteDialog);
+    this.tableView.addEventListener('click', function(e) {
+      if (e.row.rowID === 1) {
+        _this._setTiGFviewToMapView();
+        return _this._showDialog(phoneDialog);
+      } else if (e.row.rowID === 2) {
+        _this._setTiGFviewToMapView();
+        return _this._showDialog(favoriteDialog);
+      } else {
+        return Ti.API.info("no action");
+      }
+    });
     if (data.favoriteButtonEnable === true) {
-      this.tableView.addEventListener('click', function(e) {
-        if (e.row.rowID === 1) {
-          _this._setTiGFviewToMapView();
-          return _this._showDialog(phoneDialog);
-        } else if (e.row.rowID === 2) {
-          _this._setTiGFviewToMapView();
-          return _this._showDialog(favoriteDialog);
-        }
-      });
       addressRow.add(this.addressLabel);
       phoneRow.add(this.phoneIcon);
       phoneRow.add(this.phoneLabel);
@@ -220,12 +222,6 @@ shopDataDetailWindow = (function() {
       shopData.push(phoneRow);
       shopData.push(wantToGoRow);
     } else {
-      this.tableView.addEventListener('click', function(e) {
-        if (e.row.rowID === 1) {
-          _this._setTiGFviewToMapView();
-          return _this._showDialog(phoneDialog);
-        }
-      });
       addressRow.add(this.addressLabel);
       phoneRow.add(this.phoneIcon);
       phoneRow.add(this.phoneLabel);
@@ -292,8 +288,12 @@ shopDataDetailWindow = (function() {
       Ti.API.info("登録しようとしてるメモの内容は is " + contents + "です");
       return textArea.blur();
     });
+    textArea.addEventListener('blur', function(e) {
+      contents = e.value;
+      return Ti.API.info("blur event fire.content is " + contents + "です");
+    });
     registMemoBtn = Ti.UI.createLabel({
-      top: 210,
+      bottom: 30,
       right: 20,
       width: 120,
       height: 40,
@@ -327,14 +327,14 @@ shopDataDetailWindow = (function() {
         } else {
           alert("すでに登録されているか\nサーバーがダウンしているために登録することができませんでした");
         }
-        return that._hideDialog(favoriteDialog);
+        return that._hideDialog(favoriteDialog, Ti.API.info("done"));
       });
     });
     cancelleBtn = Ti.UI.createLabel({
       width: 120,
       height: 40,
       left: 20,
-      top: 210,
+      bottom: 30,
       borderRadius: 5,
       backgroundColor: "#d8514b",
       color: this.baseColor.barColor,
@@ -347,7 +347,7 @@ shopDataDetailWindow = (function() {
     });
     cancelleBtn.addEventListener('click', function(e) {
       _this._setDefaultMapViewStyle();
-      return _this._hideDialog(favoriteDialog);
+      return _this._hideDialog(favoriteDialog, Ti.API.info("done"));
     });
     favoriteDialog.add(textArea);
     favoriteDialog.add(titleForMemo);
@@ -357,10 +357,10 @@ shopDataDetailWindow = (function() {
   };
 
   shopDataDetailWindow.prototype._createPhoneDialog = function(phoneNumber, shopName) {
-    var callBtn, cancelleBtn, confirmLabel, phoneDialog, t,
-      _this = this;
+    var callBtn, cancelleBtn, confirmLabel, t, that, _view;
+    that = this;
     t = Titanium.UI.create2DMatrix().scale(0.0);
-    phoneDialog = Ti.UI.createView({
+    _view = Ti.UI.createView({
       width: 300,
       height: 240,
       top: 0,
@@ -387,9 +387,8 @@ shopDataDetailWindow = (function() {
       textAlign: "center"
     });
     callBtn.addEventListener('click', function(e) {
-      _this._setDefaultMapViewStyle();
-      _this._hideDialog(phoneDialog);
-      return Titanium.Platform.openURL("tel:" + phoneNumber);
+      that._setDefaultMapViewStyle();
+      return that._hideDialog(_view, Titanium.Platform.openURL("tel:" + phoneNumber));
     });
     cancelleBtn = Ti.UI.createLabel({
       width: 120,
@@ -407,8 +406,8 @@ shopDataDetailWindow = (function() {
       textAlign: "center"
     });
     cancelleBtn.addEventListener('click', function(e) {
-      _this._setDefaultMapViewStyle();
-      return _this._hideDialog(phoneDialog);
+      that._setDefaultMapViewStyle();
+      return that._hideDialog(_view, Ti.API.info("cancelleBtn hide"));
     });
     confirmLabel = Ti.UI.createLabel({
       top: 20,
@@ -423,10 +422,10 @@ shopDataDetailWindow = (function() {
       },
       text: "" + shopName + "の電話番号は\n" + phoneNumber + "です。\n電話しますか？"
     });
-    phoneDialog.add(confirmLabel);
-    phoneDialog.add(cancelleBtn);
-    phoneDialog.add(callBtn);
-    return phoneDialog;
+    _view.add(confirmLabel);
+    _view.add(cancelleBtn);
+    _view.add(callBtn);
+    return _view;
   };
 
   shopDataDetailWindow.prototype._setTiGFviewToMapView = function() {
@@ -441,24 +440,27 @@ shopDataDetailWindow = (function() {
     this.mapView.kCAFilterTrilinear = false;
   };
 
-  shopDataDetailWindow.prototype._showDialog = function(view) {
+  shopDataDetailWindow.prototype._showDialog = function(_view) {
     var animation, t1;
     t1 = Titanium.UI.create2DMatrix();
     t1 = t1.scale(1.0);
     animation = Titanium.UI.createAnimation();
     animation.transform = t1;
     animation.duration = 250;
-    return view.animate(animation);
+    return _view.animate(animation);
   };
 
-  shopDataDetailWindow.prototype._hideDialog = function(view) {
+  shopDataDetailWindow.prototype._hideDialog = function(_view, callback) {
     var animation, t1;
     t1 = Titanium.UI.create2DMatrix();
     t1 = t1.scale(0.0);
     animation = Titanium.UI.createAnimation();
     animation.transform = t1;
     animation.duration = 250;
-    return view.animate(animation);
+    _view.animate(animation);
+    return animation.addEventListener('complete', function(e) {
+      return callback;
+    });
   };
 
   return shopDataDetailWindow;
