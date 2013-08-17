@@ -6,7 +6,7 @@ listWindow = (function() {
   function listWindow() {
     this.refreshTableData = __bind(this.refreshTableData, this);
 
-    var ActivityIndicator, PrefectureCategory, categoryName, currentUserId, favoriteRow, row, subMenuRows, t,
+    var ActivityIndicator, PrefectureCategory, actionBar, categoryName, currentUserId, favoriteRow, row, subMenuRows, t,
       _this = this;
     ActivityIndicator = require("ui/activityIndicator");
     this.activityIndicator = new ActivityIndicator();
@@ -22,18 +22,35 @@ listWindow = (function() {
       tabBarHidden: false,
       navBarHidden: false
     });
+    actionBar = void 0;
+    this.listWindow.addEventListener("open", function() {
+      if (Ti.Platform.osname === "android") {
+        if (!_this.listWindow.activity) {
+          return Ti.API.error("Can't access action bar on a lightweight window.");
+        } else {
+          actionBar = _this.listWindow.activity.actionBar;
+          if (actionBar) {
+            actionBar.backgroundImage = Titanium.Filesystem.resourcesDirectory + "ui/image/listIconActive.png";
+            actionBar.title = "New Title";
+            return actionBar.onHomeIconItemSelected = function() {
+              return Ti.API.info("Home icon clicked!");
+            };
+          }
+        }
+      }
+    });
     this._createNavbarElement();
     t = Titanium.UI.create2DMatrix().scale(0);
     this.table = Ti.UI.createTableView({
       backgroundColor: "#f3f3f3",
       separatorStyle: Titanium.UI.iPhone.TableViewSeparatorStyle.NONE,
-      width: 160,
+      width: '600dip',
       height: 'auto',
-      left: 150,
-      top: 20,
+      left: '300dip',
+      top: '20dip',
       borderColor: "#f3f3f3",
-      borderWidth: 2,
-      borderRadius: 10,
+      borderWidth: '2dip',
+      borderRadius: '10dip',
       zIndex: 10,
       transform: t
     });
@@ -58,13 +75,13 @@ listWindow = (function() {
               return 1;
             }
           });
-          ShopAreaDataWindow = require("ui/shopAreaDataWindow");
+          ShopAreaDataWindow = require("ui/android/shopAreaDataWindow");
           return new ShopAreaDataWindow(items);
         }
       });
     });
     this.prefectures = this._loadPrefectures();
-    this.rowHeight = 50;
+    this.rowHeight = '100dip';
     this.subMenu = Ti.UI.createTableView({
       backgroundColor: "#f3f3f3",
       separatorColor: '#cccccc',
@@ -100,7 +117,7 @@ listWindow = (function() {
       categoryName = e.row.categoryName;
       that = _this;
       if (categoryName === "行きたいお店") {
-        FavoriteWindow = require("ui/favoriteWindow");
+        FavoriteWindow = require("ui/android/favoriteWindow");
         return new FavoriteWindow();
       } else {
         selectedColor = _this.prefectureColorSet.name[categoryName];
@@ -162,28 +179,13 @@ listWindow = (function() {
     return result;
   };
 
-  listWindow.prototype._createNavbarElement = function() {
-    var listWindowTitle;
-    listWindowTitle = Ti.UI.createLabel({
-      textAlign: 'center',
-      color: '#333',
-      font: {
-        fontSize: 18,
-        fontFamily: 'Rounded M+ 1p',
-        fontWeight: 'bold'
-      },
-      text: "リストから探す"
-    });
-    if (Ti.Platform.osname === 'iphone') {
-      this.listWindow.setTitleControl(listWindowTitle);
-    }
-  };
+  listWindow.prototype._createNavbarElement = function() {};
 
   listWindow.prototype._createFavoriteRow = function() {
     var favoriteIcon, favoriteLabel, favoriteRow, love;
     Ti.API.info("_createFavoriteRow start");
     favoriteRow = Ti.UI.createTableViewRow({
-      width: 150,
+      width: '600dip',
       height: this.rowHeight,
       backgroundColor: "f3f3f3",
       categoryName: "行きたいお店"
@@ -209,7 +211,7 @@ listWindow = (function() {
       textAlign: 'left',
       color: '#333',
       font: {
-        fontSize: 16,
+        fontSize: '16dip',
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       },
@@ -223,21 +225,20 @@ listWindow = (function() {
   listWindow.prototype._createSubMenuRow = function(categoryName) {
     var headerLabel, headerPoint, subMenuRow;
     headerPoint = Ti.UI.createView({
-      width: 10,
-      height: 30,
+      width: '20dip',
+      height: '60dip',
       top: 5,
       left: 10,
       backgroundColor: this.prefectureColorSet.name[categoryName]
     });
     headerLabel = Ti.UI.createLabel({
       text: categoryName,
-      top: 5,
-      left: 30,
+      top: '5dip',
+      left: '30dip',
       color: "#222",
       font: {
-        fontSize: 16,
-        fontFamily: 'Rounded M+ 1p',
-        fontWeight: 'bold'
+        fontSize: '16dip',
+        fontFamily: 'Rounded M+ 1p'
       }
     });
     subMenuRow = Ti.UI.createTableViewRow({
@@ -265,14 +266,14 @@ listWindow = (function() {
         prefectureName: "" + _items.name
       });
       textLabel = Ti.UI.createLabel({
-        width: 240,
-        height: 40,
-        top: 5,
-        left: 30,
+        width: '400dip',
+        height: '80dip',
+        top: '5dip',
+        left: '30dip',
         textAlign: 'left',
         color: '#333',
         font: {
-          fontSize: 16,
+          fontSize: '16dip',
           fontFamily: 'Rounded M+ 1p',
           fontWeight: 'bold'
         },

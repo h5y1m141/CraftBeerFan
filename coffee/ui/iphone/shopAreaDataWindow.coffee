@@ -69,7 +69,7 @@ class shopAreaDataWindow
         favoriteButtonEnable:favoriteButtonEnable
         
         
-      ShopDataDetailWindow = require("ui/shopDataDetailWindow")
+      ShopDataDetailWindow = require("ui/iphone/shopDataDetailWindow")
       shopDataDetailWindow = new ShopDataDetailWindow(data)
     )      
     @_createNavbarElement()

@@ -34,14 +34,18 @@ Ti.App.Analytics =
 
 analytics.start 10, true
 
+
 if Ti.Platform.osname is "android"
+  MainController = require("controller/mainController")
+  mainController = new MainController()
+  mainController.createTabGroup()
 
-  displayHeight = Ti.Platform.displayCaps.platformHeight
-  displayHeight = displayHeight / Ti.Platform.displayCaps.logicalDensityFactor
+  # displayHeight = Ti.Platform.displayCaps.platformHeight
+  # displayHeight = displayHeight / Ti.Platform.displayCaps.logicalDensityFactor
 
-  StartupWindow = require("ui/android/startupWindow")
-  startupWindow = new StartupWindow()  
-  startupWindow.open()
+  # StartupWindow = require("ui/android/startupWindow")
+  # startupWindow = new StartupWindow()  
+  # startupWindow.open()
 else
   
   if configurationWizard is null or typeof configurationWizard is "undefined" or configurationWizard is false

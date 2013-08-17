@@ -143,7 +143,7 @@ class startupWindow
           image:menu.screenCapture
         view.add screenCapture
       else
-        LoginForm = require("ui/loginForm")
+        LoginForm = require("ui/iphone/loginForm")
         loginForm = new LoginForm()
         view.add loginForm
 

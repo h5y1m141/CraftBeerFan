@@ -42,7 +42,7 @@ mypageWindow = (function() {
     loginType = Ti.App.Properties.getString("loginType");
     currentUserId = Ti.App.Properties.getString("currentUserId");
     if (typeof currentUserId === "undefined" || currentUserId === null) {
-      LoginForm = require("ui/loginForm");
+      LoginForm = require("ui/iphone/loginForm");
       loginForm = new LoginForm();
       loginForm.left = 40;
       loginForm.top = 80;

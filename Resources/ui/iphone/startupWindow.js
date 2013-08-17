@@ -148,7 +148,7 @@ startupWindow = (function() {
         });
         view.add(screenCapture);
       } else {
-        LoginForm = require("ui/loginForm");
+        LoginForm = require("ui/iphone/loginForm");
         loginForm = new LoginForm();
         view.add(loginForm);
       }

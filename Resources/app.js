@@ -1,4 +1,4 @@
-var Config, MainController, StartupWindow, analytics, config, configurationWizard, displayHeight, gaKey, gaModule, mainController, startupWindow;
+var Config, MainController, StartupWindow, analytics, config, configurationWizard, gaKey, gaModule, mainController, startupWindow;
 
 configurationWizard = Ti.App.Properties.getBool("configurationWizard");
 
@@ -41,11 +41,9 @@ Ti.App.Analytics = {
 analytics.start(10, true);
 
 if (Ti.Platform.osname === "android") {
-  displayHeight = Ti.Platform.displayCaps.platformHeight;
-  displayHeight = displayHeight / Ti.Platform.displayCaps.logicalDensityFactor;
-  StartupWindow = require("ui/android/startupWindow");
-  startupWindow = new StartupWindow();
-  startupWindow.open();
+  MainController = require("controller/mainController");
+  mainController = new MainController();
+  mainController.createTabGroup();
 } else {
   if (configurationWizard === null || typeof configurationWizard === "undefined" || configurationWizard === false) {
     StartupWindow = require("ui/startupWindow");

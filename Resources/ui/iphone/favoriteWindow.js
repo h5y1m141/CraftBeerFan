@@ -42,7 +42,7 @@ favoriteWindow = (function() {
           longitude: e.row.placeData.longitude,
           favoriteButtonEnable: false
         };
-        ShopDataDetailWindow = require("ui/shopDataDetailWindow");
+        ShopDataDetailWindow = require("ui/iphone/shopDataDetailWindow");
         return new ShopDataDetailWindow(data);
       }
     });

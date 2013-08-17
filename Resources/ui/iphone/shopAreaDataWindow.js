@@ -62,7 +62,7 @@ shopAreaDataWindow = (function() {
         shopInfo: e.row.placeData.shopInfo,
         favoriteButtonEnable: favoriteButtonEnable
       };
-      ShopDataDetailWindow = require("ui/shopDataDetailWindow");
+      ShopDataDetailWindow = require("ui/iphone/shopDataDetailWindow");
       return shopDataDetailWindow = new ShopDataDetailWindow(data);
     });
     this._createNavbarElement();

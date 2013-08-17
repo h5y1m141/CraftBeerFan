@@ -45,7 +45,7 @@ class listWindow
           items.sort( (a, b) ->
             (if a.shopAddress > b.shopAddress then -1 else 1)
           )
-          ShopAreaDataWindow = require("ui/shopAreaDataWindow") 
+          ShopAreaDataWindow = require("ui/iphone/shopAreaDataWindow") 
           new ShopAreaDataWindow(items)
           
       )
@@ -85,7 +85,7 @@ class listWindow
       categoryName = e.row.categoryName
       that = @
       if categoryName is "行きたいお店"
-        FavoriteWindow = require("ui/favoriteWindow")
+        FavoriteWindow = require("ui/iphone/favoriteWindow")
         new FavoriteWindow()
         
       else
