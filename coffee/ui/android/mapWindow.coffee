@@ -18,16 +18,17 @@ class mapWindow
     adView = ad.createView
       spotId:nend.spotId
       apiKey:nend.apiKey
-      width:320
-      height:50
-      bottom: 0
-      left:0
+      width:Ti.UI.FULL
+      height:'50dip'
+      bottom:'1dip'
+      left:'0dip'
+      zIndex:10
       
     mapWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
       color:"#333"
       font:
-        fontSize:18
+        fontSize:'18dip'
         fontFamily : 'Rounded M+ 1p'
         fontWeight:'bold'
       text:"近くのお店"
@@ -42,6 +43,9 @@ class mapWindow
   
     # 1.0から0.001の間で縮尺尺度を示している。
     # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
+    displayHeight = Ti.Platform.displayCaps.platformHeight
+    displayHeight = displayHeight / Ti.Platform.displayCaps.logicalDensityFactor
+    mapViewHeight = displayHeight-50
     
     @mapView = Titanium.Map.createView
       mapType: Titanium.Map.STANDARD_TYPE
@@ -56,48 +60,42 @@ class mapWindow
       zIndex:0
       top:0
       left:0
-    # プラットフォームを判定しながらスクリーンサイズ取得して
-    # iPhone4sとiPhone5とそれぞれに最適なmapViewの大きさにする
-    if Ti.Platform.osname is 'iphone' and Ti.Platform.displayCaps.platformHeight is 480
-      platform = 'iPhone4s'
-      @mapView.height = 364
-    else
-      platform = 'iPhone5'
-      @mapView.height = 452
+      width:Ti.UI.FULL
+      height:mapViewHeight+'dip'
     
     @mapView.addEventListener('click',(e)=>
       Ti.API.info "map view click event"
-      if e.clicksource is "rightButton"
-        # アカウント登録をスキップして利用する人がいるため、
-        # currentUserIdの値をチェックして、存在しない場合にはお気に入り
-        # を非表示にする
-        currentUserId = Ti.App.Properties.getString "currentUserId"
-        if typeof currentUserId is "undefined" or currentUserId is null
-          favoriteButtonEnable = false
-        else
-          favoriteButtonEnable = true
 
-        data =
-          shopName:e.title
-          shopAddress:e.annotation.shopAddress
-          phoneNumber:e.annotation.phoneNumber
-          latitude: e.annotation.latitude
-          longitude: e.annotation.longitude
-          shopInfo: e.annotation.shopInfo
-          favoriteButtonEnable:favoriteButtonEnable
-          
-        ShopDataDetailWindow = require("ui/shopDataDetailWindow")
-        shopDataDetailWindow = new ShopDataDetailWindow(data)
+      # アカウント登録をスキップして利用する人がいるため、
+      # currentUserIdの値をチェックして、存在しない場合にはお気に入り
+      # を非表示にする
+      currentUserId = Ti.App.Properties.getString "currentUserId"
+      if typeof currentUserId is "undefined" or currentUserId is null
+        favoriteButtonEnable = false
+      else
+        favoriteButtonEnable = true
+
+      data =
+        shopName:e.title
+        shopAddress:e.annotation.shopAddress
+        phoneNumber:e.annotation.phoneNumber
+        latitude: e.annotation.latitude
+        longitude: e.annotation.longitude
+        shopInfo: e.annotation.shopInfo
+        favoriteButtonEnable:favoriteButtonEnable
+        
+      ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
+      shopDataDetailWindow = new ShopDataDetailWindow(data)
       
     )    
       
     refreshLabel = Ti.UI.createLabel
       backgroundColor:"transparent"
       color:"#333"
-      width:28
-      height:28
+      width:"56dip"
+      height:"56dip"
       font:
-        fontSize: 32
+        fontSize:"32dip"
         fontFamily:'LigatureSymbols'
       text:String.fromCharCode("0xe14d")
       
@@ -124,11 +122,7 @@ class mapWindow
       )
     )
 
-
     mapWindow.rightNavButton = refreshLabel
-    
-    if Ti.Platform.osname is 'iphone'  
-      mapWindow.setTitleControl mapWindowTitle
     
     Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため'
     Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS
@@ -189,7 +183,7 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           subtitle: ""
-          image:"ui/image/bottle.png"
+          image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
           animate: false
           leftButton: ""
           rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
@@ -203,7 +197,7 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           subtitle: ""
-          image:"ui/image/tumblrIcon.png"
+          image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIcon@2x.png"
           animate: false
           leftButton: ""
           rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE

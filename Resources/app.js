@@ -40,12 +40,18 @@ Ti.App.Analytics = {
 
 analytics.start(10, true);
 
-if (configurationWizard === null || typeof configurationWizard === "undefined" || configurationWizard === false) {
-  StartupWindow = require("ui/startupWindow");
-  startupWindow = new StartupWindow();
-  startupWindow.open();
-} else {
+if (Ti.Platform.osname === "android") {
   MainController = require("controller/mainController");
   mainController = new MainController();
   mainController.createTabGroup();
+} else {
+  if (configurationWizard === null || typeof configurationWizard === "undefined" || configurationWizard === false) {
+    StartupWindow = require("ui/startupWindow");
+    startupWindow = new StartupWindow();
+    startupWindow.open();
+  } else {
+    MainController = require("controller/mainController");
+    mainController = new MainController();
+    mainController.createTabGroup();
+  }
 }

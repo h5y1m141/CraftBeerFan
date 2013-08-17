@@ -3,7 +3,7 @@ var mapWindow;
 mapWindow = (function() {
 
   function mapWindow() {
-    var ActivityIndicator, Config, ad, adView, config, keyColor, mapWindowTitle, nend, platform, refreshLabel,
+    var ActivityIndicator, Config, ad, adView, config, displayHeight, keyColor, mapViewHeight, mapWindowTitle, nend, refreshLabel,
       _this = this;
     keyColor = "#f9f9f9";
     this.baseColor = {
@@ -20,16 +20,17 @@ mapWindow = (function() {
     adView = ad.createView({
       spotId: nend.spotId,
       apiKey: nend.apiKey,
-      width: 320,
-      height: 50,
-      bottom: 0,
-      left: 0
+      width: Ti.UI.FULL,
+      height: '50dip',
+      bottom: '1dip',
+      left: '0dip',
+      zIndex: 10
     });
     mapWindowTitle = Ti.UI.createLabel({
       textAlign: 'center',
       color: "#333",
       font: {
-        fontSize: 18,
+        fontSize: '18dip',
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       },
@@ -42,6 +43,9 @@ mapWindow = (function() {
       navBarHidden: false,
       tabBarHidden: false
     });
+    displayHeight = Ti.Platform.displayCaps.platformHeight;
+    displayHeight = displayHeight / Ti.Platform.displayCaps.logicalDensityFactor;
+    mapViewHeight = displayHeight - 50;
     this.mapView = Titanium.Map.createView({
       mapType: Titanium.Map.STANDARD_TYPE,
       region: {
@@ -55,45 +59,38 @@ mapWindow = (function() {
       userLocation: true,
       zIndex: 0,
       top: 0,
-      left: 0
+      left: 0,
+      width: Ti.UI.FULL,
+      height: mapViewHeight + 'dip'
     });
-    if (Ti.Platform.osname === 'iphone' && Ti.Platform.displayCaps.platformHeight === 480) {
-      platform = 'iPhone4s';
-      this.mapView.height = 364;
-    } else {
-      platform = 'iPhone5';
-      this.mapView.height = 452;
-    }
     this.mapView.addEventListener('click', function(e) {
       var ShopDataDetailWindow, currentUserId, data, favoriteButtonEnable, shopDataDetailWindow;
       Ti.API.info("map view click event");
-      if (e.clicksource === "rightButton") {
-        currentUserId = Ti.App.Properties.getString("currentUserId");
-        if (typeof currentUserId === "undefined" || currentUserId === null) {
-          favoriteButtonEnable = false;
-        } else {
-          favoriteButtonEnable = true;
-        }
-        data = {
-          shopName: e.title,
-          shopAddress: e.annotation.shopAddress,
-          phoneNumber: e.annotation.phoneNumber,
-          latitude: e.annotation.latitude,
-          longitude: e.annotation.longitude,
-          shopInfo: e.annotation.shopInfo,
-          favoriteButtonEnable: favoriteButtonEnable
-        };
-        ShopDataDetailWindow = require("ui/shopDataDetailWindow");
-        return shopDataDetailWindow = new ShopDataDetailWindow(data);
+      currentUserId = Ti.App.Properties.getString("currentUserId");
+      if (typeof currentUserId === "undefined" || currentUserId === null) {
+        favoriteButtonEnable = false;
+      } else {
+        favoriteButtonEnable = true;
       }
+      data = {
+        shopName: e.title,
+        shopAddress: e.annotation.shopAddress,
+        phoneNumber: e.annotation.phoneNumber,
+        latitude: e.annotation.latitude,
+        longitude: e.annotation.longitude,
+        shopInfo: e.annotation.shopInfo,
+        favoriteButtonEnable: favoriteButtonEnable
+      };
+      ShopDataDetailWindow = require("ui/android/shopDataDetailWindow");
+      return shopDataDetailWindow = new ShopDataDetailWindow(data);
     });
     refreshLabel = Ti.UI.createLabel({
       backgroundColor: "transparent",
       color: "#333",
-      width: 28,
-      height: 28,
+      width: "56dip",
+      height: "56dip",
       font: {
-        fontSize: 32,
+        fontSize: "32dip",
         fontFamily: 'LigatureSymbols'
       },
       text: String.fromCharCode("0xe14d")
@@ -120,9 +117,6 @@ mapWindow = (function() {
       });
     });
     mapWindow.rightNavButton = refreshLabel;
-    if (Ti.Platform.osname === 'iphone') {
-      mapWindow.setTitleControl(mapWindowTitle);
-    }
     Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため';
     Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS;
     Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
@@ -183,7 +177,7 @@ mapWindow = (function() {
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
           subtitle: "",
-          image: "ui/image/bottle.png",
+          image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png",
           animate: false,
           leftButton: "",
           rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
@@ -198,7 +192,7 @@ mapWindow = (function() {
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
           subtitle: "",
-          image: "ui/image/tumblrIcon.png",
+          image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIcon@2x.png",
           animate: false,
           leftButton: "",
           rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE

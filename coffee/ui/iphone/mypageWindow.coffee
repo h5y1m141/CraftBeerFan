@@ -39,7 +39,7 @@ class mypageWindow
     loginType  = Ti.App.Properties.getString "loginType"
     currentUserId  =Ti.App.Properties.getString "currentUserId"
     if typeof currentUserId is "undefined" or currentUserId is null
-      LoginForm = require("ui/loginForm")
+      LoginForm = require("ui/iphone/loginForm")
       loginForm = new LoginForm()
       # アプリケーション起動時のレイアウトにloginFormは
       # 最適化されているため、myPageに配置する時には左、上の位置を

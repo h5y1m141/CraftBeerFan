@@ -10,17 +10,16 @@ class startupWindow
       textAlign: 'center'
       color:"#333"
       font:
-        fontSize:18
+        fontSize:'18dip'
         fontFamily : 'Rounded M+ 1p'
-        fontWeight:'bold'
       text:"CraftBeerFan"
       
     @scrollView = Titanium.UI.createScrollableView
       backgroundColor:@baseColor.backgroundColor
-      height:460
+      height:'460dip'
       showPagingControl:true
-      pagingControlHeight:30
-
+      pagingControlHeight:'30dip'
+      
     @_createView()
     
     win = Ti.UI.createWindow
@@ -29,9 +28,7 @@ class startupWindow
       backgroundColor:@baseColor.backgroundColor
       navBarHidden:false
       tabBarHidden:false
-      
-    if Ti.Platform.osname is 'iphone'
-      win.setTitleControl winTitle
+
 
     win.add @scrollView  
     return win
@@ -72,79 +69,39 @@ class startupWindow
     ]
     for menu in menuList
       view = Ti.UI.createView
-        width:300
-        height:400
+        width:'600dip'
+        height:'800dip'
         backgroundColor:@baseColor.backgroundColor
-        top:20
-        left:10
+        top:'0dip'
+        left:'0dip'
         zIndex:1
-        borderRadius:10
+        borderRadius:'20dip'
       
       label = Ti.UI.createLabel
+        top:'5dip'
+        left:'5dip'
         textAlign:'left'
         color:@baseColor.color
-        width:260
         font:
-          fontSize:16
+          fontSize:'18dip'
           fontFamily:'Rounded M+ 1p'
-          fontWeight:'bold'
-        height:70
-        top:10
-        left:20
         text:menu.description
+        
       view.add label
-      
-      # menu.backや、menu.nextの値を、backBtn/nextBtnのイベントリスナ
-      # で直接参照しようとすると、ループ完了した時の値が設定されてしまうため
-      # backBtn/nextBtnのそれぞれbackIndex/nextIndexプロパティというものを
-      # 作成しておき、それに値を紐付けておくことでスクロール時に前・次へのページ遷移が
-      # 実現できる
-      # 
-      backBtn = Ti.UI.createImageView
-        width:40
-        height:200
-        left:0
-        top:120
-        backIndex:menu.back
-        zIndex:10
-        image:"ui/image/backArrow.png"
-        
-      backBtn.addEventListener('click',(e)  =>
-        Ti.API.info "backIndex is #{e.source.backIndex}"
-        @scrollView.scrollToView(e.source.backIndex)
-           
-      )  
-      
-      nextBtn = Ti.UI.createImageView
-        width:40
-        height:200
-        right:0
-        top:120
-        nextIndex:menu.next  
-        zIndex:10
-        image:"ui/image/nextArrow.png"
-        
-      nextBtn.addEventListener('click',(e)  =>
-        Ti.API.info "nextIndex is #{e.source.nextIndex}"
-        @scrollView.scrollToView(e.source.nextIndex)
-      )
-        
-      if menu.back isnt null  
-        view.add backBtn
-      if menu.next isnt null  
-        view.add nextBtn
-            
-      if menu.screenCapture isnt null
+      if menu.screenCapture isnt null      
         screenCapture = Ti.UI.createImageView
-          width:200
-          height:200
-          top:120
-          left:50
-          image:menu.screenCapture
+          width:'200dip'
+          height:'200dip'
+          top:'120dip'
+          left:'100dip'
+          image:Titanium.Filesystem.resourcesDirectory + menu.screenCapture
+          
         view.add screenCapture
+        
       else
-        LoginForm = require("ui/loginForm")
+        LoginForm = require("ui/android/loginForm")
         loginForm = new LoginForm()
+        
         view.add loginForm
 
 

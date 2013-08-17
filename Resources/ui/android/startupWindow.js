@@ -17,17 +17,16 @@ startupWindow = (function() {
       textAlign: 'center',
       color: "#333",
       font: {
-        fontSize: 18,
-        fontFamily: 'Rounded M+ 1p',
-        fontWeight: 'bold'
+        fontSize: '18dip',
+        fontFamily: 'Rounded M+ 1p'
       },
       text: "CraftBeerFan"
     });
     this.scrollView = Titanium.UI.createScrollableView({
       backgroundColor: this.baseColor.backgroundColor,
-      height: 460,
+      height: '460dip',
       showPagingControl: true,
-      pagingControlHeight: 30
+      pagingControlHeight: '30dip'
     });
     this._createView();
     win = Ti.UI.createWindow({
@@ -37,16 +36,12 @@ startupWindow = (function() {
       navBarHidden: false,
       tabBarHidden: false
     });
-    if (Ti.Platform.osname === 'iphone') {
-      win.setTitleControl(winTitle);
-    }
     win.add(this.scrollView);
     return win;
   }
 
   startupWindow.prototype._createView = function() {
-    var LoginForm, backBtn, label, loginForm, menu, menuList, nextBtn, screenCapture, view, _i, _len,
-      _this = this;
+    var LoginForm, label, loginForm, menu, menuList, screenCapture, view, _i, _len;
     menuList = [
       {
         description: "CraftBeerFanはクラフトビールが買える/飲めるお店を探すことが出来るアプリケーションです",
@@ -83,72 +78,37 @@ startupWindow = (function() {
     for (_i = 0, _len = menuList.length; _i < _len; _i++) {
       menu = menuList[_i];
       view = Ti.UI.createView({
-        width: 300,
-        height: 400,
+        width: '600dip',
+        height: '800dip',
         backgroundColor: this.baseColor.backgroundColor,
-        top: 20,
-        left: 10,
+        top: '0dip',
+        left: '0dip',
         zIndex: 1,
-        borderRadius: 10
+        borderRadius: '20dip'
       });
       label = Ti.UI.createLabel({
+        top: '5dip',
+        left: '5dip',
         textAlign: 'left',
         color: this.baseColor.color,
-        width: 260,
         font: {
-          fontSize: 16,
-          fontFamily: 'Rounded M+ 1p',
-          fontWeight: 'bold'
+          fontSize: '18dip',
+          fontFamily: 'Rounded M+ 1p'
         },
-        height: 70,
-        top: 10,
-        left: 20,
         text: menu.description
       });
       view.add(label);
-      backBtn = Ti.UI.createImageView({
-        width: 40,
-        height: 200,
-        left: 0,
-        top: 120,
-        backIndex: menu.back,
-        zIndex: 10,
-        image: "ui/image/backArrow.png"
-      });
-      backBtn.addEventListener('click', function(e) {
-        Ti.API.info("backIndex is " + e.source.backIndex);
-        return _this.scrollView.scrollToView(e.source.backIndex);
-      });
-      nextBtn = Ti.UI.createImageView({
-        width: 40,
-        height: 200,
-        right: 0,
-        top: 120,
-        nextIndex: menu.next,
-        zIndex: 10,
-        image: "ui/image/nextArrow.png"
-      });
-      nextBtn.addEventListener('click', function(e) {
-        Ti.API.info("nextIndex is " + e.source.nextIndex);
-        return _this.scrollView.scrollToView(e.source.nextIndex);
-      });
-      if (menu.back !== null) {
-        view.add(backBtn);
-      }
-      if (menu.next !== null) {
-        view.add(nextBtn);
-      }
       if (menu.screenCapture !== null) {
         screenCapture = Ti.UI.createImageView({
-          width: 200,
-          height: 200,
-          top: 120,
-          left: 50,
-          image: menu.screenCapture
+          width: '200dip',
+          height: '200dip',
+          top: '120dip',
+          left: '100dip',
+          image: Titanium.Filesystem.resourcesDirectory + menu.screenCapture
         });
         view.add(screenCapture);
       } else {
-        LoginForm = require("ui/loginForm");
+        LoginForm = require("ui/android/loginForm");
         loginForm = new LoginForm();
         view.add(loginForm);
       }
