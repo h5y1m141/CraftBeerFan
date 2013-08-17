@@ -1,7 +1,6 @@
 class shopDataDetailWindow
   constructor:(data)->
 
-
     # 引数に渡されるdataの構造は以下のとおり
     # favoriteButtonEnableは、お気に入り登録するボタンを表示するか
     # どうか決める
@@ -12,7 +11,7 @@ class shopDataDetailWindow
     #   latitude:
     #   longitude:
     #   favoriteButtonEnable:true/false
-
+    filterView = require("net.uchidak.tigfview")
     keyColor = "#f9f9f9"
     @baseColor =
       barColor:keyColor
@@ -49,6 +48,7 @@ class shopDataDetailWindow
       
     
     
+    @_createNavbarElement()
     @_createMapView(data)
     @_createTableView(data)
 
@@ -58,7 +58,6 @@ class shopDataDetailWindow
     
     # 詳細情報の画面に遷移する
     activeTab = Ti.API._activeTab
-
     return activeTab.open(@shopDataDetailWindow)
     
   _createNavbarElement:() ->
@@ -82,6 +81,8 @@ class shopDataDetailWindow
         fontWeight:'bold'
       text:"お店の詳細情報"
       
+    if Ti.Platform.osname is 'iphone'  
+      @shopDataDetailWindow.setTitleControl shopDataDetailWindowTitle
       
     return
   _createMapView:(data) ->
@@ -205,9 +206,11 @@ class shopDataDetailWindow
       
     @tableView.addEventListener('click',(e) =>
       if e.row.rowID is 1
+        @_setTiGFviewToMapView()
         @_showDialog(phoneDialog)
 
       else if e.row.rowID is 2
+        @_setTiGFviewToMapView()
         @_showDialog(favoriteDialog)
       else
         Ti.API.info "no action"
@@ -353,6 +356,7 @@ class shopDataDetailWindow
 
     registMemoBtn.addEventListener('click',(e) =>
       that = @
+      that._setDefaultMapViewStyle()
       that.activityIndicator.show()
       # ACSにメモを登録
       # 次のCloud.Places.queryからはaddNewIconの外側にある
@@ -390,6 +394,7 @@ class shopDataDetailWindow
       textAlign:"center"
       
     cancelleBtn.addEventListener('click',(e) =>
+      @_setDefaultMapViewStyle()
       @_hideDialog(favoriteDialog,Ti.API.info "done")
     )
     
@@ -429,6 +434,7 @@ class shopDataDetailWindow
       textAlign:"center"
 
     callBtn.addEventListener('click',(e) ->
+      that._setDefaultMapViewStyle()
       that._hideDialog(_view,Titanium.Platform.openURL("tel:#{phoneNumber}"))
 
     )
@@ -448,6 +454,7 @@ class shopDataDetailWindow
       textAlign:"center"
       
     cancelleBtn.addEventListener('click',(e) ->
+      that._setDefaultMapViewStyle()
       that._hideDialog(_view,Ti.API.info "cancelleBtn hide")
       
     ) 
@@ -470,6 +477,19 @@ class shopDataDetailWindow
     return _view
 
 
+  # ダイアログ表示する際に、背景部分となるmapViewに対して
+  # フィルタを掛けることで奥行きある状態を表現する
+  _setTiGFviewToMapView:() ->
+    @mapView.rasterizationScale = 0.1
+    @mapView.shouldRasterize = true
+    @mapView.kCAFilterTrilinear= true
+    return
+        
+  _setDefaultMapViewStyle:() ->
+    @mapView.rasterizationScale = 1.0
+    @mapView.shouldRasterize =false
+    @mapView.kCAFilterTrilinear= false
+    return
 
   # 引数に取ったviewに対してせり出すようにするアニメーションを適用
   _showDialog:(_view) ->

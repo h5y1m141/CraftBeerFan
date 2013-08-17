@@ -34,10 +34,10 @@ class listWindow
     @table = Ti.UI.createTableView
       backgroundColor:"#f3f3f3"
       separatorStyle: Titanium.UI.iPhone.TableViewSeparatorStyle.NONE
-      width:'600dip'
+      width:'300dip'
       height:'auto'
-      left:'300dip'
-      top:'20dip'
+      left:'100dip'
+      top:'0dip'
       borderColor:"#f3f3f3"
       borderWidth:'2dip'
       borderRadius:'10dip'
@@ -55,7 +55,6 @@ class listWindow
         if items.length is 0
           alert "選択した地域のお店がみつかりません"
         else
-          Ti.API.info "kloudService success"
           items.sort( (a, b) ->
             (if a.shopAddress > b.shopAddress then -1 else 1)
           )
@@ -67,7 +66,7 @@ class listWindow
     ) # end of tableView Event
         
     @prefectures = @_loadPrefectures()
-    @rowHeight =  '100dip'
+    @rowHeight =  '80dip'
     @subMenu = Ti.UI.createTableView
       backgroundColor:"#f3f3f3"
       separatorColor: '#cccccc'
@@ -250,7 +249,7 @@ class listWindow
     for _items in prefectureNameList
       prefectureRow = Ti.UI.createTableViewRow
         width:'auto'
-        height:40
+        height:'80dip'
         hasChild:true
         prefectureName:"#{_items.name}"
 

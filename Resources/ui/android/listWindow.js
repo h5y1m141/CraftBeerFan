@@ -44,10 +44,10 @@ listWindow = (function() {
     this.table = Ti.UI.createTableView({
       backgroundColor: "#f3f3f3",
       separatorStyle: Titanium.UI.iPhone.TableViewSeparatorStyle.NONE,
-      width: '600dip',
+      width: '300dip',
       height: 'auto',
-      left: '300dip',
-      top: '20dip',
+      left: '100dip',
+      top: '0dip',
       borderColor: "#f3f3f3",
       borderWidth: '2dip',
       borderRadius: '10dip',
@@ -67,7 +67,6 @@ listWindow = (function() {
         if (items.length === 0) {
           return alert("選択した地域のお店がみつかりません");
         } else {
-          Ti.API.info("kloudService success");
           items.sort(function(a, b) {
             if (a.shopAddress > b.shopAddress) {
               return -1;
@@ -81,7 +80,7 @@ listWindow = (function() {
       });
     });
     this.prefectures = this._loadPrefectures();
-    this.rowHeight = '100dip';
+    this.rowHeight = '80dip';
     this.subMenu = Ti.UI.createTableView({
       backgroundColor: "#f3f3f3",
       separatorColor: '#cccccc',
@@ -261,7 +260,7 @@ listWindow = (function() {
       _items = prefectureNameList[_i];
       prefectureRow = Ti.UI.createTableViewRow({
         width: 'auto',
-        height: 40,
+        height: '80dip',
         hasChild: true,
         prefectureName: "" + _items.name
       });
