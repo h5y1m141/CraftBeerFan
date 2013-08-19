@@ -6,78 +6,12 @@ class listWindow
       barColor:"#f9f9f9"
       backgroundColor:"#f3f3f3"
       keyColor:"#EDAD0B"
-      
     @listWindow = Ti.UI.createWindow
       title:"リスト"
       barColor:@baseColor.barColor
       backgroundColor: @baseColor.backgroundColor
       tabBarHidden:false
       navBarHidden:false
-      
-    actionBar = undefined
-    
-    @listWindow.addEventListener("open", =>
-      if Ti.Platform.osname is "android"
-        unless @listWindow.activity
-          Ti.API.error "Can't access action bar on a lightweight window."
-        else
-          actionBar = @listWindow.activity.actionBar
-          if actionBar
-            actionBar.backgroundImage = Titanium.Filesystem.resourcesDirectory + "ui/image/listIconActive.png"
-            actionBar.title = "New Title"
-            actionBar.onHomeIconItemSelected = ->
-              Ti.API.info "Home icon clicked!"
-    )
-    @_createNavbarElement()
-
-    t = Titanium.UI.create2DMatrix().scale(0)    
-    @table = Ti.UI.createTableView
-      backgroundColor:"#f3f3f3"
-      separatorStyle: Titanium.UI.iPhone.TableViewSeparatorStyle.NONE
-      width:'600dip'
-      height:'auto'
-      left:'300dip'
-      top:'20dip'
-      borderColor:"#f3f3f3"
-      borderWidth:'2dip'
-      borderRadius:'10dip'
-      zIndex:10
-      transform:t
-
-    @table.addEventListener('click',(e) =>
-      that = @
-      that.activityIndicator.show()
-      prefectureName = e.row.prefectureName
-      KloudService = require("model/kloudService")
-      kloudService = new KloudService()
-      kloudService.findShopDataBy(prefectureName,(items) ->
-        that.activityIndicator.hide()
-        if items.length is 0
-          alert "選択した地域のお店がみつかりません"
-        else
-          Ti.API.info "kloudService success"
-          items.sort( (a, b) ->
-            (if a.shopAddress > b.shopAddress then -1 else 1)
-          )
-          ShopAreaDataWindow = require("ui/android/shopAreaDataWindow") 
-          new ShopAreaDataWindow(items)
-          
-      )
-      
-    ) # end of tableView Event
-        
-    @prefectures = @_loadPrefectures()
-    @rowHeight =  '100dip'
-    @subMenu = Ti.UI.createTableView
-      backgroundColor:"#f3f3f3"
-      separatorColor: '#cccccc'
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
-      width:"auto"
-      height:"auto"
-      left:0
-      top:0
-      zIndex:1
-      
     @prefectureColorSet = "name":
       "北海道・東北":"#3261AB"
       "関東":"#007FB1"
@@ -93,6 +27,59 @@ class listWindow
       "近畿":"#FFFBD5"
       "中国・四国":"#FEF7D5"
       "九州・沖縄":"#F9DFD5"
+      
+    myTemplate = childTemplates: [
+      # Title 
+      type: "Ti.UI.Label" # Use a label for the title
+      bindId:"title" # Maps to a custom info property of the item data
+      properties: # Sets the label properties
+        color: "#333"
+        font:
+          fontSize:'16dip'
+          fontFamily : 'Rounded M+ 1p'
+        width:'400dip'
+        height:'80dip'
+        left:"30dp"
+        top:'5dip'
+    ]      
+    @listView = Ti.UI.createListView
+      templates:
+        template: myTemplate
+      defaultItemTemplate: "template"
+      
+    @prefectures = @_loadPrefectures()
+    @refreshTableData("関東","#CAE7F2","#CAE7F2")
+    
+    @rowHeight =  '80dip'
+    @subMenu = Ti.UI.createTableView
+      backgroundColor:"#f3f3f3"
+      separatorColor: '#cccccc'
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      width:"auto"
+      height:"auto"
+      left:0
+      top:0
+      zIndex:1
+      
+      
+    actionBar = undefined
+
+    @listWindow.addEventListener("open", =>
+      if Ti.Platform.osname is "android"
+        unless @listWindow.activity
+          Ti.API.error "Can't access action bar on a lightweight window."
+        else
+          actionBar = @listWindow.activity.actionBar
+          if actionBar
+            actionBar.backgroundImage = Titanium.Filesystem.resourcesDirectory + "ui/image/listIconActive.png"
+            actionBar.title = "New Title"
+            actionBar.onHomeIconItemSelected = ->
+              Ti.API.info "Home icon clicked!"
+    )
+    
+
+    @_createNavbarElement()
+    
       
     
     @subMenu.addEventListener('click',(e)=>
@@ -110,18 +97,18 @@ class listWindow
 
         # animateした後のコールバック関数内では@が
         # 参照できないために以下変数に格納する
-        table = @table
+        listView = @listView
         t1 = Titanium.UI.create2DMatrix().scale(0.0)
         a = Titanium.UI.createAnimation()
         a.transform = t1
         a.duration = 400
         a.addEventListener('complete',() ->
           t2 = Titanium.UI.create2DMatrix()
-          table.animate
+          listView.animate
             transform:t2
             duration:400
         )  
-        table.animate(a,()->
+        listView.animate(a,()->
           that.refreshTableData(categoryName,selectedColor,selectedSubColor)
         )
 
@@ -148,8 +135,8 @@ class listWindow
     
     @subMenu.setData subMenuRows
 
-    @listWindow.add @subMenu
-    @listWindow.add @table
+    # @listWindow.add @subMenu
+    @listWindow.add @listView
     @listWindow.add @activityIndicator
     
     return @listWindow
@@ -242,37 +229,19 @@ class listWindow
     return subMenuRow
     
   refreshTableData: (categoryName,selectedColor,selectedSubColor) =>        
-    rows = []
+
+    sections = []
     PrefectureCategory = @_makePrefectureCategory(@prefectures)
     prefectureNameList = PrefectureCategory[categoryName]
-      
+    prefectureSection = Ti.UI.createListSection()
+    prefectureDataSet = []
     # 都道府県のエリア毎に都道府県のrowを生成
     for _items in prefectureNameList
-      prefectureRow = Ti.UI.createTableViewRow
-        width:'auto'
-        height:40
-        hasChild:true
-        prefectureName:"#{_items.name}"
+      prefectureDataSet.push({title:{text:_items.name}})
 
-      textLabel = Ti.UI.createLabel
-        width:'400dip'
-        height:'80dip'
-        top:'5dip'
-        left:'30dip'
-        textAlign:'left'
-        color:'#333'
-        font:
-          fontSize:'16dip'
-          fontFamily : 'Rounded M+ 1p'
-          fontWeight:'bold'
-        text:"#{_items.name}"
-        
-      prefectureRow.add textLabel
-      rows.push prefectureRow
+    prefectureSection.setItems prefectureDataSet
+    sections.push prefectureSection
 
-            
-    @table.borderColor = selectedColor
-    @table.backgroundColor = selectedSubColor
-    return @table.setData rows
+    return @listView.setSections sections
     
 module.exports = listWindow

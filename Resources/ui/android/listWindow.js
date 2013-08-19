@@ -6,7 +6,7 @@ listWindow = (function() {
   function listWindow() {
     this.refreshTableData = __bind(this.refreshTableData, this);
 
-    var ActivityIndicator, PrefectureCategory, actionBar, categoryName, currentUserId, favoriteRow, row, subMenuRows, t,
+    var ActivityIndicator, PrefectureCategory, actionBar, categoryName, currentUserId, favoriteRow, myTemplate, row, subMenuRows,
       _this = this;
     ActivityIndicator = require("ui/activityIndicator");
     this.activityIndicator = new ActivityIndicator();
@@ -21,76 +21,6 @@ listWindow = (function() {
       backgroundColor: this.baseColor.backgroundColor,
       tabBarHidden: false,
       navBarHidden: false
-    });
-    actionBar = void 0;
-    this.listWindow.addEventListener("open", function() {
-      if (Ti.Platform.osname === "android") {
-        if (!_this.listWindow.activity) {
-          return Ti.API.error("Can't access action bar on a lightweight window.");
-        } else {
-          actionBar = _this.listWindow.activity.actionBar;
-          if (actionBar) {
-            actionBar.backgroundImage = Titanium.Filesystem.resourcesDirectory + "ui/image/listIconActive.png";
-            actionBar.title = "New Title";
-            return actionBar.onHomeIconItemSelected = function() {
-              return Ti.API.info("Home icon clicked!");
-            };
-          }
-        }
-      }
-    });
-    this._createNavbarElement();
-    t = Titanium.UI.create2DMatrix().scale(0);
-    this.table = Ti.UI.createTableView({
-      backgroundColor: "#f3f3f3",
-      separatorStyle: Titanium.UI.iPhone.TableViewSeparatorStyle.NONE,
-      width: '600dip',
-      height: 'auto',
-      left: '300dip',
-      top: '20dip',
-      borderColor: "#f3f3f3",
-      borderWidth: '2dip',
-      borderRadius: '10dip',
-      zIndex: 10,
-      transform: t
-    });
-    this.table.addEventListener('click', function(e) {
-      var KloudService, kloudService, prefectureName, that;
-      that = _this;
-      that.activityIndicator.show();
-      prefectureName = e.row.prefectureName;
-      KloudService = require("model/kloudService");
-      kloudService = new KloudService();
-      return kloudService.findShopDataBy(prefectureName, function(items) {
-        var ShopAreaDataWindow;
-        that.activityIndicator.hide();
-        if (items.length === 0) {
-          return alert("選択した地域のお店がみつかりません");
-        } else {
-          Ti.API.info("kloudService success");
-          items.sort(function(a, b) {
-            if (a.shopAddress > b.shopAddress) {
-              return -1;
-            } else {
-              return 1;
-            }
-          });
-          ShopAreaDataWindow = require("ui/android/shopAreaDataWindow");
-          return new ShopAreaDataWindow(items);
-        }
-      });
-    });
-    this.prefectures = this._loadPrefectures();
-    this.rowHeight = '100dip';
-    this.subMenu = Ti.UI.createTableView({
-      backgroundColor: "#f3f3f3",
-      separatorColor: '#cccccc',
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
-      width: "auto",
-      height: "auto",
-      left: 0,
-      top: 0,
-      zIndex: 1
     });
     this.prefectureColorSet = {
       "name": {
@@ -112,8 +42,64 @@ listWindow = (function() {
         "九州・沖縄": "#F9DFD5"
       }
     };
+    myTemplate = {
+      childTemplates: [
+        {
+          type: "Ti.UI.Label",
+          bindId: "title",
+          properties: {
+            color: "#333",
+            font: {
+              fontSize: '16dip',
+              fontFamily: 'Rounded M+ 1p'
+            },
+            width: '400dip',
+            height: '80dip',
+            left: "30dp",
+            top: '5dip'
+          }
+        }
+      ]
+    };
+    this.listView = Ti.UI.createListView({
+      templates: {
+        template: myTemplate
+      },
+      defaultItemTemplate: "template"
+    });
+    this.prefectures = this._loadPrefectures();
+    this.refreshTableData("関東", "#CAE7F2", "#CAE7F2");
+    this.rowHeight = '80dip';
+    this.subMenu = Ti.UI.createTableView({
+      backgroundColor: "#f3f3f3",
+      separatorColor: '#cccccc',
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
+      width: "auto",
+      height: "auto",
+      left: 0,
+      top: 0,
+      zIndex: 1
+    });
+    actionBar = void 0;
+    this.listWindow.addEventListener("open", function() {
+      if (Ti.Platform.osname === "android") {
+        if (!_this.listWindow.activity) {
+          return Ti.API.error("Can't access action bar on a lightweight window.");
+        } else {
+          actionBar = _this.listWindow.activity.actionBar;
+          if (actionBar) {
+            actionBar.backgroundImage = Titanium.Filesystem.resourcesDirectory + "ui/image/listIconActive.png";
+            actionBar.title = "New Title";
+            return actionBar.onHomeIconItemSelected = function() {
+              return Ti.API.info("Home icon clicked!");
+            };
+          }
+        }
+      }
+    });
+    this._createNavbarElement();
     this.subMenu.addEventListener('click', function(e) {
-      var FavoriteWindow, a, categoryName, curretRowIndex　, selectedColor, selectedSubColor, t1, table, that;
+      var FavoriteWindow, a, categoryName, curretRowIndex　, listView, selectedColor, selectedSubColor, t1, that;
       categoryName = e.row.categoryName;
       that = _this;
       if (categoryName === "行きたいお店") {
@@ -123,7 +109,7 @@ listWindow = (function() {
         selectedColor = _this.prefectureColorSet.name[categoryName];
         selectedSubColor = "#FFF";
         curretRowIndex　 = e.index;
-        table = _this.table;
+        listView = _this.listView;
         t1 = Titanium.UI.create2DMatrix().scale(0.0);
         a = Titanium.UI.createAnimation();
         a.transform = t1;
@@ -131,12 +117,12 @@ listWindow = (function() {
         a.addEventListener('complete', function() {
           var t2;
           t2 = Titanium.UI.create2DMatrix();
-          return table.animate({
+          return listView.animate({
             transform: t2,
             duration: 400
           });
         });
-        return table.animate(a, function() {
+        return listView.animate(a, function() {
           return that.refreshTableData(categoryName, selectedColor, selectedSubColor);
         });
       }
@@ -156,8 +142,7 @@ listWindow = (function() {
       subMenuRows.push(favoriteRow);
     }
     this.subMenu.setData(subMenuRows);
-    this.listWindow.add(this.subMenu);
-    this.listWindow.add(this.table);
+    this.listWindow.add(this.listView);
     this.listWindow.add(this.activityIndicator);
     return this.listWindow;
   }
@@ -253,38 +238,23 @@ listWindow = (function() {
   };
 
   listWindow.prototype.refreshTableData = function(categoryName, selectedColor, selectedSubColor) {
-    var PrefectureCategory, prefectureNameList, prefectureRow, rows, textLabel, _i, _items, _len;
-    rows = [];
+    var PrefectureCategory, prefectureDataSet, prefectureNameList, prefectureSection, sections, _i, _items, _len;
+    sections = [];
     PrefectureCategory = this._makePrefectureCategory(this.prefectures);
     prefectureNameList = PrefectureCategory[categoryName];
+    prefectureSection = Ti.UI.createListSection();
+    prefectureDataSet = [];
     for (_i = 0, _len = prefectureNameList.length; _i < _len; _i++) {
       _items = prefectureNameList[_i];
-      prefectureRow = Ti.UI.createTableViewRow({
-        width: 'auto',
-        height: 40,
-        hasChild: true,
-        prefectureName: "" + _items.name
+      prefectureDataSet.push({
+        title: {
+          text: _items.name
+        }
       });
-      textLabel = Ti.UI.createLabel({
-        width: '400dip',
-        height: '80dip',
-        top: '5dip',
-        left: '30dip',
-        textAlign: 'left',
-        color: '#333',
-        font: {
-          fontSize: '16dip',
-          fontFamily: 'Rounded M+ 1p',
-          fontWeight: 'bold'
-        },
-        text: "" + _items.name
-      });
-      prefectureRow.add(textLabel);
-      rows.push(prefectureRow);
     }
-    this.table.borderColor = selectedColor;
-    this.table.backgroundColor = selectedSubColor;
-    return this.table.setData(rows);
+    prefectureSection.setItems(prefectureDataSet);
+    sections.push(prefectureSection);
+    return this.listView.setSections(sections);
   };
 
   return listWindow;
