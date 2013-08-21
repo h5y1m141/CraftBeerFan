@@ -1,4 +1,4 @@
-var Config, MainController, StartupWindow, analytics, config, configurationWizard, gaKey, gaModule, mainController, startupWindow;
+var Config, ListWindow, MainController, StartupWindow, analytics, config, configurationWizard, gaKey, gaModule, listWindow, mainController, osname, startupWindow;
 
 configurationWizard = Ti.App.Properties.getBool("configurationWizard");
 
@@ -40,10 +40,12 @@ Ti.App.Analytics = {
 
 analytics.start(10, true);
 
+osname = Ti.Platform.osname;
+
 if (Ti.Platform.osname === "android") {
-  MainController = require("controller/mainController");
-  mainController = new MainController();
-  mainController.createTabGroup();
+  ListWindow = require("ui/android/listWindow");
+  listWindow = new ListWindow();
+  listWindow.open();
 } else {
   if (configurationWizard === null || typeof configurationWizard === "undefined" || configurationWizard === false) {
     StartupWindow = require("ui/startupWindow");

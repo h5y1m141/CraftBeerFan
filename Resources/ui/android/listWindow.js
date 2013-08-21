@@ -6,8 +6,7 @@ listWindow = (function() {
   function listWindow() {
     this.refreshTableData = __bind(this.refreshTableData, this);
 
-    var ActivityIndicator, PrefectureCategory, actionBar, categoryName, currentUserId, favoriteRow, myTemplate, row, subMenuRows,
-      _this = this;
+    var ActivityIndicator, myTemplate;
     ActivityIndicator = require("ui/activityIndicator");
     this.activityIndicator = new ActivityIndicator();
     this.baseColor = {
@@ -19,7 +18,6 @@ listWindow = (function() {
       title: "リスト",
       barColor: this.baseColor.barColor,
       backgroundColor: this.baseColor.backgroundColor,
-      tabBarHidden: false,
       navBarHidden: false
     });
     this.prefectureColorSet = {
@@ -69,81 +67,20 @@ listWindow = (function() {
     });
     this.prefectures = this._loadPrefectures();
     this.refreshTableData("関東", "#CAE7F2", "#CAE7F2");
-    this.rowHeight = '80dip';
-    this.subMenu = Ti.UI.createTableView({
-      backgroundColor: "#f3f3f3",
-      separatorColor: '#cccccc',
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
-      width: "auto",
-      height: "auto",
-      left: 0,
-      top: 0,
-      zIndex: 1
-    });
-    actionBar = void 0;
-    this.listWindow.addEventListener("open", function() {
-      if (Ti.Platform.osname === "android") {
-        if (!_this.listWindow.activity) {
-          return Ti.API.error("Can't access action bar on a lightweight window.");
-        } else {
-          actionBar = _this.listWindow.activity.actionBar;
-          if (actionBar) {
-            actionBar.backgroundImage = Titanium.Filesystem.resourcesDirectory + "ui/image/listIconActive.png";
-            actionBar.title = "New Title";
-            return actionBar.onHomeIconItemSelected = function() {
-              return Ti.API.info("Home icon clicked!");
-            };
-          }
-        }
-      }
-    });
-    this._createNavbarElement();
-    this.subMenu.addEventListener('click', function(e) {
-      var FavoriteWindow, a, categoryName, curretRowIndex　, listView, selectedColor, selectedSubColor, t1, that;
-      categoryName = e.row.categoryName;
-      that = _this;
-      if (categoryName === "行きたいお店") {
-        FavoriteWindow = require("ui/android/favoriteWindow");
-        return new FavoriteWindow();
-      } else {
-        selectedColor = _this.prefectureColorSet.name[categoryName];
-        selectedSubColor = "#FFF";
-        curretRowIndex　 = e.index;
-        listView = _this.listView;
-        t1 = Titanium.UI.create2DMatrix().scale(0.0);
-        a = Titanium.UI.createAnimation();
-        a.transform = t1;
-        a.duration = 400;
-        a.addEventListener('complete', function() {
-          var t2;
-          t2 = Titanium.UI.create2DMatrix();
-          return listView.animate({
-            transform: t2,
-            duration: 400
-          });
-        });
-        return listView.animate(a, function() {
-          return that.refreshTableData(categoryName, selectedColor, selectedSubColor);
-        });
-      }
-    });
-    PrefectureCategory = this._makePrefectureCategory(this.prefectures);
-    subMenuRows = [];
-    for (categoryName in PrefectureCategory) {
-      row = this._createSubMenuRow("" + categoryName);
-      subMenuRows.push(row);
-    }
-    currentUserId = Ti.App.Properties.getString("currentUserId");
-    Ti.API.info("check if favoriteRow should be created. currentUserId is " + currentUserId);
-    if (typeof currentUserId === "undefined" || currentUserId === null) {
-      Ti.API.info("お気に入り画面に遷移するrowは生成しない");
-    } else {
-      favoriteRow = this._createFavoriteRow();
-      subMenuRows.push(favoriteRow);
-    }
-    this.subMenu.setData(subMenuRows);
+    this.listWindow.activity.onCreateOptionsMenu = function(e) {
+      var menu, menuItem;
+      e.title = "new title";
+      menu = e.menu;
+      menuItem = menu.add({
+        title: "Compose",
+        icon: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png",
+        showAsAction: Ti.Android.SHOW_AS_ACTION_ALWAYS
+      });
+      return menuItem.addEventListener("click", function(e) {
+        return Ti.API.info("Action Item Clicked!");
+      });
+    };
     this.listWindow.add(this.listView);
-    this.listWindow.add(this.activityIndicator);
     return this.listWindow;
   }
 

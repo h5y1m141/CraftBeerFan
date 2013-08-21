@@ -10,7 +10,6 @@ class listWindow
       title:"リスト"
       barColor:@baseColor.barColor
       backgroundColor: @baseColor.backgroundColor
-      tabBarHidden:false
       navBarHidden:false
     @prefectureColorSet = "name":
       "北海道・東北":"#3261AB"
@@ -49,96 +48,26 @@ class listWindow
       
     @prefectures = @_loadPrefectures()
     @refreshTableData("関東","#CAE7F2","#CAE7F2")
-    
-    @rowHeight =  '80dip'
-    @subMenu = Ti.UI.createTableView
-      backgroundColor:"#f3f3f3"
-      separatorColor: '#cccccc'
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
-      width:"auto"
-      height:"auto"
-      left:0
-      top:0
-      zIndex:1
-      
-      
-    actionBar = undefined
+    # @listWindow.addEventListener("open", (e)=>
+    #   actionBar = @listWindow.activity.actionBar
+    #   if actionBar
+    #     actionBar.title = "New Title"
+    #     actionBar.onHomeIconItemSelected = ->
+    #       Ti.API.info "Home icon clicked!"
+    # )
 
-    @listWindow.addEventListener("open", =>
-      if Ti.Platform.osname is "android"
-        unless @listWindow.activity
-          Ti.API.error "Can't access action bar on a lightweight window."
-        else
-          actionBar = @listWindow.activity.actionBar
-          if actionBar
-            actionBar.backgroundImage = Titanium.Filesystem.resourcesDirectory + "ui/image/listIconActive.png"
-            actionBar.title = "New Title"
-            actionBar.onHomeIconItemSelected = ->
-              Ti.API.info "Home icon clicked!"
-    )
-    
+    @listWindow.activity.onCreateOptionsMenu = (e) ->
+      e.title = "new title"
+      menu = e.menu
+      menuItem = menu.add(
+        title: "Compose"
+        icon:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+        showAsAction:Ti.Android.SHOW_AS_ACTION_ALWAYS
+      )
+      menuItem.addEventListener "click", (e) ->
+        Ti.API.info "Action Item Clicked!"
 
-    @_createNavbarElement()
-    
-      
-    
-    @subMenu.addEventListener('click',(e)=>
-      categoryName = e.row.categoryName
-      that = @
-      if categoryName is "行きたいお店"
-        FavoriteWindow = require("ui/android/favoriteWindow")
-        new FavoriteWindow()
-        
-      else
-        selectedColor = @prefectureColorSet.name[categoryName]
-        # selectedSubColor = @prefectureSubColorSet.name[categoryName]
-        selectedSubColor = "#FFF"
-        curretRowIndex　= e.index
-
-        # animateした後のコールバック関数内では@が
-        # 参照できないために以下変数に格納する
-        listView = @listView
-        t1 = Titanium.UI.create2DMatrix().scale(0.0)
-        a = Titanium.UI.createAnimation()
-        a.transform = t1
-        a.duration = 400
-        a.addEventListener('complete',() ->
-          t2 = Titanium.UI.create2DMatrix()
-          listView.animate
-            transform:t2
-            duration:400
-        )  
-        listView.animate(a,()->
-          that.refreshTableData(categoryName,selectedColor,selectedSubColor)
-        )
-
-    )
-
-    PrefectureCategory = @_makePrefectureCategory(@prefectures)
-    subMenuRows = []
-
-    for categoryName of PrefectureCategory
-      row = @_createSubMenuRow("#{categoryName}")
-      subMenuRows.push row
-
-    # アカウント登録をスキップして利用する人がいるため、
-    # currentUserIdの値をチェックして、存在しない場合にはお気に入り
-    # rowを配置しない
-    currentUserId  =Ti.App.Properties.getString "currentUserId"
-    Ti.API.info "check if favoriteRow should be created. currentUserId is #{currentUserId}"
-    
-    if typeof currentUserId is "undefined" or currentUserId is null
-      Ti.API.info "お気に入り画面に遷移するrowは生成しない"
-    else  
-      favoriteRow = @_createFavoriteRow()
-      subMenuRows.push favoriteRow
-    
-    @subMenu.setData subMenuRows
-
-    # @listWindow.add @subMenu
     @listWindow.add @listView
-    @listWindow.add @activityIndicator
-    
     return @listWindow
             
   _loadPrefectures:() ->
