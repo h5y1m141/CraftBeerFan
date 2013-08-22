@@ -35,7 +35,8 @@ Ti.App.Analytics =
 analytics.start 10, true
 
 osname = Ti.Platform.osname
-if Ti.Platform.osname is "android"
+
+if osname is "android"
   # MainController = require("controller/mainController")
   # mainController = new MainController()
   # mainController.createTabGroup()
@@ -43,14 +44,18 @@ if Ti.Platform.osname is "android"
   listWindow = new ListWindow()
   listWindow.open()
 
-else
-  
+else if osname is "iphone"
+
   if configurationWizard is null or typeof configurationWizard is "undefined" or configurationWizard is false
 
-    StartupWindow = require("ui/startupWindow")
+    StartupWindow = require("ui/#{osname}/startupWindow")
     startupWindow = new StartupWindow()  
     startupWindow.open()
   else
+    MainController = require("controller/mainController")
+    mainController = new MainController()
+    mainController.createTabGroup()
+else
     MainController = require("controller/mainController")
     mainController = new MainController()
     mainController.createTabGroup()
