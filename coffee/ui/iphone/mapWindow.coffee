@@ -93,6 +93,7 @@ class mapWindow
         
     @mapView.addEventListener('regionchanged',(e)=>
       Ti.API.info "regionchanged fire"
+      Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
       @activityIndicator.show()            
       regionData = @mapView.getRegion()
       latitude = regionData.latitude

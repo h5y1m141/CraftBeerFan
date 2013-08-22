@@ -90,6 +90,7 @@ mapWindow = (function() {
     this.mapView.addEventListener('regionchanged', function(e) {
       var latitude, longitude, regionData;
       Ti.API.info("regionchanged fire");
+      Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
       _this.activityIndicator.show();
       regionData = _this.mapView.getRegion();
       latitude = regionData.latitude;
