@@ -2,7 +2,39 @@ class mainController
   constructor:() ->
     KloudService = require("model/kloudService")
     @kloudService = new KloudService()
-    
+    @tabSetting =
+      "iphone":
+        "map":
+          "icon":"ui/image/grayPin.png"
+          "activeIcon":"ui/image/pin.png"
+          "windowName":"mapWindow"
+        ,  
+        "list":
+          "icon":"ui/image/listIcon.png"
+          "activeIcon":"ui/image/listIconActive.png"
+          "windowName":"listWindow"
+        ,  
+        "myPage":
+          "icon":"ui/image/settingIcon.png"
+          "activeIcon":"ui/image/activeSettingIcon.png"      
+          "windowName":"mypageWindow"
+      ,    
+      "android":
+        "map":
+          "icon":"ui/image/grayPin@2x.png"
+          "activeIcon":"ui/image/pin@2x.png"
+          "windowName":"mapWindow"
+        ,  
+        "list":
+          "icon":"ui/image/listIcon@2x.png"
+          "activeIcon":"ui/image/listIconActive@2x.png"
+          "windowName":"listWindow"
+        ,  
+        "myPage":
+          "icon":"ui/image/settingIcon@2x.png"
+          "activeIcon":"ui/image/activeSettingIcon@2x.png"      
+          "windowName":"mypageWindow"      
+      
   createTabGroup:() ->
     tabGroup = Ti.UI.createTabGroup
       tabsBackgroundColor:"#f9f9f9"
@@ -25,31 +57,33 @@ class mainController
       Ti.App.Analytics.trackPageview "/tab/#{tabGroup._activeTab.windowName}"
       return
     )
-    
-    MapWindow = require("ui/mapWindow")
+    osname = Ti.Platform.osname
+    Ti.API.info "osname is #{osname}"
+
+    MapWindow = require("ui/#{osname}/mapWindow")
     mapWindow = new MapWindow()
     mapTab = Titanium.UI.createTab
       window:mapWindow
-      icon:"ui/image/grayPin.png"
-      activeIcon:"ui/image/pin.png"
-      windowName:"mapWindow"
+      icon:@tabSetting[osname].map.icon
+      activeIcon:@tabSetting[osname].map.activeIcon
+      windowName:@tabSetting[osname].map.windowName
 
 
-    ListWindow = require("ui/listWindow")
+    ListWindow = require("ui/#{osname}/listWindow")
     listWindow = new ListWindow()
     listTab = Titanium.UI.createTab
       window:listWindow
-      icon:"ui/image/listIcon.png"
-      activeIcon:"ui/image/listIconActive.png"
-      windowName:"listWindow"      
+      icon:@tabSetting[osname].list.icon
+      activeIcon:@tabSetting[osname].list.activeIcon
+      windowName:@tabSetting[osname].list.windowName
 
-    MypageWindow = require("ui/mypageWindow")
+    MypageWindow = require("ui/#{osname}/mypageWindow")
     mypageWindow = new MypageWindow()
     mypageTab = Titanium.UI.createTab
       window:mypageWindow
-      icon:"ui/image/settingIcon.png"
-      activeIcon:"ui/image/activeSettingIcon.png"      
-      windowName:"mypageWindow"      
+      icon:@tabSetting[osname].myPage.icon
+      activeIcon:@tabSetting[osname].myPage.activeIcon
+      windowName:@tabSetting[osname].myPage.windowName
 
     tabGroup.addTab mapTab
     tabGroup.addTab listTab

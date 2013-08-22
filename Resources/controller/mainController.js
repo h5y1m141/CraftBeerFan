@@ -13,10 +13,46 @@ mainController = (function() {
     var KloudService;
     KloudService = require("model/kloudService");
     this.kloudService = new KloudService();
+    this.tabSetting = {
+      "iphone": {
+        "map": {
+          "icon": "ui/image/grayPin.png",
+          "activeIcon": "ui/image/pin.png",
+          "windowName": "mapWindow"
+        },
+        "list": {
+          "icon": "ui/image/listIcon.png",
+          "activeIcon": "ui/image/listIconActive.png",
+          "windowName": "listWindow"
+        },
+        "myPage": {
+          "icon": "ui/image/settingIcon.png",
+          "activeIcon": "ui/image/activeSettingIcon.png",
+          "windowName": "mypageWindow"
+        }
+      },
+      "android": {
+        "map": {
+          "icon": "ui/image/grayPin@2x.png",
+          "activeIcon": "ui/image/pin@2x.png",
+          "windowName": "mapWindow"
+        },
+        "list": {
+          "icon": "ui/image/listIcon@2x.png",
+          "activeIcon": "ui/image/listIconActive@2x.png",
+          "windowName": "listWindow"
+        },
+        "myPage": {
+          "icon": "ui/image/settingIcon@2x.png",
+          "activeIcon": "ui/image/activeSettingIcon@2x.png",
+          "windowName": "mypageWindow"
+        }
+      }
+    };
   }
 
   mainController.prototype.createTabGroup = function() {
-    var ListWindow, MapWindow, MypageWindow, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, tabGroup;
+    var ListWindow, MapWindow, MypageWindow, listTab, listWindow, mapTab, mapWindow, mypageTab, mypageWindow, osname, tabGroup;
     tabGroup = Ti.UI.createTabGroup({
       tabsBackgroundColor: "#f9f9f9",
       shadowImage: "ui/image/shadowimage.png",
@@ -33,29 +69,31 @@ mainController = (function() {
       Ti.API._activeTab = tabGroup._activeTab;
       Ti.App.Analytics.trackPageview("/tab/" + tabGroup._activeTab.windowName);
     });
-    MapWindow = require("ui/mapWindow");
+    osname = Ti.Platform.osname;
+    Ti.API.info("osname is " + osname);
+    MapWindow = require("ui/" + osname + "/mapWindow");
     mapWindow = new MapWindow();
     mapTab = Titanium.UI.createTab({
       window: mapWindow,
-      icon: "ui/image/grayPin.png",
-      activeIcon: "ui/image/pin.png",
-      windowName: "mapWindow"
+      icon: this.tabSetting[osname].map.icon,
+      activeIcon: this.tabSetting[osname].map.activeIcon,
+      windowName: this.tabSetting[osname].map.windowName
     });
-    ListWindow = require("ui/listWindow");
+    ListWindow = require("ui/" + osname + "/listWindow");
     listWindow = new ListWindow();
     listTab = Titanium.UI.createTab({
       window: listWindow,
-      icon: "ui/image/listIcon.png",
-      activeIcon: "ui/image/listIconActive.png",
-      windowName: "listWindow"
+      icon: this.tabSetting[osname].list.icon,
+      activeIcon: this.tabSetting[osname].list.activeIcon,
+      windowName: this.tabSetting[osname].list.windowName
     });
-    MypageWindow = require("ui/mypageWindow");
+    MypageWindow = require("ui/" + osname + "/mypageWindow");
     mypageWindow = new MypageWindow();
     mypageTab = Titanium.UI.createTab({
       window: mypageWindow,
-      icon: "ui/image/settingIcon.png",
-      activeIcon: "ui/image/activeSettingIcon.png",
-      windowName: "mypageWindow"
+      icon: this.tabSetting[osname].myPage.icon,
+      activeIcon: this.tabSetting[osname].myPage.activeIcon,
+      windowName: this.tabSetting[osname].myPage.windowName
     });
     tabGroup.addTab(mapTab);
     tabGroup.addTab(listTab);

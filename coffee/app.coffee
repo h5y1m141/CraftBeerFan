@@ -1,5 +1,3 @@
-
-
 configurationWizard = Ti.App.Properties.getBool "configurationWizard"
 
 # GoogleAnalyticsによるトラッキングのための処理
@@ -34,14 +32,30 @@ Ti.App.Analytics =
       label: label
       value: value
 
-
 analytics.start 10, true
-if configurationWizard is null or typeof configurationWizard is "undefined" or configurationWizard is false
 
-  StartupWindow = require("ui/startupWindow")
-  startupWindow = new StartupWindow()  
-  startupWindow.open()
+osname = Ti.Platform.osname
+
+if osname is "android"
+  # MainController = require("controller/mainController")
+  # mainController = new MainController()
+  # mainController.createTabGroup()
+  ListWindow = require("ui/android/listWindow")
+  listWindow = new ListWindow()
+  listWindow.open()
+
+else if osname is "iphone"
+
+  if configurationWizard is null or typeof configurationWizard is "undefined" or configurationWizard is false
+
+    StartupWindow = require("ui/#{osname}/startupWindow")
+    startupWindow = new StartupWindow()  
+    startupWindow.open()
+  else
+    MainController = require("controller/mainController")
+    mainController = new MainController()
+    mainController.createTabGroup()
 else
-  MainController = require("controller/mainController")
-  mainController = new MainController()
-  mainController.createTabGroup()
+    MainController = require("controller/mainController")
+    mainController = new MainController()
+    mainController.createTabGroup()
