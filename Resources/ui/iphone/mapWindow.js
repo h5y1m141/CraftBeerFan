@@ -87,6 +87,15 @@ mapWindow = (function() {
         return shopDataDetailWindow = new ShopDataDetailWindow(data);
       }
     });
+    this.mapView.addEventListener('regionchanged', function(e) {
+      var latitude, longitude, regionData;
+      Ti.API.info("regionchanged fire");
+      _this.activityIndicator.show();
+      regionData = _this.mapView.getRegion();
+      latitude = regionData.latitude;
+      longitude = regionData.longitude;
+      return _this._nearBy(latitude, longitude);
+    });
     refreshLabel = Ti.UI.createLabel({
       backgroundColor: "transparent",
       color: "#333",
@@ -164,6 +173,19 @@ mapWindow = (function() {
         longitudeDelta: 0.025
       });
       return that._nearBy(latitude, longitude);
+    });
+  };
+
+  mapWindow.prototype._calculateLatLngfromPixels = function(xPixels, yPixels) {
+    var heightDegPerPixel, heightInPixels, region, widthDegPerPixel, widthInPixels;
+    region = this.mapView.actualRegion || this.mapView.region;
+    widthInPixels = this.mapView.rect.width;
+    heightInPixels = this.mapView.rect.height;
+    heightDegPerPixel = -region.latitudeDelta / heightInPixels;
+    widthDegPerPixel = region.longitudeDelta / widthInPixels;
+    ({
+      lat: (yPixels - heightInPixels / 2) * heightDegPerPixel + region.latitude,
+      lon: (xPixels - widthInPixels / 2) * widthDegPerPixel + region.longitude
     });
   };
 
