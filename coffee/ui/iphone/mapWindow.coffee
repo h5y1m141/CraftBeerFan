@@ -89,8 +89,18 @@ class mapWindow
         ShopDataDetailWindow = require("ui/iphone/shopDataDetailWindow")
         shopDataDetailWindow = new ShopDataDetailWindow(data)
       
-    )    
+    )
+        
+    @mapView.addEventListener('regionchanged',(e)=>
+      Ti.API.info "regionchanged fire"
+      @activityIndicator.show()            
+      regionData = @mapView.getRegion()
+      latitude = regionData.latitude
+      longitude =regionData.longitude
+      return @_nearBy(latitude,longitude)
       
+    )
+          
     refreshLabel = Ti.UI.createLabel
       backgroundColor:"transparent"
       color:"#333"
@@ -175,6 +185,20 @@ class mapWindow
       
     )
     return
+    
+  _calculateLatLngfromPixels:(xPixels, yPixels) ->
+    region = @mapView.actualRegion or @mapView.region
+    widthInPixels = @mapView.rect.width
+    heightInPixels = @mapView.rect.height
+    
+    # should invert because of the pixel reference frame
+    heightDegPerPixel = -region.latitudeDelta / heightInPixels
+    widthDegPerPixel = region.longitudeDelta / widthInPixels
+    lat: (yPixels - heightInPixels / 2) * heightDegPerPixel + region.latitude
+    lon: (xPixels - widthInPixels / 2) * widthDegPerPixel + region.longitude
+    
+    return
+     
   addAnnotations:(array) ->
     Ti.API.info "addAnnotations start mapView is #{@mapView}"
     @activityIndicator.hide()

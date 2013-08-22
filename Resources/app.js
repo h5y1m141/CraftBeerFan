@@ -42,13 +42,13 @@ analytics.start(10, true);
 
 osname = Ti.Platform.osname;
 
-if (Ti.Platform.osname === "android") {
+if (osname === "android") {
   ListWindow = require("ui/android/listWindow");
   listWindow = new ListWindow();
   listWindow.open();
-} else {
+} else if (osname === "iphone") {
   if (configurationWizard === null || typeof configurationWizard === "undefined" || configurationWizard === false) {
-    StartupWindow = require("ui/startupWindow");
+    StartupWindow = require("ui/" + osname + "/startupWindow");
     startupWindow = new StartupWindow();
     startupWindow.open();
   } else {
@@ -56,4 +56,8 @@ if (Ti.Platform.osname === "android") {
     mainController = new MainController();
     mainController.createTabGroup();
   }
+} else {
+  MainController = require("controller/mainController");
+  mainController = new MainController();
+  mainController.createTabGroup();
 }
