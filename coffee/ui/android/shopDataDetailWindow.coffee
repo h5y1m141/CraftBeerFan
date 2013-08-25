@@ -1,7 +1,6 @@
 class shopDataDetailWindow
   constructor:(data)->
 
-
     # 引数に渡されるdataの構造は以下のとおり
     # favoriteButtonEnableは、お気に入り登録するボタンを表示するか
     # どうか決める
@@ -23,8 +22,16 @@ class shopDataDetailWindow
       favoriteColor:"#DA5019"
       starColor:"#DA5019"
       separatorColor:'#cccccc'
-    @mapView = Titanium.Map.createView
-      mapType: Titanium.Map.STANDARD_TYPE
+
+      
+    @shopDataDetailWindow = Ti.UI.createWindow
+      title:"#{data.shopName}"
+      barColor:@baseColor.barColor
+      backgroundColor:@baseColor.backgroundColor
+      navBarHidden:false
+      
+    detailMap = Titanium.Map.createView
+      mapType:Titanium.Map.STANDARD_TYPE
       region: 
         latitude:data.latitude
         longitude:data.longitude
@@ -34,66 +41,28 @@ class shopDataDetailWindow
       regionFit:true
       userLocation:true
       zIndex:0
-      top:0
-      left:0
-      height:200
-      width:'auto'
-
+      top:'0dip'
+      left:'0dip'
+      height:'200dip'
+      width:Ti.UI.FULL
       
-    @shopDataDetailWindow = Ti.UI.createWindow
-      title:"近くのお店"
-      barColor:@baseColor.barColor
-      backgroundColor:@baseColor.backgroundColor
-      navBarHidden:false
-      tabBarHidden:false
-      
-    
-    
-    @_createMapView(data)
-    @_createTableView(data)
-
-    ActivityIndicator = require("ui/activityIndicator")
-    @activityIndicator = new ActivityIndicator()
-    @shopDataDetailWindow.add @activityIndicator
-    
-    # 詳細情報の画面に遷移する
-    activeTab = Ti.API._activeTab
-
-    return activeTab.open(@shopDataDetailWindow)
-    
-  _createNavbarElement:() ->
-    backButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/backButton.png"
-      width:44
-      height:44
-      
-    backButton.addEventListener('click',(e) =>
-      return @shopDataDetailWindow.close({animated:true})
-    )
-    
-    @shopDataDetailWindow.leftNavButton = backButton
-      
-    shopDataDetailWindowTitle = Ti.UI.createLabel
-      textAlign: 'center'
-      color:'#333'
-      font:
-        fontSize:18
-        fontFamily : 'Rounded M+ 1p'
-        fontWeight:'bold'
-      text:"お店の詳細情報"
-      
-      
-    return
-  _createMapView:(data) ->
-
     annotation = Titanium.Map.createAnnotation
       pincolor:Titanium.Map.ANNOTATION_PURPLE
       animate: false
       latitude:data.latitude
       longitude:data.longitude
 
-    @mapView.addAnnotation annotation
-    return @shopDataDetailWindow.add @mapView
+    detailMap.addAnnotation annotation
+    @shopDataDetailWindow.add detailMap
+
+    @_createTableView(data)
+
+    ActivityIndicator = require("ui/activityIndicator")
+    @activityIndicator = new ActivityIndicator()
+    @shopDataDetailWindow.add @activityIndicator
+    return @shopDataDetailWindow
+    
+    
     
   _createTableView:(data) ->
     shopData = []

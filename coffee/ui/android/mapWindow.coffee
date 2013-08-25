@@ -83,11 +83,33 @@ class mapWindow
         longitude: e.annotation.longitude
         shopInfo: e.annotation.shopInfo
         favoriteButtonEnable:favoriteButtonEnable
-        
+
+      #　Androidの場合には1つのアプリでMapViewを複数貼り付けることが出来ないため
+      # そのための対応
+      mapWindow.remove @mapView
+      @mapView = null
+      mapWindow.close()
       ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
       shopDataDetailWindow = new ShopDataDetailWindow(data)
+      shopDataDetailWindow.addEventListener('android:back',(e) ->
+        return
+
+      )
+      
+      return shopDataDetailWindow.open()
       
     )    
+    @mapView.addEventListener('regionchanged',(e)=>
+      Ti.API.info "regionchanged fire"
+      Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
+      @activityIndicator.show()            
+      regionData = @mapView.getRegion()
+      latitude = regionData.latitude
+      longitude =regionData.longitude
+
+      return @_nearBy(latitude,longitude)
+      
+    )
       
     refreshLabel = Ti.UI.createLabel
       backgroundColor:"transparent"
@@ -183,10 +205,10 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           subtitle: ""
-          image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+          image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottleIcon.png"
           animate: false
           leftButton: ""
-          rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
+          rightButton:""
         @mapView.addAnnotation annotation
       else
         annotation = Titanium.Map.createAnnotation
@@ -197,10 +219,10 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           subtitle: ""
-          image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIcon@2x.png"
+          image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblr.png"
           animate: false
           leftButton: ""
-          rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
+          rightButton:""
         @mapView.addAnnotation annotation
       
 

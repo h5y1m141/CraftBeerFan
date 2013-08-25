@@ -3,7 +3,7 @@ var shopDataDetailWindow;
 shopDataDetailWindow = (function() {
 
   function shopDataDetailWindow(data) {
-    var ActivityIndicator, activeTab, keyColor;
+    var ActivityIndicator, annotation, detailMap, keyColor;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
@@ -15,7 +15,13 @@ shopDataDetailWindow = (function() {
       starColor: "#DA5019",
       separatorColor: '#cccccc'
     };
-    this.mapView = Titanium.Map.createView({
+    this.shopDataDetailWindow = Ti.UI.createWindow({
+      title: "" + data.shopName,
+      barColor: this.baseColor.barColor,
+      backgroundColor: this.baseColor.backgroundColor,
+      navBarHidden: false
+    });
+    detailMap = Titanium.Map.createView({
       mapType: Titanium.Map.STANDARD_TYPE,
       region: {
         latitude: data.latitude,
@@ -27,64 +33,25 @@ shopDataDetailWindow = (function() {
       regionFit: true,
       userLocation: true,
       zIndex: 0,
-      top: 0,
-      left: 0,
-      height: 200,
-      width: 'auto'
+      top: '0dip',
+      left: '0dip',
+      height: '200dip',
+      width: Ti.UI.FULL
     });
-    this.shopDataDetailWindow = Ti.UI.createWindow({
-      title: "近くのお店",
-      barColor: this.baseColor.barColor,
-      backgroundColor: this.baseColor.backgroundColor,
-      navBarHidden: false,
-      tabBarHidden: false
-    });
-    this._createMapView(data);
-    this._createTableView(data);
-    ActivityIndicator = require("ui/activityIndicator");
-    this.activityIndicator = new ActivityIndicator();
-    this.shopDataDetailWindow.add(this.activityIndicator);
-    activeTab = Ti.API._activeTab;
-    return activeTab.open(this.shopDataDetailWindow);
-  }
-
-  shopDataDetailWindow.prototype._createNavbarElement = function() {
-    var backButton, shopDataDetailWindowTitle,
-      _this = this;
-    backButton = Titanium.UI.createButton({
-      backgroundImage: "ui/image/backButton.png",
-      width: 44,
-      height: 44
-    });
-    backButton.addEventListener('click', function(e) {
-      return _this.shopDataDetailWindow.close({
-        animated: true
-      });
-    });
-    this.shopDataDetailWindow.leftNavButton = backButton;
-    shopDataDetailWindowTitle = Ti.UI.createLabel({
-      textAlign: 'center',
-      color: '#333',
-      font: {
-        fontSize: 18,
-        fontFamily: 'Rounded M+ 1p',
-        fontWeight: 'bold'
-      },
-      text: "お店の詳細情報"
-    });
-  };
-
-  shopDataDetailWindow.prototype._createMapView = function(data) {
-    var annotation;
     annotation = Titanium.Map.createAnnotation({
       pincolor: Titanium.Map.ANNOTATION_PURPLE,
       animate: false,
       latitude: data.latitude,
       longitude: data.longitude
     });
-    this.mapView.addAnnotation(annotation);
-    return this.shopDataDetailWindow.add(this.mapView);
-  };
+    detailMap.addAnnotation(annotation);
+    this.shopDataDetailWindow.add(detailMap);
+    this._createTableView(data);
+    ActivityIndicator = require("ui/activityIndicator");
+    this.activityIndicator = new ActivityIndicator();
+    this.shopDataDetailWindow.add(this.activityIndicator);
+    return this.shopDataDetailWindow;
+  }
 
   shopDataDetailWindow.prototype._createTableView = function(data) {
     var addressRow, favoriteDialog, love, loveEmpty, phoneDialog, phoneRow, shopData, shopInfoIcon, shopInfoLabel, shopInfoRow, wantToGoIcon, wantToGoIconLabel, wantToGoRow,

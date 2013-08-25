@@ -81,8 +81,23 @@ mapWindow = (function() {
         shopInfo: e.annotation.shopInfo,
         favoriteButtonEnable: favoriteButtonEnable
       };
+      mapWindow.remove(_this.mapView);
+      _this.mapView = null;
+      mapWindow.close();
       ShopDataDetailWindow = require("ui/android/shopDataDetailWindow");
-      return shopDataDetailWindow = new ShopDataDetailWindow(data);
+      shopDataDetailWindow = new ShopDataDetailWindow(data);
+      shopDataDetailWindow.addEventListener('android:back', function(e) {});
+      return shopDataDetailWindow.open();
+    });
+    this.mapView.addEventListener('regionchanged', function(e) {
+      var latitude, longitude, regionData;
+      Ti.API.info("regionchanged fire");
+      Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
+      _this.activityIndicator.show();
+      regionData = _this.mapView.getRegion();
+      latitude = regionData.latitude;
+      longitude = regionData.longitude;
+      return _this._nearBy(latitude, longitude);
     });
     refreshLabel = Ti.UI.createLabel({
       backgroundColor: "transparent",
@@ -177,10 +192,10 @@ mapWindow = (function() {
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
           subtitle: "",
-          image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png",
+          image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottleIcon.png",
           animate: false,
           leftButton: "",
-          rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
+          rightButton: ""
         });
         _results.push(this.mapView.addAnnotation(annotation));
       } else {
@@ -192,10 +207,10 @@ mapWindow = (function() {
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
           subtitle: "",
-          image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIcon@2x.png",
+          image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblr.png",
           animate: false,
           leftButton: "",
-          rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
+          rightButton: ""
         });
         _results.push(this.mapView.addAnnotation(annotation));
       }

@@ -68,16 +68,30 @@ listWindow = (function() {
     this.prefectures = this._loadPrefectures();
     this.refreshTableData("関東", "#CAE7F2", "#CAE7F2");
     this.listWindow.activity.onCreateOptionsMenu = function(e) {
-      var menu, menuItem;
-      e.title = "new title";
+      var listViewItem, mapViewItem, menu;
       menu = e.menu;
-      menuItem = menu.add({
-        title: "Compose",
-        icon: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png",
+      mapViewItem = menu.add({
+        title: "近くのお店",
+        icon: Titanium.Filesystem.resourcesDirectory + "ui/image/pin@2x.png",
         showAsAction: Ti.Android.SHOW_AS_ACTION_ALWAYS
       });
-      return menuItem.addEventListener("click", function(e) {
-        return Ti.API.info("Action Item Clicked!");
+      mapViewItem.addEventListener("click", function(e) {
+        var mapWindow;
+        mapWindow = require("ui/android/mapWindow");
+        mapWindow = new mapWindow();
+        return mapWindow.open();
+      });
+      listViewItem = menu.add({
+        title: "リスト",
+        icon: Titanium.Filesystem.resourcesDirectory + "ui/image/listIcon@2x.png",
+        showAsAction: Ti.Android.SHOW_AS_ACTION_ALWAYS
+      });
+      return listViewItem.addEventListener("click", function(e) {
+        var win;
+        win = Ti.UI.createWindow({
+          navBarHidden: false
+        });
+        return win.open();
       });
     };
     this.listWindow.add(this.listView);

@@ -48,24 +48,30 @@ class listWindow
       
     @prefectures = @_loadPrefectures()
     @refreshTableData("関東","#CAE7F2","#CAE7F2")
-    # @listWindow.addEventListener("open", (e)=>
-    #   actionBar = @listWindow.activity.actionBar
-    #   if actionBar
-    #     actionBar.title = "New Title"
-    #     actionBar.onHomeIconItemSelected = ->
-    #       Ti.API.info "Home icon clicked!"
-    # )
 
     @listWindow.activity.onCreateOptionsMenu = (e) ->
-      e.title = "new title"
       menu = e.menu
-      menuItem = menu.add(
-        title: "Compose"
-        icon:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+      mapViewItem = menu.add(
+        title: "近くのお店"
+        icon:Titanium.Filesystem.resourcesDirectory + "ui/image/pin@2x.png"
         showAsAction:Ti.Android.SHOW_AS_ACTION_ALWAYS
       )
-      menuItem.addEventListener "click", (e) ->
-        Ti.API.info "Action Item Clicked!"
+      mapViewItem.addEventListener "click", (e) ->
+        mapWindow = require("ui/android/mapWindow")
+        mapWindow = new mapWindow()
+        mapWindow.open()
+        
+        
+      listViewItem = menu.add(
+        title: "リスト"
+        icon:Titanium.Filesystem.resourcesDirectory + "ui/image/listIcon@2x.png"
+        showAsAction:Ti.Android.SHOW_AS_ACTION_ALWAYS
+      )
+      listViewItem.addEventListener "click", (e) ->
+        win = Ti.UI.createWindow
+          navBarHidden:false
+        win.open()
+
 
     @listWindow.add @listView
     return @listWindow
