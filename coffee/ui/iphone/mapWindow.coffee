@@ -92,13 +92,21 @@ class mapWindow
     )
         
     @mapView.addEventListener('regionchanged',(e)=>
-      Ti.API.info "regionchanged fire"
-      Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
-      @activityIndicator.show()            
-      regionData = @mapView.getRegion()
-      latitude = regionData.latitude
-      longitude =regionData.longitude
-      return @_nearBy(latitude,longitude)
+      # ちょっとしたスクロールに反応してしまうため、以下URLを参考に
+      # 一定時間経過してないとイベント発火しないような処理にする
+      # http://developer.appcelerator.com/question/129061/mapview-markers-display-on-regionchanged
+      that = @
+      clearTimeout updateMapTimeout  if updateMapTimeout
+      updateMapTimeout = setTimeout(->
+        Ti.API.info "regionchanged fire"
+        Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
+        that.activityIndicator.show()            
+        regionData = that.mapView.getRegion()
+        latitude = regionData.latitude
+        longitude = regionData.longitude
+        return that._nearBy(latitude,longitude)
+
+      , 50)
       
     )
           
@@ -159,6 +167,7 @@ class mapWindow
     KloudService =require("model/kloudService")
     kloudService = new KloudService()
     kloudService.placesQuery(latitude,longitude,(data) ->
+
       that.addAnnotations(data)
     )
     

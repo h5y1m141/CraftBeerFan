@@ -88,14 +88,21 @@ mapWindow = (function() {
       }
     });
     this.mapView.addEventListener('regionchanged', function(e) {
-      var latitude, longitude, regionData;
-      Ti.API.info("regionchanged fire");
-      Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
-      _this.activityIndicator.show();
-      regionData = _this.mapView.getRegion();
-      latitude = regionData.latitude;
-      longitude = regionData.longitude;
-      return _this._nearBy(latitude, longitude);
+      var that, updateMapTimeout;
+      that = _this;
+      if (updateMapTimeout) {
+        clearTimeout(updateMapTimeout);
+      }
+      return updateMapTimeout = setTimeout(function() {
+        var latitude, longitude, regionData;
+        Ti.API.info("regionchanged fire");
+        Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
+        that.activityIndicator.show();
+        regionData = that.mapView.getRegion();
+        latitude = regionData.latitude;
+        longitude = regionData.longitude;
+        return that._nearBy(latitude, longitude);
+      }, 50);
     });
     refreshLabel = Ti.UI.createLabel({
       backgroundColor: "transparent",
