@@ -48,13 +48,14 @@ class listWindow
       
     @prefectures = @_loadPrefectures()
     @refreshTableData("関東","#CAE7F2","#CAE7F2")
-
+    
     @listWindow.activity.onCreateOptionsMenu = (e) ->
       menu = e.menu
       actionBarMenu = require("ui/android/actionBarMenu")
       actionBarMenu = new actionBarMenu(menu)
-
-
+      
+      
+      
     @listWindow.add @listView
     return @listWindow
             

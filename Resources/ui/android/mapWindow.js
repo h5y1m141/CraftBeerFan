@@ -3,7 +3,7 @@ var mapWindow;
 mapWindow = (function() {
 
   function mapWindow() {
-    var ActivityIndicator, Config, ad, adView, config, displayHeight, keyColor, mapViewHeight, mapWindowTitle, nend, refreshLabel,
+    var ActivityIndicator, Config, ad, adView, config, displayHeight, keyColor, mapViewHeight, mapWindowTitle, nend,
       _this = this;
     keyColor = "#f9f9f9";
     this.baseColor = {
@@ -90,48 +90,22 @@ mapWindow = (function() {
       return shopDataDetailWindow.open();
     });
     this.mapView.addEventListener('regionchanged', function(e) {
-      var latitude, longitude, regionData;
-      Ti.API.info("regionchanged fire");
-      Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
-      _this.activityIndicator.show();
-      regionData = _this.mapView.getRegion();
-      latitude = regionData.latitude;
-      longitude = regionData.longitude;
-      return _this._nearBy(latitude, longitude);
-    });
-    refreshLabel = Ti.UI.createLabel({
-      backgroundColor: "transparent",
-      color: "#333",
-      width: "56dip",
-      height: "56dip",
-      font: {
-        fontSize: "32dip",
-        fontFamily: 'LigatureSymbols'
-      },
-      text: String.fromCharCode("0xe14d")
-    });
-    refreshLabel.addEventListener('click', function(e) {
-      var that;
+      var that, updateMapTimeout;
       that = _this;
-      that.activityIndicator.show();
-      return Titanium.Geolocation.getCurrentPosition(function(e) {
-        var latitude, longitude;
-        if (e.error) {
-          Ti.API.info(e.error);
-          return;
-        }
-        latitude = e.coords.latitude;
-        longitude = e.coords.longitude;
-        that.mapView.setLocation({
-          latitude: latitude,
-          longitude: longitude,
-          latitudeDelta: 0.025,
-          longitudeDelta: 0.025
-        });
+      if (updateMapTimeout) {
+        clearTimeout(updateMapTimeout);
+      }
+      return updateMapTimeout = setTimeout(function() {
+        var latitude, longitude, regionData;
+        Ti.API.info("regionchanged fire");
+        Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
+        that.activityIndicator.show();
+        regionData = that.mapView.getRegion();
+        latitude = regionData.latitude;
+        longitude = regionData.longitude;
         return that._nearBy(latitude, longitude);
-      });
+      }, 50);
     });
-    mapWindow.rightNavButton = refreshLabel;
     Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため';
     Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS;
     Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;

@@ -28,7 +28,6 @@ class kloudService
             
           result.push(data)
           i++
-
         return callback(result)
       else
         Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))

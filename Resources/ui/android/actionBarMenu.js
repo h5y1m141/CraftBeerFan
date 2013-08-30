@@ -3,7 +3,7 @@ var actionBarMenu;
 actionBarMenu = (function() {
 
   function actionBarMenu(menu) {
-    var listViewItem, mapViewItem;
+    var item, listViewItem, mapViewItem;
     mapViewItem = menu.add({
       title: "近くのお店",
       icon: Titanium.Filesystem.resourcesDirectory + "ui/image/pin@2x.png",
@@ -20,12 +20,18 @@ actionBarMenu = (function() {
       icon: Titanium.Filesystem.resourcesDirectory + "ui/image/listIcon@2x.png",
       showAsAction: Ti.Android.SHOW_AS_ACTION_ALWAYS
     });
-    listViewItem.addEventListener("click", function(e) {
-      var win;
-      win = Ti.UI.createWindow({
-        navBarHidden: false
-      });
-      return win.open();
+    listViewItem.addEventListener("click", function(e) {});
+    item = menu.add({
+      title: 'item1',
+      showAsAction: SHOW_AS_ACTION_NEVER
+    });
+    item = menu.add({
+      title: 'item2',
+      showAsAction: SHOW_AS_ACTION_NEVER
+    });
+    item = menu.add({
+      title: 'item3',
+      showAsAction: SHOW_AS_ACTION_NEVER
     });
     return;
   }

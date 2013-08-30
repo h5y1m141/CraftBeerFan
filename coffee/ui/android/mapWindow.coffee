@@ -100,51 +100,60 @@ class mapWindow
       
     )    
     @mapView.addEventListener('regionchanged',(e)=>
-      Ti.API.info "regionchanged fire"
-      Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
-      @activityIndicator.show()            
-      regionData = @mapView.getRegion()
-      latitude = regionData.latitude
-      longitude =regionData.longitude
-
-      return @_nearBy(latitude,longitude)
-      
-    )
-      
-    refreshLabel = Ti.UI.createLabel
-      backgroundColor:"transparent"
-      color:"#333"
-      width:"56dip"
-      height:"56dip"
-      font:
-        fontSize:"32dip"
-        fontFamily:'LigatureSymbols'
-      text:String.fromCharCode("0xe14d")
-      
-    refreshLabel.addEventListener('click',(e) =>
+      # ちょっとしたスクロールに反応してしまうため、以下URLを参考に
+      # 一定時間経過してないとイベント発火しないような処理にする
+      # http://developer.appcelerator.com/question/129061/mapview-markers-display-on-regionchanged
       that = @
-      that.activityIndicator.show()      
-      Titanium.Geolocation.getCurrentPosition( (e) ->
-        if e.error
-          Ti.API.info e.error
-          return
-          
-        latitude = e.coords.latitude
-        longitude = e.coords.longitude
-        
-         # 現在地まで地図をスクロールする
-        that.mapView.setLocation(
-          latitude: latitude
-          longitude: longitude
-          latitudeDelta:0.025
-          longitudeDelta:0.025
-        )
-        that._nearBy(latitude,longitude)
+      clearTimeout updateMapTimeout  if updateMapTimeout
+      updateMapTimeout = setTimeout(->
+        Ti.API.info "regionchanged fire"
+        Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
+        that.activityIndicator.show()            
+        regionData = that.mapView.getRegion()
+        latitude = regionData.latitude
+        longitude =regionData.longitude
 
-      )
+        return that._nearBy(latitude,longitude)
+
+      , 50)
+      
+      
     )
+      
+    # refreshLabel = Ti.UI.createLabel
+    #   backgroundColor:"transparent"
+    #   color:"#333"
+    #   width:"56dip"
+    #   height:"56dip"
+    #   font:
+    #     fontSize:"32dip"
+    #     fontFamily:'LigatureSymbols'
+    #   text:String.fromCharCode("0xe14d")
+      
+    # refreshLabel.addEventListener('click',(e) =>
+    #   that = @
+    #   that.activityIndicator.show()      
+    #   Titanium.Geolocation.getCurrentPosition( (e) ->
+    #     if e.error
+    #       Ti.API.info e.error
+    #       return
+          
+    #     latitude = e.coords.latitude
+    #     longitude = e.coords.longitude
+        
+    #      # 現在地まで地図をスクロールする
+    #     that.mapView.setLocation(
+    #       latitude: latitude
+    #       longitude: longitude
+    #       latitudeDelta:0.025
+    #       longitudeDelta:0.025
+    #     )
+    #     that._nearBy(latitude,longitude)
 
-    mapWindow.rightNavButton = refreshLabel
+    #   )
+    # )
+
+    # mapWindow.rightNavButton = refreshLabel
     
     Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため'
     Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS
