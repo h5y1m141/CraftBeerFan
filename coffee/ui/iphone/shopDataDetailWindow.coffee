@@ -20,7 +20,7 @@ class shopDataDetailWindow
       textColor:"#333"
       phoneColor:"#3261AB"
       favoriteColor:"#DA5019"
-      starColor:"#DA5019"
+      feedbackColor:"#DA5019"
       separatorColor:'#cccccc'
     @mapView = Titanium.Map.createView
       mapType: Titanium.Map.STANDARD_TYPE
@@ -139,6 +139,8 @@ class shopDataDetailWindow
       title:String.fromCharCode("0xf095")
       
       
+      
+      
     @phoneLabel = Ti.UI.createLabel
       text:"電話する"
       textAlign:'left'
@@ -188,6 +190,40 @@ class shopDataDetailWindow
       left:50
       width:200
       height:30
+      
+    feedbackLabel = Ti.UI.createLabel
+      text:"お店情報の間違いを報告する"
+      textAlign:'left'
+      left:50
+      top:10
+      width:240
+      color:@baseColor.textColor
+      font:
+        fontSize:18
+        fontFamily:'Rounded M+ 1p'
+        fontWeight:'bold'
+
+    feedbackRow = Ti.UI.createTableViewRow
+      width:'auto'
+      height:40
+      selectedColor:'transparent'
+      rowID:3
+
+
+    feedbackIcon = Ti.UI.createButton
+      top:5
+      left:10
+      width:30
+      height:30
+      backgroundColor:@baseColor.feedbackColor
+      backgroundImage:"NONE"
+      borderWidth:0
+      borderRadius:0
+      color:@baseColor.barColor
+      font:
+        fontSize: 24
+        fontFamily:'LigatureSymbols'
+      title:String.fromCharCode("0xe08a")
       
     phoneDialog = @_createPhoneDialog(data.phoneNumber,data.shopName)
     favoriteDialog = @_createFavoriteDialog(data.shopName)
@@ -259,12 +295,16 @@ class shopDataDetailWindow
       phoneRow.add @phoneLabel
       
       wantToGoRow.add wantToGoIconLabel
-      wantToGoRow.add wantToGoIcon      
+      wantToGoRow.add wantToGoIcon
+
+      feedbackRow.add feedbackLabel
+      feedbackRow.add feedbackIcon
       
       shopData.push @section  
       shopData.push addressRow
       shopData.push phoneRow
       shopData.push wantToGoRow
+      shopData.push feedbackRow
       shopData.push shopInfoRow unless typeof shopInfoRow is 'undefined'
       
     else
@@ -273,9 +313,14 @@ class shopDataDetailWindow
       phoneRow.add @phoneIcon
       phoneRow.add @phoneLabel
       
+      feedbackRow.add feedbackLabel
+      feedbackRow.add feedbackIcon
+      
+      
       shopData.push @section  
       shopData.push addressRow
       shopData.push phoneRow
+      shopData.push feedbackRow
       shopData.push shopInfoRow unless typeof shopInfoRow is 'undefined'
     @tableView.setData shopData
     return @shopDataDetailWindow.add @tableView

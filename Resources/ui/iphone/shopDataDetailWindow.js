@@ -13,7 +13,7 @@ shopDataDetailWindow = (function() {
       textColor: "#333",
       phoneColor: "#3261AB",
       favoriteColor: "#DA5019",
-      starColor: "#DA5019",
+      feedbackColor: "#DA5019",
       separatorColor: '#cccccc'
     };
     this.mapView = Titanium.Map.createView({
@@ -92,7 +92,7 @@ shopDataDetailWindow = (function() {
   };
 
   shopDataDetailWindow.prototype._createTableView = function(data) {
-    var addressRow, favoriteDialog, love, loveEmpty, phoneDialog, phoneRow, shopData, shopInfoIcon, shopInfoLabel, shopInfoRow, wantToGoIcon, wantToGoIconLabel, wantToGoRow,
+    var addressRow, favoriteDialog, feedbackIcon, feedbackLabel, feedbackRow, love, loveEmpty, phoneDialog, phoneRow, shopData, shopInfoIcon, shopInfoLabel, shopInfoRow, wantToGoIcon, wantToGoIconLabel, wantToGoRow,
       _this = this;
     shopData = [];
     addressRow = Ti.UI.createTableViewRow({
@@ -186,6 +186,41 @@ shopDataDetailWindow = (function() {
       width: 200,
       height: 30
     });
+    feedbackLabel = Ti.UI.createLabel({
+      text: "お店情報の間違いを報告する",
+      textAlign: 'left',
+      left: 50,
+      top: 10,
+      width: 240,
+      color: this.baseColor.textColor,
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p',
+        fontWeight: 'bold'
+      }
+    });
+    feedbackRow = Ti.UI.createTableViewRow({
+      width: 'auto',
+      height: 40,
+      selectedColor: 'transparent',
+      rowID: 3
+    });
+    feedbackIcon = Ti.UI.createButton({
+      top: 5,
+      left: 10,
+      width: 30,
+      height: 30,
+      backgroundColor: this.baseColor.feedbackColor,
+      backgroundImage: "NONE",
+      borderWidth: 0,
+      borderRadius: 0,
+      color: this.baseColor.barColor,
+      font: {
+        fontSize: 24,
+        fontFamily: 'LigatureSymbols'
+      },
+      title: String.fromCharCode("0xe08a")
+    });
     phoneDialog = this._createPhoneDialog(data.phoneNumber, data.shopName);
     favoriteDialog = this._createFavoriteDialog(data.shopName);
     this.shopDataDetailWindow.add(phoneDialog);
@@ -252,10 +287,13 @@ shopDataDetailWindow = (function() {
       phoneRow.add(this.phoneLabel);
       wantToGoRow.add(wantToGoIconLabel);
       wantToGoRow.add(wantToGoIcon);
+      feedbackRow.add(feedbackLabel);
+      feedbackRow.add(feedbackIcon);
       shopData.push(this.section);
       shopData.push(addressRow);
       shopData.push(phoneRow);
       shopData.push(wantToGoRow);
+      shopData.push(feedbackRow);
       if (typeof shopInfoRow !== 'undefined') {
         shopData.push(shopInfoRow);
       }
@@ -263,9 +301,12 @@ shopDataDetailWindow = (function() {
       addressRow.add(this.addressLabel);
       phoneRow.add(this.phoneIcon);
       phoneRow.add(this.phoneLabel);
+      feedbackRow.add(feedbackLabel);
+      feedbackRow.add(feedbackIcon);
       shopData.push(this.section);
       shopData.push(addressRow);
       shopData.push(phoneRow);
+      shopData.push(feedbackRow);
       if (typeof shopInfoRow !== 'undefined') {
         shopData.push(shopInfoRow);
       }
