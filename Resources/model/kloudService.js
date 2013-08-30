@@ -230,6 +230,18 @@ kloudService = (function() {
     });
   };
 
+  kloudService.prototype.sendFeedBack = function(contents, shopName, currentUserId, callback) {
+    return this.Cloud.Emails.send({
+      template: 'feedbackAboutShopData',
+      recipients: 'h5y1m141@gmail.com',
+      contents: contents,
+      shopName: shopName,
+      currentUserId: currentUserId
+    }, function(result) {
+      return callback(result);
+    });
+  };
+
   kloudService.prototype._getAppID = function() {
     var appid, config, file, json;
     config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json");

@@ -213,6 +213,15 @@ class kloudService
     , (result) ->
       return callback(result)
 
+  sendFeedBack:(contents,shopName,currentUserId,callback) ->
+    @Cloud.Emails.send
+      template:'feedbackAboutShopData'
+      recipients:'h5y1m141@gmail.com'
+      contents:contents
+      shopName:shopName
+      currentUserId:currentUserId
+    , (result) ->
+      return callback(result)
   
   _getAppID:() ->
     # Facebook appidを取得
