@@ -173,6 +173,12 @@ mainController = (function() {
     });
   };
 
+  mainController.prototype.sendFeedBack = function(contents, shopName, currentUserId, callback) {
+    return this.kloudService.sendFeedBack(contents, shopName, currentUserId, function(result) {
+      return callback(result);
+    });
+  };
+
   mainController.prototype._login = function(callback) {
     var currentUserId, loginType, password, userName;
     currentUserId = Ti.App.Properties.getString("currentUserId");

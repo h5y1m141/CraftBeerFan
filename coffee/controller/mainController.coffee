@@ -156,7 +156,12 @@ class mainController
     )
     return
 
-      
+  sendFeedBack:(contents,shopName,currentUserId,callback) ->
+    @kloudService.sendFeedBack(contents,shopName,currentUserId,(result) ->
+      callback(result)
+    )
+
+
         
   _login:(callback) =>
     # 現在のログインIDを収得した上でユーザ情報取得する
