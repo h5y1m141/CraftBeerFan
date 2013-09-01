@@ -11,7 +11,7 @@ class shopDataDetailWindow
     #   latitude:
     #   longitude:
     #   favoriteButtonEnable:true/false
-    filterView = require("net.uchidak.tigfview")
+
     keyColor = "#f9f9f9"
     @baseColor =
       barColor:keyColor
@@ -47,7 +47,6 @@ class shopDataDetailWindow
       tabBarHidden:false
       
     
-    
     @_createNavbarElement()
     @_createMapView(data)
     @_createTableView(data)
@@ -57,8 +56,7 @@ class shopDataDetailWindow
     @shopDataDetailWindow.add @activityIndicator
     
     # 詳細情報の画面に遷移する
-    activeTab = Ti.API._activeTab
-    return activeTab.open(@shopDataDetailWindow)
+    @shopDataDetailWindow.open()
     
   _createNavbarElement:() ->
     backButton = Titanium.UI.createButton
@@ -206,11 +204,9 @@ class shopDataDetailWindow
       
     @tableView.addEventListener('click',(e) =>
       if e.row.rowID is 1
-        @_setTiGFviewToMapView()
         @_showDialog(phoneDialog)
 
       else if e.row.rowID is 2
-        @_setTiGFviewToMapView()
         @_showDialog(favoriteDialog)
       else
         Ti.API.info "no action"
@@ -356,7 +352,6 @@ class shopDataDetailWindow
 
     registMemoBtn.addEventListener('click',(e) =>
       that = @
-      that._setDefaultMapViewStyle()
       that.activityIndicator.show()
       # ACSにメモを登録
       # 次のCloud.Places.queryからはaddNewIconの外側にある
@@ -394,7 +389,6 @@ class shopDataDetailWindow
       textAlign:"center"
       
     cancelleBtn.addEventListener('click',(e) =>
-      @_setDefaultMapViewStyle()
       @_hideDialog(favoriteDialog,Ti.API.info "done")
     )
     
@@ -434,7 +428,6 @@ class shopDataDetailWindow
       textAlign:"center"
 
     callBtn.addEventListener('click',(e) ->
-      that._setDefaultMapViewStyle()
       that._hideDialog(_view,Titanium.Platform.openURL("tel:#{phoneNumber}"))
 
     )
@@ -454,7 +447,6 @@ class shopDataDetailWindow
       textAlign:"center"
       
     cancelleBtn.addEventListener('click',(e) ->
-      that._setDefaultMapViewStyle()
       that._hideDialog(_view,Ti.API.info "cancelleBtn hide")
       
     ) 
@@ -479,17 +471,6 @@ class shopDataDetailWindow
 
   # ダイアログ表示する際に、背景部分となるmapViewに対して
   # フィルタを掛けることで奥行きある状態を表現する
-  _setTiGFviewToMapView:() ->
-    @mapView.rasterizationScale = 0.1
-    @mapView.shouldRasterize = true
-    @mapView.kCAFilterTrilinear= true
-    return
-        
-  _setDefaultMapViewStyle:() ->
-    @mapView.rasterizationScale = 1.0
-    @mapView.shouldRasterize =false
-    @mapView.kCAFilterTrilinear= false
-    return
 
   # 引数に取ったviewに対してせり出すようにするアニメーションを適用
   _showDialog:(_view) ->

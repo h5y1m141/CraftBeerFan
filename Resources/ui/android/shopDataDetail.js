@@ -3,8 +3,7 @@ var shopDataDetailWindow;
 shopDataDetailWindow = (function() {
 
   function shopDataDetailWindow(data) {
-    var ActivityIndicator, activeTab, filterView, keyColor;
-    filterView = require("net.uchidak.tigfview");
+    var ActivityIndicator, keyColor;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
@@ -46,8 +45,7 @@ shopDataDetailWindow = (function() {
     ActivityIndicator = require("ui/activityIndicator");
     this.activityIndicator = new ActivityIndicator();
     this.shopDataDetailWindow.add(this.activityIndicator);
-    activeTab = Ti.API._activeTab;
-    return activeTab.open(this.shopDataDetailWindow);
+    this.shopDataDetailWindow.open();
   }
 
   shopDataDetailWindow.prototype._createNavbarElement = function() {
@@ -202,10 +200,8 @@ shopDataDetailWindow = (function() {
     });
     this.tableView.addEventListener('click', function(e) {
       if (e.row.rowID === 1) {
-        _this._setTiGFviewToMapView();
         return _this._showDialog(phoneDialog);
       } else if (e.row.rowID === 2) {
-        _this._setTiGFviewToMapView();
         return _this._showDialog(favoriteDialog);
       } else {
         return Ti.API.info("no action");
@@ -353,7 +349,6 @@ shopDataDetailWindow = (function() {
     registMemoBtn.addEventListener('click', function(e) {
       var MainController, currentUserId, mainController, ratings, that;
       that = _this;
-      that._setDefaultMapViewStyle();
       that.activityIndicator.show();
       Ti.API.info("contents is " + contents);
       ratings = ratings;
@@ -387,7 +382,6 @@ shopDataDetailWindow = (function() {
       textAlign: "center"
     });
     cancelleBtn.addEventListener('click', function(e) {
-      _this._setDefaultMapViewStyle();
       return _this._hideDialog(favoriteDialog, Ti.API.info("done"));
     });
     favoriteDialog.add(textArea);
@@ -428,7 +422,6 @@ shopDataDetailWindow = (function() {
       textAlign: "center"
     });
     callBtn.addEventListener('click', function(e) {
-      that._setDefaultMapViewStyle();
       return that._hideDialog(_view, Titanium.Platform.openURL("tel:" + phoneNumber));
     });
     cancelleBtn = Ti.UI.createLabel({
@@ -447,7 +440,6 @@ shopDataDetailWindow = (function() {
       textAlign: "center"
     });
     cancelleBtn.addEventListener('click', function(e) {
-      that._setDefaultMapViewStyle();
       return that._hideDialog(_view, Ti.API.info("cancelleBtn hide"));
     });
     confirmLabel = Ti.UI.createLabel({
@@ -467,18 +459,6 @@ shopDataDetailWindow = (function() {
     _view.add(cancelleBtn);
     _view.add(callBtn);
     return _view;
-  };
-
-  shopDataDetailWindow.prototype._setTiGFviewToMapView = function() {
-    this.mapView.rasterizationScale = 0.1;
-    this.mapView.shouldRasterize = true;
-    this.mapView.kCAFilterTrilinear = true;
-  };
-
-  shopDataDetailWindow.prototype._setDefaultMapViewStyle = function() {
-    this.mapView.rasterizationScale = 1.0;
-    this.mapView.shouldRasterize = false;
-    this.mapView.kCAFilterTrilinear = false;
   };
 
   shopDataDetailWindow.prototype._showDialog = function(_view) {

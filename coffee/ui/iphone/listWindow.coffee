@@ -16,7 +16,8 @@ class listWindow
       
     @_createNavbarElement()
 
-    t = Titanium.UI.create2DMatrix().scale(0)    
+    t = Titanium.UI.create2DMatrix().scale(0)
+    
     @table = Ti.UI.createTableView
       backgroundColor:"#f3f3f3"
       separatorStyle: Titanium.UI.iPhone.TableViewSeparatorStyle.NONE
@@ -47,7 +48,6 @@ class listWindow
           )
           ShopAreaDataWindow = require("ui/iphone/shopAreaDataWindow") 
           new ShopAreaDataWindow(items)
-          
       )
       
     ) # end of tableView Event
@@ -93,7 +93,6 @@ class listWindow
         # selectedSubColor = @prefectureSubColorSet.name[categoryName]
         selectedSubColor = "#FFF"
         curretRowIndex　= e.index
-
         # animateした後のコールバック関数内では@が
         # 参照できないために以下変数に格納する
         table = @table

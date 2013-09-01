@@ -13,7 +13,7 @@ shopDataDetailWindow = (function() {
       textColor: "#333",
       phoneColor: "#3261AB",
       favoriteColor: "#DA5019",
-      starColor: "#DA5019",
+      feedbackColor: "#DA5019",
       separatorColor: '#cccccc'
     };
     this.mapView = Titanium.Map.createView({
@@ -92,7 +92,7 @@ shopDataDetailWindow = (function() {
   };
 
   shopDataDetailWindow.prototype._createTableView = function(data) {
-    var addressRow, favoriteDialog, love, loveEmpty, phoneDialog, phoneRow, shopData, shopInfoIcon, shopInfoLabel, shopInfoRow, wantToGoIcon, wantToGoIconLabel, wantToGoRow,
+    var addressRow, favoriteDialog, feedBackDialog, feedbackIcon, feedbackLabel, feedbackRow, love, loveEmpty, phoneDialog, phoneRow, shopData, shopInfoIcon, shopInfoLabel, shopInfoRow, wantToGoIcon, wantToGoIconLabel, wantToGoRow,
       _this = this;
     shopData = [];
     addressRow = Ti.UI.createTableViewRow({
@@ -186,10 +186,48 @@ shopDataDetailWindow = (function() {
       width: 200,
       height: 30
     });
+    feedbackLabel = Ti.UI.createLabel({
+      text: "お店情報の間違いを報告する",
+      textAlign: 'left',
+      left: 50,
+      top: 10,
+      width: 240,
+      color: this.baseColor.textColor,
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p',
+        fontWeight: 'bold'
+      }
+    });
+    feedbackRow = Ti.UI.createTableViewRow({
+      width: 'auto',
+      height: 40,
+      selectedColor: 'transparent',
+      rowID: 3,
+      shopName: "" + data.shopName
+    });
+    feedbackIcon = Ti.UI.createButton({
+      top: 5,
+      left: 10,
+      width: 30,
+      height: 30,
+      backgroundColor: this.baseColor.feedbackColor,
+      backgroundImage: "NONE",
+      borderWidth: 0,
+      borderRadius: 0,
+      color: this.baseColor.barColor,
+      font: {
+        fontSize: 24,
+        fontFamily: 'LigatureSymbols'
+      },
+      title: String.fromCharCode("0xe08a")
+    });
     phoneDialog = this._createPhoneDialog(data.phoneNumber, data.shopName);
     favoriteDialog = this._createFavoriteDialog(data.shopName);
+    feedBackDialog = this._createFeedBackDialog(data.shopName);
     this.shopDataDetailWindow.add(phoneDialog);
     this.shopDataDetailWindow.add(favoriteDialog);
+    this.shopDataDetailWindow.add(feedBackDialog);
     this.tableView = Ti.UI.createTableView({
       width: 'auto',
       height: 'auto',
@@ -207,6 +245,9 @@ shopDataDetailWindow = (function() {
       } else if (e.row.rowID === 2) {
         _this._setTiGFviewToMapView();
         return _this._showDialog(favoriteDialog);
+      } else if (e.row.rowID === 3) {
+        _this._setTiGFviewToMapView();
+        return _this._showDialog(feedBackDialog);
       } else {
         return Ti.API.info("no action");
       }
@@ -252,10 +293,13 @@ shopDataDetailWindow = (function() {
       phoneRow.add(this.phoneLabel);
       wantToGoRow.add(wantToGoIconLabel);
       wantToGoRow.add(wantToGoIcon);
+      feedbackRow.add(feedbackLabel);
+      feedbackRow.add(feedbackIcon);
       shopData.push(this.section);
       shopData.push(addressRow);
       shopData.push(phoneRow);
       shopData.push(wantToGoRow);
+      shopData.push(feedbackRow);
       if (typeof shopInfoRow !== 'undefined') {
         shopData.push(shopInfoRow);
       }
@@ -263,9 +307,12 @@ shopDataDetailWindow = (function() {
       addressRow.add(this.addressLabel);
       phoneRow.add(this.phoneIcon);
       phoneRow.add(this.phoneLabel);
+      feedbackRow.add(feedbackLabel);
+      feedbackRow.add(feedbackIcon);
       shopData.push(this.section);
       shopData.push(addressRow);
       shopData.push(phoneRow);
+      shopData.push(feedbackRow);
       if (typeof shopInfoRow !== 'undefined') {
         shopData.push(shopInfoRow);
       }
@@ -466,6 +513,129 @@ shopDataDetailWindow = (function() {
     _view.add(confirmLabel);
     _view.add(cancelleBtn);
     _view.add(callBtn);
+    return _view;
+  };
+
+  shopDataDetailWindow.prototype._createFeedBackDialog = function(shopName) {
+    var cancelleBtn, contents, registMemoBtn, selectedColor, selectedValue, t, textArea, titleForMemo, unselectedColor, _view,
+      _this = this;
+    Ti.API.info("createFeedBackDialog start shopName is " + shopName);
+    t = Titanium.UI.create2DMatrix().scale(0.0);
+    unselectedColor = "#666";
+    selectedColor = "#222";
+    selectedValue = false;
+    _view = Ti.UI.createView({
+      width: 300,
+      height: 280,
+      top: 0,
+      left: 10,
+      borderRadius: 10,
+      opacity: 0.8,
+      backgroundColor: "#333",
+      zIndex: 20,
+      transform: t
+    });
+    titleForMemo = Ti.UI.createLabel({
+      text: "どの部分に誤りがあったのかご入力ください",
+      width: 300,
+      height: 40,
+      color: this.baseColor.barColor,
+      left: 10,
+      top: 5,
+      font: {
+        fontSize: 14,
+        fontFamily: 'Rounded M+ 1p',
+        fontWeight: 'bold'
+      }
+    });
+    contents = "";
+    textArea = Titanium.UI.createTextArea({
+      value: '',
+      height: 150,
+      width: 280,
+      top: 50,
+      left: 10,
+      font: {
+        fontSize: 12,
+        fontFamily: 'Rounded M+ 1p',
+        fontWeight: 'bold'
+      },
+      color: this.baseColor.textColor,
+      textAlign: 'left',
+      borderWidth: 2,
+      borderColor: "#dfdfdf",
+      borderRadius: 5,
+      keyboardType: Titanium.UI.KEYBOARD_DEFAULT
+    });
+    textArea.addEventListener('return', function(e) {
+      contents = e.value;
+      Ti.API.info("登録しようとしてる情報は is " + contents + "です");
+      return textArea.blur();
+    });
+    textArea.addEventListener('blur', function(e) {
+      contents = e.value;
+      return Ti.API.info("blur event fire.content is " + contents + "です");
+    });
+    registMemoBtn = Ti.UI.createLabel({
+      bottom: 30,
+      right: 20,
+      width: 120,
+      height: 40,
+      backgroundImage: "NONE",
+      borderWidth: 0,
+      borderRadius: 5,
+      color: this.baseColor.barColor,
+      backgroundColor: "#4cda64",
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p'
+      },
+      text: "報告する",
+      textAlign: 'center'
+    });
+    registMemoBtn.addEventListener('click', function(e) {
+      var MainController, currentUserId, mainController, that;
+      that = _this;
+      that._setDefaultMapViewStyle();
+      that.activityIndicator.show();
+      contents = contents;
+      currentUserId = Ti.App.Properties.getString("currentUserId");
+      Ti.API.info("contents is " + contents + " and shopName is " + shopName);
+      MainController = require("controller/mainController");
+      mainController = new MainController();
+      return mainController.sendFeedBack(contents, shopName, currentUserId, function(result) {
+        that.activityIndicator.hide();
+        if (result.success) {
+          alert("報告完了しました");
+        } else {
+          alert("サーバーがダウンしているために登録することができませんでした");
+        }
+        return that._hideDialog(_view, Ti.API.info("done"));
+      });
+    });
+    cancelleBtn = Ti.UI.createLabel({
+      width: 120,
+      height: 40,
+      left: 20,
+      bottom: 30,
+      borderRadius: 5,
+      backgroundColor: "#d8514b",
+      color: this.baseColor.barColor,
+      font: {
+        fontSize: 18,
+        fontFamily: 'Rounded M+ 1p'
+      },
+      text: '中止する',
+      textAlign: "center"
+    });
+    cancelleBtn.addEventListener('click', function(e) {
+      _this._setDefaultMapViewStyle();
+      return _this._hideDialog(_view, Ti.API.info("done"));
+    });
+    _view.add(textArea);
+    _view.add(titleForMemo);
+    _view.add(registMemoBtn);
+    _view.add(cancelleBtn);
     return _view;
   };
 

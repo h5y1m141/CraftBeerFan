@@ -83,46 +83,77 @@ class mapWindow
         longitude: e.annotation.longitude
         shopInfo: e.annotation.shopInfo
         favoriteButtonEnable:favoriteButtonEnable
-        
+
+      #　Androidの場合には1つのアプリでMapViewを複数貼り付けることが出来ないため
+      # そのための対応
+      mapWindow.remove @mapView
+      @mapView = null
+      mapWindow.close()
       ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
       shopDataDetailWindow = new ShopDataDetailWindow(data)
-      
-    )    
-      
-    refreshLabel = Ti.UI.createLabel
-      backgroundColor:"transparent"
-      color:"#333"
-      width:"56dip"
-      height:"56dip"
-      font:
-        fontSize:"32dip"
-        fontFamily:'LigatureSymbols'
-      text:String.fromCharCode("0xe14d")
-      
-    refreshLabel.addEventListener('click',(e) =>
-      that = @
-      that.activityIndicator.show()      
-      Titanium.Geolocation.getCurrentPosition( (e) ->
-        if e.error
-          Ti.API.info e.error
-          return
-          
-        latitude = e.coords.latitude
-        longitude = e.coords.longitude
-        
-         # 現在地まで地図をスクロールする
-        that.mapView.setLocation(
-          latitude: latitude
-          longitude: longitude
-          latitudeDelta:0.025
-          longitudeDelta:0.025
-        )
-        that._nearBy(latitude,longitude)
+      shopDataDetailWindow.addEventListener('android:back',(e) ->
+        return
 
       )
-    )
+      
+      return shopDataDetailWindow.open()
+      
+    )    
+    @mapView.addEventListener('regionchanged',(e)=>
+      # ちょっとしたスクロールに反応してしまうため、以下URLを参考に
+      # 一定時間経過してないとイベント発火しないような処理にする
+      # http://developer.appcelerator.com/question/129061/mapview-markers-display-on-regionchanged
+      that = @
+      clearTimeout updateMapTimeout  if updateMapTimeout
+      updateMapTimeout = setTimeout(->
+        Ti.API.info "regionchanged fire"
+        Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
+        that.activityIndicator.show()            
+        regionData = that.mapView.getRegion()
+        latitude = regionData.latitude
+        longitude =regionData.longitude
 
-    mapWindow.rightNavButton = refreshLabel
+        return that._nearBy(latitude,longitude)
+
+      , 50)
+      
+      
+    )
+      
+    # refreshLabel = Ti.UI.createLabel
+    #   backgroundColor:"transparent"
+    #   color:"#333"
+    #   width:"56dip"
+    #   height:"56dip"
+    #   font:
+    #     fontSize:"32dip"
+    #     fontFamily:'LigatureSymbols'
+    #   text:String.fromCharCode("0xe14d")
+      
+    # refreshLabel.addEventListener('click',(e) =>
+    #   that = @
+    #   that.activityIndicator.show()      
+    #   Titanium.Geolocation.getCurrentPosition( (e) ->
+    #     if e.error
+    #       Ti.API.info e.error
+    #       return
+          
+    #     latitude = e.coords.latitude
+    #     longitude = e.coords.longitude
+        
+    #      # 現在地まで地図をスクロールする
+    #     that.mapView.setLocation(
+    #       latitude: latitude
+    #       longitude: longitude
+    #       latitudeDelta:0.025
+    #       longitudeDelta:0.025
+    #     )
+    #     that._nearBy(latitude,longitude)
+
+    #   )
+    # )
+
+    # mapWindow.rightNavButton = refreshLabel
     
     Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため'
     Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS
@@ -183,10 +214,10 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           subtitle: ""
-          image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+          image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottleIcon.png"
           animate: false
           leftButton: ""
-          rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
+          rightButton:""
         @mapView.addAnnotation annotation
       else
         annotation = Titanium.Map.createAnnotation
@@ -197,10 +228,10 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           subtitle: ""
-          image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIcon@2x.png"
+          image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblr.png"
           animate: false
           leftButton: ""
-          rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
+          rightButton:""
         @mapView.addAnnotation annotation
       
 
