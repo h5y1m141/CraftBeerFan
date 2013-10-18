@@ -4,7 +4,7 @@ var listWindow,
 listWindow = (function() {
 
   function listWindow() {
-    this.refreshTableData = __bind(this.refreshTableData, this);
+    this.refreshListViewData = __bind(this.refreshListViewData, this);
 
     var ActivityIndicator, myTemplate;
     ActivityIndicator = require("ui/activityIndicator");
@@ -55,6 +55,9 @@ listWindow = (function() {
             height: '80dip',
             left: "30dp",
             top: '5dip'
+          },
+          events: {
+            click: this.showShopArea
           }
         }
       ]
@@ -66,7 +69,7 @@ listWindow = (function() {
       defaultItemTemplate: "template"
     });
     this.prefectures = this._loadPrefectures();
-    this.refreshTableData("関東", "#CAE7F2", "#CAE7F2");
+    this.refreshListViewData("関東", "#CAE7F2", "#CAE7F2");
     this.listWindow.activity.onCreateOptionsMenu = function(e) {
       var actionBarMenu, menu;
       menu = e.menu;
@@ -76,6 +79,32 @@ listWindow = (function() {
     this.listWindow.add(this.listView);
     return this.listWindow;
   }
+
+  listWindow.prototype.showShopArea = function(e) {
+    var KloudService, index, kloudService, prefectureName;
+    index = e.itemIndex;
+    prefectureName = e.section.items[index].title.text;
+    KloudService = require("model/kloudService");
+    kloudService = new KloudService();
+    return kloudService.findShopDataBy(prefectureName, function(items) {
+      var ShopAreaDataWindow, shopWindow;
+      if (items.length === 0) {
+        return alert("選択した地域のお店がみつかりません");
+      } else {
+        items.sort(function(a, b) {
+          if (a.shopAddress > b.shopAddress) {
+            return -1;
+          } else {
+            return 1;
+          }
+        });
+        ShopAreaDataWindow = require("ui/android/shopAreaDataWindow");
+        alert("ShopAreaDataWindow start");
+        shopWindow = new ShopAreaDataWindow(items);
+        return shopWindow.open();
+      }
+    });
+  };
 
   listWindow.prototype._loadPrefectures = function() {
     var file, json, prefectures;
@@ -167,7 +196,7 @@ listWindow = (function() {
     return subMenuRow;
   };
 
-  listWindow.prototype.refreshTableData = function(categoryName, selectedColor, selectedSubColor) {
+  listWindow.prototype.refreshListViewData = function(categoryName, selectedColor, selectedSubColor) {
     var PrefectureCategory, prefectureDataSet, prefectureNameList, prefectureSection, sections, _i, _items, _len;
     sections = [];
     PrefectureCategory = this._makePrefectureCategory(this.prefectures);

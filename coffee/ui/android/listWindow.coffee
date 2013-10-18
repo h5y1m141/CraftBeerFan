@@ -40,25 +40,48 @@ class listWindow
         height:'80dip'
         left:"30dp"
         top:'5dip'
-    ]      
+      events:
+        click:@showShopArea
+    ]
+      
     @listView = Ti.UI.createListView
       templates:
         template: myTemplate
       defaultItemTemplate: "template"
       
+      
     @prefectures = @_loadPrefectures()
-    @refreshTableData("関東","#CAE7F2","#CAE7F2")
+    @refreshListViewData("関東","#CAE7F2","#CAE7F2")
     
     @listWindow.activity.onCreateOptionsMenu = (e) ->
       menu = e.menu
       actionBarMenu = require("ui/android/actionBarMenu")
       actionBarMenu = new actionBarMenu(menu)
       
-      
-      
     @listWindow.add @listView
+
     return @listWindow
-            
+    
+  showShopArea:(e) ->
+    index = e.itemIndex
+    prefectureName = e.section.items[index].title.text
+
+    KloudService = require("model/kloudService")
+    kloudService = new KloudService()
+    kloudService.findShopDataBy(prefectureName,(items) ->
+      if items.length is 0
+        alert "選択した地域のお店がみつかりません"
+      else
+        items.sort( (a, b) ->
+          (if a.shopAddress > b.shopAddress then -1 else 1)
+        )
+        ShopAreaDataWindow = require("ui/android/shopAreaDataWindow")
+        alert "ShopAreaDataWindow start"
+        shopWindow = new ShopAreaDataWindow(items)
+        shopWindow.open()
+    )
+
+    
   _loadPrefectures:() ->
     prefectures = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/prefectures.json")
     file = prefectures.read().toString();
@@ -146,7 +169,7 @@ class listWindow
     subMenuRow.add headerLabel
     return subMenuRow
     
-  refreshTableData: (categoryName,selectedColor,selectedSubColor) =>        
+  refreshListViewData: (categoryName,selectedColor,selectedSubColor) =>        
 
     sections = []
     PrefectureCategory = @_makePrefectureCategory(@prefectures)
