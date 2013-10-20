@@ -35,7 +35,7 @@ shopDataDetailWindow = (function() {
       zIndex: 0,
       top: '0dip',
       left: '0dip',
-      height: '200dip',
+      height: '400dip',
       width: Ti.UI.FULL
     });
     annotation = Titanium.Map.createAnnotation({
@@ -59,25 +59,25 @@ shopDataDetailWindow = (function() {
     shopData = [];
     addressRow = Ti.UI.createTableViewRow({
       width: 'auto',
-      height: 40,
+      height: '80dip',
       selectedColor: 'transparent'
     });
     this.addressLabel = Ti.UI.createLabel({
       text: "" + data.shopAddress,
       textAlign: 'left',
-      width: 280,
+      width: '280dip',
       color: this.baseColor.textColor,
       left: 20,
       top: 10,
       font: {
-        fontSize: 18,
+        fontSize: '18dip',
         fontFamily: 'Rounded M+ 1p',
         fontWeight: 'bold'
       }
     });
     phoneRow = Ti.UI.createTableViewRow({
       width: 'auto',
-      height: 40,
+      height: '80dip',
       selectedColor: 'transparent',
       rowID: 1,
       phoneNumber: data.phoneNumber
@@ -103,7 +103,7 @@ shopDataDetailWindow = (function() {
       textAlign: 'left',
       left: 50,
       top: 10,
-      width: 150,
+      width: '150dip',
       color: this.baseColor.textColor,
       font: {
         fontSize: 18,
@@ -113,7 +113,7 @@ shopDataDetailWindow = (function() {
     });
     wantToGoRow = Ti.UI.createTableViewRow({
       width: 'auto',
-      height: 40,
+      height: '40dip',
       selectedColor: 'transparent',
       rowID: 2,
       shopName: "" + data.shopName

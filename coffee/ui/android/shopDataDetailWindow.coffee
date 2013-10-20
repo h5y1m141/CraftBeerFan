@@ -43,7 +43,7 @@ class shopDataDetailWindow
       zIndex:0
       top:'0dip'
       left:'0dip'
-      height:'200dip'
+      height:'400dip'
       width:Ti.UI.FULL
       
     annotation = Titanium.Map.createAnnotation
@@ -69,24 +69,24 @@ class shopDataDetailWindow
     
     addressRow = Ti.UI.createTableViewRow
       width:'auto'
-      height:40
+      height:'80dip'
       selectedColor:'transparent'
       
     @addressLabel = Ti.UI.createLabel
       text:"#{data.shopAddress}"
       textAlign:'left'      
-      width:280
+      width:'280dip'
       color:@baseColor.textColor
       left:20
       top:10
       font:
-        fontSize:18
+        fontSize:'18dip'
         fontFamily :'Rounded M+ 1p'
         fontWeight:'bold'
     
     phoneRow = Ti.UI.createTableViewRow
       width:'auto'
-      height:40
+      height:'80dip'
       selectedColor:'transparent'
       rowID:1
       phoneNumber:data.phoneNumber
@@ -112,7 +112,7 @@ class shopDataDetailWindow
       textAlign:'left'
       left:50
       top:10
-      width:150
+      width:'150dip'
       color:@baseColor.textColor
       font:
         fontSize:18
@@ -123,7 +123,7 @@ class shopDataDetailWindow
       
     wantToGoRow = Ti.UI.createTableViewRow
       width:'auto'
-      height:40
+      height:'40dip'
       selectedColor:'transparent'
       rowID:2
       shopName:"#{data.shopName}"
