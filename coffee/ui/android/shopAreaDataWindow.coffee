@@ -83,10 +83,9 @@ class shopAreaDataWindow
     shopDataRowTable.finishLayout()
     @shopAreaDataWindow.add shopDataRowTable
 
-    # 画面に遷移する
-    activeTab = Ti.API._activeTab
+    
     Ti.App.Analytics.trackPageview "/window/shopAreaDataWindow"
-    return activeTab.open(@shopAreaDataWindow)
+    return @shopAreaDataWindow
     
 
   _createNavbarElement:() ->
@@ -119,7 +118,7 @@ class shopAreaDataWindow
     
     if placeData.shopFlg is "true"
       iconImage = Ti.UI.createImageView
-        image:"ui/image/bottle.png"
+        image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle.png"
         left:'5dip'
         width:'20dip'
         height:'30dip'
@@ -127,7 +126,7 @@ class shopAreaDataWindow
 
     else
       iconImage = Ti.UI.createImageView
-        image:"ui/image/tumblrIcon.png"
+        image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIcon.png"
         left:'5dip'
         width:'20dip'
         height:'30dip'

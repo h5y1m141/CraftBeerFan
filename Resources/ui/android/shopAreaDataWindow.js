@@ -3,7 +3,7 @@ var shopAreaDataWindow;
 shopAreaDataWindow = (function() {
 
   function shopAreaDataWindow(items) {
-    var activeTab, item, keyColor, searchBar, shopDataRow, shopDataRowTable, shopDataRows, _i, _len;
+    var item, keyColor, searchBar, shopDataRow, shopDataRowTable, shopDataRows, _i, _len;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
@@ -76,9 +76,8 @@ shopAreaDataWindow = (function() {
     shopDataRowTable.setData(shopDataRows);
     shopDataRowTable.finishLayout();
     this.shopAreaDataWindow.add(shopDataRowTable);
-    activeTab = Ti.API._activeTab;
     Ti.App.Analytics.trackPageview("/window/shopAreaDataWindow");
-    return activeTab.open(this.shopAreaDataWindow);
+    return this.shopAreaDataWindow;
   }
 
   shopAreaDataWindow.prototype._createNavbarElement = function() {
@@ -114,7 +113,7 @@ shopAreaDataWindow = (function() {
     var addressLabel, iconImage, row, titleLabel;
     if (placeData.shopFlg === "true") {
       iconImage = Ti.UI.createImageView({
-        image: "ui/image/bottle.png",
+        image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle.png",
         left: '5dip',
         width: '20dip',
         height: '30dip',
@@ -122,7 +121,7 @@ shopAreaDataWindow = (function() {
       });
     } else {
       iconImage = Ti.UI.createImageView({
-        image: "ui/image/tumblrIcon.png",
+        image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIcon.png",
         left: '5dip',
         width: '20dip',
         height: '30dip',
