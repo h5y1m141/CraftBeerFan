@@ -41,8 +41,8 @@ class shopDataDetailWindow
       regionFit:true
       userLocation:true
       zIndex:0
-      top:'0dip'
-      left:'0dip'
+      top:0
+      left:0
       height:'400dip'
       width:Ti.UI.FULL
       
@@ -163,9 +163,8 @@ class shopDataDetailWindow
     @shopDataDetailWindow.add favoriteDialog
 
     @tableView = Ti.UI.createTableView
-      width:'auto'
-      height:'auto'
-      top:200
+      width:Ti.UI.FULL
+      top:400
       left:0
       data:shopData
       backgroundColor:@baseColor.backgroundColor
