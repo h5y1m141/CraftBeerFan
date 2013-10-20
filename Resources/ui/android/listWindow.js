@@ -6,8 +6,10 @@ listWindow = (function() {
   function listWindow() {
     this.refreshListViewData = __bind(this.refreshListViewData, this);
 
+    this.showShopArea = __bind(this.showShopArea, this);
+
     var ActivityIndicator, myTemplate;
-    ActivityIndicator = require("ui/activityIndicator");
+    ActivityIndicator = require("ui/android/activitiIndicator");
     this.activityIndicator = new ActivityIndicator();
     this.baseColor = {
       barColor: "#f9f9f9",
@@ -76,18 +78,23 @@ listWindow = (function() {
       actionBarMenu = require("ui/android/actionBarMenu");
       return actionBarMenu = new actionBarMenu(menu);
     };
+    this.activityIndicator.hide();
     this.listWindow.add(this.listView);
+    this.listWindow.add(this.activityIndicator);
     return this.listWindow;
   }
 
   listWindow.prototype.showShopArea = function(e) {
-    var KloudService, index, kloudService, prefectureName;
+    var KloudService, index, kloudService, prefectureName, that;
+    that = this;
+    that.activityIndicator.show();
     index = e.itemIndex;
     prefectureName = e.section.items[index].title.text;
     KloudService = require("model/kloudService");
     kloudService = new KloudService();
     return kloudService.findShopDataBy(prefectureName, function(items) {
       var ShopAreaDataWindow, shopWindow;
+      that.activityIndicator.hide();
       if (items.length === 0) {
         return alert("選択した地域のお店がみつかりません");
       } else {
@@ -99,7 +106,6 @@ listWindow = (function() {
           }
         });
         ShopAreaDataWindow = require("ui/android/shopAreaDataWindow");
-        alert("ShopAreaDataWindow start");
         shopWindow = new ShopAreaDataWindow(items);
         return shopWindow.open();
       }

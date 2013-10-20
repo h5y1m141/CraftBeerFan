@@ -1,6 +1,6 @@
 class listWindow
   constructor:() ->
-    ActivityIndicator = require("ui/activityIndicator")
+    ActivityIndicator = require("ui/android/activitiIndicator")
     @activityIndicator = new ActivityIndicator()
     @baseColor =
       barColor:"#f9f9f9"
@@ -58,17 +58,22 @@ class listWindow
       actionBarMenu = require("ui/android/actionBarMenu")
       actionBarMenu = new actionBarMenu(menu)
       
+    @activityIndicator.hide()  
     @listWindow.add @listView
+    @listWindow.add @activityIndicator
 
     return @listWindow
     
-  showShopArea:(e) ->
+  showShopArea:(e) =>
+    that = @
+    that.activityIndicator.show()
     index = e.itemIndex
     prefectureName = e.section.items[index].title.text
 
     KloudService = require("model/kloudService")
     kloudService = new KloudService()
     kloudService.findShopDataBy(prefectureName,(items) ->
+      that.activityIndicator.hide()
       if items.length is 0
         alert "選択した地域のお店がみつかりません"
       else
@@ -76,7 +81,6 @@ class listWindow
           (if a.shopAddress > b.shopAddress then -1 else 1)
         )
         ShopAreaDataWindow = require("ui/android/shopAreaDataWindow")
-        alert "ShopAreaDataWindow start"
         shopWindow = new ShopAreaDataWindow(items)
         shopWindow.open()
     )
