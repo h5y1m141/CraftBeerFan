@@ -69,7 +69,7 @@ class shopDataDetailWindow
     
     addressRow = Ti.UI.createTableViewRow
       width:'auto'
-      height:'80dip'
+      height:'40dip'
       selectedColor:'transparent'
       
     @addressLabel = Ti.UI.createLabel
@@ -81,12 +81,11 @@ class shopDataDetailWindow
       top:10
       font:
         fontSize:'18dip'
-        fontFamily :'Rounded M+ 1p'
         fontWeight:'bold'
     
     phoneRow = Ti.UI.createTableViewRow
       width:'auto'
-      height:'80dip'
+      height:'40dip'
       selectedColor:'transparent'
       rowID:1
       phoneNumber:data.phoneNumber
@@ -94,29 +93,28 @@ class shopDataDetailWindow
     @phoneIcon = Ti.UI.createButton
       top:5
       left:10
-      width:30
-      height:30
+      width:'40dip'
+      height:'40dip'
       backgroundColor:@baseColor.phoneColor
       backgroundImage:"NONE"
       borderWidth:0
       borderRadius:0
       color:@baseColor.barColor
       font:
-        fontSize: 24
-        fontFamily:'FontAwesome'
+        fontSize:'36dip'
+        fontFamily:'fontawesome-webfont'
       title:String.fromCharCode("0xf095")
       
       
     @phoneLabel = Ti.UI.createLabel
       text:"電話する"
       textAlign:'left'
-      left:50
+      left:100
       top:10
       width:'150dip'
       color:@baseColor.textColor
       font:
-        fontSize:18
-        fontFamily:'Rounded M+ 1p'
+        fontSize:'18dip'
         fontWeight:'bold'
 
 
@@ -149,7 +147,6 @@ class shopDataDetailWindow
       color:@baseColor.textColor
       font:
         fontSize:18
-        fontFamily:'Rounded M+ 1p'
       text:"行きたい"
       textAlign:'left'
       top:5
@@ -209,7 +206,6 @@ class shopDataDetailWindow
         top:10
         font:
           fontSize:14
-          fontFamily :'Rounded M+ 1p'
           
       shopInfoRow.add shopInfoLabel
       shopInfoRow.add shopInfoIcon
@@ -269,8 +265,7 @@ class shopDataDetailWindow
       left:10
       top:5
       font:
-        fontSize:14
-        fontFamily :'Rounded M+ 1p'
+        fontSize:'14dip'
         fontWeight:'bold'
         
     contents = ""
@@ -281,9 +276,7 @@ class shopDataDetailWindow
       top:50
       left:10
       font:
-        fontSize:12
-        fontFamily :'Rounded M+ 1p'
-        fontWeight:'bold'
+        fontSize:'12dip'
       color:@baseColor.textColor
       textAlign:'left'
       borderWidth:2
@@ -314,8 +307,7 @@ class shopDataDetailWindow
       color:@baseColor.barColor      
       backgroundColor:"#4cda64"
       font:
-        fontSize:18
-        fontFamily :'Rounded M+ 1p'
+        fontSize:'18dip'
       text:"登録する"
       textAlign:'center'
 
@@ -352,8 +344,7 @@ class shopDataDetailWindow
       backgroundColor:"#d8514b"
       color:@baseColor.barColor
       font:
-        fontSize:18
-        fontFamily :'Rounded M+ 1p'
+        fontSize:'18dip'
       text:'中止する'
       textAlign:"center"
       
@@ -372,8 +363,8 @@ class shopDataDetailWindow
     that = @
     t = Titanium.UI.create2DMatrix().scale(0.0)
     _view = Ti.UI.createView
-      width:300
-      height:240
+      width:Ti.UI.FULL
+      height:'240dip'
       top:0
       left:10
       borderRadius:10
@@ -383,16 +374,15 @@ class shopDataDetailWindow
       transform:t
       
     callBtn = Ti.UI.createLabel
-      width:120
-      height:40
+      width:'120dip'
+      height:'40dip'
       right:20
       bottom:40
       borderRadius:5      
       color:@baseColor.barColor      
       backgroundColor:"#4cda64"
       font:
-        fontSize:18
-        fontFamily :'Rounded M+ 1p'
+        fontSize:'18dip'
       text:'はい'
       textAlign:"center"
 
@@ -402,16 +392,15 @@ class shopDataDetailWindow
     )
     
     cancelleBtn = Ti.UI.createLabel
-      width:120
-      height:40
+      width:'120dip'
+      height:'40dip'
       left:20
       bottom:40
       borderRadius:5
       backgroundColor:"#d8514b"
       color:@baseColor.barColor
       font:
-        fontSize:18
-        fontFamily :'Rounded M+ 1p'
+        fontSize:'18dip'
       text:'いいえ'
       textAlign:"center"
       
@@ -423,12 +412,11 @@ class shopDataDetailWindow
       top:20
       left:10
       textAlign:'center'
-      width:300
-      height:150
+      width:'300dip'
+      height:'150dip'
       color:@baseColor.barColor
       font:
-        fontSize:16
-        fontFamily:'Rounded M+ 1p'
+        fontSize:'16dip'
       text:"#{shopName}の電話番号は\n#{phoneNumber}です。\n電話しますか？"
       
     _view.add confirmLabel
