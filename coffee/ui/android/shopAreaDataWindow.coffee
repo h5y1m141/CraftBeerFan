@@ -13,7 +13,7 @@ class shopAreaDataWindow
       navBarHidden:false
       tabBarHidden:false
           
-    searchBar = Titanium.UI.createSearchBar
+    searchBar = Ti.UI.Android.createSearchView
       barColor:@baseColor.barColor
       backgroundColor:"#ccc"
       showCancel:false
@@ -21,21 +21,21 @@ class shopAreaDataWindow
       
     
       
-    searchBar.addEventListener("change", (e) ->
-      Ti.API.info "change event start. e.value is #{e.value}"
-      e.value
-    )  
-    searchBar.addEventListener("return", (e) ->
-      Ti.App.Analytics.trackEvent('shopAreaDataWindow','search','searchBar',1)
-      searchBar.blur()
-    )
-    searchBar.addEventListener("focus", (e) ->
-      searchBar.setShowCancel(false)
+    # searchBar.addEventListener("change", (e) ->
+    #   Ti.API.info "change event start. e.value is #{e.value}"
+    #   e.value
+    # )  
+    # searchBar.addEventListener("return", (e) ->
+    #   Ti.App.Analytics.trackEvent('shopAreaDataWindow','search','searchBar',1)
+    #   searchBar.blur()
+    # )
+    # searchBar.addEventListener("focus", (e) ->
+    #   searchBar.setShowCancel(false)
 
-    )
-    searchBar.addEventListener("cancel", (e) ->
-      searchBar.blur()
-    )
+    # )
+    # searchBar.addEventListener("cancel", (e) ->
+    #   searchBar.blur()
+    # )
 
       
     shopDataRowTable = Ti.UI.createTableView
@@ -58,7 +58,7 @@ class shopAreaDataWindow
         favoriteButtonEnable = false
       else
         favoriteButtonEnable = true
-        
+
       data =
         shopName:e.row.placeData.shopName
         shopAddress:e.row.placeData.shopAddress
@@ -67,12 +67,13 @@ class shopAreaDataWindow
         longitude:e.row.placeData.longitude
         shopInfo:e.row.placeData.shopInfo
         favoriteButtonEnable:favoriteButtonEnable
-        
+        shopFlg:e.row.placeData.shopFlg
         
       ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
       shopDataDetailWindow = new ShopDataDetailWindow(data)
+      shopDataDetailWindow.open()
     )      
-    @_createNavbarElement()
+
     shopDataRows = []
     for item in items
       shopDataRow = @_createShopDataRow(item)
@@ -88,31 +89,6 @@ class shopAreaDataWindow
     return @shopAreaDataWindow
     
 
-  _createNavbarElement:() ->
-    backButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/backButton.png"
-      width:'44dip'
-      height:'44dip'
-      
-    backButton.addEventListener('click',(e) =>
-      Ti.App.Analytics.trackPageview "/window/listWindow"
-      return @shopAreaDataWindow.close({animated:true})
-    )
-
-      
-    @shopAreaDataWindow.leftNavButton = backButton
-    shopAreaDataWindowTitle = Ti.UI.createLabel
-      textAlign: 'center'
-      color:'#333'
-      font:
-        fontSize:'18dip'
-        fontFamily : 'Rounded M+ 1p'
-      text:"地域別のお店情報"
-
-    if Ti.Platform.osname is 'iphone'
-      @shopAreaDataWindow.setTitleControl shopAreaDataWindowTitle
-      
-    return    
 
   _createShopDataRow:(placeData) ->
     
@@ -135,31 +111,28 @@ class shopAreaDataWindow
       
 
     titleLabel = Ti.UI.createLabel
-      width:'240dip'
+      width:'260dip'
       height:'30dip'
       top:'5dip'
       left:'40dip'
       color:'#333'
       font:
         fontSize:'18dip'
-        fontFamily : 'Rounded M+ 1p'
       text:"#{placeData.shopName}"
       
     addressLabel = Ti.UI.createLabel
       width:'240dip'
       height:'30dip'
       top:'30dip'
-      left:'40dip'
+      left:'60dip'
       color:'#444'
       font:
-        fontSize:'14dip'
-        fontFamily : 'Rounded M+ 1p'
+        fontSize:'12dip'
       text:"#{placeData.shopAddress}"
 
     row = Ti.UI.createTableViewRow
-      width:'auto'
-      height:'60dip'
-      borderWidth:'0dip'
+      width:Ti.UI.FULL
+      height:'80dip'
       hasChild:true
       placeData:placeData
       shopAddress:placeData.shopAddress
