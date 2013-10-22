@@ -3,7 +3,7 @@ var shopAreaDataWindow;
 shopAreaDataWindow = (function() {
 
   function shopAreaDataWindow(items) {
-    var activeTab, item, keyColor, searchBar, shopDataRow, shopDataRowTable, shopDataRows, _i, _len;
+    var item, keyColor, searchBar, shopDataRow, shopDataRowTable, shopDataRows, _i, _len;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
@@ -16,25 +16,11 @@ shopAreaDataWindow = (function() {
       navBarHidden: false,
       tabBarHidden: false
     });
-    searchBar = Titanium.UI.createSearchBar({
+    searchBar = Ti.UI.Android.createSearchView({
       barColor: this.baseColor.barColor,
       backgroundColor: "#ccc",
       showCancel: false,
       hintText: "ここに住所入力すると絞り込めます"
-    });
-    searchBar.addEventListener("change", function(e) {
-      Ti.API.info("change event start. e.value is " + e.value);
-      return e.value;
-    });
-    searchBar.addEventListener("return", function(e) {
-      Ti.App.Analytics.trackEvent('shopAreaDataWindow', 'search', 'searchBar', 1);
-      return searchBar.blur();
-    });
-    searchBar.addEventListener("focus", function(e) {
-      return searchBar.setShowCancel(false);
-    });
-    searchBar.addEventListener("cancel", function(e) {
-      return searchBar.blur();
     });
     shopDataRowTable = Ti.UI.createTableView({
       width: 'auto',
@@ -60,12 +46,13 @@ shopAreaDataWindow = (function() {
         latitude: e.row.placeData.latitude,
         longitude: e.row.placeData.longitude,
         shopInfo: e.row.placeData.shopInfo,
-        favoriteButtonEnable: favoriteButtonEnable
+        favoriteButtonEnable: favoriteButtonEnable,
+        shopFlg: e.row.placeData.shopFlg
       };
       ShopDataDetailWindow = require("ui/android/shopDataDetailWindow");
-      return shopDataDetailWindow = new ShopDataDetailWindow(data);
+      shopDataDetailWindow = new ShopDataDetailWindow(data);
+      return shopDataDetailWindow.open();
     });
-    this._createNavbarElement();
     shopDataRows = [];
     for (_i = 0, _len = items.length; _i < _len; _i++) {
       item = items[_i];
@@ -76,45 +63,15 @@ shopAreaDataWindow = (function() {
     shopDataRowTable.setData(shopDataRows);
     shopDataRowTable.finishLayout();
     this.shopAreaDataWindow.add(shopDataRowTable);
-    activeTab = Ti.API._activeTab;
     Ti.App.Analytics.trackPageview("/window/shopAreaDataWindow");
-    return activeTab.open(this.shopAreaDataWindow);
+    return this.shopAreaDataWindow;
   }
-
-  shopAreaDataWindow.prototype._createNavbarElement = function() {
-    var backButton, shopAreaDataWindowTitle,
-      _this = this;
-    backButton = Titanium.UI.createButton({
-      backgroundImage: "ui/image/backButton.png",
-      width: '44dip',
-      height: '44dip'
-    });
-    backButton.addEventListener('click', function(e) {
-      Ti.App.Analytics.trackPageview("/window/listWindow");
-      return _this.shopAreaDataWindow.close({
-        animated: true
-      });
-    });
-    this.shopAreaDataWindow.leftNavButton = backButton;
-    shopAreaDataWindowTitle = Ti.UI.createLabel({
-      textAlign: 'center',
-      color: '#333',
-      font: {
-        fontSize: '18dip',
-        fontFamily: 'Rounded M+ 1p'
-      },
-      text: "地域別のお店情報"
-    });
-    if (Ti.Platform.osname === 'iphone') {
-      this.shopAreaDataWindow.setTitleControl(shopAreaDataWindowTitle);
-    }
-  };
 
   shopAreaDataWindow.prototype._createShopDataRow = function(placeData) {
     var addressLabel, iconImage, row, titleLabel;
     if (placeData.shopFlg === "true") {
       iconImage = Ti.UI.createImageView({
-        image: "ui/image/bottle.png",
+        image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle.png",
         left: '5dip',
         width: '20dip',
         height: '30dip',
@@ -122,7 +79,7 @@ shopAreaDataWindow = (function() {
       });
     } else {
       iconImage = Ti.UI.createImageView({
-        image: "ui/image/tumblrIcon.png",
+        image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIcon.png",
         left: '5dip',
         width: '20dip',
         height: '30dip',
@@ -130,14 +87,13 @@ shopAreaDataWindow = (function() {
       });
     }
     titleLabel = Ti.UI.createLabel({
-      width: '240dip',
+      width: '260dip',
       height: '30dip',
       top: '5dip',
       left: '40dip',
       color: '#333',
       font: {
-        fontSize: '18dip',
-        fontFamily: 'Rounded M+ 1p'
+        fontSize: '18dip'
       },
       text: "" + placeData.shopName
     });
@@ -145,18 +101,16 @@ shopAreaDataWindow = (function() {
       width: '240dip',
       height: '30dip',
       top: '30dip',
-      left: '40dip',
+      left: '60dip',
       color: '#444',
       font: {
-        fontSize: '14dip',
-        fontFamily: 'Rounded M+ 1p'
+        fontSize: '12dip'
       },
       text: "" + placeData.shopAddress
     });
     row = Ti.UI.createTableViewRow({
-      width: 'auto',
-      height: '60dip',
-      borderWidth: '0dip',
+      width: Ti.UI.FULL,
+      height: '80dip',
       hasChild: true,
       placeData: placeData,
       shopAddress: placeData.shopAddress,
