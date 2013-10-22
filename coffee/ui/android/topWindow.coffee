@@ -29,6 +29,7 @@ class topWindow
       "近畿":"#FFFBD5"
       "中国・四国":"#FEF7D5"
       "九州・沖縄":"#F9DFD5"
+      
     myTemplate = childTemplates: [
       # Title 
       type: "Ti.UI.Label" # Use a label for the title
@@ -38,7 +39,7 @@ class topWindow
         font:
           fontSize:'16dip'
         width:'400dip'
-        height:'40dip'
+        height:'60dip'
         left:"30dp"
         top:'5dip'
       events:
@@ -115,9 +116,9 @@ class topWindow
 
     KloudService = require("model/kloudService")
     kloudService = new KloudService()
-    kloudService.findShopData(prefectureName,(items) ->
-      alert "start! items is #{items}"
-    )
+    # kloudService.findShopData(prefectureName,(items) ->
+    #   alert "start! items is #{items}"
+    # )
     kloudService.findShopDataBy(prefectureName,(items) ->
       that.activityIndicator.hide()
       if items.length is 0

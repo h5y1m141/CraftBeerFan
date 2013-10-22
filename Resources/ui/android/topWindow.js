@@ -51,7 +51,7 @@ topWindow = (function() {
               fontSize: '16dip'
             },
             width: '400dip',
-            height: '40dip',
+            height: '60dip',
             left: "30dp",
             top: '5dip'
           },
@@ -173,9 +173,6 @@ topWindow = (function() {
     prefectureName = e.section.items[index].title.text;
     KloudService = require("model/kloudService");
     kloudService = new KloudService();
-    kloudService.findShopData(prefectureName, function(items) {
-      return alert("start! items is " + items);
-    });
     return kloudService.findShopDataBy(prefectureName, function(items) {
       var ShopAreaDataWindow, shopWindow;
       that.activityIndicator.hide();
