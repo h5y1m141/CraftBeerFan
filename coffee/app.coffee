@@ -37,12 +37,6 @@ analytics.start 10, true
 osname = Ti.Platform.osname
 
 if osname is "android"
-  ListWindow = require("ui/android/listWindow")
-  listWindow = new ListWindow()
-  listWindow.open()
-  # mapWindow = require("ui/android/mapWindow")
-  # mapWindow = new mapWindow()
-  # mapWindow.open()
   TopWindow = require("ui/android/topWindow")
   topWindow = new TopWindow()
   topWindow.open()

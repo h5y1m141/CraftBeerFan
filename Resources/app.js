@@ -1,4 +1,4 @@
-var Config, ListWindow, MainController, StartupWindow, TopWindow, analytics, config, configurationWizard, gaKey, gaModule, listWindow, mainController, osname, startupWindow, topWindow;
+var Config, MainController, StartupWindow, TopWindow, analytics, config, configurationWizard, gaKey, gaModule, mainController, osname, startupWindow, topWindow;
 
 configurationWizard = Ti.App.Properties.getBool("configurationWizard");
 
@@ -43,9 +43,6 @@ analytics.start(10, true);
 osname = Ti.Platform.osname;
 
 if (osname === "android") {
-  ListWindow = require("ui/android/listWindow");
-  listWindow = new ListWindow();
-  listWindow.open();
   TopWindow = require("ui/android/topWindow");
   topWindow = new TopWindow();
   topWindow.open();
