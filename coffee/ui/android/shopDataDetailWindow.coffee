@@ -46,12 +46,17 @@ class shopDataDetailWindow
       height:'400dip'
       width:Ti.UI.FULL
       
+    if data.shopFlg is "true"
+      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+    else
+      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
+      
     annotation = Titanium.Map.createAnnotation
-      pincolor:Titanium.Map.ANNOTATION_PURPLE
+      image:iconImage
       animate: false
       latitude:data.latitude
       longitude:data.longitude
-
+ 
     detailMap.addAnnotation annotation
     @shopDataDetailWindow.add detailMap
 
@@ -68,8 +73,8 @@ class shopDataDetailWindow
     shopData = []
     
     addressRow = Ti.UI.createTableViewRow
-      width:'auto'
-      height:'40dip'
+      width:Ti.UI.FULL
+      height:'60dip'
       selectedColor:'transparent'
       
     @addressLabel = Ti.UI.createLabel
@@ -84,7 +89,7 @@ class shopDataDetailWindow
         fontWeight:'bold'
     
     phoneRow = Ti.UI.createTableViewRow
-      width:'auto'
+      width:Ti.UI.FULL
       height:'40dip'
       selectedColor:'transparent'
       rowID:1

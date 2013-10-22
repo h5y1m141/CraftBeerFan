@@ -3,7 +3,7 @@ var shopDataDetailWindow;
 shopDataDetailWindow = (function() {
 
   function shopDataDetailWindow(data) {
-    var ActivityIndicator, annotation, detailMap, keyColor;
+    var ActivityIndicator, annotation, detailMap, iconImage, keyColor;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
@@ -38,8 +38,13 @@ shopDataDetailWindow = (function() {
       height: '400dip',
       width: Ti.UI.FULL
     });
+    if (data.shopFlg === "true") {
+      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png";
+    } else {
+      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png";
+    }
     annotation = Titanium.Map.createAnnotation({
-      pincolor: Titanium.Map.ANNOTATION_PURPLE,
+      image: iconImage,
       animate: false,
       latitude: data.latitude,
       longitude: data.longitude
@@ -58,8 +63,8 @@ shopDataDetailWindow = (function() {
       _this = this;
     shopData = [];
     addressRow = Ti.UI.createTableViewRow({
-      width: 'auto',
-      height: '40dip',
+      width: Ti.UI.FULL,
+      height: '60dip',
       selectedColor: 'transparent'
     });
     this.addressLabel = Ti.UI.createLabel({
@@ -75,7 +80,7 @@ shopDataDetailWindow = (function() {
       }
     });
     phoneRow = Ti.UI.createTableViewRow({
-      width: 'auto',
+      width: Ti.UI.FULL,
       height: '40dip',
       selectedColor: 'transparent',
       rowID: 1,
