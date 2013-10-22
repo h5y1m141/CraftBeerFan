@@ -3,13 +3,17 @@ var mapWindow;
 mapWindow = (function() {
 
   function mapWindow() {
-    var ActivityIndicator, Config, ad, adView, config, displayHeight, keyColor, mapViewHeight, mapWindowTitle, nend,
+    var ActivityIndicator, Config, MapModule, ad, adView, config, displayHeight, keyColor, mapViewHeight, mapWindowTitle, mapview, nend,
       _this = this;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
       backgroundColor: keyColor
     };
+    MapModule = require('ti.map');
+    mapview = MapModule.createView({
+      mapType: MapModule.NORMAL_TYPE
+    });
     ad = require('net.nend');
     Config = require("model/loadConfig");
     config = new Config();
@@ -86,7 +90,6 @@ mapWindow = (function() {
       mapWindow.close();
       ShopDataDetailWindow = require("ui/android/shopDataDetailWindow");
       shopDataDetailWindow = new ShopDataDetailWindow(data);
-      shopDataDetailWindow.addEventListener('android:back', function(e) {});
       return shopDataDetailWindow.open();
     });
     this.mapView.addEventListener('regionchanged', function(e) {
@@ -166,7 +169,7 @@ mapWindow = (function() {
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
           subtitle: "",
-          image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottleIcon.png",
+          pincolor: Titanium.Map.ANNOTATION_GREEN,
           animate: false,
           leftButton: "",
           rightButton: ""
@@ -181,7 +184,7 @@ mapWindow = (function() {
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
           subtitle: "",
-          image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblr.png",
+          pincolor: Titanium.Map.ANNOTATION_RED,
           animate: false,
           leftButton: "",
           rightButton: ""

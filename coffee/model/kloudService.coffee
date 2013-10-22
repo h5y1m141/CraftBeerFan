@@ -197,6 +197,40 @@ class kloudService
       else
         Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
         
+  findShopData:(queryParam,callback) ->
+    prefectureName = ["神奈川県","千葉県"]
+    @Cloud.Places.query
+      page: 1
+      per_page: 200
+      where:
+        state:
+          $in:prefectureName
+
+    , (e) ->
+
+      if e.success
+        result = []
+        i = 0
+        while i < e.places.length
+          place = e.places[i]
+
+          data =
+            latitude: place.latitude
+            longitude: place.longitude
+            shopName:place.name
+            shopAddress: place.address
+            phoneNumber: place.phone_number
+            shopFlg:place.custom_fields.shopFlg
+            shopInfo:place.custom_fields.shopInfo
+            
+
+          result.push(data)
+          i++
+        Ti.API.info "findShopData done result is #{result}"
+        return callback(result)
+      else
+        Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
+        
   signUP:(userID,password,callback) ->
     @Cloud.Users.create
       username:userID

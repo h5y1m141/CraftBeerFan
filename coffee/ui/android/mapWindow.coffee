@@ -5,7 +5,8 @@ class mapWindow
       barColor:keyColor
       backgroundColor:keyColor
 
-      
+    MapModule = require('ti.map')
+    mapview = MapModule.createView({mapType:MapModule.NORMAL_TYPE})
     ad = require('net.nend')
     Config = require("model/loadConfig")
     config = new Config()
@@ -91,10 +92,10 @@ class mapWindow
       mapWindow.close()
       ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
       shopDataDetailWindow = new ShopDataDetailWindow(data)
-      shopDataDetailWindow.addEventListener('android:back',(e) ->
-        return
+      # shopDataDetailWindow.addEventListener('android:back',(e) ->
+      #   return
 
-      )
+      # )
       
       return shopDataDetailWindow.open()
       
@@ -119,41 +120,6 @@ class mapWindow
       
       
     )
-      
-    # refreshLabel = Ti.UI.createLabel
-    #   backgroundColor:"transparent"
-    #   color:"#333"
-    #   width:"56dip"
-    #   height:"56dip"
-    #   font:
-    #     fontSize:"32dip"
-    #     fontFamily:'LigatureSymbols'
-    #   text:String.fromCharCode("0xe14d")
-      
-    # refreshLabel.addEventListener('click',(e) =>
-    #   that = @
-    #   that.activityIndicator.show()      
-    #   Titanium.Geolocation.getCurrentPosition( (e) ->
-    #     if e.error
-    #       Ti.API.info e.error
-    #       return
-          
-    #     latitude = e.coords.latitude
-    #     longitude = e.coords.longitude
-        
-    #      # 現在地まで地図をスクロールする
-    #     that.mapView.setLocation(
-    #       latitude: latitude
-    #       longitude: longitude
-    #       latitudeDelta:0.025
-    #       longitudeDelta:0.025
-    #     )
-    #     that._nearBy(latitude,longitude)
-
-    #   )
-    # )
-
-    # mapWindow.rightNavButton = refreshLabel
     
     Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため'
     Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS
@@ -214,7 +180,8 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           subtitle: ""
-          image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottleIcon.png"
+          pincolor:Titanium.Map.ANNOTATION_GREEN
+          # image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottleIcon.png"
           animate: false
           leftButton: ""
           rightButton:""
@@ -228,13 +195,12 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           subtitle: ""
-          image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblr.png"
+          pincolor:Titanium.Map.ANNOTATION_RED          
+          # image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblr.png"
           animate: false
           leftButton: ""
           rightButton:""
         @mapView.addAnnotation annotation
-      
-
 
 
 module.exports = mapWindow  

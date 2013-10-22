@@ -37,12 +37,9 @@ analytics.start 10, true
 osname = Ti.Platform.osname
 
 if osname is "android"
-  # MainController = require("controller/mainController")
-  # mainController = new MainController()
-  # mainController.createTabGroup()
-  ListWindow = require("ui/android/listWindow")
-  listWindow = new ListWindow()
-  listWindow.open()
+  TopWindow = require("ui/android/topWindow")
+  topWindow = new TopWindow()
+  topWindow.open()
 
 else if osname is "iphone"
 

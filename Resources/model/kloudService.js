@@ -211,6 +211,44 @@ kloudService = (function() {
     });
   };
 
+  kloudService.prototype.findShopData = function(queryParam, callback) {
+    var prefectureName;
+    prefectureName = ["神奈川県", "千葉県"];
+    return this.Cloud.Places.query({
+      page: 1,
+      per_page: 200,
+      where: {
+        state: {
+          $in: prefectureName
+        }
+      }
+    }, function(e) {
+      var data, i, place, result;
+      if (e.success) {
+        result = [];
+        i = 0;
+        while (i < e.places.length) {
+          place = e.places[i];
+          data = {
+            latitude: place.latitude,
+            longitude: place.longitude,
+            shopName: place.name,
+            shopAddress: place.address,
+            phoneNumber: place.phone_number,
+            shopFlg: place.custom_fields.shopFlg,
+            shopInfo: place.custom_fields.shopInfo
+          };
+          result.push(data);
+          i++;
+        }
+        Ti.API.info("findShopData done result is " + result);
+        return callback(result);
+      } else {
+        return Ti.API.info("Error:\n" + ((e.error && e.message) || JSON.stringify(e)));
+      }
+    });
+  };
+
   kloudService.prototype.signUP = function(userID, password, callback) {
     return this.Cloud.Users.create({
       username: userID,
