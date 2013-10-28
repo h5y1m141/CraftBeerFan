@@ -37,9 +37,12 @@ analytics.start 10, true
 osname = Ti.Platform.osname
 
 if osname is "android"
-  TopWindow = require("ui/android/topWindow")
-  topWindow = new TopWindow()
-  topWindow.open()
+  # TopWindow = require("ui/android/topWindow")
+  # topWindow = new TopWindow()
+  # topWindow.open()
+  Map = require("ui/android/mapWindow")
+  mapWindow = new Map()
+  mapWindow.open()
 
 else if osname is "iphone"
 

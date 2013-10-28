@@ -4,7 +4,7 @@ activityIndicator = (function() {
 
   function activityIndicator() {
     var actInd;
-    actInd = Ti.UI.createActivityIndicator({
+    actInd = Ti.UI.Android.createProgressIndicator({
       zIndex: 20,
       backgroundColor: "#222",
       top: 150,
@@ -12,9 +12,7 @@ activityIndicator = (function() {
       height: '40dip',
       width: '200dip',
       font: {
-        fontSize: '18dip',
-        fontFamily: 'Rounded M+ 1p',
-        fontWeight: 'bold'
+        fontSize: '18dip'
       },
       color: '#fff',
       message: 'loading...'

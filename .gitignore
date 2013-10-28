@@ -5,5 +5,6 @@ tmp
 .DS_Store
 Resources/model/config.json
 Info.plist
-/tiapp.xml
-/cookies.txt
+tiapp.xml
+cookies.txt
+CraftBeerFan.keystore

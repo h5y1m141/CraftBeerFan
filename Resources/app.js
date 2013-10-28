@@ -1,4 +1,4 @@
-var Config, MainController, StartupWindow, TopWindow, analytics, config, configurationWizard, gaKey, gaModule, mainController, osname, startupWindow, topWindow;
+var Config, MainController, Map, StartupWindow, analytics, config, configurationWizard, gaKey, gaModule, mainController, mapWindow, osname, startupWindow;
 
 configurationWizard = Ti.App.Properties.getBool("configurationWizard");
 
@@ -43,9 +43,9 @@ analytics.start(10, true);
 osname = Ti.Platform.osname;
 
 if (osname === "android") {
-  TopWindow = require("ui/android/topWindow");
-  topWindow = new TopWindow();
-  topWindow.open();
+  Map = require("ui/android/mapWindow");
+  mapWindow = new Map();
+  mapWindow.open();
 } else if (osname === "iphone") {
   if (configurationWizard === null || typeof configurationWizard === "undefined" || configurationWizard === false) {
     StartupWindow = require("ui/" + osname + "/startupWindow");
