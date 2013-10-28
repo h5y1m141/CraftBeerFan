@@ -81,46 +81,34 @@ class mapWindow
 
       , 1000)
     )
-    
-    pPassive = Ti.Geolocation.Android.createLocationProvider(
-      name: Ti.Geolocation.PROVIDER_PASSIVE
-      minUpdateDistance: 0.0
-      minUpdateTime: 0
+  
+    gpsRule = Ti.Geolocation.Android.createLocationRule(
+      provider: Ti.Geolocation.PROVIDER_GPS
+      accuracy: 100
+      maxAge: 300000
+      minAge: 10000
     )
-    pNetwork = Ti.Geolocation.Android.createLocationProvider(
-      name: Ti.Geolocation.PROVIDER_NETWORK
-      minUpdateDistance: 0.0
-      minUpdateTime: 0
-    )
-    pGps = Ti.Geolocation.Android.createLocationProvider(
-      name: Ti.Geolocation.PROVIDER_GPS
-      minUpdateDistance: 0.0
-      minUpdateTime: 0
-    )
-    Ti.Geolocation.Android.removeLocationProvider pPassive
-    Ti.Geolocation.Android.addLocationProvider pNetwork
-    Ti.Geolocation.Android.addLocationProvider pGps
-    Ti.Geolocation.Android.manualMode = true    
-    # Ti.Geolocation.addEventListener('location',(e)=>
-    #   @activityIndicator.show()
-    #   if e.success
+    Ti.Geolocation.Android.addLocationRule gpsRule    
+    Ti.Geolocation.addEventListener('location',(e)=>
+      @activityIndicator.show()
+      if e.success
 
-    #     latitude = e.coords.latitude
-    #     longitude = e.coords.longitude
-    #     @mapview.setLocation(
-    #       latitude: latitude
-    #       longitude: longitude
-    #       latitudeDelta:0.025
-    #       longitudeDelta:0.025
-    #     )
-    #     Ti.API.info "location event fire .latitude is #{latitude}and #{longitude}"
-    #     @_nearBy(latitude,longitude)
+        latitude = e.coords.latitude
+        longitude = e.coords.longitude
+        @mapview.setLocation(
+          latitude: latitude
+          longitude: longitude
+          latitudeDelta:0.025
+          longitudeDelta:0.025
+        )
+        Ti.API.info "location event fire .latitude is #{latitude}and #{longitude}"
+        @_nearBy(latitude,longitude)
         
-    #   else
-    #     Ti.API.info e.error
-    #     @activityIndicator.hide()
+      else
+        Ti.API.info e.error
+        @activityIndicator.hide()
         
-    # )
+    )
 
     mapWindow.add adView
     mapWindow.add @mapview

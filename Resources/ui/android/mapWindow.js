@@ -6,7 +6,7 @@ mapWindow = (function() {
   function mapWindow() {
     this.addAnnotations = __bind(this.addAnnotations, this);
 
-    var ActivityIndicator, Config, ad, adView, config, displayHeight, keyColor, mapViewHeight, mapWindowTitle, nend, pGps, pNetwork, pPassive,
+    var ActivityIndicator, Config, ad, adView, config, displayHeight, gpsRule, keyColor, mapViewHeight, mapWindowTitle, nend,
       _this = this;
     keyColor = "#f9f9f9";
     this.baseColor = {
@@ -82,25 +82,32 @@ mapWindow = (function() {
         return that._nearBy(latitude, longitude);
       }, 1000);
     });
-    pPassive = Ti.Geolocation.Android.createLocationProvider({
-      name: Ti.Geolocation.PROVIDER_PASSIVE,
-      minUpdateDistance: 0.0,
-      minUpdateTime: 0
+    gpsRule = Ti.Geolocation.Android.createLocationRule({
+      provider: Ti.Geolocation.PROVIDER_GPS,
+      accuracy: 100,
+      maxAge: 300000,
+      minAge: 10000
     });
-    pNetwork = Ti.Geolocation.Android.createLocationProvider({
-      name: Ti.Geolocation.PROVIDER_NETWORK,
-      minUpdateDistance: 0.0,
-      minUpdateTime: 0
+    Ti.Geolocation.Android.addLocationRule(gpsRule);
+    Ti.Geolocation.addEventListener('location', function(e) {
+      var latitude, longitude;
+      _this.activityIndicator.show();
+      if (e.success) {
+        latitude = e.coords.latitude;
+        longitude = e.coords.longitude;
+        _this.mapview.setLocation({
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.025,
+          longitudeDelta: 0.025
+        });
+        Ti.API.info("location event fire .latitude is " + latitude + "and " + longitude);
+        return _this._nearBy(latitude, longitude);
+      } else {
+        Ti.API.info(e.error);
+        return _this.activityIndicator.hide();
+      }
     });
-    pGps = Ti.Geolocation.Android.createLocationProvider({
-      name: Ti.Geolocation.PROVIDER_GPS,
-      minUpdateDistance: 0.0,
-      minUpdateTime: 0
-    });
-    Ti.Geolocation.Android.removeLocationProvider(pPassive);
-    Ti.Geolocation.Android.addLocationProvider(pNetwork);
-    Ti.Geolocation.Android.addLocationProvider(pGps);
-    Ti.Geolocation.Android.manualMode = true;
     mapWindow.add(adView);
     mapWindow.add(this.mapview);
     mapWindow.add(this.activityIndicator);
