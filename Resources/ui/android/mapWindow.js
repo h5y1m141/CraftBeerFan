@@ -1,33 +1,33 @@
-var mapWindow;
+var mapWindow,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 mapWindow = (function() {
 
   function mapWindow() {
-    var ActivityIndicator, Config, MapModule, ad, adView, config, displayHeight, keyColor, mapViewHeight, mapWindowTitle, mapview, nend,
+    this.addAnnotations = __bind(this.addAnnotations, this);
+
+    var ActivityIndicator, Config, ad, adView, config, displayHeight, gpsRule, keyColor, mapViewHeight, mapWindowTitle, nend,
       _this = this;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
       backgroundColor: keyColor
     };
-    MapModule = require('ti.map');
-    mapview = MapModule.createView({
-      mapType: MapModule.NORMAL_TYPE
-    });
+    this.MapModule = require('ti.map');
     ad = require('net.nend');
     Config = require("model/loadConfig");
     config = new Config();
     nend = config.getNendData();
-    ActivityIndicator = require('ui/activityIndicator');
+    ActivityIndicator = require('ui/android/activitiIndicator');
     this.activityIndicator = new ActivityIndicator();
     this.activityIndicator.hide();
     adView = ad.createView({
       spotId: nend.spotId,
       apiKey: nend.apiKey,
-      width: Ti.UI.FULL,
+      width: Titanium.Platform.displayCaps.platformWidth,
       height: '50dip',
       bottom: '1dip',
-      left: '0dip',
+      left: 0,
       zIndex: 10
     });
     mapWindowTitle = Ti.UI.createLabel({
@@ -50,73 +50,67 @@ mapWindow = (function() {
     displayHeight = Ti.Platform.displayCaps.platformHeight;
     displayHeight = displayHeight / Ti.Platform.displayCaps.logicalDensityFactor;
     mapViewHeight = displayHeight - 50;
-    this.mapView = Titanium.Map.createView({
-      mapType: Titanium.Map.STANDARD_TYPE,
+    Ti.API.info("displayHeight is " + displayHeight + "and mapViewHeight is " + mapViewHeight);
+    this.mapview = this.MapModule.createView({
+      mapType: this.MapModule.NORMAL_TYPE,
       region: {
         latitude: 35.676564,
         longitude: 139.765076,
-        latitudeDelta: 0.025,
-        longitudeDelta: 0.025
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05
       },
       animate: true,
-      regionFit: true,
-      userLocation: true,
-      zIndex: 0,
-      top: 0,
-      left: 0,
+      userLocation: false,
       width: Ti.UI.FULL,
-      height: mapViewHeight + 'dip'
+      height: "542dip",
+      zIndex: 1
     });
-    this.mapView.addEventListener('click', function(e) {
-      var ShopDataDetailWindow, currentUserId, data, favoriteButtonEnable, shopDataDetailWindow;
-      Ti.API.info("map view click event");
-      currentUserId = Ti.App.Properties.getString("currentUserId");
-      if (typeof currentUserId === "undefined" || currentUserId === null) {
-        favoriteButtonEnable = false;
-      } else {
-        favoriteButtonEnable = true;
-      }
-      data = {
-        shopName: e.title,
-        shopAddress: e.annotation.shopAddress,
-        phoneNumber: e.annotation.phoneNumber,
-        latitude: e.annotation.latitude,
-        longitude: e.annotation.longitude,
-        shopInfo: e.annotation.shopInfo,
-        favoriteButtonEnable: favoriteButtonEnable
-      };
-      mapWindow.remove(_this.mapView);
-      _this.mapView = null;
-      mapWindow.close();
-      ShopDataDetailWindow = require("ui/android/shopDataDetailWindow");
-      shopDataDetailWindow = new ShopDataDetailWindow(data);
-      return shopDataDetailWindow.open();
-    });
-    this.mapView.addEventListener('regionchanged', function(e) {
+    this.mapview.addEventListener('regionchanged', function(e) {
       var that, updateMapTimeout;
       that = _this;
+      that.activityIndicator.show();
       if (updateMapTimeout) {
         clearTimeout(updateMapTimeout);
       }
       return updateMapTimeout = setTimeout(function() {
-        var latitude, longitude, regionData;
-        Ti.API.info("regionchanged fire");
+        var latitude, longitude;
+        Ti.API.info("regionchanged fire that is " + that);
         Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
-        that.activityIndicator.show();
-        regionData = that.mapView.getRegion();
-        latitude = regionData.latitude;
-        longitude = regionData.longitude;
+        latitude = e.latitude;
+        longitude = e.longitude;
+        Ti.API.info("latitude is " + latitude + " and longitude is " + longitude);
         return that._nearBy(latitude, longitude);
-      }, 50);
+      }, 1000);
     });
-    Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため';
-    Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS;
-    Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
-    Ti.Geolocation.distanceFilter = 5;
-    mapWindow.add(this.mapView);
+    gpsRule = Ti.Geolocation.Android.createLocationRule({
+      provider: Ti.Geolocation.PROVIDER_GPS,
+      accuracy: 100,
+      maxAge: 300000,
+      minAge: 10000
+    });
+    Ti.Geolocation.Android.addLocationRule(gpsRule);
+    Ti.Geolocation.addEventListener('location', function(e) {
+      var latitude, longitude;
+      _this.activityIndicator.show();
+      if (e.success) {
+        latitude = e.coords.latitude;
+        longitude = e.coords.longitude;
+        _this.mapview.setLocation({
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.025,
+          longitudeDelta: 0.025
+        });
+        Ti.API.info("location event fire .latitude is " + latitude + "and " + longitude);
+        return _this._nearBy(latitude, longitude);
+      } else {
+        Ti.API.info(e.error);
+        return _this.activityIndicator.hide();
+      }
+    });
     mapWindow.add(adView);
+    mapWindow.add(this.mapview);
     mapWindow.add(this.activityIndicator);
-    this._getGeoCurrentPosition();
     return mapWindow;
   }
 
@@ -134,7 +128,7 @@ mapWindow = (function() {
     var that;
     that = this;
     that.activityIndicator.show();
-    Titanium.Geolocation.getCurrentPosition(function(e) {
+    Titanium.Geolocation.addEventListener('location', function(e) {
       var latitude, longitude;
       if (e.error) {
         Ti.API.info(e.error);
@@ -143,7 +137,7 @@ mapWindow = (function() {
       }
       latitude = e.coords.latitude;
       longitude = e.coords.longitude;
-      that.mapView.setLocation({
+      that.mapview.setLocation({
         latitude: latitude,
         longitude: longitude,
         latitudeDelta: 0.025,
@@ -155,41 +149,34 @@ mapWindow = (function() {
 
   mapWindow.prototype.addAnnotations = function(array) {
     var annotation, data, _i, _len, _results;
-    Ti.API.info("addAnnotations start mapView is " + this.mapView);
     this.activityIndicator.hide();
     _results = [];
     for (_i = 0, _len = array.length; _i < _len; _i++) {
       data = array[_i];
+      Ti.API.info("addAnnotations start latitude is " + data.latitude);
+      Ti.API.info("shopName is " + data.shopName);
       if (data.shopFlg === "true") {
-        annotation = Titanium.Map.createAnnotation({
+        annotation = this.MapModule.createAnnotation({
           latitude: data.latitude,
           longitude: data.longitude,
           title: data.shopName,
           phoneNumber: data.phoneNumber,
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
-          subtitle: "",
-          pincolor: Titanium.Map.ANNOTATION_GREEN,
-          animate: false,
-          leftButton: "",
-          rightButton: ""
+          image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
         });
-        _results.push(this.mapView.addAnnotation(annotation));
+        _results.push(this.mapview.addAnnotation(annotation));
       } else {
-        annotation = Titanium.Map.createAnnotation({
+        annotation = this.MapModule.createAnnotation({
           latitude: data.latitude,
           longitude: data.longitude,
           title: data.shopName,
           phoneNumber: data.phoneNumber,
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
-          subtitle: "",
-          pincolor: Titanium.Map.ANNOTATION_RED,
-          animate: false,
-          leftButton: "",
-          rightButton: ""
+          image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
         });
-        _results.push(this.mapView.addAnnotation(annotation));
+        _results.push(this.mapview.addAnnotation(annotation));
       }
     }
     return _results;

@@ -5,24 +5,24 @@ class mapWindow
       barColor:keyColor
       backgroundColor:keyColor
 
-    MapModule = require('ti.map')
-    mapview = MapModule.createView({mapType:MapModule.NORMAL_TYPE})
+    @MapModule = require('ti.map')
+    
     ad = require('net.nend')
     Config = require("model/loadConfig")
     config = new Config()
     nend = config.getNendData()
     
-    ActivityIndicator = require('ui/activityIndicator')
+    ActivityIndicator = require('ui/android/activitiIndicator')
     @activityIndicator = new ActivityIndicator()
     @activityIndicator.hide()
     
     adView = ad.createView
       spotId:nend.spotId
       apiKey:nend.apiKey
-      width:Ti.UI.FULL
+      width:Titanium.Platform.displayCaps.platformWidth
       height:'50dip'
       bottom:'1dip'
-      left:'0dip'
+      left:0
       zIndex:10
       
     mapWindowTitle = Ti.UI.createLabel
@@ -47,96 +47,80 @@ class mapWindow
     displayHeight = Ti.Platform.displayCaps.platformHeight
     displayHeight = displayHeight / Ti.Platform.displayCaps.logicalDensityFactor
     mapViewHeight = displayHeight-50
-    
-    @mapView = Titanium.Map.createView
-      mapType: Titanium.Map.STANDARD_TYPE
-      region: 
-        latitude:35.676564
-        longitude:139.765076
-        latitudeDelta:0.025
-        longitudeDelta:0.025
-      animate:true
-      regionFit:true
-      userLocation:true
-      zIndex:0
-      top:0
-      left:0
+    Ti.API.info "displayHeight is #{displayHeight}and mapViewHeight is #{mapViewHeight}"
+    @mapview = @MapModule.createView
+      mapType: @MapModule.NORMAL_TYPE
+      region:
+        latitude: 35.676564
+        longitude:139.765076 
+        latitudeDelta: 0.05
+        longitudeDelta: 0.05
+      animate: true
+      userLocation:false
       width:Ti.UI.FULL
-      height:mapViewHeight+'dip'
+      height:"542dip"
+      zIndex:1
+
     
-    @mapView.addEventListener('click',(e)=>
-      Ti.API.info "map view click event"
 
-      # アカウント登録をスキップして利用する人がいるため、
-      # currentUserIdの値をチェックして、存在しない場合にはお気に入り
-      # を非表示にする
-      currentUserId = Ti.App.Properties.getString "currentUserId"
-      if typeof currentUserId is "undefined" or currentUserId is null
-        favoriteButtonEnable = false
-      else
-        favoriteButtonEnable = true
-
-      data =
-        shopName:e.title
-        shopAddress:e.annotation.shopAddress
-        phoneNumber:e.annotation.phoneNumber
-        latitude: e.annotation.latitude
-        longitude: e.annotation.longitude
-        shopInfo: e.annotation.shopInfo
-        favoriteButtonEnable:favoriteButtonEnable
-
-      #　Androidの場合には1つのアプリでMapViewを複数貼り付けることが出来ないため
-      # そのための対応
-      mapWindow.remove @mapView
-      @mapView = null
-      mapWindow.close()
-      ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
-      shopDataDetailWindow = new ShopDataDetailWindow(data)
-      # shopDataDetailWindow.addEventListener('android:back',(e) ->
-      #   return
-
-      # )
-      
-      return shopDataDetailWindow.open()
-      
-    )    
-    @mapView.addEventListener('regionchanged',(e)=>
+    @mapview.addEventListener('regionchanged',(e)=>
       # ちょっとしたスクロールに反応してしまうため、以下URLを参考に
       # 一定時間経過してないとイベント発火しないような処理にする
       # http://developer.appcelerator.com/question/129061/mapview-markers-display-on-regionchanged
       that = @
+      # alert @activityIndicator
+      that.activityIndicator.show()           
       clearTimeout updateMapTimeout  if updateMapTimeout
       updateMapTimeout = setTimeout(->
-        Ti.API.info "regionchanged fire"
+        Ti.API.info "regionchanged fire that is #{that}"
         Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
-        that.activityIndicator.show()            
-        regionData = that.mapView.getRegion()
-        latitude = regionData.latitude
-        longitude =regionData.longitude
-
+        latitude = e.latitude
+        longitude = e.longitude
+        Ti.API.info "latitude is #{latitude} and longitude is #{longitude}"
         return that._nearBy(latitude,longitude)
 
-      , 50)
-      
-      
+      , 1000)
     )
-    
-    Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため'
-    Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS
-    Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS
-    Ti.Geolocation.distanceFilter = 5
-    
-    mapWindow.add @mapView
+  
+    gpsRule = Ti.Geolocation.Android.createLocationRule(
+      provider: Ti.Geolocation.PROVIDER_GPS
+      accuracy: 100
+      maxAge: 300000
+      minAge: 10000
+    )
+    Ti.Geolocation.Android.addLocationRule gpsRule    
+    Ti.Geolocation.addEventListener('location',(e)=>
+      @activityIndicator.show()
+      if e.success
+
+        latitude = e.coords.latitude
+        longitude = e.coords.longitude
+        @mapview.setLocation(
+          latitude: latitude
+          longitude: longitude
+          latitudeDelta:0.025
+          longitudeDelta:0.025
+        )
+        Ti.API.info "location event fire .latitude is #{latitude}and #{longitude}"
+        @_nearBy(latitude,longitude)
+        
+      else
+        Ti.API.info e.error
+        @activityIndicator.hide()
+        
+    )
+
     mapWindow.add adView
+    mapWindow.add @mapview
     mapWindow.add @activityIndicator
 
     # init時に現在位置を取得する
-    @_getGeoCurrentPosition()
+    # @_getGeoCurrentPosition()
     return mapWindow
     
   _nearBy:(latitude,longitude) ->
     that = @
-    KloudService =require("model/kloudService")
+    KloudService = require("model/kloudService")
     kloudService = new KloudService()
     kloudService.placesQuery(latitude,longitude,(data) ->
       that.addAnnotations(data)
@@ -145,7 +129,7 @@ class mapWindow
   _getGeoCurrentPosition:() ->
     that = @
     that.activityIndicator.show()
-    Titanium.Geolocation.getCurrentPosition( (e) ->
+    Titanium.Geolocation.addEventListener('location',(e)->
       if e.error
         Ti.API.info e.error
         that.activityIndicator.hide()
@@ -153,9 +137,7 @@ class mapWindow
         
       latitude = e.coords.latitude
       longitude = e.coords.longitude
-      
-       # 現在地まで地図をスクロールする
-      that.mapView.setLocation(
+      that.mapview.setLocation(
         latitude: latitude
         longitude: longitude
         latitudeDelta:0.025
@@ -163,44 +145,37 @@ class mapWindow
       )
 
       that._nearBy(latitude,longitude)
-      
+        
     )
+
     return
-  addAnnotations:(array) ->
-    Ti.API.info "addAnnotations start mapView is #{@mapView}"
+  addAnnotations:(array) =>
     @activityIndicator.hide()
     for data in array
-
+      Ti.API.info "addAnnotations start latitude is #{data.latitude}"
+      Ti.API.info "shopName is #{data.shopName}"      
       if data.shopFlg is "true"
-        annotation = Titanium.Map.createAnnotation
+        annotation = @MapModule.createAnnotation
           latitude: data.latitude
           longitude: data.longitude
           title: data.shopName
           phoneNumber: data.phoneNumber
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
-          subtitle: ""
-          pincolor:Titanium.Map.ANNOTATION_GREEN
-          # image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottleIcon.png"
-          animate: false
-          leftButton: ""
-          rightButton:""
-        @mapView.addAnnotation annotation
+          image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+
+        @mapview.addAnnotation annotation
       else
-        annotation = Titanium.Map.createAnnotation
+        annotation = @MapModule.createAnnotation
           latitude: data.latitude
           longitude: data.longitude
           title: data.shopName
           phoneNumber: data.phoneNumber
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
-          subtitle: ""
-          pincolor:Titanium.Map.ANNOTATION_RED          
-          # image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblr.png"
-          animate: false
-          leftButton: ""
-          rightButton:""
-        @mapView.addAnnotation annotation
+          image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
+
+        @mapview.addAnnotation annotation
 
 
 module.exports = mapWindow  

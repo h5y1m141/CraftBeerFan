@@ -1,3 +1,12 @@
+android/ATTR_MINIFY=true
+android/ATTR_PROJECT_NAME=CraftBeerFan
+android/abi=armeabi-v7a
+android/distribute_path=/Users/hoyamada/Dropbox/Public/learning_javascript/titanium/CraftBeerFan/build
+android/keystore_alias=CraftBeerFan
+android/keystore_password=orih6254
+android/keystore_path=/Users/hoyamada/Dropbox/Public/learning_javascript/titanium/CraftBeerFan/Resources/CraftBeerFan
+android/recent_output=/Users/hoyamada/Dropbox/Public/learning_javascript/titanium/CraftBeerFan/build
+android/sdk_version=Android 4.0
 eclipse.preferences.version=1
 iosLaunchConfigurationAttributes/ATTR_MINIFY=true
 iosLaunchConfigurationAttributes/ATTR_PROJECT_NAME=CraftBeerFan

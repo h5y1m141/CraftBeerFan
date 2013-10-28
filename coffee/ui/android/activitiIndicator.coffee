@@ -1,6 +1,6 @@
 class activityIndicator
   constructor: () ->
-    actInd = Ti.UI.createActivityIndicator
+    actInd = Ti.UI.Android.createProgressIndicator
       zIndex:20
       backgroundColor:"#222"
       top:150
@@ -9,8 +9,6 @@ class activityIndicator
       width:'200dip'
       font:
         fontSize:'18dip'
-        fontFamily : 'Rounded M+ 1p'
-        fontWeight:'bold'
       color: '#fff'
       message: 'loading...'
     return actInd
