@@ -23,22 +23,22 @@ class shopDataDetailWindow
       starColor:"#DA5019"
       separatorColor:'#cccccc'
 
-      
+    
     @shopDataDetailWindow = Ti.UI.createWindow
       title:"#{data.shopName}"
       barColor:@baseColor.barColor
       backgroundColor:@baseColor.backgroundColor
       navBarHidden:false
       
-    detailMap = Titanium.Map.createView
-      mapType:Titanium.Map.STANDARD_TYPE
+    MapModule = require('ti.map')        
+    detailMap = MapModule.createView
+      mapType: MapModule.NORMAL_TYPE
       region: 
         latitude:data.latitude
         longitude:data.longitude
         latitudeDelta:0.005
         longitudeDelta:0.005
       animate:true
-      regionFit:true
       userLocation:true
       zIndex:0
       top:0
@@ -51,9 +51,8 @@ class shopDataDetailWindow
     else
       iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
       
-    annotation = Titanium.Map.createAnnotation
+    annotation = MapModule.createAnnotation
       image:iconImage
-      animate: false
       latitude:data.latitude
       longitude:data.longitude
  
@@ -61,8 +60,7 @@ class shopDataDetailWindow
     @shopDataDetailWindow.add detailMap
 
     @_createTableView(data)
-
-    ActivityIndicator = require("ui/activityIndicator")
+    ActivityIndicator = require('ui/android/activitiIndicator')
     @activityIndicator = new ActivityIndicator()
     @shopDataDetailWindow.add @activityIndicator
     return @shopDataDetailWindow
