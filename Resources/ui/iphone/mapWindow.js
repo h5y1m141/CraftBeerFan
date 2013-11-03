@@ -94,13 +94,17 @@ mapWindow = (function() {
         clearTimeout(updateMapTimeout);
       }
       return updateMapTimeout = setTimeout(function() {
-        var latitude, longitude, regionData;
+        var geoHashResult, latitude, longitude, precision, regionData, tiGeoHash;
         Ti.API.info("regionchanged fire");
         Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
         that.activityIndicator.show();
         regionData = that.mapView.getRegion();
         latitude = regionData.latitude;
         longitude = regionData.longitude;
+        tiGeoHash = require("/lib/TiGeoHash");
+        precision = 7;
+        geoHashResult = tiGeoHash.encodeGeoHash(latitude, longitude, precision);
+        Ti.API.info("Hash is " + geoHashResult.geohash);
         return that._nearBy(latitude, longitude);
       }, 50);
     });

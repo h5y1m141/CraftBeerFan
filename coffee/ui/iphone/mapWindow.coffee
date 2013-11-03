@@ -104,6 +104,11 @@ class mapWindow
         regionData = that.mapView.getRegion()
         latitude = regionData.latitude
         longitude = regionData.longitude
+        tiGeoHash = require("/lib/TiGeoHash")
+        precision = 7 # GeoHashの計算結果で得られる桁数を指定
+        geoHashResult = tiGeoHash.encodeGeoHash(latitude,longitude,precision)
+        Ti.API.info "Hash is #{geoHashResult.geohash}"
+        
         return that._nearBy(latitude,longitude)
 
       , 50)
