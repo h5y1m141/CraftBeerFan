@@ -14,6 +14,8 @@ mapWindow = (function() {
       backgroundColor: keyColor
     };
     this.MapModule = require('ti.map');
+    this.currentLatitude = 35.676564;
+    this.currentLongitude = 139.765076;
     ad = require('net.nend');
     Config = require("model/loadConfig");
     config = new Config();
@@ -62,25 +64,38 @@ mapWindow = (function() {
       animate: true,
       userLocation: false,
       width: Ti.UI.FULL,
-      height: "542dip",
+      height: "514dip",
       zIndex: 1
     });
-    this.mapview.addEventListener('regionchanged', function(e) {
-      var that, updateMapTimeout;
-      that = _this;
-      that.activityIndicator.show();
-      if (updateMapTimeout) {
-        clearTimeout(updateMapTimeout);
+    this.mapview.addEventListener('click', function(e) {
+      var ShopDataDetailWindow, data, favoriteButtonEnable, shopDataDetailWindow;
+      Ti.API.info("mapview event fire!!");
+      if (e.clicksource === "title") {
+        favoriteButtonEnable = false;
+        data = {
+          shopName: e.title,
+          shopAddress: e.annotation.shopAddress,
+          phoneNumber: e.annotation.phoneNumber,
+          latitude: e.annotation.latitude,
+          longitude: e.annotation.longitude,
+          shopInfo: e.annotation.shopInfo,
+          favoriteButtonEnable: favoriteButtonEnable
+        };
+        ShopDataDetailWindow = require("ui/android/shopDataDetailWindow");
+        shopDataDetailWindow = new ShopDataDetailWindow(data);
+        return shopDataDetailWindow.open();
       }
-      return updateMapTimeout = setTimeout(function() {
-        var latitude, longitude;
-        Ti.API.info("regionchanged fire that is " + that);
-        Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
-        latitude = e.latitude;
-        longitude = e.longitude;
-        Ti.API.info("latitude is " + latitude + " and longitude is " + longitude);
-        return that._nearBy(latitude, longitude);
-      }, 1000);
+    });
+    this.mapview.addEventListener('regionchanged', function(e) {
+      var distance, latitude, longitude;
+      latitude = e.latitude;
+      longitude = e.longitude;
+      distance = _this.currentLatitude - latitude;
+      Ti.API.info("distance is " + distance);
+      Ti.API.info("latitude: " + latitude + " and currentLatitude: " + _this.currentLatitude);
+      _this.currentLatitude = latitude;
+      _this.currentLongitude = longitude;
+      return Ti.API.info("refresh done. @currentLatitude is " + _this.currentLatitude);
     });
     gpsRule = Ti.Geolocation.Android.createLocationRule({
       provider: Ti.Geolocation.PROVIDER_GPS,
@@ -101,6 +116,8 @@ mapWindow = (function() {
           latitudeDelta: 0.025,
           longitudeDelta: 0.025
         });
+        _this.currentLatitude = latitude;
+        _this.currentLongitude = longitude;
         Ti.API.info("location event fire .latitude is " + latitude + "and " + longitude);
         return _this._nearBy(latitude, longitude);
       } else {
@@ -121,29 +138,6 @@ mapWindow = (function() {
     kloudService = new KloudService();
     return kloudService.placesQuery(latitude, longitude, function(data) {
       return that.addAnnotations(data);
-    });
-  };
-
-  mapWindow.prototype._getGeoCurrentPosition = function() {
-    var that;
-    that = this;
-    that.activityIndicator.show();
-    Titanium.Geolocation.addEventListener('location', function(e) {
-      var latitude, longitude;
-      if (e.error) {
-        Ti.API.info(e.error);
-        that.activityIndicator.hide();
-        return;
-      }
-      latitude = e.coords.latitude;
-      longitude = e.coords.longitude;
-      that.mapview.setLocation({
-        latitude: latitude,
-        longitude: longitude,
-        latitudeDelta: 0.025,
-        longitudeDelta: 0.025
-      });
-      return that._nearBy(latitude, longitude);
     });
   };
 
