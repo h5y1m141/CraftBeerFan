@@ -5,6 +5,10 @@ class mapWindow
       barColor:keyColor
       backgroundColor:keyColor
 
+    @tiGeoHash = require("/lib/TiGeoHash")
+    @precision = 5 # GeoHashの計算結果で得られる桁数を指定
+    @geoHashResult = []
+
     @MapModule = require('ti.map')
 
     @currentLatitude = 35.676564
@@ -85,25 +89,31 @@ class mapWindow
     
 
     @mapview.addEventListener('regionchanged',(e)=>
+      
+      # ちょっとしたスクロールに反応してしまうため、緯度経度から
+      # GeoHashの値を得て蓄積していく
+      # そして、前回得たGeoHashの値から変更されていた場合に
+      # お店情報を取得する
+
+      lastGeoHashValue = @geoHashResult[@geoHashResult.length-1]
+      Ti.API.info "lastGeoHashValue is #{lastGeoHashValue}"
       latitude = e.latitude
       longitude = e.longitude
-      distance = @currentLatitude - latitude
-      Ti.API.info "distance is #{distance}"
-      Ti.API.info "latitude: #{latitude} and currentLatitude: #{@currentLatitude}"
-      @currentLatitude  = latitude
-      @currentLongitude = longitude
-      Ti.API.info "refresh done. @currentLatitude is #{@currentLatitude}"
-      # that = @
-      # _ = require("lib/underscore")
-      # delay = 3 * 1000
-      # retreiveAnotherShopData = _.debounce( ->
 
-      #   Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
-      #   Ti.API.info "latitude is #{latitude} and longitude is #{longitude}"
-      #   that.activityIndicator.show()
-      #   that._nearBy(latitude,longitude)
+      geoHashResult = @tiGeoHash.encodeGeoHash(latitude,longitude,@precision)
+      Ti.API.info "Hash is #{geoHashResult.geohash}"
+      Ti.API.info "#{geoHashResult.geohash} #{lastGeoHashValue}"
+      
+      if geoHashResult.geohash is lastGeoHashValue
+        Ti.API.info "regionchanged doesn't fire"
+        @geoHashResult.push(geoHashResult.geohash)
+      else
+        Ti.API.info "regionchanged fire"
+        Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
+        @geoHashResult.push(geoHashResult.geohash)
+        @activityIndicator.show()            
         
-      # ,delay)
+        @_nearBy(latitude,longitude)
     )
       
 
@@ -121,15 +131,16 @@ class mapWindow
 
         latitude = e.coords.latitude
         longitude = e.coords.longitude
+        geoHashResult = @tiGeoHash.encodeGeoHash(latitude,longitude,@precision)
+        @geoHashResult.push(geoHashResult.geohash)
+        
         @mapview.setLocation(
           latitude: latitude
           longitude: longitude
           latitudeDelta:0.025
           longitudeDelta:0.025
         )
-        @currentLatitude  = latitude
-        @currentLongitude = longitude
-        Ti.API.info "location event fire .latitude is #{latitude}and #{longitude}"
+
         @_nearBy(latitude,longitude)
         
       else

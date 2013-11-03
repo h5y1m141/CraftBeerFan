@@ -155,7 +155,7 @@ listWindow = (function() {
 
   listWindow.prototype._makePrefectureCategory = function(data) {
     var result, _;
-    _ = require("lib/underscore-1.4.3.min");
+    _ = require("lib/underscore");
     result = _.groupBy(data, function(row) {
       return row.area;
     });

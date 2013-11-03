@@ -10,6 +10,9 @@ mapWindow = (function() {
       barColor: keyColor,
       backgroundColor: keyColor
     };
+    this.tiGeoHash = require("/lib/TiGeoHash");
+    this.precision = 6;
+    this.geoHashResult = [];
     ad = require('net.nend');
     Config = require("model/loadConfig");
     config = new Config();
@@ -88,21 +91,25 @@ mapWindow = (function() {
       }
     });
     this.mapView.addEventListener('regionchanged', function(e) {
-      var that, updateMapTimeout;
-      that = _this;
-      if (updateMapTimeout) {
-        clearTimeout(updateMapTimeout);
-      }
-      return updateMapTimeout = setTimeout(function() {
-        var latitude, longitude, regionData;
+      var geoHashResult, lastGeoHashValue, latitude, longitude, regionData;
+      lastGeoHashValue = _this.geoHashResult[_this.geoHashResult.length - 1];
+      Ti.API.info("lastGeoHashValue is " + lastGeoHashValue);
+      regionData = _this.mapView.getRegion();
+      latitude = regionData.latitude;
+      longitude = regionData.longitude;
+      geoHashResult = _this.tiGeoHash.encodeGeoHash(latitude, longitude, _this.precision);
+      Ti.API.info("Hash is " + geoHashResult.geohash);
+      Ti.API.info("" + geoHashResult.geohash + " " + lastGeoHashValue);
+      if (geoHashResult.geohash === lastGeoHashValue) {
+        Ti.API.info("regionchanged doesn't fire");
+        return _this.geoHashResult.push(geoHashResult.geohash);
+      } else {
         Ti.API.info("regionchanged fire");
         Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
-        that.activityIndicator.show();
-        regionData = that.mapView.getRegion();
-        latitude = regionData.latitude;
-        longitude = regionData.longitude;
-        return that._nearBy(latitude, longitude);
-      }, 50);
+        _this.geoHashResult.push(geoHashResult.geohash);
+        _this.activityIndicator.show();
+        return _this._nearBy(latitude, longitude);
+      }
     });
     refreshLabel = Ti.UI.createLabel({
       backgroundColor: "transparent",
@@ -120,13 +127,16 @@ mapWindow = (function() {
       that = _this;
       that.activityIndicator.show();
       return Titanium.Geolocation.getCurrentPosition(function(e) {
-        var latitude, longitude;
+        var geoHashResult, latitude, longitude;
         if (e.error) {
           Ti.API.info(e.error);
           return;
         }
         latitude = e.coords.latitude;
         longitude = e.coords.longitude;
+        geoHashResult = that.tiGeoHash.encodeGeoHash(latitude, longitude, that.precision);
+        that.geoHashResult.push(geoHashResult.geohash);
+        Ti.API.info("geoHashResult is :" + that.geoHashResult);
         that.mapView.setLocation({
           latitude: latitude,
           longitude: longitude,
@@ -166,7 +176,7 @@ mapWindow = (function() {
     that = this;
     that.activityIndicator.show();
     Titanium.Geolocation.getCurrentPosition(function(e) {
-      var latitude, longitude;
+      var geoHashResult, latitude, longitude;
       if (e.error) {
         Ti.API.info(e.error);
         that.activityIndicator.hide();
@@ -174,6 +184,9 @@ mapWindow = (function() {
       }
       latitude = e.coords.latitude;
       longitude = e.coords.longitude;
+      geoHashResult = that.tiGeoHash.encodeGeoHash(latitude, longitude, that.precision);
+      that.geoHashResult.push(geoHashResult.geohash);
+      Ti.API.info("geoHashResult is :" + that.geoHashResult);
       that.mapView.setLocation({
         latitude: latitude,
         longitude: longitude,

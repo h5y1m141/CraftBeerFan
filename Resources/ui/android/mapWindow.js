@@ -13,6 +13,9 @@ mapWindow = (function() {
       barColor: keyColor,
       backgroundColor: keyColor
     };
+    this.tiGeoHash = require("/lib/TiGeoHash");
+    this.precision = 5;
+    this.geoHashResult = [];
     this.MapModule = require('ti.map');
     this.currentLatitude = 35.676564;
     this.currentLongitude = 139.765076;
@@ -87,15 +90,24 @@ mapWindow = (function() {
       }
     });
     this.mapview.addEventListener('regionchanged', function(e) {
-      var distance, latitude, longitude;
+      var geoHashResult, lastGeoHashValue, latitude, longitude;
+      lastGeoHashValue = _this.geoHashResult[_this.geoHashResult.length - 1];
+      Ti.API.info("lastGeoHashValue is " + lastGeoHashValue);
       latitude = e.latitude;
       longitude = e.longitude;
-      distance = _this.currentLatitude - latitude;
-      Ti.API.info("distance is " + distance);
-      Ti.API.info("latitude: " + latitude + " and currentLatitude: " + _this.currentLatitude);
-      _this.currentLatitude = latitude;
-      _this.currentLongitude = longitude;
-      return Ti.API.info("refresh done. @currentLatitude is " + _this.currentLatitude);
+      geoHashResult = _this.tiGeoHash.encodeGeoHash(latitude, longitude, _this.precision);
+      Ti.API.info("Hash is " + geoHashResult.geohash);
+      Ti.API.info("" + geoHashResult.geohash + " " + lastGeoHashValue);
+      if (geoHashResult.geohash === lastGeoHashValue) {
+        Ti.API.info("regionchanged doesn't fire");
+        return _this.geoHashResult.push(geoHashResult.geohash);
+      } else {
+        Ti.API.info("regionchanged fire");
+        Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
+        _this.geoHashResult.push(geoHashResult.geohash);
+        _this.activityIndicator.show();
+        return _this._nearBy(latitude, longitude);
+      }
     });
     gpsRule = Ti.Geolocation.Android.createLocationRule({
       provider: Ti.Geolocation.PROVIDER_GPS,
@@ -105,20 +117,19 @@ mapWindow = (function() {
     });
     Ti.Geolocation.Android.addLocationRule(gpsRule);
     Ti.Geolocation.addEventListener('location', function(e) {
-      var latitude, longitude;
+      var geoHashResult, latitude, longitude;
       _this.activityIndicator.show();
       if (e.success) {
         latitude = e.coords.latitude;
         longitude = e.coords.longitude;
+        geoHashResult = _this.tiGeoHash.encodeGeoHash(latitude, longitude, _this.precision);
+        _this.geoHashResult.push(geoHashResult.geohash);
         _this.mapview.setLocation({
           latitude: latitude,
           longitude: longitude,
           latitudeDelta: 0.025,
           longitudeDelta: 0.025
         });
-        _this.currentLatitude = latitude;
-        _this.currentLongitude = longitude;
-        Ti.API.info("location event fire .latitude is " + latitude + "and " + longitude);
         return _this._nearBy(latitude, longitude);
       } else {
         Ti.API.info(e.error);
