@@ -38,31 +38,33 @@ class shopDataDetailWindow
         longitude:data.longitude
         latitudeDelta:0.005
         longitudeDelta:0.005
-      animate:true
-      userLocation:true
+      animate:false
+      userLocation:false
       zIndex:0
       top:0
       left:0
       height:'400dip'
       width:Ti.UI.FULL
+      pincolor:1
       
-    if data.shopFlg is "true"
-      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
-    else
-      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
+    # if data.shopFlg is "true"
+    #   iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+    # else
+    #   iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
       
-    annotation = MapModule.createAnnotation
-      image:iconImage
-      latitude:data.latitude
-      longitude:data.longitude
+    # annotation = MapModule.createAnnotation
+    #   image:iconImage
+    #   latitude:data.latitude
+    #   longitude:data.longitude
  
-    detailMap.addAnnotation annotation
+    # detailMap.addAnnotation annotation
     @shopDataDetailWindow.add detailMap
 
     @_createTableView(data)
     ActivityIndicator = require('ui/android/activitiIndicator')
     @activityIndicator = new ActivityIndicator()
     @shopDataDetailWindow.add @activityIndicator
+    @activityIndicator.hide()
     return @shopDataDetailWindow
     
     

@@ -3,7 +3,7 @@ var shopDataDetailWindow;
 shopDataDetailWindow = (function() {
 
   function shopDataDetailWindow(data) {
-    var ActivityIndicator, MapModule, annotation, detailMap, iconImage, keyColor;
+    var ActivityIndicator, MapModule, detailMap, keyColor;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
@@ -30,30 +30,21 @@ shopDataDetailWindow = (function() {
         latitudeDelta: 0.005,
         longitudeDelta: 0.005
       },
-      animate: true,
-      userLocation: true,
+      animate: false,
+      userLocation: false,
       zIndex: 0,
       top: 0,
       left: 0,
       height: '400dip',
-      width: Ti.UI.FULL
+      width: Ti.UI.FULL,
+      pincolor: 1
     });
-    if (data.shopFlg === "true") {
-      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png";
-    } else {
-      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png";
-    }
-    annotation = MapModule.createAnnotation({
-      image: iconImage,
-      latitude: data.latitude,
-      longitude: data.longitude
-    });
-    detailMap.addAnnotation(annotation);
     this.shopDataDetailWindow.add(detailMap);
     this._createTableView(data);
     ActivityIndicator = require('ui/android/activitiIndicator');
     this.activityIndicator = new ActivityIndicator();
     this.shopDataDetailWindow.add(this.activityIndicator);
+    this.activityIndicator.hide();
     return this.shopDataDetailWindow;
   }
 
