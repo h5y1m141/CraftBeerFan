@@ -3,7 +3,7 @@ var shopDataDetailWindow;
 shopDataDetailWindow = (function() {
 
   function shopDataDetailWindow(data) {
-    var ActivityIndicator, annotation, detailMap, iconImage, keyColor;
+    var ActivityIndicator, MapModule, detailMap, keyColor;
     keyColor = "#f9f9f9";
     this.baseColor = {
       barColor: keyColor,
@@ -21,40 +21,30 @@ shopDataDetailWindow = (function() {
       backgroundColor: this.baseColor.backgroundColor,
       navBarHidden: false
     });
-    detailMap = Titanium.Map.createView({
-      mapType: Titanium.Map.STANDARD_TYPE,
+    MapModule = require('ti.map');
+    detailMap = MapModule.createView({
+      mapType: MapModule.NORMAL_TYPE,
       region: {
         latitude: data.latitude,
         longitude: data.longitude,
         latitudeDelta: 0.005,
         longitudeDelta: 0.005
       },
-      animate: true,
-      regionFit: true,
-      userLocation: true,
+      animate: false,
+      userLocation: false,
       zIndex: 0,
       top: 0,
       left: 0,
       height: '400dip',
-      width: Ti.UI.FULL
+      width: Ti.UI.FULL,
+      pincolor: 1
     });
-    if (data.shopFlg === "true") {
-      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png";
-    } else {
-      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png";
-    }
-    annotation = Titanium.Map.createAnnotation({
-      image: iconImage,
-      animate: false,
-      latitude: data.latitude,
-      longitude: data.longitude
-    });
-    detailMap.addAnnotation(annotation);
     this.shopDataDetailWindow.add(detailMap);
     this._createTableView(data);
-    ActivityIndicator = require("ui/activityIndicator");
+    ActivityIndicator = require('ui/android/activitiIndicator');
     this.activityIndicator = new ActivityIndicator();
     this.shopDataDetailWindow.add(this.activityIndicator);
+    this.activityIndicator.hide();
     return this.shopDataDetailWindow;
   }
 

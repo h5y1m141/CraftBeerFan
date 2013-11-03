@@ -151,7 +151,7 @@ class listWindow
   # :
 
   _makePrefectureCategory: (data) ->
-    _ =  require("lib/underscore-1.4.3.min")
+    _ =  require("lib/underscore")
     result = _.groupBy(data,(row) ->
       return row.area
     )

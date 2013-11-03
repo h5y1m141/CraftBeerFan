@@ -13,7 +13,12 @@ mapWindow = (function() {
       barColor: keyColor,
       backgroundColor: keyColor
     };
+    this.tiGeoHash = require("/lib/TiGeoHash");
+    this.precision = 5;
+    this.geoHashResult = [];
     this.MapModule = require('ti.map');
+    this.currentLatitude = 35.676564;
+    this.currentLongitude = 139.765076;
     ad = require('net.nend');
     Config = require("model/loadConfig");
     config = new Config();
@@ -62,25 +67,47 @@ mapWindow = (function() {
       animate: true,
       userLocation: false,
       width: Ti.UI.FULL,
-      height: "542dip",
+      height: "514dip",
       zIndex: 1
     });
-    this.mapview.addEventListener('regionchanged', function(e) {
-      var that, updateMapTimeout;
-      that = _this;
-      that.activityIndicator.show();
-      if (updateMapTimeout) {
-        clearTimeout(updateMapTimeout);
+    this.mapview.addEventListener('click', function(e) {
+      var ShopDataDetailWindow, data, favoriteButtonEnable, shopDataDetailWindow;
+      Ti.API.info("mapview event fire!!");
+      if (e.clicksource === "title") {
+        favoriteButtonEnable = false;
+        data = {
+          shopName: e.title,
+          shopAddress: e.annotation.shopAddress,
+          phoneNumber: e.annotation.phoneNumber,
+          latitude: e.annotation.latitude,
+          longitude: e.annotation.longitude,
+          shopInfo: e.annotation.shopInfo,
+          favoriteButtonEnable: favoriteButtonEnable
+        };
+        ShopDataDetailWindow = require("ui/android/shopDataDetailWindow");
+        shopDataDetailWindow = new ShopDataDetailWindow(data);
+        return shopDataDetailWindow.open();
       }
-      return updateMapTimeout = setTimeout(function() {
-        var latitude, longitude;
-        Ti.API.info("regionchanged fire that is " + that);
+    });
+    this.mapview.addEventListener('regionchanged', function(e) {
+      var geoHashResult, lastGeoHashValue, latitude, longitude;
+      lastGeoHashValue = _this.geoHashResult[_this.geoHashResult.length - 1];
+      Ti.API.info("lastGeoHashValue is " + lastGeoHashValue);
+      latitude = e.latitude;
+      longitude = e.longitude;
+      geoHashResult = _this.tiGeoHash.encodeGeoHash(latitude, longitude, _this.precision);
+      Ti.API.info("Hash is " + geoHashResult.geohash);
+      Ti.API.info("" + geoHashResult.geohash + " " + lastGeoHashValue);
+      if (geoHashResult.geohash === lastGeoHashValue) {
+        Ti.API.info("regionchanged doesn't fire");
+        return _this.geoHashResult.push(geoHashResult.geohash);
+      } else {
+        Ti.API.info("regionchanged fire");
         Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
-        latitude = e.latitude;
-        longitude = e.longitude;
-        Ti.API.info("latitude is " + latitude + " and longitude is " + longitude);
-        return that._nearBy(latitude, longitude);
-      }, 1000);
+        _this.geoHashResult.push(geoHashResult.geohash);
+        _this.activityIndicator.show();
+        return _this._nearBy(latitude, longitude);
+      }
     });
     gpsRule = Ti.Geolocation.Android.createLocationRule({
       provider: Ti.Geolocation.PROVIDER_GPS,
@@ -90,18 +117,19 @@ mapWindow = (function() {
     });
     Ti.Geolocation.Android.addLocationRule(gpsRule);
     Ti.Geolocation.addEventListener('location', function(e) {
-      var latitude, longitude;
+      var geoHashResult, latitude, longitude;
       _this.activityIndicator.show();
       if (e.success) {
         latitude = e.coords.latitude;
         longitude = e.coords.longitude;
+        geoHashResult = _this.tiGeoHash.encodeGeoHash(latitude, longitude, _this.precision);
+        _this.geoHashResult.push(geoHashResult.geohash);
         _this.mapview.setLocation({
           latitude: latitude,
           longitude: longitude,
           latitudeDelta: 0.025,
           longitudeDelta: 0.025
         });
-        Ti.API.info("location event fire .latitude is " + latitude + "and " + longitude);
         return _this._nearBy(latitude, longitude);
       } else {
         Ti.API.info(e.error);
@@ -121,29 +149,6 @@ mapWindow = (function() {
     kloudService = new KloudService();
     return kloudService.placesQuery(latitude, longitude, function(data) {
       return that.addAnnotations(data);
-    });
-  };
-
-  mapWindow.prototype._getGeoCurrentPosition = function() {
-    var that;
-    that = this;
-    that.activityIndicator.show();
-    Titanium.Geolocation.addEventListener('location', function(e) {
-      var latitude, longitude;
-      if (e.error) {
-        Ti.API.info(e.error);
-        that.activityIndicator.hide();
-        return;
-      }
-      latitude = e.coords.latitude;
-      longitude = e.coords.longitude;
-      that.mapview.setLocation({
-        latitude: latitude,
-        longitude: longitude,
-        latitudeDelta: 0.025,
-        longitudeDelta: 0.025
-      });
-      return that._nearBy(latitude, longitude);
     });
   };
 

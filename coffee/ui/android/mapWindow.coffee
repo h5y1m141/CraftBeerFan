@@ -5,7 +5,14 @@ class mapWindow
       barColor:keyColor
       backgroundColor:keyColor
 
+    @tiGeoHash = require("/lib/TiGeoHash")
+    @precision = 5 # GeoHashの計算結果で得られる桁数を指定
+    @geoHashResult = []
+
     @MapModule = require('ti.map')
+
+    @currentLatitude = 35.676564
+    @currentLongitude = 139.765076 
     
     ad = require('net.nend')
     Config = require("model/loadConfig")
@@ -58,29 +65,58 @@ class mapWindow
       animate: true
       userLocation:false
       width:Ti.UI.FULL
-      height:"542dip"
+      height:"514dip"
       zIndex:1
 
+    @mapview.addEventListener('click',(e)=>
+      Ti.API.info "mapview event fire!!"
+      if e.clicksource is "title"
+        favoriteButtonEnable = false
+        data =
+          shopName:e.title
+          shopAddress:e.annotation.shopAddress
+          phoneNumber:e.annotation.phoneNumber
+          latitude: e.annotation.latitude
+          longitude: e.annotation.longitude
+          shopInfo: e.annotation.shopInfo
+          favoriteButtonEnable:favoriteButtonEnable
+          
+        ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
+        shopDataDetailWindow = new ShopDataDetailWindow(data)
+        shopDataDetailWindow.open()
+      
+    )
     
 
     @mapview.addEventListener('regionchanged',(e)=>
-      # ちょっとしたスクロールに反応してしまうため、以下URLを参考に
-      # 一定時間経過してないとイベント発火しないような処理にする
-      # http://developer.appcelerator.com/question/129061/mapview-markers-display-on-regionchanged
-      that = @
-      # alert @activityIndicator
-      that.activityIndicator.show()           
-      clearTimeout updateMapTimeout  if updateMapTimeout
-      updateMapTimeout = setTimeout(->
-        Ti.API.info "regionchanged fire that is #{that}"
-        Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
-        latitude = e.latitude
-        longitude = e.longitude
-        Ti.API.info "latitude is #{latitude} and longitude is #{longitude}"
-        return that._nearBy(latitude,longitude)
+      
+      # ちょっとしたスクロールに反応してしまうため、緯度経度から
+      # GeoHashの値を得て蓄積していく
+      # そして、前回得たGeoHashの値から変更されていた場合に
+      # お店情報を取得する
 
-      , 1000)
+      lastGeoHashValue = @geoHashResult[@geoHashResult.length-1]
+      Ti.API.info "lastGeoHashValue is #{lastGeoHashValue}"
+      latitude = e.latitude
+      longitude = e.longitude
+
+      geoHashResult = @tiGeoHash.encodeGeoHash(latitude,longitude,@precision)
+      Ti.API.info "Hash is #{geoHashResult.geohash}"
+      Ti.API.info "#{geoHashResult.geohash} #{lastGeoHashValue}"
+      
+      if geoHashResult.geohash is lastGeoHashValue
+        Ti.API.info "regionchanged doesn't fire"
+        @geoHashResult.push(geoHashResult.geohash)
+      else
+        Ti.API.info "regionchanged fire"
+        Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
+        @geoHashResult.push(geoHashResult.geohash)
+        @activityIndicator.show()            
+        
+        @_nearBy(latitude,longitude)
     )
+      
+
   
     gpsRule = Ti.Geolocation.Android.createLocationRule(
       provider: Ti.Geolocation.PROVIDER_GPS
@@ -95,13 +131,16 @@ class mapWindow
 
         latitude = e.coords.latitude
         longitude = e.coords.longitude
+        geoHashResult = @tiGeoHash.encodeGeoHash(latitude,longitude,@precision)
+        @geoHashResult.push(geoHashResult.geohash)
+        
         @mapview.setLocation(
           latitude: latitude
           longitude: longitude
           latitudeDelta:0.025
           longitudeDelta:0.025
         )
-        Ti.API.info "location event fire .latitude is #{latitude}and #{longitude}"
+
         @_nearBy(latitude,longitude)
         
       else
@@ -114,8 +153,6 @@ class mapWindow
     mapWindow.add @mapview
     mapWindow.add @activityIndicator
 
-    # init時に現在位置を取得する
-    # @_getGeoCurrentPosition()
     return mapWindow
     
   _nearBy:(latitude,longitude) ->
@@ -126,29 +163,7 @@ class mapWindow
       that.addAnnotations(data)
     )
     
-  _getGeoCurrentPosition:() ->
-    that = @
-    that.activityIndicator.show()
-    Titanium.Geolocation.addEventListener('location',(e)->
-      if e.error
-        Ti.API.info e.error
-        that.activityIndicator.hide()
-        return
-        
-      latitude = e.coords.latitude
-      longitude = e.coords.longitude
-      that.mapview.setLocation(
-        latitude: latitude
-        longitude: longitude
-        latitudeDelta:0.025
-        longitudeDelta:0.025
-      )
 
-      that._nearBy(latitude,longitude)
-        
-    )
-
-    return
   addAnnotations:(array) =>
     @activityIndicator.hide()
     for data in array
