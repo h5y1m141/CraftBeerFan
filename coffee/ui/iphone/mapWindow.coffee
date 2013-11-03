@@ -5,7 +5,11 @@ class mapWindow
       barColor:keyColor
       backgroundColor:keyColor
 
-      
+        
+    @tiGeoHash = require("/lib/TiGeoHash")
+    @precision = 6 # GeoHashの計算結果で得られる桁数を指定
+    @geoHashResult = []
+    
     ad = require('net.nend')
     Config = require("model/loadConfig")
     config = new Config()
@@ -92,27 +96,32 @@ class mapWindow
     )
         
     @mapView.addEventListener('regionchanged',(e)=>
-      # ちょっとしたスクロールに反応してしまうため、以下URLを参考に
-      # 一定時間経過してないとイベント発火しないような処理にする
-      # http://developer.appcelerator.com/question/129061/mapview-markers-display-on-regionchanged
-      that = @
-      clearTimeout updateMapTimeout  if updateMapTimeout
-      updateMapTimeout = setTimeout(->
+      
+      # ちょっとしたスクロールに反応してしまうため、緯度経度から
+      # GeoHashの値を得て蓄積していく
+      # そして、前回得たGeoHashの値から変更されていた場合に
+      # お店情報を取得する
+
+      lastGeoHashValue = @geoHashResult[@geoHashResult.length-1]
+      Ti.API.info "lastGeoHashValue is #{lastGeoHashValue}"
+      regionData = @mapView.getRegion()
+      latitude = regionData.latitude
+      longitude = regionData.longitude
+
+      geoHashResult = @tiGeoHash.encodeGeoHash(latitude,longitude,@precision)
+      Ti.API.info "Hash is #{geoHashResult.geohash}"
+      Ti.API.info "#{geoHashResult.geohash} #{lastGeoHashValue}"
+      
+      if geoHashResult.geohash is lastGeoHashValue
+        Ti.API.info "regionchanged doesn't fire"
+        @geoHashResult.push(geoHashResult.geohash)
+      else
         Ti.API.info "regionchanged fire"
         Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
-        that.activityIndicator.show()            
-        regionData = that.mapView.getRegion()
-        latitude = regionData.latitude
-        longitude = regionData.longitude
-        tiGeoHash = require("/lib/TiGeoHash")
-        precision = 7 # GeoHashの計算結果で得られる桁数を指定
-        geoHashResult = tiGeoHash.encodeGeoHash(latitude,longitude,precision)
-        Ti.API.info "Hash is #{geoHashResult.geohash}"
+        @geoHashResult.push(geoHashResult.geohash)
+        @activityIndicator.show()            
         
-        return that._nearBy(latitude,longitude)
-
-      , 50)
-      
+        @_nearBy(latitude,longitude)
     )
           
     refreshLabel = Ti.UI.createLabel
@@ -135,7 +144,9 @@ class mapWindow
           
         latitude = e.coords.latitude
         longitude = e.coords.longitude
-        
+        geoHashResult = that.tiGeoHash.encodeGeoHash(latitude,longitude,that.precision)        
+        that.geoHashResult.push(geoHashResult.geohash)
+        Ti.API.info "geoHashResult is :#{that.geoHashResult}"
          # 現在地まで地図をスクロールする
         that.mapView.setLocation(
           latitude: latitude
@@ -187,6 +198,9 @@ class mapWindow
         
       latitude = e.coords.latitude
       longitude = e.coords.longitude
+      geoHashResult = that.tiGeoHash.encodeGeoHash(latitude,longitude,that.precision)        
+      that.geoHashResult.push(geoHashResult.geohash)
+      Ti.API.info "geoHashResult is :#{that.geoHashResult}"
       
        # 現在地まで地図をスクロールする
       that.mapView.setLocation(
