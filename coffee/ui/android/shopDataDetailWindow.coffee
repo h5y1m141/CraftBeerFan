@@ -23,48 +23,48 @@ class shopDataDetailWindow
       starColor:"#DA5019"
       separatorColor:'#cccccc'
 
-      
+    
     @shopDataDetailWindow = Ti.UI.createWindow
       title:"#{data.shopName}"
       barColor:@baseColor.barColor
       backgroundColor:@baseColor.backgroundColor
       navBarHidden:false
       
-    detailMap = Titanium.Map.createView
-      mapType:Titanium.Map.STANDARD_TYPE
+    MapModule = require('ti.map')        
+    detailMap = MapModule.createView
+      mapType: MapModule.NORMAL_TYPE
       region: 
         latitude:data.latitude
         longitude:data.longitude
         latitudeDelta:0.005
         longitudeDelta:0.005
-      animate:true
-      regionFit:true
-      userLocation:true
+      animate:false
+      userLocation:false
       zIndex:0
       top:0
       left:0
       height:'400dip'
       width:Ti.UI.FULL
+      pincolor:1
       
-    if data.shopFlg is "true"
-      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
-    else
-      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
+    # if data.shopFlg is "true"
+    #   iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+    # else
+    #   iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
       
-    annotation = Titanium.Map.createAnnotation
-      image:iconImage
-      animate: false
-      latitude:data.latitude
-      longitude:data.longitude
+    # annotation = MapModule.createAnnotation
+    #   image:iconImage
+    #   latitude:data.latitude
+    #   longitude:data.longitude
  
-    detailMap.addAnnotation annotation
+    # detailMap.addAnnotation annotation
     @shopDataDetailWindow.add detailMap
 
     @_createTableView(data)
-
-    ActivityIndicator = require("ui/activityIndicator")
+    ActivityIndicator = require('ui/android/activitiIndicator')
     @activityIndicator = new ActivityIndicator()
     @shopDataDetailWindow.add @activityIndicator
+    @activityIndicator.hide()
     return @shopDataDetailWindow
     
     
