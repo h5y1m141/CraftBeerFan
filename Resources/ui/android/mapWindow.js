@@ -14,7 +14,7 @@ mapWindow = (function() {
       backgroundColor: keyColor
     };
     this.tiGeoHash = require("/lib/TiGeoHash");
-    this.precision = 6;
+    this.precision = 5;
     this.geoHashResult = [];
     this.MapModule = require('ti.map');
     this.currentLatitude = 35.676564;

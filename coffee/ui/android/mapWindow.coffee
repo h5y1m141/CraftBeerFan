@@ -6,7 +6,7 @@ class mapWindow
       backgroundColor:keyColor
 
     @tiGeoHash = require("/lib/TiGeoHash")
-    @precision = 6 # GeoHashの計算結果で得られる桁数を指定
+    @precision = 5 # GeoHashの計算結果で得られる桁数を指定
     @geoHashResult = []
 
     @MapModule = require('ti.map')
