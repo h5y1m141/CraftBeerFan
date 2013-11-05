@@ -47,17 +47,21 @@ class shopDataDetailWindow
       width:Ti.UI.FULL
       pincolor:1
       
-    # if data.shopFlg is "true"
-    #   iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
-    # else
-    #   iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
+    if data.shopFlg is "true"
+      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+    else data.shopFlg is "false"
+      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
+    else
+      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
       
-    # annotation = MapModule.createAnnotation
-    #   image:iconImage
-    #   latitude:data.latitude
-    #   longitude:data.longitude
+      
+    annotation = MapModule.createAnnotation
+      latitude:data.latitude
+      longitude:data.longitude
+      pincolor:1
+      # image:iconImage      
  
-    # detailMap.addAnnotation annotation
+    detailMap.addAnnotation annotation
     @shopDataDetailWindow.add detailMap
 
     @_createTableView(data)

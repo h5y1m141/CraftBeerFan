@@ -72,6 +72,7 @@ class mapWindow
       Ti.API.info "mapview event fire!!"
       if e.clicksource is "title"
         favoriteButtonEnable = false
+
         data =
           shopName:e.title
           shopAddress:e.annotation.shopAddress
@@ -80,7 +81,8 @@ class mapWindow
           longitude: e.annotation.longitude
           shopInfo: e.annotation.shopInfo
           favoriteButtonEnable:favoriteButtonEnable
-          
+          shopFlg: e.annotation.shopFlg
+
         ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
         shopDataDetailWindow = new ShopDataDetailWindow(data)
         shopDataDetailWindow.open()
@@ -177,6 +179,7 @@ class mapWindow
           phoneNumber: data.phoneNumber
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
+          shopFlg:data.shopFlg
           image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
 
         @mapview.addAnnotation annotation
@@ -188,6 +191,7 @@ class mapWindow
           phoneNumber: data.phoneNumber
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
+          shopFlg:data.shopFlg
           image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
 
         @mapview.addAnnotation annotation

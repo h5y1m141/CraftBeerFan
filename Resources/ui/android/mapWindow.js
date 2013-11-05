@@ -82,7 +82,8 @@ mapWindow = (function() {
           latitude: e.annotation.latitude,
           longitude: e.annotation.longitude,
           shopInfo: e.annotation.shopInfo,
-          favoriteButtonEnable: favoriteButtonEnable
+          favoriteButtonEnable: favoriteButtonEnable,
+          shopFlg: e.annotation.shopFlg
         };
         ShopDataDetailWindow = require("ui/android/shopDataDetailWindow");
         shopDataDetailWindow = new ShopDataDetailWindow(data);
@@ -168,6 +169,7 @@ mapWindow = (function() {
           phoneNumber: data.phoneNumber,
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
+          shopFlg: data.shopFlg,
           image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
         });
         _results.push(this.mapview.addAnnotation(annotation));
@@ -179,6 +181,7 @@ mapWindow = (function() {
           phoneNumber: data.phoneNumber,
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
+          shopFlg: data.shopFlg,
           image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
         });
         _results.push(this.mapview.addAnnotation(annotation));
