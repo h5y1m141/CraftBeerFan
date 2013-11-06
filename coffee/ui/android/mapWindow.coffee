@@ -70,23 +70,9 @@ class mapWindow
 
     @mapview.addEventListener('click',(e)=>
       Ti.API.info "mapview event fire!!"
-      if e.clicksource is "title"
-        favoriteButtonEnable = false
-
-        data =
-          shopName:e.title
-          shopAddress:e.annotation.shopAddress
-          phoneNumber:e.annotation.phoneNumber
-          latitude: e.annotation.latitude
-          longitude: e.annotation.longitude
-          shopInfo: e.annotation.shopInfo
-          favoriteButtonEnable:favoriteButtonEnable
-          shopFlg: e.annotation.shopFlg
-
-        ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
-        shopDataDetailWindow = new ShopDataDetailWindow(data)
-        shopDataDetailWindow.open()
-      
+      if e.clicksource is "rightPane"
+        Titanium.Platform.openURL("tel:#{e.annotation.phoneNumber}")
+        
     )
     
 
@@ -176,10 +162,19 @@ class mapWindow
           latitude: data.latitude
           longitude: data.longitude
           title: data.shopName
+          subtitle:data.phoneNumber          
           phoneNumber: data.phoneNumber
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           shopFlg:data.shopFlg
+          leftButton:"ui/image/bottle@2x.png"
+          rightView:Ti.UI.createButton
+            color:"#3261AB"
+            backgroundColor:"#f9f9f9"            
+            font:
+              fontSize:'36dip'
+              fontFamily:'fontawesome-webfont'
+            title:String.fromCharCode("0xf095")
           image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
 
         @mapview.addAnnotation annotation
@@ -188,10 +183,19 @@ class mapWindow
           latitude: data.latitude
           longitude: data.longitude
           title: data.shopName
+          subtitle:data.phoneNumber
           phoneNumber: data.phoneNumber
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           shopFlg:data.shopFlg
+          leftButton:"ui/image/tumblrIconForMap.png"
+          rightView:Ti.UI.createButton
+            color:"#3261AB"
+            backgroundColor:"#f9f9f9"           
+            font:
+              fontSize:'36dip'
+              fontFamily:'fontawesome-webfont'
+            title:String.fromCharCode("0xf095")          
           image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
 
         @mapview.addAnnotation annotation
