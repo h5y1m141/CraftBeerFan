@@ -165,17 +165,6 @@ mapWindow = (function() {
             },
             title: String.fromCharCode("0xf095")
           }),
-          rightView: Ti.UI.createButton({
-            color: "#333",
-            backgroundColor: "#f9f9f9",
-            width: "30dip",
-            height: "30dip",
-            font: {
-              fontSize: '36dip',
-              fontFamily: 'ligaturesymbols'
-            },
-            title: String.fromCharCode("0xE075")
-          }),
           image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
         });
         _results.push(this.mapview.addAnnotation(annotation));
@@ -199,17 +188,6 @@ mapWindow = (function() {
               fontFamily: 'fontawesome-webfont'
             },
             title: String.fromCharCode("0xf095")
-          }),
-          rightView: Ti.UI.createButton({
-            color: "#333",
-            backgroundColor: "#f9f9f9",
-            width: "30dip",
-            height: "30dip",
-            font: {
-              fontSize: '36dip',
-              fontFamily: 'ligaturesymbols'
-            },
-            title: String.fromCharCode("0xE075")
           }),
           image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
         });
