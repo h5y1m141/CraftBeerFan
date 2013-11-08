@@ -29,9 +29,7 @@ mapWindow = (function() {
     adView = ad.createView({
       spotId: nend.spotId,
       apiKey: nend.apiKey,
-      width: Titanium.Platform.displayCaps.platformWidth,
-      height: '50dip',
-      bottom: '1dip',
+      bottom: 0,
       left: 0,
       zIndex: 10
     });
@@ -54,7 +52,7 @@ mapWindow = (function() {
     });
     displayHeight = Ti.Platform.displayCaps.platformHeight;
     displayHeight = displayHeight / Ti.Platform.displayCaps.logicalDensityFactor;
-    mapViewHeight = displayHeight - 50;
+    mapViewHeight = displayHeight - 130;
     Ti.API.info("displayHeight is " + displayHeight + "and mapViewHeight is " + mapViewHeight);
     this.mapview = this.MapModule.createView({
       mapType: this.MapModule.NORMAL_TYPE,
@@ -66,13 +64,14 @@ mapWindow = (function() {
       },
       animate: true,
       userLocation: false,
+      top: 0,
+      left: 0,
       width: Ti.UI.FULL,
-      height: "514dip",
+      height: mapViewHeight + "dip",
       zIndex: 1
     });
     this.mapview.addEventListener('click', function(e) {
-      Ti.API.info("mapview event fire!!");
-      if (e.clicksource === "rightPane") {
+      if (e.clicksource === "leftPane") {
         return Titanium.Platform.openURL("tel:" + e.annotation.phoneNumber);
       }
     });
@@ -145,8 +144,6 @@ mapWindow = (function() {
     _results = [];
     for (_i = 0, _len = array.length; _i < _len; _i++) {
       data = array[_i];
-      Ti.API.info("addAnnotations start latitude is " + data.latitude);
-      Ti.API.info("shopName is " + data.shopName);
       if (data.shopFlg === "true") {
         annotation = this.MapModule.createAnnotation({
           latitude: data.latitude,
@@ -157,15 +154,27 @@ mapWindow = (function() {
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
           shopFlg: data.shopFlg,
-          leftButton: "ui/image/bottle@2x.png",
-          rightView: Ti.UI.createButton({
+          leftView: Ti.UI.createButton({
             color: "#3261AB",
             backgroundColor: "#f9f9f9",
+            width: "30dip",
+            height: "30dip",
             font: {
               fontSize: '36dip',
               fontFamily: 'fontawesome-webfont'
             },
             title: String.fromCharCode("0xf095")
+          }),
+          rightView: Ti.UI.createButton({
+            color: "#333",
+            backgroundColor: "#f9f9f9",
+            width: "30dip",
+            height: "30dip",
+            font: {
+              fontSize: '36dip',
+              fontFamily: 'ligaturesymbols'
+            },
+            title: String.fromCharCode("0xE075")
           }),
           image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
         });
@@ -180,15 +189,27 @@ mapWindow = (function() {
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
           shopFlg: data.shopFlg,
-          leftButton: "ui/image/tumblrIconForMap.png",
-          rightView: Ti.UI.createButton({
+          leftView: Ti.UI.createButton({
             color: "#3261AB",
             backgroundColor: "#f9f9f9",
+            width: "30dip",
+            height: "30dip",
             font: {
               fontSize: '36dip',
               fontFamily: 'fontawesome-webfont'
             },
             title: String.fromCharCode("0xf095")
+          }),
+          rightView: Ti.UI.createButton({
+            color: "#333",
+            backgroundColor: "#f9f9f9",
+            width: "30dip",
+            height: "30dip",
+            font: {
+              fontSize: '36dip',
+              fontFamily: 'ligaturesymbols'
+            },
+            title: String.fromCharCode("0xE075")
           }),
           image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
         });

@@ -26,9 +26,9 @@ class mapWindow
     adView = ad.createView
       spotId:nend.spotId
       apiKey:nend.apiKey
-      width:Titanium.Platform.displayCaps.platformWidth
-      height:'50dip'
-      bottom:'1dip'
+      # width:Titanium.Platform.displayCaps.platformWidth + "dip"
+      # height:'50dip'
+      bottom:0
       left:0
       zIndex:10
       
@@ -53,7 +53,7 @@ class mapWindow
     # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
     displayHeight = Ti.Platform.displayCaps.platformHeight
     displayHeight = displayHeight / Ti.Platform.displayCaps.logicalDensityFactor
-    mapViewHeight = displayHeight-50
+    mapViewHeight = displayHeight-130
     Ti.API.info "displayHeight is #{displayHeight}and mapViewHeight is #{mapViewHeight}"
     @mapview = @MapModule.createView
       mapType: @MapModule.NORMAL_TYPE
@@ -64,15 +64,16 @@ class mapWindow
         longitudeDelta: 0.05
       animate: true
       userLocation:false
+      top:0
+      left:0
       width:Ti.UI.FULL
-      height:"514dip"
+      height:mapViewHeight + "dip"
       zIndex:1
 
+    
     @mapview.addEventListener('click',(e)=>
-      Ti.API.info "mapview event fire!!"
-      if e.clicksource is "rightPane"
+      if e.clicksource is "leftPane"
         Titanium.Platform.openURL("tel:#{e.annotation.phoneNumber}")
-        
     )
     
 
@@ -155,30 +156,11 @@ class mapWindow
   addAnnotations:(array) =>
     @activityIndicator.hide()
     for data in array
-      Ti.API.info "addAnnotations start latitude is #{data.latitude}"
-      Ti.API.info "shopName is #{data.shopName}"      
-      if data.shopFlg is "true"
-        annotation = @MapModule.createAnnotation
-          latitude: data.latitude
-          longitude: data.longitude
-          title: data.shopName
-          subtitle:data.phoneNumber          
-          phoneNumber: data.phoneNumber
-          shopAddress: data.shopAddress
-          shopInfo:data.shopInfo
-          shopFlg:data.shopFlg
-          leftButton:"ui/image/bottle@2x.png"
-          rightView:Ti.UI.createButton
-            color:"#3261AB"
-            backgroundColor:"#f9f9f9"            
-            font:
-              fontSize:'36dip'
-              fontFamily:'fontawesome-webfont'
-            title:String.fromCharCode("0xf095")
-          image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+      # Ti.API.info "addAnnotations start latitude is #{data.latitude}"
+      # Ti.API.info "shopName is #{data.shopName}"
 
-        @mapview.addAnnotation annotation
-      else
+                
+      if data.shopFlg is "true"
         annotation = @MapModule.createAnnotation
           latitude: data.latitude
           longitude: data.longitude
@@ -188,14 +170,55 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           shopFlg:data.shopFlg
-          leftButton:"ui/image/tumblrIconForMap.png"
-          rightView:Ti.UI.createButton
+          leftView:Ti.UI.createButton
             color:"#3261AB"
-            backgroundColor:"#f9f9f9"           
+            backgroundColor:"#f9f9f9"
+            width:"30dip"
+            height:"30dip"
             font:
               fontSize:'36dip'
               fontFamily:'fontawesome-webfont'
-            title:String.fromCharCode("0xf095")          
+            title:String.fromCharCode("0xf095")
+          rightView:Ti.UI.createButton
+            color:"#333"
+            backgroundColor:"#f9f9f9"
+            width:"30dip"
+            height:"30dip"
+            font:
+              fontSize:'36dip'
+              fontFamily:'ligaturesymbols'
+            title:String.fromCharCode("0xE075")
+          image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+
+        @mapview.addAnnotation annotation
+      else
+        annotation = @MapModule.createAnnotation
+          latitude: data.latitude
+          longitude: data.longitude
+          title: data.shopName
+          subtitle:data.phoneNumber          
+          phoneNumber: data.phoneNumber
+          shopAddress: data.shopAddress
+          shopInfo:data.shopInfo
+          shopFlg:data.shopFlg
+          leftView:Ti.UI.createButton
+            color:"#3261AB"
+            backgroundColor:"#f9f9f9"
+            width:"30dip"
+            height:"30dip"
+            font:
+              fontSize:'36dip'
+              fontFamily:'fontawesome-webfont'
+            title:String.fromCharCode("0xf095")
+          rightView:Ti.UI.createButton
+            color:"#333"
+            backgroundColor:"#f9f9f9"
+            width:"30dip"
+            height:"30dip"
+            font:
+              fontSize:'36dip'
+              fontFamily:'ligaturesymbols'
+            title:String.fromCharCode("0xE075")                      
           image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
 
         @mapview.addAnnotation annotation
