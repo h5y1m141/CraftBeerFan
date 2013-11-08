@@ -159,7 +159,25 @@ class mapWindow
       # Ti.API.info "addAnnotations start latitude is #{data.latitude}"
       # Ti.API.info "shopName is #{data.shopName}"
 
-                
+      phoneBtn = Ti.UI.createButton
+        color:"#3261AB"
+        backgroundColor:"#f9f9f9"
+        width:"30dip"
+        height:"30dip"
+        font:
+          fontSize:'36dip'
+          fontFamily:'fontawesome-webfont'
+        title:String.fromCharCode("0xf095")
+      informationBtn = Ti.UI.createButton
+        color:"#333"
+        backgroundColor:"#f9f9f9"
+        width:"30dip"
+        height:"30dip"
+        font:
+          fontSize:'36dip'
+          fontFamily:'ligaturesymbols'
+        title:String.fromCharCode("0xE075")
+        
       if data.shopFlg is "true"
         annotation = @MapModule.createAnnotation
           latitude: data.latitude
@@ -170,24 +188,8 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           shopFlg:data.shopFlg
-          leftView:Ti.UI.createButton
-            color:"#3261AB"
-            backgroundColor:"#f9f9f9"
-            width:"30dip"
-            height:"30dip"
-            font:
-              fontSize:'36dip'
-              fontFamily:'fontawesome-webfont'
-            title:String.fromCharCode("0xf095")
-          # rightView:Ti.UI.createButton
-          #   color:"#333"
-          #   backgroundColor:"#f9f9f9"
-          #   width:"30dip"
-          #   height:"30dip"
-          #   font:
-          #     fontSize:'36dip'
-          #     fontFamily:'ligaturesymbols'
-          #   title:String.fromCharCode("0xE075")
+          leftView:phoneBtn
+          # rightView:informationBtn
           image:Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
 
         @mapview.addAnnotation annotation
@@ -201,24 +203,8 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           shopFlg:data.shopFlg
-          leftView:Ti.UI.createButton
-            color:"#3261AB"
-            backgroundColor:"#f9f9f9"
-            width:"30dip"
-            height:"30dip"
-            font:
-              fontSize:'36dip'
-              fontFamily:'fontawesome-webfont'
-            title:String.fromCharCode("0xf095")
-          # rightView:Ti.UI.createButton
-          #   color:"#333"
-          #   backgroundColor:"#f9f9f9"
-          #   width:"30dip"
-          #   height:"30dip"
-          #   font:
-          #     fontSize:'36dip'
-          #     fontFamily:'ligaturesymbols'
-          #   title:String.fromCharCode("0xE075")                      
+          leftView:phoneBtn
+          # rightView:informationBtn
           image:Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
 
         @mapview.addAnnotation annotation

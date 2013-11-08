@@ -139,11 +139,33 @@ mapWindow = (function() {
   };
 
   mapWindow.prototype.addAnnotations = function(array) {
-    var annotation, data, _i, _len, _results;
+    var annotation, data, informationBtn, phoneBtn, _i, _len, _results;
     this.activityIndicator.hide();
     _results = [];
     for (_i = 0, _len = array.length; _i < _len; _i++) {
       data = array[_i];
+      phoneBtn = Ti.UI.createButton({
+        color: "#3261AB",
+        backgroundColor: "#f9f9f9",
+        width: "30dip",
+        height: "30dip",
+        font: {
+          fontSize: '36dip',
+          fontFamily: 'fontawesome-webfont'
+        },
+        title: String.fromCharCode("0xf095")
+      });
+      informationBtn = Ti.UI.createButton({
+        color: "#333",
+        backgroundColor: "#f9f9f9",
+        width: "30dip",
+        height: "30dip",
+        font: {
+          fontSize: '36dip',
+          fontFamily: 'ligaturesymbols'
+        },
+        title: String.fromCharCode("0xE075")
+      });
       if (data.shopFlg === "true") {
         annotation = this.MapModule.createAnnotation({
           latitude: data.latitude,
@@ -154,17 +176,7 @@ mapWindow = (function() {
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
           shopFlg: data.shopFlg,
-          leftView: Ti.UI.createButton({
-            color: "#3261AB",
-            backgroundColor: "#f9f9f9",
-            width: "30dip",
-            height: "30dip",
-            font: {
-              fontSize: '36dip',
-              fontFamily: 'fontawesome-webfont'
-            },
-            title: String.fromCharCode("0xf095")
-          }),
+          leftView: phoneBtn,
           image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
         });
         _results.push(this.mapview.addAnnotation(annotation));
@@ -178,17 +190,7 @@ mapWindow = (function() {
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
           shopFlg: data.shopFlg,
-          leftView: Ti.UI.createButton({
-            color: "#3261AB",
-            backgroundColor: "#f9f9f9",
-            width: "30dip",
-            height: "30dip",
-            font: {
-              fontSize: '36dip',
-              fontFamily: 'fontawesome-webfont'
-            },
-            title: String.fromCharCode("0xf095")
-          }),
+          leftView: phoneBtn,
           image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
         });
         _results.push(this.mapview.addAnnotation(annotation));
