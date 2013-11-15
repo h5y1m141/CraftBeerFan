@@ -8,3 +8,6 @@ Info.plist
 tiapp.xml
 cookies.txt
 CraftBeerFan.keystore
+my-release-key.keystore
+release
+release.keystore
