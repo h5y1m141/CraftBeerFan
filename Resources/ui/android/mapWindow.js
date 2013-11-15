@@ -29,9 +29,7 @@ mapWindow = (function() {
     adView = ad.createView({
       spotId: nend.spotId,
       apiKey: nend.apiKey,
-      width: Titanium.Platform.displayCaps.platformWidth,
-      height: '50dip',
-      bottom: '1dip',
+      bottom: 0,
       left: 0,
       zIndex: 10
     });
@@ -54,7 +52,7 @@ mapWindow = (function() {
     });
     displayHeight = Ti.Platform.displayCaps.platformHeight;
     displayHeight = displayHeight / Ti.Platform.displayCaps.logicalDensityFactor;
-    mapViewHeight = displayHeight - 50;
+    mapViewHeight = displayHeight - 130;
     Ti.API.info("displayHeight is " + displayHeight + "and mapViewHeight is " + mapViewHeight);
     this.mapview = this.MapModule.createView({
       mapType: this.MapModule.NORMAL_TYPE,
@@ -66,27 +64,15 @@ mapWindow = (function() {
       },
       animate: true,
       userLocation: false,
+      top: 0,
+      left: 0,
       width: Ti.UI.FULL,
-      height: "514dip",
+      height: mapViewHeight + "dip",
       zIndex: 1
     });
     this.mapview.addEventListener('click', function(e) {
-      var ShopDataDetailWindow, data, favoriteButtonEnable, shopDataDetailWindow;
-      Ti.API.info("mapview event fire!!");
-      if (e.clicksource === "title") {
-        favoriteButtonEnable = false;
-        data = {
-          shopName: e.title,
-          shopAddress: e.annotation.shopAddress,
-          phoneNumber: e.annotation.phoneNumber,
-          latitude: e.annotation.latitude,
-          longitude: e.annotation.longitude,
-          shopInfo: e.annotation.shopInfo,
-          favoriteButtonEnable: favoriteButtonEnable
-        };
-        ShopDataDetailWindow = require("ui/android/shopDataDetailWindow");
-        shopDataDetailWindow = new ShopDataDetailWindow(data);
-        return shopDataDetailWindow.open();
+      if (e.clicksource === "leftPane") {
+        return Titanium.Platform.openURL("tel:" + e.annotation.phoneNumber);
       }
     });
     this.mapview.addEventListener('regionchanged', function(e) {
@@ -153,21 +139,44 @@ mapWindow = (function() {
   };
 
   mapWindow.prototype.addAnnotations = function(array) {
-    var annotation, data, _i, _len, _results;
+    var annotation, data, informationBtn, phoneBtn, _i, _len, _results;
     this.activityIndicator.hide();
     _results = [];
     for (_i = 0, _len = array.length; _i < _len; _i++) {
       data = array[_i];
-      Ti.API.info("addAnnotations start latitude is " + data.latitude);
-      Ti.API.info("shopName is " + data.shopName);
+      phoneBtn = Ti.UI.createButton({
+        color: "#3261AB",
+        backgroundColor: "#f9f9f9",
+        width: "30dip",
+        height: "30dip",
+        font: {
+          fontSize: '36dip',
+          fontFamily: 'fontawesome-webfont'
+        },
+        title: String.fromCharCode("0xf095")
+      });
+      informationBtn = Ti.UI.createButton({
+        color: "#333",
+        backgroundColor: "#f9f9f9",
+        width: "30dip",
+        height: "30dip",
+        font: {
+          fontSize: '36dip',
+          fontFamily: 'ligaturesymbols'
+        },
+        title: String.fromCharCode("0xE075")
+      });
       if (data.shopFlg === "true") {
         annotation = this.MapModule.createAnnotation({
           latitude: data.latitude,
           longitude: data.longitude,
           title: data.shopName,
+          subtitle: data.phoneNumber,
           phoneNumber: data.phoneNumber,
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
+          shopFlg: data.shopFlg,
+          leftView: phoneBtn,
           image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
         });
         _results.push(this.mapview.addAnnotation(annotation));
@@ -176,9 +185,12 @@ mapWindow = (function() {
           latitude: data.latitude,
           longitude: data.longitude,
           title: data.shopName,
+          subtitle: data.phoneNumber,
           phoneNumber: data.phoneNumber,
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
+          shopFlg: data.shopFlg,
+          leftView: phoneBtn,
           image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
         });
         _results.push(this.mapview.addAnnotation(annotation));

@@ -47,17 +47,21 @@ class shopDataDetailWindow
       width:Ti.UI.FULL
       pincolor:1
       
-    # if data.shopFlg is "true"
-    #   iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
-    # else
-    #   iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
+    if data.shopFlg is "true"
+      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+    else if data.shopFlg is "false"
+      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
+    else
+      iconImage = Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
       
-    # annotation = MapModule.createAnnotation
-    #   image:iconImage
-    #   latitude:data.latitude
-    #   longitude:data.longitude
+      
+    annotation = MapModule.createAnnotation
+      latitude:data.latitude
+      longitude:data.longitude
+      pincolor:1
+      # image:iconImage      
  
-    # detailMap.addAnnotation annotation
+    detailMap.addAnnotation annotation
     @shopDataDetailWindow.add detailMap
 
     @_createTableView(data)
@@ -192,11 +196,11 @@ class shopDataDetailWindow
       shopInfoIcon = Ti.UI.createLabel
         top:10
         left:10
-        width:30
-        height:30
+        width:"40dip"
+        height:"40dip"
         color:"#ccc"
         font:
-          fontSize:24
+          fontSize:"36dip"
           fontFamily:'LigatureSymbols'
         text:String.fromCharCode("0xe075")
         textAlign:'center'
@@ -204,13 +208,14 @@ class shopDataDetailWindow
       shopInfoLabel = Ti.UI.createLabel
         text:"#{data.shopInfo}"
         textAlign:'left'      
-        width:250
+        width:"250dip"
         height:'auto'
         color:@baseColor.textColor
-        left:50
+        left:100
         top:10
         font:
-          fontSize:14
+          fontSize:"18dip"
+          fontWeight:'bold'          
           
       shopInfoRow.add shopInfoLabel
       shopInfoRow.add shopInfoIcon
