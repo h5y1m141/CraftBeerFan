@@ -5,24 +5,32 @@
   mapWindow = (function() {
     function mapWindow() {
       this.addAnnotations = __bind(this.addAnnotations, this);
-      this._updateUI = __bind(this._updateUI, this);
-      var ActivityIndicator, displayHeight, gpsRule, keyColor, mapViewHeight, mapWindowTitle;
+      var ActivityIndicator, Config, ad, adView, config, displayHeight, gpsRule, keyColor, mapViewHeight, mapWindowTitle, nend;
       keyColor = "#f9f9f9";
       this.baseColor = {
         barColor: keyColor,
         backgroundColor: keyColor
       };
-      this.LANDSCAPE = 0;
-      this.PORTRAIT = 1;
       this.tiGeoHash = require("/lib/TiGeoHash");
       this.precision = 5;
       this.geoHashResult = [];
       this.MapModule = require('ti.map');
-      this.currentLatitude = 35.674819;
-      this.currentLongitude = 139.765084;
+      this.currentLatitude = 35.676564;
+      this.currentLongitude = 139.765076;
+      ad = require('net.nend');
+      Config = require("model/loadConfig");
+      config = new Config();
+      nend = config.getNendData();
       ActivityIndicator = require('ui/android/activitiIndicator');
       this.activityIndicator = new ActivityIndicator();
       this.activityIndicator.hide();
+      adView = ad.createView({
+        spotId: nend.spotId,
+        apiKey: nend.apiKey,
+        bottom: 0,
+        left: 0,
+        zIndex: 10
+      });
       mapWindowTitle = Ti.UI.createLabel({
         textAlign: 'center',
         color: "#333",
@@ -33,7 +41,7 @@
         },
         text: "近くのお店"
       });
-      this.mapWindow = Ti.UI.createWindow({
+      mapWindow = Ti.UI.createWindow({
         title: "近くのお店",
         barColor: this.baseColor.barColor,
         backgroundColor: this.baseColor.backgroundColor,
@@ -56,8 +64,8 @@
         userLocation: false,
         top: 0,
         left: 0,
-        width: "100%",
-        height: "100%",
+        width: Ti.UI.FULL,
+        height: mapViewHeight + "dip",
         zIndex: 1
       });
       this.mapview.addEventListener('click', (function(_this) {
@@ -82,7 +90,7 @@
             return _this.geoHashResult.push(geoHashResult.geohash);
           } else {
             Ti.API.info("regionchanged fire");
-            Ti.App.Analytics.trackEvent('@mapWindow', 'regionchanged', 'regionchanged', 1);
+            Ti.App.Analytics.trackEvent('mapWindow', 'regionchanged', 'regionchanged', 1);
             _this.geoHashResult.push(geoHashResult.geohash);
             _this.activityIndicator.show();
             return _this._nearBy(latitude, longitude);
@@ -118,16 +126,10 @@
           }
         };
       })(this));
-      Ti.Gesture.addEventListener('orientationchange', (function(_this) {
-        return function(e) {
-          var _portrait;
-          Ti.API.info("orientationchange start");
-          return _portrait = e.source.isPortrait();
-        };
-      })(this));
-      this.mapWindow.add(this.mapview);
-      this.mapWindow.add(this.activityIndicator);
-      return this.mapWindow;
+      mapWindow.add(adView);
+      mapWindow.add(this.mapview);
+      mapWindow.add(this.activityIndicator);
+      return mapWindow;
     }
 
     mapWindow.prototype._nearBy = function(latitude, longitude) {
@@ -138,10 +140,6 @@
       return kloudService.placesQuery(latitude, longitude, function(data) {
         return that.addAnnotations(data);
       });
-    };
-
-    mapWindow.prototype._updateUI = function(isPortrait) {
-      return Ti.API.info(this.mapWindow.getChildren());
     };
 
     mapWindow.prototype.addAnnotations = function(array) {

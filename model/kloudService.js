@@ -7,11 +7,10 @@
       this.reviewsQuery = __bind(this.reviewsQuery, this);
       this.reviewsCreate = __bind(this.reviewsCreate, this);
       this.Cloud = require('ti.cloud');
-      Ti.API.debug(" @Cloud " + this.Cloud.Places.query);
     }
 
     kloudService.prototype.placesQuery = function(latitude, longitude, callback) {
-      Ti.API.info("startplacesQuery latitude is " + latitude + " and longitude is " + longitude);
+      Ti.API.info("startplacesQuery");
       return this.Cloud.Places.query({
         page: 1,
         per_page: 20,
@@ -23,13 +22,11 @@
         }
       }, function(e) {
         var data, i, place, result;
-        Ti.API.info("event is " + e.success + " and " + e.places.length);
         if (e.success) {
           result = [];
           i = 0;
           while (i < e.places.length) {
             place = e.places[i];
-            Ti.API.info(place.name);
             data = {
               latitude: place.latitude,
               longitude: place.longitude,

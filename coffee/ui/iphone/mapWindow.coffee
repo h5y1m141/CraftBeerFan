@@ -10,22 +10,11 @@ class mapWindow
     @precision = 6 # GeoHashの計算結果で得られる桁数を指定
     @geoHashResult = []
     
-    ad = require('net.nend')
-    Config = require("model/loadConfig")
-    config = new Config()
-    nend = config.getNendData()
     
     ActivityIndicator = require('ui/activityIndicator')
     @activityIndicator = new ActivityIndicator()
     @activityIndicator.hide()
     
-    adView = ad.createView
-      spotId:nend.spotId
-      apiKey:nend.apiKey
-      width:320
-      height:50
-      bottom: 0
-      left:0
       
     mapWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
@@ -46,9 +35,9 @@ class mapWindow
   
     # 1.0から0.001の間で縮尺尺度を示している。
     # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
-    
-    @mapView = Titanium.Map.createView
-      mapType: Titanium.Map.STANDARD_TYPE
+    @MapModule = require('ti.map')    
+    @mapView = @MapModule.createView
+      mapType: @MapModule.NORMAL_TYPE
       region: 
         latitude:35.676564
         longitude:139.765076
@@ -64,11 +53,12 @@ class mapWindow
     # iPhone4sとiPhone5とそれぞれに最適なmapViewの大きさにする
     if Ti.Platform.osname is 'iphone' and Ti.Platform.displayCaps.platformHeight is 480
       platform = 'iPhone4s'
-      @mapView.height = 364
+      # @mapView.height = 364
     else
       platform = 'iPhone5'
-      @mapView.height = 452
-    
+      # @mapView.height = 452
+      
+    @mapView.height = "100%"
     @mapView.addEventListener('click',(e)=>
       Ti.API.info "map view click event"
       if e.clicksource is "rightButton"
@@ -171,7 +161,6 @@ class mapWindow
     Ti.Geolocation.distanceFilter = 5
     
     mapWindow.add @mapView
-    mapWindow.add adView
     mapWindow.add @activityIndicator
 
     # init時に現在位置を取得する
@@ -183,6 +172,7 @@ class mapWindow
     KloudService =require("model/kloudService")
     kloudService = new KloudService()
     kloudService.placesQuery(latitude,longitude,(data) ->
+      Ti.API.info "data is #{data}"
 
       that.addAnnotations(data)
     )
@@ -232,9 +222,9 @@ class mapWindow
     Ti.API.info "addAnnotations start mapView is #{@mapView}"
     @activityIndicator.hide()
     for data in array
-
+      Ti.API.info data.shopName
       if data.shopFlg is "true"
-        annotation = Titanium.Map.createAnnotation
+        annotation = @MapModule.createAnnotation
           latitude: data.latitude
           longitude: data.longitude
           title: data.shopName
@@ -247,8 +237,9 @@ class mapWindow
           leftButton: ""
           rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
         @mapView.addAnnotation annotation
+        Ti.API.info annotation
       else
-        annotation = Titanium.Map.createAnnotation
+        annotation = @MapModule.createAnnotation
           latitude: data.latitude
           longitude: data.longitude
           title: data.shopName

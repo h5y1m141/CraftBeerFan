@@ -3,7 +3,7 @@
 
   mapWindow = (function() {
     function mapWindow() {
-      var ActivityIndicator, keyColor, mapWindowTitle, platform, refreshLabel;
+      var ActivityIndicator, Config, ad, adView, config, keyColor, mapWindowTitle, nend, platform, refreshLabel;
       keyColor = "#f9f9f9";
       this.baseColor = {
         barColor: keyColor,
@@ -12,9 +12,21 @@
       this.tiGeoHash = require("/lib/TiGeoHash");
       this.precision = 6;
       this.geoHashResult = [];
+      ad = require('net.nend');
+      Config = require("model/loadConfig");
+      config = new Config();
+      nend = config.getNendData();
       ActivityIndicator = require('ui/activityIndicator');
       this.activityIndicator = new ActivityIndicator();
       this.activityIndicator.hide();
+      adView = ad.createView({
+        spotId: nend.spotId,
+        apiKey: nend.apiKey,
+        width: 320,
+        height: 50,
+        bottom: 0,
+        left: 0
+      });
       mapWindowTitle = Ti.UI.createLabel({
         textAlign: 'center',
         color: "#333",
@@ -32,9 +44,8 @@
         navBarHidden: false,
         tabBarHidden: false
       });
-      this.MapModule = require('ti.map');
-      this.mapView = this.MapModule.createView({
-        mapType: this.MapModule.NORMAL_TYPE,
+      this.mapView = Titanium.Map.createView({
+        mapType: Titanium.Map.STANDARD_TYPE,
         region: {
           latitude: 35.676564,
           longitude: 139.765076,
@@ -50,10 +61,11 @@
       });
       if (Ti.Platform.osname === 'iphone' && Ti.Platform.displayCaps.platformHeight === 480) {
         platform = 'iPhone4s';
+        this.mapView.height = 364;
       } else {
         platform = 'iPhone5';
+        this.mapView.height = 452;
       }
-      this.mapView.height = "100%";
       this.mapView.addEventListener('click', (function(_this) {
         return function(e) {
           var ShopDataDetailWindow, currentUserId, data, favoriteButtonEnable, shopDataDetailWindow;
@@ -148,6 +160,7 @@
       Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
       Ti.Geolocation.distanceFilter = 5;
       mapWindow.add(this.mapView);
+      mapWindow.add(adView);
       mapWindow.add(this.activityIndicator);
       this._getGeoCurrentPosition();
       return mapWindow;
@@ -159,7 +172,6 @@
       KloudService = require("model/kloudService");
       kloudService = new KloudService();
       return kloudService.placesQuery(latitude, longitude, function(data) {
-        Ti.API.info("data is " + data);
         return that.addAnnotations(data);
       });
     };
@@ -210,9 +222,8 @@
       _results = [];
       for (_i = 0, _len = array.length; _i < _len; _i++) {
         data = array[_i];
-        Ti.API.info(data.shopName);
         if (data.shopFlg === "true") {
-          annotation = this.MapModule.createAnnotation({
+          annotation = Titanium.Map.createAnnotation({
             latitude: data.latitude,
             longitude: data.longitude,
             title: data.shopName,
@@ -225,10 +236,9 @@
             leftButton: "",
             rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
           });
-          this.mapView.addAnnotation(annotation);
-          _results.push(Ti.API.info(annotation));
+          _results.push(this.mapView.addAnnotation(annotation));
         } else {
-          annotation = this.MapModule.createAnnotation({
+          annotation = Titanium.Map.createAnnotation({
             latitude: data.latitude,
             longitude: data.longitude,
             title: data.shopName,

@@ -1,9 +1,10 @@
 class kloudService
   constructor:() ->
     @Cloud = require('ti.cloud')
-  
+    Ti.API.debug " @Cloud #{@Cloud.Places.query}"
+
   placesQuery:(latitude,longitude,callback) ->
-    Ti.API.info "startplacesQuery"
+    Ti.API.info "startplacesQuery latitude is #{latitude} and longitude is #{longitude}"
     @Cloud.Places.query
       page: 1
       per_page: 20
@@ -12,11 +13,14 @@ class kloudService
           $nearSphere:[longitude,latitude] 
           $maxDistance: 0.01
     , (e) ->
+      Ti.API.info "event is #{e.success} and #{e.places.length}"      
       if e.success
+
         result = []
         i = 0
         while i < e.places.length
           place = e.places[i]
+          Ti.API.info place.name
           data =
             latitude: place.latitude
             longitude: place.longitude

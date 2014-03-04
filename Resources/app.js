@@ -1,63 +1,54 @@
-var Config, MainController, Map, StartupWindow, analytics, config, configurationWizard, gaKey, gaModule, mainController, mapWindow, osname, startupWindow;
+(function() {
+  var Config, Map, analytics, config, configurationWizard, gaKey, gaModule, mapWindow, osname;
 
-configurationWizard = Ti.App.Properties.getBool("configurationWizard");
+  configurationWizard = Ti.App.Properties.getBool("configurationWizard");
 
-Config = require("model/loadConfig");
+  Config = require("/model/loadConfig");
 
-config = new Config();
+  config = new Config();
 
-gaKey = config.getGoogleAnalyticsKey();
+  gaKey = config.getGoogleAnalyticsKey();
 
-gaModule = require('lib/Ti.Google.Analytics');
+  gaModule = require('/lib/Ti.Google.Analytics');
 
-analytics = new gaModule(gaKey);
+  analytics = new gaModule(gaKey);
 
-Ti.App.addEventListener("analytics_trackPageview", function(e) {
-  var path;
-  path = "/ft/" + Titanium.Platform.name;
-  return analytics.trackPageview(path + e.pageUrl);
-});
+  Ti.API.info("gaModule is " + gaModule);
 
-Ti.App.addEventListener("analytics_trackEvent", function(e) {
-  return analytics.trackEvent(e.category, e.action, e.label, e.value);
-});
+  Ti.App.addEventListener("analytics_trackPageview", function(e) {
+    var path;
+    path = "/ft/" + Titanium.Platform.name;
+    return analytics.trackPageview(path + e.pageUrl);
+  });
 
-Ti.App.Analytics = {
-  trackPageview: function(pageUrl) {
-    return Ti.App.fireEvent("analytics_trackPageview", {
-      pageUrl: pageUrl
-    });
-  },
-  trackEvent: function(category, action, label, value) {
-    return Ti.App.fireEvent("analytics_trackEvent", {
-      category: category,
-      action: action,
-      label: label,
-      value: value
-    });
-  }
-};
+  Ti.App.addEventListener("analytics_trackEvent", function(e) {
+    return analytics.trackEvent(e.category, e.action, e.label, e.value);
+  });
 
-analytics.start(10, true);
+  Ti.App.Analytics = {
+    trackPageview: function(pageUrl) {
+      return Ti.App.fireEvent("analytics_trackPageview", {
+        pageUrl: pageUrl
+      });
+    },
+    trackEvent: function(category, action, label, value) {
+      return Ti.App.fireEvent("analytics_trackEvent", {
+        category: category,
+        action: action,
+        label: label,
+        value: value
+      });
+    }
+  };
 
-osname = Ti.Platform.osname;
+  analytics.start(10, true);
 
-if (osname === "android") {
-  Map = require("ui/android/mapWindow");
+  osname = Ti.Platform.osname;
+
+  Map = require("/ui/" + osname + "/mapWindow");
+
   mapWindow = new Map();
+
   mapWindow.open();
-} else if (osname === "iphone") {
-  if (configurationWizard === null || typeof configurationWizard === "undefined" || configurationWizard === false) {
-    StartupWindow = require("ui/" + osname + "/startupWindow");
-    startupWindow = new StartupWindow();
-    startupWindow.open();
-  } else {
-    MainController = require("controller/mainController");
-    mainController = new MainController();
-    mainController.createTabGroup();
-  }
-} else {
-  MainController = require("controller/mainController");
-  mainController = new MainController();
-  mainController.createTabGroup();
-}
+
+}).call(this);

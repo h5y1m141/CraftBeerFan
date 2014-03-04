@@ -4,33 +4,21 @@ class mapWindow
     @baseColor =
       barColor:keyColor
       backgroundColor:keyColor
-
+    @LANDSCAPE = 0  
+    @PORTRAIT = 1
     @tiGeoHash = require("/lib/TiGeoHash")
     @precision = 5 # GeoHashの計算結果で得られる桁数を指定
     @geoHashResult = []
 
     @MapModule = require('ti.map')
 
-    @currentLatitude = 35.676564
-    @currentLongitude = 139.765076 
+    @currentLatitude = 35.674819
+    @currentLongitude = 139.765084
     
-    ad = require('net.nend')
-    Config = require("model/loadConfig")
-    config = new Config()
-    nend = config.getNendData()
     
     ActivityIndicator = require('ui/android/activitiIndicator')
     @activityIndicator = new ActivityIndicator()
     @activityIndicator.hide()
-    
-    adView = ad.createView
-      spotId:nend.spotId
-      apiKey:nend.apiKey
-      # width:Titanium.Platform.displayCaps.platformWidth + "dip"
-      # height:'50dip'
-      bottom:0
-      left:0
-      zIndex:10
       
     mapWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
@@ -41,7 +29,7 @@ class mapWindow
         fontWeight:'bold'
       text:"近くのお店"
     
-    mapWindow = Ti.UI.createWindow
+    @mapWindow = Ti.UI.createWindow
       title:"近くのお店"
       barColor:@baseColor.barColor
       backgroundColor:@baseColor.backgroundColor
@@ -66,8 +54,8 @@ class mapWindow
       userLocation:false
       top:0
       left:0
-      width:Ti.UI.FULL
-      height:mapViewHeight + "dip"
+      width:"100%"
+      height:"100%"
       zIndex:1
 
     
@@ -98,7 +86,7 @@ class mapWindow
         @geoHashResult.push(geoHashResult.geohash)
       else
         Ti.API.info "regionchanged fire"
-        Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
+        Ti.App.Analytics.trackEvent('@mapWindow','regionchanged','regionchanged',1)
         @geoHashResult.push(geoHashResult.geohash)
         @activityIndicator.show()            
         
@@ -138,11 +126,17 @@ class mapWindow
         
     )
 
-    mapWindow.add adView
-    mapWindow.add @mapview
-    mapWindow.add @activityIndicator
+    Ti.Gesture.addEventListener 'orientationchange',(e) =>
+      
+      Ti.API.info "orientationchange start"
+      _portrait = e.source.isPortrait()
 
-    return mapWindow
+    @mapWindow.add @mapview
+    @mapWindow.add @activityIndicator
+
+
+    
+    return @mapWindow
     
   _nearBy:(latitude,longitude) ->
     that = @
@@ -152,7 +146,10 @@ class mapWindow
       that.addAnnotations(data)
     )
     
+  _updateUI:(isPortrait) =>
+    Ti.API.info @mapWindow.getChildren()
 
+  
   addAnnotations:(array) =>
     @activityIndicator.hide()
     for data in array

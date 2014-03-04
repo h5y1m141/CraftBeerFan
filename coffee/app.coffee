@@ -2,14 +2,15 @@ configurationWizard = Ti.App.Properties.getBool "configurationWizard"
 
 # GoogleAnalyticsによるトラッキングのための処理
 
-Config = require("model/loadConfig")
+Config = require("/model/loadConfig")
 config = new Config()
 gaKey = config.getGoogleAnalyticsKey()
 
-gaModule = require('lib/Ti.Google.Analytics')
+gaModule = require('/lib/Ti.Google.Analytics')
+
 analytics = new gaModule(gaKey)
 
-
+Ti.API.info "gaModule is #{gaModule}"
 
 
 Ti.App.addEventListener "analytics_trackPageview", (e) ->
@@ -36,26 +37,31 @@ analytics.start 10, true
 
 osname = Ti.Platform.osname
 
-if osname is "android"
-  # TopWindow = require("ui/android/topWindow")
-  # topWindow = new TopWindow()
-  # topWindow.open()
-  Map = require("ui/android/mapWindow")
-  mapWindow = new Map()
-  mapWindow.open()
+Map = require("/ui/#{osname}/mapWindow")
+mapWindow = new Map()
+mapWindow.open()
 
-else if osname is "iphone"
+# if osname is "android"
+#   # TopWindow = require("ui/android/topWindow")
+#   # topWindow = new TopWindow()
+#   # topWindow.open()
 
-  if configurationWizard is null or typeof configurationWizard is "undefined" or configurationWizard is false
+#   Map = require("/ui/android/mapWindow")
+#   mapWindow = new Map()
+#   mapWindow.open()
 
-    StartupWindow = require("ui/#{osname}/startupWindow")
-    startupWindow = new StartupWindow()  
-    startupWindow.open()
-  else
-    MainController = require("controller/mainController")
-    mainController = new MainController()
-    mainController.createTabGroup()
-else
-    MainController = require("controller/mainController")
-    mainController = new MainController()
-    mainController.createTabGroup()
+# else if osname is "iphone"
+
+#   if configurationWizard is null or typeof configurationWizard is "undefined" or configurationWizard is false
+
+#     StartupWindow = require("ui/#{osname}/startupWindow")
+#     startupWindow = new StartupWindow()  
+#     startupWindow.open()
+#   else
+#     MainController = require("controller/mainController")
+#     mainController = new MainController()
+#     mainController.createTabGroup()
+# else
+#     MainController = require("controller/mainController")
+#     mainController = new MainController()
+#     mainController.createTabGroup()
