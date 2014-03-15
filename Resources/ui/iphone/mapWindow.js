@@ -3,7 +3,7 @@
 
   mapWindow = (function() {
     function mapWindow() {
-      var ActivityIndicator, keyColor, mapWindowTitle, platform, refreshLabel;
+      var ActivityIndicator, keyColor, refreshLabel;
       keyColor = "#f9f9f9";
       this.baseColor = {
         barColor: keyColor,
@@ -15,16 +15,83 @@
       ActivityIndicator = require('ui/activityIndicator');
       this.activityIndicator = new ActivityIndicator();
       this.activityIndicator.hide();
-      mapWindowTitle = Ti.UI.createLabel({
-        textAlign: 'center',
+      this.shopInfoView = Ti.UI.createView({
+        width: Ti.UI.FULL,
+        height: "20%",
+        bottom: -30,
+        left: 0,
+        backgroundColor: "#f3f3f3",
+        opacity: 0.9,
+        zIndex: 10,
+        visible: false
+      });
+      this.shopInfoView.addEventListener('click', (function(_this) {
+        return function(e) {
+          var animation, animation1, t1, t2;
+          t1 = Titanium.UI.create2DMatrix();
+          animation = Titanium.UI.createAnimation();
+          animation.transform = t1;
+          animation.duration = 400;
+          animation.height = "50%";
+          _this.shopInfoView.animate(animation, function() {
+            return Ti.API.info("done");
+          });
+          t2 = Titanium.UI.create2DMatrix();
+          animation1 = Titanium.UI.createAnimation();
+          animation1.transform = t2;
+          animation1.duration = 500;
+          animation1.height = "50%";
+          return _this.mapView.animate(animation1, function() {
+            return Ti.API.info("done");
+          });
+        };
+      })(this));
+      this.shopName = Ti.UI.createLabel({
         color: "#333",
         font: {
           fontSize: 18,
-          fontFamily: 'Rounded M+ 1p',
-          fontWeight: 'bold'
+          weight: "bold"
         },
-        text: "近くのお店"
+        top: 5,
+        left: 50,
+        width: "80%",
+        height: 20
       });
+      this.icon = Ti.UI.createImageView({
+        top: 10,
+        left: 10
+      });
+      this.shopCategory = Ti.UI.createLabel({
+        color: "#333",
+        font: {
+          fontSize: 14
+        },
+        top: 30,
+        left: 50
+      });
+      this.phoneNumber = Ti.UI.createLabel({
+        color: "#333",
+        font: {
+          fontSize: 14
+        },
+        top: 30,
+        left: 200
+      });
+      this.shopInfo = Ti.UI.createLabel({
+        color: "#333",
+        font: {
+          fontSize: 12
+        },
+        top: 55,
+        left: 10,
+        width: "90%",
+        height: 30
+      });
+      this.shopInfoView.add(this.shopName);
+      this.shopInfoView.add(this.shopCategory);
+      this.shopInfoView.add(this.phoneNumber);
+      this.shopInfoView.add(this.shopInfo);
+      this.shopInfoView.add(this.icon);
       mapWindow = Ti.UI.createWindow({
         title: "近くのお店",
         barColor: this.baseColor.barColor,
@@ -38,45 +105,31 @@
         region: {
           latitude: 35.676564,
           longitude: 139.765076,
-          latitudeDelta: 0.025,
-          longitudeDelta: 0.025
+          latitudeDelta: 1,
+          longitudeDelta: 1
         },
         animate: true,
         regionFit: true,
         userLocation: true,
         zIndex: 0,
         top: 0,
-        left: 0
+        left: 0,
+        width: "100%",
+        height: "100%"
       });
-      if (Ti.Platform.osname === 'iphone' && Ti.Platform.displayCaps.platformHeight === 480) {
-        platform = 'iPhone4s';
-      } else {
-        platform = 'iPhone5';
-      }
-      this.mapView.height = "100%";
       this.mapView.addEventListener('click', (function(_this) {
         return function(e) {
-          var ShopDataDetailWindow, currentUserId, data, favoriteButtonEnable, shopDataDetailWindow;
-          Ti.API.info("map view click event");
-          if (e.clicksource === "rightButton") {
-            currentUserId = Ti.App.Properties.getString("currentUserId");
-            if (typeof currentUserId === "undefined" || currentUserId === null) {
-              favoriteButtonEnable = false;
-            } else {
-              favoriteButtonEnable = true;
-            }
-            data = {
-              shopName: e.title,
-              shopAddress: e.annotation.shopAddress,
-              phoneNumber: e.annotation.phoneNumber,
-              latitude: e.annotation.latitude,
-              longitude: e.annotation.longitude,
-              shopInfo: e.annotation.shopInfo,
-              favoriteButtonEnable: favoriteButtonEnable
-            };
-            ShopDataDetailWindow = require("ui/iphone/shopDataDetailWindow");
-            return shopDataDetailWindow = new ShopDataDetailWindow(data);
-          }
+          var data;
+          Ti.API.info("mapView event fire e.annotation.imagePath is " + e.annotation.imagePath + " and title is " + e.title);
+          data = {
+            shopName: e.annotation.shopName,
+            imagePath: e.annotation.imagePath,
+            phoneNumber: e.annotation.phoneNumber,
+            latitude: e.annotation.latitude,
+            longitude: e.annotation.longitude,
+            shopInfo: e.annotation.shopInfo
+          };
+          return _this._showShopInfo(data);
         };
       })(this));
       this.mapView.addEventListener('regionchanged', (function(_this) {
@@ -132,23 +185,20 @@
             that.mapView.setLocation({
               latitude: latitude,
               longitude: longitude,
-              latitudeDelta: 0.025,
-              longitudeDelta: 0.025
+              latitudeDelta: 0.5,
+              longitudeDelta: 0.5
             });
             return that._nearBy(latitude, longitude);
           });
         };
       })(this));
-      mapWindow.rightNavButton = refreshLabel;
-      if (Ti.Platform.osname === 'iphone') {
-        mapWindow.setTitleControl(mapWindowTitle);
-      }
       Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため';
       Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS;
       Ti.Geolocation.preferredProvider = Ti.Geolocation.PROVIDER_GPS;
       Ti.Geolocation.distanceFilter = 5;
       mapWindow.add(this.mapView);
       mapWindow.add(this.activityIndicator);
+      mapWindow.add(this.shopInfoView);
       this._getGeoCurrentPosition();
       return mapWindow;
     }
@@ -183,8 +233,8 @@
         that.mapView.setLocation({
           latitude: latitude,
           longitude: longitude,
-          latitudeDelta: 0.025,
-          longitudeDelta: 0.025
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05
         });
         return that._nearBy(latitude, longitude);
       });
@@ -203,6 +253,57 @@
       });
     };
 
+    mapWindow.prototype._showShopInfo = function(data) {
+      var animation, t1;
+      Ti.API.info("#imagePath is " + data.imagePath + " and Name is " + data.shopName);
+      if (data.imagePath === "ui/image/tumblrIcon.png") {
+        this.shopCategory.text = "飲めるお店";
+      } else {
+        this.shopCategory.text = "買えるお店";
+      }
+      this.phoneNumber.text = data.phoneNumber;
+      this.shopInfo.text = data.shopInfo;
+      this.shopName.text = data.shopName;
+      this.icon.setImage(data.imagePath);
+      t1 = Titanium.UI.create2DMatrix();
+      animation = Titanium.UI.createAnimation();
+      animation.transform = t1;
+      animation.duration = 1000;
+      animation.bottom = 30;
+      return this.shopInfoView.animate(animation, (function(_this) {
+        return function() {
+          return _this.shopInfoView.show();
+        };
+      })(this));
+    };
+
+    mapWindow.prototype._changeStatusShopInfoView = function(status) {
+      var animation, t1;
+      if (status === "hide") {
+        t1 = Titanium.UI.create2DMatrix();
+        animation = Titanium.UI.createAnimation();
+        animation.transform = t1;
+        animation.duration = 500;
+        animation.bottom = 30;
+        return this.shopInfoView.animate(animation, (function(_this) {
+          return function() {
+            return _this.shopInfoView.show();
+          };
+        })(this));
+      } else {
+        t1 = Titanium.UI.create2DMatrix();
+        animation = Titanium.UI.createAnimation();
+        animation.transform = t1;
+        animation.duration = 500;
+        animation.bottom = -30;
+        return this.shopInfoView.animate(animation, (function(_this) {
+          return function() {
+            return _this.shopInfoView.hide();
+          };
+        })(this));
+      }
+    };
+
     mapWindow.prototype.addAnnotations = function(array) {
       var annotation, data, _i, _len, _results;
       Ti.API.info("addAnnotations start mapView is " + this.mapView);
@@ -215,12 +316,13 @@
           annotation = this.MapModule.createAnnotation({
             latitude: data.latitude,
             longitude: data.longitude,
+            shopName: data.shopName,
             title: data.shopName,
             phoneNumber: data.phoneNumber,
             shopAddress: data.shopAddress,
             shopInfo: data.shopInfo,
             subtitle: "",
-            image: "ui/image/bottle.png",
+            imagePath: "ui/image/bottle.png",
             animate: false,
             leftButton: "",
             rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
@@ -231,12 +333,13 @@
           annotation = this.MapModule.createAnnotation({
             latitude: data.latitude,
             longitude: data.longitude,
+            shopName: data.shopName,
             title: data.shopName,
             phoneNumber: data.phoneNumber,
             shopAddress: data.shopAddress,
             shopInfo: data.shopInfo,
             subtitle: "",
-            image: "ui/image/tumblrIcon.png",
+            imagePath: "ui/image/tumblrIcon.png",
             animate: false,
             leftButton: "",
             rightButton: Titanium.UI.iPhone.SystemButton.DISCLOSURE
