@@ -14,17 +14,84 @@ class mapWindow
     ActivityIndicator = require('ui/activityIndicator')
     @activityIndicator = new ActivityIndicator()
     @activityIndicator.hide()
-    
+    @shopInfoView = Ti.UI.createView
+      width:Ti.UI.FULL
+      height:"20%"
+      bottom:-30
+      left:0
+      backgroundColor:"#f3f3f3"
+      opacity:0.9
+      zIndex:10
+      visible:false
       
-    mapWindowTitle = Ti.UI.createLabel
-      textAlign: 'center'
+    @shopInfoView.addEventListener 'click',(e) =>
+      t1 = Titanium.UI.create2DMatrix()
+      animation = Titanium.UI.createAnimation()
+      animation.transform = t1
+      animation.duration = 400
+      animation.height = "50%"
+      @shopInfoView.animate(animation,() =>
+        Ti.API.info "done"
+      )
+      t2 = Titanium.UI.create2DMatrix()
+      animation1 = Titanium.UI.createAnimation()
+      animation1.transform = t2
+      animation1.duration = 500
+      animation1.height = "50%"
+      
+      @mapView.animate(animation1,() ->
+        Ti.API.info "done"
+      )
+      
+      # @shopInfoView.height = "50%"
+      # @mapView.height      = "50%"
+      
+      # if e.source.visible is true
+      #   @_changeStatusShopInfoView("hide")
+      # else
+      #   @_changeStatusShopInfoView("show")      
+
+        
+    @shopName = Ti.UI.createLabel
       color:"#333"
       font:
         fontSize:18
-        fontFamily : 'Rounded M+ 1p'
-        fontWeight:'bold'
-      text:"近くのお店"
+        weight:"bold"
+      top:5
+      left:50
+      width:"80%"
+      height:20
+      
+    @icon = Ti.UI.createImageView
+      top:10
+      left:10
+    @shopCategory = Ti.UI.createLabel
+      color:"#333"
+      font:
+        fontSize:14
+      top:30
+      left:50      
+    @phoneNumber = Ti.UI.createLabel
+      color:"#333"
+      font:
+        fontSize:14
+      top:30
+      left:200
     
+    @shopInfo = Ti.UI.createLabel
+      color:"#333"
+      font:
+        fontSize:12
+      top:55
+      left:10
+      width:"90%"
+      height:30
+      
+    @shopInfoView.add  @shopName
+    @shopInfoView.add  @shopCategory    
+    @shopInfoView.add  @phoneNumber
+    @shopInfoView.add  @shopInfo
+    @shopInfoView.add  @icon
     mapWindow = Ti.UI.createWindow
       title:"近くのお店"
       barColor:@baseColor.barColor
@@ -41,50 +108,30 @@ class mapWindow
       region: 
         latitude:35.676564
         longitude:139.765076
-        latitudeDelta:0.025
-        longitudeDelta:0.025
+        latitudeDelta:1
+        longitudeDelta:1  
       animate:true
       regionFit:true
       userLocation:true
       zIndex:0
       top:0
       left:0
-    # プラットフォームを判定しながらスクリーンサイズ取得して
-    # iPhone4sとiPhone5とそれぞれに最適なmapViewの大きさにする
-    if Ti.Platform.osname is 'iphone' and Ti.Platform.displayCaps.platformHeight is 480
-      platform = 'iPhone4s'
-      # @mapView.height = 364
-    else
-      platform = 'iPhone5'
-      # @mapView.height = 452
-      
-    @mapView.height = "100%"
+      width:"100%"
+      height:"100%"
     @mapView.addEventListener('click',(e)=>
-      Ti.API.info "map view click event"
-      if e.clicksource is "rightButton"
-        # アカウント登録をスキップして利用する人がいるため、
-        # currentUserIdの値をチェックして、存在しない場合にはお気に入り
-        # を非表示にする
-        currentUserId = Ti.App.Properties.getString "currentUserId"
-        if typeof currentUserId is "undefined" or currentUserId is null
-          favoriteButtonEnable = false
-        else
-          favoriteButtonEnable = true
-
-        data =
-          shopName:e.title
-          shopAddress:e.annotation.shopAddress
-          phoneNumber:e.annotation.phoneNumber
-          latitude: e.annotation.latitude
-          longitude: e.annotation.longitude
-          shopInfo: e.annotation.shopInfo
-          favoriteButtonEnable:favoriteButtonEnable
-          
-        ShopDataDetailWindow = require("ui/iphone/shopDataDetailWindow")
-        shopDataDetailWindow = new ShopDataDetailWindow(data)
+      Ti.API.info "mapView event fire e.annotation.imagePath is #{e.annotation.imagePath} and title is #{e.title}"
+      data =
+        shopName:e.annotation.shopName
+        imagePath:e.annotation.imagePath
+        phoneNumber:e.annotation.phoneNumber
+        latitude: e.annotation.latitude
+        longitude: e.annotation.longitude
+        shopInfo: e.annotation.shopInfo
+        
+      @_showShopInfo data
       
     )
-        
+      
     @mapView.addEventListener('regionchanged',(e)=>
       
       # ちょっとしたスクロールに反応してしまうため、緯度経度から
@@ -141,8 +188,8 @@ class mapWindow
         that.mapView.setLocation(
           latitude: latitude
           longitude: longitude
-          latitudeDelta:0.025
-          longitudeDelta:0.025
+          latitudeDelta:0.5
+          longitudeDelta:0.5
         )
         that._nearBy(latitude,longitude)
 
@@ -150,10 +197,6 @@ class mapWindow
     )
 
 
-    mapWindow.rightNavButton = refreshLabel
-    
-    if Ti.Platform.osname is 'iphone'  
-      mapWindow.setTitleControl mapWindowTitle
     
     Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため'
     Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS
@@ -162,6 +205,7 @@ class mapWindow
     
     mapWindow.add @mapView
     mapWindow.add @activityIndicator
+    mapWindow.add @shopInfoView
 
     # init時に現在位置を取得する
     @_getGeoCurrentPosition()
@@ -196,8 +240,8 @@ class mapWindow
       that.mapView.setLocation(
         latitude: latitude
         longitude: longitude
-        latitudeDelta:0.025
-        longitudeDelta:0.025
+        latitudeDelta:0.05
+        longitudeDelta:0.05
       )
 
       that._nearBy(latitude,longitude)
@@ -217,7 +261,48 @@ class mapWindow
     lon: (xPixels - widthInPixels / 2) * widthDegPerPixel + region.longitude
     
     return
-     
+    
+  _showShopInfo:(data) ->
+    Ti.API.info "#imagePath is #{data.imagePath} and Name is #{data.shopName}"    
+    if data.imagePath is "ui/image/tumblrIcon.png"
+      @shopCategory.text = "飲めるお店"
+    else
+      @shopCategory.text = "買えるお店"
+    @phoneNumber.text = data.phoneNumber
+    @shopInfo.text = data.shopInfo
+    @shopName.text = data.shopName
+    @icon.setImage data.imagePath
+    t1 = Titanium.UI.create2DMatrix()
+    animation = Titanium.UI.createAnimation()
+    animation.transform = t1
+    animation.duration = 1000
+    animation.bottom = 30
+
+    return @shopInfoView.animate(animation ,() =>
+      @shopInfoView.show()
+    )  
+    # return @shopInfoView.show()
+  _changeStatusShopInfoView:(status) ->
+    if status is "hide"
+      t1 = Titanium.UI.create2DMatrix()
+      animation = Titanium.UI.createAnimation()
+      animation.transform = t1
+      animation.duration = 500
+      animation.bottom = 30
+
+      return @shopInfoView.animate(animation ,() =>
+        @shopInfoView.show()
+      )        
+    else
+      t1 = Titanium.UI.create2DMatrix()
+      animation = Titanium.UI.createAnimation()
+      animation.transform = t1
+      animation.duration = 500
+      animation.bottom = -30
+
+      return @shopInfoView.animate(animation ,() =>
+        @shopInfoView.hide()
+      )            
   addAnnotations:(array) ->
     Ti.API.info "addAnnotations start mapView is #{@mapView}"
     @activityIndicator.hide()
@@ -227,12 +312,13 @@ class mapWindow
         annotation = @MapModule.createAnnotation
           latitude: data.latitude
           longitude: data.longitude
-          title: data.shopName
+          shopName: data.shopName
+          title:data.shopName
           phoneNumber: data.phoneNumber
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           subtitle: ""
-          image:"ui/image/bottle.png"
+          imagePath:"ui/image/bottle.png"
           animate: false
           leftButton: ""
           rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
@@ -242,12 +328,13 @@ class mapWindow
         annotation = @MapModule.createAnnotation
           latitude: data.latitude
           longitude: data.longitude
-          title: data.shopName
+          shopName: data.shopName
+          title:data.shopName          
           phoneNumber: data.phoneNumber
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           subtitle: ""
-          image:"ui/image/tumblrIcon.png"
+          imagePath:"ui/image/tumblrIcon.png"
           animate: false
           leftButton: ""
           rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE

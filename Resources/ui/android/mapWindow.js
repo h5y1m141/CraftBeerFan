@@ -5,8 +5,7 @@
   mapWindow = (function() {
     function mapWindow() {
       this.addAnnotations = __bind(this.addAnnotations, this);
-      this._updateUI = __bind(this._updateUI, this);
-      var ActivityIndicator, displayHeight, gpsRule, keyColor, mapViewHeight, mapWindowTitle;
+      var ActivityIndicator, gpsRule, keyColor, mapWindowTitle;
       keyColor = "#f9f9f9";
       this.baseColor = {
         barColor: keyColor,
@@ -14,37 +13,28 @@
       };
       this.LANDSCAPE = 0;
       this.PORTRAIT = 1;
+      this.displayHeight = Ti.Platform.displayCaps.platformHeight;
+      this.displayWidth = Ti.Platform.displayCaps.platformWidth;
+      if (this.displayHeight > 1000) {
+        this.barHeight = 144;
+      } else {
+        this.barHeight = 72;
+      }
+      this.currentDeviceStatus = Ti.Gesture.orientation;
+      this.mapViewHight = 0;
       this.tiGeoHash = require("/lib/TiGeoHash");
       this.precision = 5;
       this.geoHashResult = [];
       this.MapModule = require('ti.map');
       this.currentLatitude = 35.674819;
       this.currentLongitude = 139.765084;
-      ActivityIndicator = require('ui/android/activitiIndicator');
-      this.activityIndicator = new ActivityIndicator();
-      this.activityIndicator.hide();
-      mapWindowTitle = Ti.UI.createLabel({
-        textAlign: 'center',
-        color: "#333",
-        font: {
-          fontSize: '18dip',
-          fontFamily: 'Rounded M+ 1p',
-          fontWeight: 'bold'
-        },
-        text: "近くのお店"
+      this.container = Ti.UI.createView({
+        width: "100%",
+        height: "100%",
+        top: 0,
+        left: 0
       });
-      this.mapWindow = Ti.UI.createWindow({
-        title: "近くのお店",
-        barColor: this.baseColor.barColor,
-        backgroundColor: this.baseColor.backgroundColor,
-        navBarHidden: false,
-        tabBarHidden: false
-      });
-      displayHeight = Ti.Platform.displayCaps.platformHeight;
-      displayHeight = displayHeight / Ti.Platform.displayCaps.logicalDensityFactor;
-      mapViewHeight = displayHeight - 130;
-      Ti.API.info("displayHeight is " + displayHeight + "and mapViewHeight is " + mapViewHeight);
-      this.mapview = this.MapModule.createView({
+      this.mapView = this.MapModule.createView({
         mapType: this.MapModule.NORMAL_TYPE,
         region: {
           latitude: 35.676564,
@@ -60,14 +50,21 @@
         height: "100%",
         zIndex: 1
       });
-      this.mapview.addEventListener('click', (function(_this) {
+      this.mapView.addEventListener('click', (function(_this) {
         return function(e) {
-          if (e.clicksource === "leftPane") {
-            return Titanium.Platform.openURL("tel:" + e.annotation.phoneNumber);
-          }
+          var data;
+          data = {
+            shopName: e.annotation.shopName,
+            imagePath: e.annotation.imagePath,
+            phoneNumber: e.annotation.phoneNumber,
+            latitude: e.annotation.latitude,
+            longitude: e.annotation.longitude,
+            shopInfo: e.annotation.shopInfo
+          };
+          return _this._showShopInfo(data);
         };
       })(this));
-      this.mapview.addEventListener('regionchanged', (function(_this) {
+      this.mapView.addEventListener('regionchanged', (function(_this) {
         return function(e) {
           var geoHashResult, lastGeoHashValue, latitude, longitude;
           lastGeoHashValue = _this.geoHashResult[_this.geoHashResult.length - 1];
@@ -105,7 +102,7 @@
             longitude = e.coords.longitude;
             geoHashResult = _this.tiGeoHash.encodeGeoHash(latitude, longitude, _this.precision);
             _this.geoHashResult.push(geoHashResult.geohash);
-            _this.mapview.setLocation({
+            _this.mapView.setLocation({
               latitude: latitude,
               longitude: longitude,
               latitudeDelta: 0.025,
@@ -120,13 +117,110 @@
       })(this));
       Ti.Gesture.addEventListener('orientationchange', (function(_this) {
         return function(e) {
-          var _portrait;
-          Ti.API.info("orientationchange start");
-          return _portrait = e.source.isPortrait();
+          if (Ti.Platform.displayCaps.platformHeight > 1080) {
+            _this.height = 144;
+          } else {
+            _this.height = 72;
+          }
+          if (_this.currentDeviceStatus === _this.PORTRAIT && e.orientation === _this.PORTRAIT) {
+            return _this.mapViewHight = Ti.Platform.displayCaps.platformHeight / 2 - _this.height;
+          } else if (_this.currentDeviceStatus === _this.PORTRAIT && e.orientation === _this.LANDSCAPE) {
+            return _this.mapViewHight = (Ti.Platform.displayCaps.platformHeight / 2) - (_this.height / 2);
+          } else if (_this.currentDeviceStatus === _this.LANDSCAPE && e.orientation === _this.PORTRAIT) {
+            return _this.mapViewHight = Ti.Platform.displayCaps.platformHeight / 2 - _this.height;
+          } else if (_this.currentDeviceStatus === _this.LANDSCAPE && e.orientation === _this.LANDSCAPE) {
+            return _this.mapViewHight = (Ti.Platform.displayCaps.platformHeight / 2) - (_this.height / 2);
+          } else {
+            return Ti.API.info("cant' set width");
+          }
         };
       })(this));
-      this.mapWindow.add(this.mapview);
+      ActivityIndicator = require('ui/android/activitiIndicator');
+      this.activityIndicator = new ActivityIndicator();
+      this.activityIndicator.hide();
+      this.shopInfoView = Ti.UI.createView({
+        width: Ti.UI.FULL,
+        height: this.barHeight * 2,
+        top: this.displayHeight + 30,
+        left: 0,
+        backgroundColor: "#f3f3f3",
+        zIndex: 10,
+        visible: false
+      });
+      this.shopInfoView.addEventListener('click', function(e) {
+        return this._slideEachView();
+      });
+      this.shopName = Ti.UI.createLabel({
+        color: "#333",
+        font: {
+          fontSize: "18dp",
+          weight: "bold"
+        },
+        top: 100,
+        left: 50,
+        width: 800,
+        height: 100
+      });
+      this.icon = Ti.UI.createImageView({
+        top: 10,
+        left: 10
+      });
+      this.shopCategory = Ti.UI.createLabel({
+        color: "#333",
+        font: {
+          fontSize: "14dp"
+        },
+        top: 10,
+        left: 100
+      });
+      this.phoneNumber = Ti.UI.createLabel({
+        color: "#333",
+        font: {
+          fontSize: "14dp"
+        },
+        top: 220,
+        left: 50
+      });
+      this.shopInfo = Ti.UI.createLabel({
+        color: "#333",
+        font: {
+          fontSize: "12dp"
+        },
+        top: 200,
+        left: 50,
+        width: this.displayWidth * 0.9,
+        height: 40,
+        geo: {
+          latitude: 0,
+          longitude: 0
+        }
+      });
+      this.shopInfoView.add(this.shopName);
+      this.shopInfoView.add(this.shopCategory);
+      this.shopInfoView.add(this.phoneNumber);
+      this.shopInfoView.add(this.shopInfo);
+      this.shopInfoView.add(this.icon);
+      mapWindowTitle = Ti.UI.createLabel({
+        textAlign: 'center',
+        color: "#333",
+        font: {
+          fontSize: '18dp',
+          fontFamily: 'Rounded M+ 1p',
+          fontWeight: 'bold'
+        },
+        text: "近くのお店"
+      });
+      this.mapWindow = Ti.UI.createWindow({
+        title: "近くのお店",
+        barColor: this.baseColor.barColor,
+        backgroundColor: this.baseColor.backgroundColor,
+        navBarHidden: false,
+        tabBarHidden: false
+      });
+      this.container.add(this.mapView);
+      this.mapWindow.add(this.container);
       this.mapWindow.add(this.activityIndicator);
+      this.mapWindow.add(this.shopInfoView);
       return this.mapWindow;
     }
 
@@ -140,66 +234,96 @@
       });
     };
 
-    mapWindow.prototype._updateUI = function(isPortrait) {
-      return Ti.API.info(this.mapWindow.getChildren());
+    mapWindow.prototype._showshopInfoDetail = function() {
+      var animation, animation1, animationSpeed, latitude, longitude, mapView, mapViewHeightafterAnimation, t1, t2;
+      t1 = Titanium.UI.create2DMatrix();
+      animation = Titanium.UI.createAnimation();
+      animationSpeed = 300;
+      animation.transform = t1;
+      animation.duration = animationSpeed;
+      animation.top = 0;
+      this.shopInfoView.height = this.displayHeight;
+      t2 = Titanium.UI.create2DMatrix();
+      animation1 = Titanium.UI.createAnimation({
+        transform: t2,
+        duration: animationSpeed,
+        top: this.displayHeight / 2,
+        left: 0
+      });
+      mapView = this.mapView;
+      latitude = this.shopInfo.geo.latitude;
+      longitude = this.shopInfo.geo.longitude;
+      mapViewHeightafterAnimation = this.displayHeight / 2;
+      return this.shopInfoView.animate(animation1, function() {
+        mapView.region = {
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01
+        };
+        return mapView.height = mapViewHeightafterAnimation;
+      });
+    };
+
+    mapWindow.prototype._slideEachView = function() {};
+
+    mapWindow.prototype._showShopInfo = function(data) {
+      var animation, t1;
+      Ti.API.info("#imagePath is " + data.imagePath + " and Name is " + data.shopName);
+      if (data.imagePath === "ui/image/tumblrIcon.png" || data.imagePath === "ui/image/tumblrIconForMap.png") {
+        this.shopCategory.text = "飲めるお店";
+      } else {
+        this.shopCategory.text = "買えるお店";
+      }
+      t1 = Titanium.UI.create2DMatrix();
+      animation = Titanium.UI.createAnimation();
+      animation.transform = t1;
+      animation.duration = 500;
+      animation.bottom = "1dp";
+      return this.shopInfoView.animate(animation, (function(_this) {
+        return function() {
+          Ti.API.info("done");
+          _this.phoneNumber.text = data.phoneNumber;
+          _this.shopInfo.text = data.shopInfo;
+          _this.shopInfo.geo.latitude = data.latitude;
+          _this.shopInfo.geo.longitude = data.longitude;
+          _this.shopName.text = data.shopName;
+          _this.icon.setImage(Titanium.Filesystem.resourcesDirectory + data.imagePath);
+          return _this.shopInfoView.show();
+        };
+      })(this));
     };
 
     mapWindow.prototype.addAnnotations = function(array) {
-      var annotation, data, informationBtn, phoneBtn, _i, _len, _results;
+      var annotation, data, _i, _len, _results;
       this.activityIndicator.hide();
       _results = [];
       for (_i = 0, _len = array.length; _i < _len; _i++) {
         data = array[_i];
-        phoneBtn = Ti.UI.createButton({
-          color: "#3261AB",
-          backgroundColor: "#f9f9f9",
-          width: "30dip",
-          height: "30dip",
-          font: {
-            fontSize: '36dip',
-            fontFamily: 'fontawesome-webfont'
-          },
-          title: String.fromCharCode("0xf095")
-        });
-        informationBtn = Ti.UI.createButton({
-          color: "#333",
-          backgroundColor: "#f9f9f9",
-          width: "30dip",
-          height: "30dip",
-          font: {
-            fontSize: '36dip',
-            fontFamily: 'ligaturesymbols'
-          },
-          title: String.fromCharCode("0xE075")
-        });
         if (data.shopFlg === "true") {
           annotation = this.MapModule.createAnnotation({
             latitude: data.latitude,
             longitude: data.longitude,
-            title: data.shopName,
-            subtitle: data.phoneNumber,
+            shopName: data.shopName,
             phoneNumber: data.phoneNumber,
             shopAddress: data.shopAddress,
             shopInfo: data.shopInfo,
             shopFlg: data.shopFlg,
-            leftView: phoneBtn,
-            image: Titanium.Filesystem.resourcesDirectory + "ui/image/bottle@2x.png"
+            imagePath: "ui/image/bottle@2x.png"
           });
-          _results.push(this.mapview.addAnnotation(annotation));
+          _results.push(this.mapView.addAnnotation(annotation));
         } else {
           annotation = this.MapModule.createAnnotation({
             latitude: data.latitude,
             longitude: data.longitude,
-            title: data.shopName,
-            subtitle: data.phoneNumber,
+            shopName: data.shopName,
             phoneNumber: data.phoneNumber,
             shopAddress: data.shopAddress,
             shopInfo: data.shopInfo,
             shopFlg: data.shopFlg,
-            leftView: phoneBtn,
-            image: Titanium.Filesystem.resourcesDirectory + "ui/image/tumblrIconForMap.png"
+            imagePath: "ui/image/tumblrIconForMap.png"
           });
-          _results.push(this.mapview.addAnnotation(annotation));
+          _results.push(this.mapView.addAnnotation(annotation));
         }
       }
       return _results;

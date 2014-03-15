@@ -16,8 +16,9 @@
         feedbackColor: "#DA5019",
         separatorColor: '#cccccc'
       };
-      this.mapView = Titanium.Map.createView({
-        mapType: Titanium.Map.STANDARD_TYPE,
+      this.MapModule = require('ti.map');
+      this.mapView = this.MapModule.createView({
+        mapType: this.MapModule.NORMAL_TYPE,
         region: {
           latitude: data.latitude,
           longitude: data.longitude,
@@ -82,8 +83,8 @@
 
     shopDataDetailWindow.prototype._createMapView = function(data) {
       var annotation;
-      annotation = Titanium.Map.createAnnotation({
-        pincolor: Titanium.Map.ANNOTATION_PURPLE,
+      annotation = this.MapModule.createAnnotation({
+        pincolor: this.MapModule.ANNOTATION_PURPLE,
         animate: false,
         latitude: data.latitude,
         longitude: data.longitude
