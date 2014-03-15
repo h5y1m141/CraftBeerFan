@@ -48,6 +48,8 @@ class mapWindow
     
     
     @mapView.addEventListener('click',(e)=>
+
+   
       # if e.clicksource is "leftPane"
       #   Titanium.Platform.openURL("tel:#{e.annotation.phoneNumber}")
       data =
@@ -154,6 +156,7 @@ class mapWindow
       width:Ti.UI.FULL
       height:@barHeight * 2
       top:@displayHeight + 30
+      annotationData:null
       left:0
       backgroundColor:"#f3f3f3"
       # opacity:0.9
@@ -161,7 +164,6 @@ class mapWindow
       visible:false
       
     @shopInfoView.addEventListener 'click',(e) =>
-      # @_slideEachView()
       @_showshopInfoDetail()
 
     @shopName = Ti.UI.createLabel
@@ -266,18 +268,21 @@ class mapWindow
     mapView = @mapView
     latitude = @shopInfo.geo.latitude
     longitude =@shopInfo.geo.longitude
+    annotationData = @shopInfo.annotationData
+    that = @
     mapViewHeightafterAnimation = @displayHeight/2
     @shopInfoView.animate(animation1, () ->
-      mapView.region =
-        latitude:latitude
-        longitude:longitude          
-        latitudeDelta:0.01
-        longitudeDelta:0.01
+      # mapView.region =
+      #   latitude:latitude
+      #   longitude:longitude          
+      #   latitudeDelta:0.01
+      #   longitudeDelta:0.01
       
       mapView.height = mapViewHeightafterAnimation
+      mapView.removeAllAnnotations()
+      that.addAnnotations([annotationData])
+      return
     )
-  _slideEachView:() ->
-    return
     
   _showShopInfo:(data) ->
     Ti.API.info "#imagePath is #{data.imagePath} and Name is #{data.shopName}"    
@@ -297,10 +302,11 @@ class mapWindow
       @shopInfo.text = data.shopInfo
       @shopInfo.geo.latitude = data.latitude
       @shopInfo.geo.longitude = data.longitude
+      @shopInfo.annotationData = data
 
       @shopName.text = data.shopName
       
-      @icon.setImage Titanium.Filesystem.resourcesDirectory + data.imagePath
+      @icon.setImage Ti.Filesystem.resourcesDirectory + data.imagePath
       @shopInfoView.show()      
     )      
 
@@ -318,6 +324,7 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           shopFlg:data.shopFlg
+          image:"ui/image/bottle@2x.png"
           imagePath:"ui/image/bottle@2x.png"
 
 
@@ -331,6 +338,7 @@ class mapWindow
           shopAddress: data.shopAddress
           shopInfo:data.shopInfo
           shopFlg:data.shopFlg
+          image:"ui/image/tumblrIconForMap.png"
           imagePath:"ui/image/tumblrIconForMap.png"
 
         @mapView.addAnnotation annotation

@@ -142,6 +142,7 @@
         width: Ti.UI.FULL,
         height: this.barHeight * 2,
         top: this.displayHeight + 30,
+        annotationData: null,
         left: 0,
         backgroundColor: "#f3f3f3",
         zIndex: 10,
@@ -237,7 +238,7 @@
     };
 
     mapWindow.prototype._showshopInfoDetail = function() {
-      var animation, animation1, animationSpeed, latitude, longitude, mapView, mapViewHeightafterAnimation, t1, t2;
+      var animation, animation1, animationSpeed, annotationData, latitude, longitude, mapView, mapViewHeightafterAnimation, t1, t2, that;
       t1 = Titanium.UI.create2DMatrix();
       animation = Titanium.UI.createAnimation();
       animationSpeed = 300;
@@ -255,19 +256,15 @@
       mapView = this.mapView;
       latitude = this.shopInfo.geo.latitude;
       longitude = this.shopInfo.geo.longitude;
+      annotationData = this.shopInfo.annotationData;
+      that = this;
       mapViewHeightafterAnimation = this.displayHeight / 2;
       return this.shopInfoView.animate(animation1, function() {
-        mapView.region = {
-          latitude: latitude,
-          longitude: longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01
-        };
-        return mapView.height = mapViewHeightafterAnimation;
+        mapView.height = mapViewHeightafterAnimation;
+        mapView.removeAllAnnotations();
+        that.addAnnotations([annotationData]);
       });
     };
-
-    mapWindow.prototype._slideEachView = function() {};
 
     mapWindow.prototype._showShopInfo = function(data) {
       var animation, t1;
@@ -289,8 +286,9 @@
           _this.shopInfo.text = data.shopInfo;
           _this.shopInfo.geo.latitude = data.latitude;
           _this.shopInfo.geo.longitude = data.longitude;
+          _this.shopInfo.annotationData = data;
           _this.shopName.text = data.shopName;
-          _this.icon.setImage(Titanium.Filesystem.resourcesDirectory + data.imagePath);
+          _this.icon.setImage(Ti.Filesystem.resourcesDirectory + data.imagePath);
           return _this.shopInfoView.show();
         };
       })(this));
@@ -311,6 +309,7 @@
             shopAddress: data.shopAddress,
             shopInfo: data.shopInfo,
             shopFlg: data.shopFlg,
+            image: "ui/image/bottle@2x.png",
             imagePath: "ui/image/bottle@2x.png"
           });
           _results.push(this.mapView.addAnnotation(annotation));
@@ -323,6 +322,7 @@
             shopAddress: data.shopAddress,
             shopInfo: data.shopInfo,
             shopFlg: data.shopFlg,
+            image: "ui/image/tumblrIconForMap.png",
             imagePath: "ui/image/tumblrIconForMap.png"
           });
           _results.push(this.mapView.addAnnotation(annotation));
