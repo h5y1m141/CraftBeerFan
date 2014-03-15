@@ -160,9 +160,9 @@ class mapWindow
       zIndex:10
       visible:false
       
-    @shopInfoView.addEventListener 'click',(e) ->
-      @_slideEachView()
-      # @_showshopInfoDetail()
+    @shopInfoView.addEventListener 'click',(e) =>
+      # @_slideEachView()
+      @_showshopInfoDetail()
 
     @shopName = Ti.UI.createLabel
       color:"#333"

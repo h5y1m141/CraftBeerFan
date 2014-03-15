@@ -147,9 +147,11 @@
         zIndex: 10,
         visible: false
       });
-      this.shopInfoView.addEventListener('click', function(e) {
-        return this._slideEachView();
-      });
+      this.shopInfoView.addEventListener('click', (function(_this) {
+        return function(e) {
+          return _this._showshopInfoDetail();
+        };
+      })(this));
       this.shopName = Ti.UI.createLabel({
         color: "#333",
         font: {
