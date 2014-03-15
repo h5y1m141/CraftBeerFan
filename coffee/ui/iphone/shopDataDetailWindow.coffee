@@ -22,8 +22,9 @@ class shopDataDetailWindow
       favoriteColor:"#DA5019"
       feedbackColor:"#DA5019"
       separatorColor:'#cccccc'
-    @mapView = Titanium.Map.createView
-      mapType: Titanium.Map.STANDARD_TYPE
+    @MapModule = require('ti.map')    
+    @mapView = @MapModule.createView
+      mapType: @MapModule.NORMAL_TYPE
       region: 
         latitude:data.latitude
         longitude:data.longitude
@@ -87,8 +88,8 @@ class shopDataDetailWindow
     return
   _createMapView:(data) ->
 
-    annotation = Titanium.Map.createAnnotation
-      pincolor:Titanium.Map.ANNOTATION_PURPLE
+    annotation = @MapModule.createAnnotation
+      pincolor:@MapModule.ANNOTATION_PURPLE
       animate: false
       latitude:data.latitude
       longitude:data.longitude
