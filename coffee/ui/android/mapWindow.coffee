@@ -48,19 +48,22 @@ class mapWindow
     
     
     @mapView.addEventListener('click',(e)=>
+      if e.clicksource is "rightPane"
+        data =
+          shopName:e.annotation.shopName
+          imagePath:e.annotation.imagePath
+          phoneNumber:e.annotation.phoneNumber
+          latitude: e.annotation.latitude
+          longitude: e.annotation.longitude
+          shopInfo: e.annotation.shopInfo
 
-   
-      # if e.clicksource is "leftPane"
-      #   Titanium.Platform.openURL("tel:#{e.annotation.phoneNumber}")
-      data =
-        shopName:e.annotation.shopName
-        imagePath:e.annotation.imagePath
-        phoneNumber:e.annotation.phoneNumber
-        latitude: e.annotation.latitude
-        longitude: e.annotation.longitude
-        shopInfo: e.annotation.shopInfo
+        ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
+        shopDataDetailWindow = new ShopDataDetailWindow(data)
+        shopDataDetailWindow.open()
+      else if e.clicksource is "leftPane"
+        Ti.Platform.openURL("tel:#{e.annotation.phoneNumber}")
         
-      @_showShopInfo data
+      # @_showShopInfo data
       
 
     )
@@ -153,13 +156,14 @@ class mapWindow
     @activityIndicator = new ActivityIndicator()
     @activityIndicator.hide()
     @shopInfoView = Ti.UI.createView
-      width:Ti.UI.FULL
+      width:"400dp"
       height:@barHeight * 2
-      top:@displayHeight + 30
+      # top:@displayHeight + 30
+      top:100
       annotationData:null
-      left:0
+      left:50
       backgroundColor:"#f3f3f3"
-      # opacity:0.9
+      opacity:0.9
       zIndex:10
       visible:false
       
@@ -171,27 +175,46 @@ class mapWindow
       font:
         fontSize:"18dp"
         weight:"bold"
-      top:100
-      left:50
-      width:800
-      height:100
-      
-    @icon = Ti.UI.createImageView
       top:10
       left:10
-    @shopCategory = Ti.UI.createLabel
-      color:"#333"
-      font:
-        fontSize:"14dp"
-      top:10
-      left:100
+      width:"200dp"
+      
+    @icon = Ti.UI.createImageView
+      top:"10dp"
+      left:"10dp"
+      width:"20dp"
+      height:"40dp"
+    
+    # @shopCategory = Ti.UI.createLabel
+    #   color:"#333"
+    #   font:
+    #     fontSize:"14dp"
+    #   top:10
+    #   left:100
+    phoneIcon = String.fromCharCode("0xe06e")        
     @phoneNumber = Ti.UI.createLabel
       color:"#333"
       font:
-        fontSize:"14dp"
-      top:220
-      left:50
-    
+        fontSize:"32dp"
+        fontFamily:'fontawesome-webfont'
+      top:10
+      right:10
+      text:String.fromCharCode("0xf095")
+      phoneNumber:null
+    phoneBtn = Ti.UI.createButton
+      color:"#3261AB"
+      backgroundColor:"#f9f9f9"
+      width:"30dip"
+      height:"30dip"
+      top:10
+      right:10
+      font:
+        fontSize:"32dp"
+        fontFamily:'fontawesome-webfont'
+      title:String.fromCharCode("0xf095")      
+    @phoneNumber.addEventListener 'click',(e) ->
+      alert e
+      # Ti.Platform.openURL("tel:#{e.annotation.phoneNumber}")          
     @shopInfo = Ti.UI.createLabel
       color:"#333"
       font:
@@ -205,10 +228,11 @@ class mapWindow
         longitude:0
       
     @shopInfoView.add  @shopName
-    @shopInfoView.add  @shopCategory    
-    @shopInfoView.add  @phoneNumber
+    # @shopInfoView.add  @shopCategory    
+    # @shopInfoView.add  @phoneNumber
+    @shopInfoView.add  phoneBtn
     @shopInfoView.add  @shopInfo
-    @shopInfoView.add  @icon
+    # @shopInfoView.add  @icon
       
     mapWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
@@ -286,35 +310,65 @@ class mapWindow
     
   _showShopInfo:(data) ->
     Ti.API.info "#imagePath is #{data.imagePath} and Name is #{data.shopName}"    
-    if data.imagePath is "ui/image/tumblrIcon.png" or data.imagePath is "ui/image/tumblrIconForMap.png"
-      @shopCategory.text = "飲めるお店"
-    else
-      @shopCategory.text = "買えるお店"
-    t1 = Titanium.UI.create2DMatrix()
-    animation = Titanium.UI.createAnimation()
-    animation.transform = t1
-    animation.duration = 500
-    animation.bottom = "1dp"
+    # if data.imagePath is "ui/image/tumblrIcon.png" or data.imagePath is "ui/image/tumblrIconForMap.png"
+    #   @shopCategory.text = "飲めるお店"
+    # else
+    #   @shopCategory.text = "買えるお店"
+    @phoneNumber.phoneNumber = data.phoneNumber
+    @shopInfo.text = data.shopInfo
+    @shopInfo.geo.latitude = data.latitude
+    @shopInfo.geo.longitude = data.longitude
+    @shopInfo.annotationData = data
 
-    return @shopInfoView.animate(animation ,() =>
-      Ti.API.info "done"
-      @phoneNumber.text = data.phoneNumber
-      @shopInfo.text = data.shopInfo
-      @shopInfo.geo.latitude = data.latitude
-      @shopInfo.geo.longitude = data.longitude
-      @shopInfo.annotationData = data
+    @shopName.text = data.shopName
+    
+    @icon.setImage Ti.Filesystem.resourcesDirectory + data.imagePath
+    @shopInfoView.visible = true
 
-      @shopName.text = data.shopName
+    # t1 = Titanium.UI.create2DMatrix()
+    # animation = Titanium.UI.createAnimation()
+    # animation.transform = t1
+    # animation.duration = 500
+    # animation.top = 100
+
+    # return @shopInfoView.animate(animation ,() =>
+    #   Ti.API.info "done"
+    #   @phoneNumber.phoneNumber = data.phoneNumber
+    #   @shopInfo.text = data.shopInfo
+    #   @shopInfo.geo.latitude = data.latitude
+    #   @shopInfo.geo.longitude = data.longitude
+    #   @shopInfo.annotationData = data
+
+    #   @shopName.text = data.shopName
+    #   @shopName.top = "1dp"
       
-      @icon.setImage Ti.Filesystem.resourcesDirectory + data.imagePath
-      @shopInfoView.show()      
-    )      
+    #   @icon.setImage Ti.Filesystem.resourcesDirectory + data.imagePath
+    #   @shopInfoView.show()      
+    # )      
 
 
   
   addAnnotations:(array) =>
     @activityIndicator.hide()
     for data in array
+      phoneBtn = Ti.UI.createButton
+        color:"#3261AB"
+        backgroundColor:"#f9f9f9"
+        width:"30dip"
+        height:"30dip"
+        font:
+          fontSize:'36dip'
+          fontFamily:'fontawesome-webfont'
+        title:String.fromCharCode("0xf095")
+      informationBtn = Ti.UI.createButton
+        color:"#333"
+        backgroundColor:"#f9f9f9"
+        width:"30dip"
+        height:"30dip"
+        font:
+          fontSize:'36dip'
+          fontFamily:'ligaturesymbols'
+        title:String.fromCharCode("0xE075")        
       if data.shopFlg is "true"
         annotation = @MapModule.createAnnotation
           latitude: data.latitude
@@ -326,6 +380,9 @@ class mapWindow
           shopFlg:data.shopFlg
           image:"ui/image/bottle@2x.png"
           imagePath:"ui/image/bottle@2x.png"
+          title:data.shopName
+          leftView:phoneBtn
+          rightView:informationBtn
 
 
         @mapView.addAnnotation annotation
@@ -340,7 +397,9 @@ class mapWindow
           shopFlg:data.shopFlg
           image:"ui/image/tumblrIconForMap.png"
           imagePath:"ui/image/tumblrIconForMap.png"
-
+          leftView:phoneBtn
+          rightView:informationBtn
+          title:data.shopName          
         @mapView.addAnnotation annotation
 
 

@@ -5,7 +5,7 @@
   mapWindow = (function() {
     function mapWindow() {
       this.addAnnotations = __bind(this.addAnnotations, this);
-      var ActivityIndicator, gpsRule, keyColor, mapWindowTitle;
+      var ActivityIndicator, gpsRule, keyColor, mapWindowTitle, phoneBtn, phoneIcon;
       keyColor = "#f9f9f9";
       this.baseColor = {
         barColor: keyColor,
@@ -52,16 +52,22 @@
       });
       this.mapView.addEventListener('click', (function(_this) {
         return function(e) {
-          var data;
-          data = {
-            shopName: e.annotation.shopName,
-            imagePath: e.annotation.imagePath,
-            phoneNumber: e.annotation.phoneNumber,
-            latitude: e.annotation.latitude,
-            longitude: e.annotation.longitude,
-            shopInfo: e.annotation.shopInfo
-          };
-          return _this._showShopInfo(data);
+          var ShopDataDetailWindow, data, shopDataDetailWindow;
+          if (e.clicksource === "rightPane") {
+            data = {
+              shopName: e.annotation.shopName,
+              imagePath: e.annotation.imagePath,
+              phoneNumber: e.annotation.phoneNumber,
+              latitude: e.annotation.latitude,
+              longitude: e.annotation.longitude,
+              shopInfo: e.annotation.shopInfo
+            };
+            ShopDataDetailWindow = require("ui/android/shopDataDetailWindow");
+            shopDataDetailWindow = new ShopDataDetailWindow(data);
+            return shopDataDetailWindow.open();
+          } else if (e.clicksource === "leftPane") {
+            return Ti.Platform.openURL("tel:" + e.annotation.phoneNumber);
+          }
         };
       })(this));
       this.mapView.addEventListener('regionchanged', (function(_this) {
@@ -139,12 +145,13 @@
       this.activityIndicator = new ActivityIndicator();
       this.activityIndicator.hide();
       this.shopInfoView = Ti.UI.createView({
-        width: Ti.UI.FULL,
+        width: "400dp",
         height: this.barHeight * 2,
-        top: this.displayHeight + 30,
+        top: 100,
         annotationData: null,
-        left: 0,
+        left: 50,
         backgroundColor: "#f3f3f3",
+        opacity: 0.9,
         zIndex: 10,
         visible: false
       });
@@ -159,30 +166,43 @@
           fontSize: "18dp",
           weight: "bold"
         },
-        top: 100,
-        left: 50,
-        width: 800,
-        height: 100
+        top: 10,
+        left: 10,
+        width: "200dp"
       });
       this.icon = Ti.UI.createImageView({
-        top: 10,
-        left: 10
+        top: "10dp",
+        left: "10dp",
+        width: "20dp",
+        height: "40dp"
       });
-      this.shopCategory = Ti.UI.createLabel({
-        color: "#333",
-        font: {
-          fontSize: "14dp"
-        },
-        top: 10,
-        left: 100
-      });
+      phoneIcon = String.fromCharCode("0xe06e");
       this.phoneNumber = Ti.UI.createLabel({
         color: "#333",
         font: {
-          fontSize: "14dp"
+          fontSize: "32dp",
+          fontFamily: 'fontawesome-webfont'
         },
-        top: 220,
-        left: 50
+        top: 10,
+        right: 10,
+        text: String.fromCharCode("0xf095"),
+        phoneNumber: null
+      });
+      phoneBtn = Ti.UI.createButton({
+        color: "#3261AB",
+        backgroundColor: "#f9f9f9",
+        width: "30dip",
+        height: "30dip",
+        top: 10,
+        right: 10,
+        font: {
+          fontSize: "32dp",
+          fontFamily: 'fontawesome-webfont'
+        },
+        title: String.fromCharCode("0xf095")
+      });
+      this.phoneNumber.addEventListener('click', function(e) {
+        return alert(e);
       });
       this.shopInfo = Ti.UI.createLabel({
         color: "#333",
@@ -199,10 +219,8 @@
         }
       });
       this.shopInfoView.add(this.shopName);
-      this.shopInfoView.add(this.shopCategory);
-      this.shopInfoView.add(this.phoneNumber);
+      this.shopInfoView.add(phoneBtn);
       this.shopInfoView.add(this.shopInfo);
-      this.shopInfoView.add(this.icon);
       mapWindowTitle = Ti.UI.createLabel({
         textAlign: 'center',
         color: "#333",
@@ -267,39 +285,45 @@
     };
 
     mapWindow.prototype._showShopInfo = function(data) {
-      var animation, t1;
       Ti.API.info("#imagePath is " + data.imagePath + " and Name is " + data.shopName);
-      if (data.imagePath === "ui/image/tumblrIcon.png" || data.imagePath === "ui/image/tumblrIconForMap.png") {
-        this.shopCategory.text = "飲めるお店";
-      } else {
-        this.shopCategory.text = "買えるお店";
-      }
-      t1 = Titanium.UI.create2DMatrix();
-      animation = Titanium.UI.createAnimation();
-      animation.transform = t1;
-      animation.duration = 500;
-      animation.bottom = "1dp";
-      return this.shopInfoView.animate(animation, (function(_this) {
-        return function() {
-          Ti.API.info("done");
-          _this.phoneNumber.text = data.phoneNumber;
-          _this.shopInfo.text = data.shopInfo;
-          _this.shopInfo.geo.latitude = data.latitude;
-          _this.shopInfo.geo.longitude = data.longitude;
-          _this.shopInfo.annotationData = data;
-          _this.shopName.text = data.shopName;
-          _this.icon.setImage(Ti.Filesystem.resourcesDirectory + data.imagePath);
-          return _this.shopInfoView.show();
-        };
-      })(this));
+      this.phoneNumber.phoneNumber = data.phoneNumber;
+      this.shopInfo.text = data.shopInfo;
+      this.shopInfo.geo.latitude = data.latitude;
+      this.shopInfo.geo.longitude = data.longitude;
+      this.shopInfo.annotationData = data;
+      this.shopName.text = data.shopName;
+      this.icon.setImage(Ti.Filesystem.resourcesDirectory + data.imagePath);
+      return this.shopInfoView.visible = true;
     };
 
     mapWindow.prototype.addAnnotations = function(array) {
-      var annotation, data, _i, _len, _results;
+      var annotation, data, informationBtn, phoneBtn, _i, _len, _results;
       this.activityIndicator.hide();
       _results = [];
       for (_i = 0, _len = array.length; _i < _len; _i++) {
         data = array[_i];
+        phoneBtn = Ti.UI.createButton({
+          color: "#3261AB",
+          backgroundColor: "#f9f9f9",
+          width: "30dip",
+          height: "30dip",
+          font: {
+            fontSize: '36dip',
+            fontFamily: 'fontawesome-webfont'
+          },
+          title: String.fromCharCode("0xf095")
+        });
+        informationBtn = Ti.UI.createButton({
+          color: "#333",
+          backgroundColor: "#f9f9f9",
+          width: "30dip",
+          height: "30dip",
+          font: {
+            fontSize: '36dip',
+            fontFamily: 'ligaturesymbols'
+          },
+          title: String.fromCharCode("0xE075")
+        });
         if (data.shopFlg === "true") {
           annotation = this.MapModule.createAnnotation({
             latitude: data.latitude,
@@ -310,7 +334,10 @@
             shopInfo: data.shopInfo,
             shopFlg: data.shopFlg,
             image: "ui/image/bottle@2x.png",
-            imagePath: "ui/image/bottle@2x.png"
+            imagePath: "ui/image/bottle@2x.png",
+            title: data.shopName,
+            leftView: phoneBtn,
+            rightView: informationBtn
           });
           _results.push(this.mapView.addAnnotation(annotation));
         } else {
@@ -323,7 +350,10 @@
             shopInfo: data.shopInfo,
             shopFlg: data.shopFlg,
             image: "ui/image/tumblrIconForMap.png",
-            imagePath: "ui/image/tumblrIconForMap.png"
+            imagePath: "ui/image/tumblrIconForMap.png",
+            leftView: phoneBtn,
+            rightView: informationBtn,
+            title: data.shopName
           });
           _results.push(this.mapView.addAnnotation(annotation));
         }
