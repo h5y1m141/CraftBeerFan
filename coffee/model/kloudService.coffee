@@ -22,6 +22,7 @@ class kloudService
           place = e.places[i]
           Ti.API.info place.name
           data =
+            id:place.id
             latitude: place.latitude
             longitude: place.longitude
             shopName:place.name
