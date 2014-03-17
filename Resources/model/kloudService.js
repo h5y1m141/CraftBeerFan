@@ -283,6 +283,25 @@
       });
     };
 
+    kloudService.prototype.statusesQuery = function(placeID, callback) {
+      return this.Cloud.Statuses.query({
+        page: 1,
+        per_page: 20,
+        where: {
+          place_id: placeID
+        }
+      }, function(e) {
+        var noData;
+        Ti.API.info(e);
+        if (e.success) {
+          return callback(e.statuses);
+        } else {
+          noData = [];
+          return callback(noData);
+        }
+      });
+    };
+
     kloudService.prototype._getAppID = function() {
       var appid, config, file, json;
       config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json");
