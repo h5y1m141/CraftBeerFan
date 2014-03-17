@@ -3,7 +3,7 @@
 
   shopDataDetailWindow = (function() {
     function shopDataDetailWindow(data) {
-      var keyColor;
+      var ActivityIndicator, keyColor;
       keyColor = "#f9f9f9";
       this.baseColor = {
         barColor: keyColor,
@@ -21,12 +21,16 @@
         backgroundColor: this.baseColor.backgroundColor,
         navBarHidden: false
       });
+      ActivityIndicator = require('ui/android/activitiIndicator');
+      this.activityIndicator = new ActivityIndicator();
+      this.activityIndicator.hide();
       this._createTableView(data);
+      this.shopDataDetailWindow.add(this.activityIndicator);
       return this.shopDataDetailWindow;
     }
 
     shopDataDetailWindow.prototype._createTableView = function(data) {
-      var row, shopData, shopInfo, shopInfoIcon, shopInfoLabel, shopInfoRow, statusesRows, wantToGoRow, _i, _len;
+      var shopData, shopInfo, shopInfoIcon, shopInfoLabel, shopInfoRow, statusesRows, wantToGoRow;
       shopData = [];
       wantToGoRow = Ti.UI.createTableViewRow({
         width: 'auto',
@@ -90,18 +94,17 @@
       if (data.statuses.length !== 0) {
         Ti.API.info("create statuses data.statuses is " + data.statuses);
         statusesRows = this._createStatusesRows(data.statuses);
-        for (_i = 0, _len = statusesRows.length; _i < _len; _i++) {
-          row = statusesRows[_i];
-          shopData.push(row);
-        }
+        shopData.push(statusesRows);
       }
       this.tableView.setData(shopData);
       return this.shopDataDetailWindow.add(this.tableView);
     };
 
     shopDataDetailWindow.prototype._createStatusesRows = function(statuses) {
-      var obj, rows, statusLabel, statusRow, _i, _len;
-      rows = [];
+      var obj, statusLabel, statusRow, statusSection, _i, _len;
+      statusSection = Ti.UI.createTableViewSection({
+        headerTitle: "開栓情報一覧"
+      });
       for (_i = 0, _len = statuses.length; _i < _len; _i++) {
         obj = statuses[_i];
         statusRow = Ti.UI.createTableViewRow({
@@ -122,9 +125,9 @@
           }
         });
         statusRow.add(statusLabel);
-        rows.push(statusRow);
+        statusSection.add(statusRow);
       }
-      return rows;
+      return statusSection;
     };
 
     return shopDataDetailWindow;

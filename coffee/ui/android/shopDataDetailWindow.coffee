@@ -19,8 +19,11 @@ class shopDataDetailWindow
       backgroundColor:@baseColor.backgroundColor
       navBarHidden:false
       
-
+    ActivityIndicator = require('ui/android/activitiIndicator')
+    @activityIndicator = new ActivityIndicator()
+    @activityIndicator.hide()
     @_createTableView(data)
+    @shopDataDetailWindow.add @activityIndicator
     return @shopDataDetailWindow
     
     
@@ -91,14 +94,17 @@ class shopDataDetailWindow
     if data.statuses.length isnt 0
       Ti.API.info "create statuses data.statuses is #{data.statuses}"
       statusesRows = @_createStatusesRows(data.statuses)
-      for row in statusesRows
-        shopData.push row
+      shopData.push statusesRows
       
     @tableView.setData shopData
     return @shopDataDetailWindow.add @tableView
+
             
   _createStatusesRows:(statuses) ->
-    rows = []
+    statusSection = Ti.UI.createTableViewSection
+      headerTitle:"開栓情報一覧"
+      
+    # rows = []
     for obj in statuses
       statusRow = Ti.UI.createTableViewRow
         width:Ti.UI.FULL
@@ -117,8 +123,7 @@ class shopDataDetailWindow
           fontSize:"16dip"
           
       statusRow.add statusLabel
-      rows.push statusRow
-      
-    return rows
+      statusSection.add statusRow
+    return statusSection
       
 module.exports = shopDataDetailWindow  
