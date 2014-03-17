@@ -26,43 +26,8 @@
     }
 
     shopDataDetailWindow.prototype._createTableView = function(data) {
-      var phoneRow, shopData, shopInfoIcon, shopInfoLabel, shopInfoRow, wantToGoRow;
+      var row, shopData, shopInfo, shopInfoIcon, shopInfoLabel, shopInfoRow, statusesRows, wantToGoRow, _i, _len;
       shopData = [];
-      phoneRow = Ti.UI.createTableViewRow({
-        width: Ti.UI.FULL,
-        height: '40dip',
-        selectedColor: 'transparent',
-        rowID: 1,
-        phoneNumber: data.phoneNumber
-      });
-      this.phoneIcon = Ti.UI.createButton({
-        top: 5,
-        left: 10,
-        width: '40dip',
-        height: '40dip',
-        backgroundColor: this.baseColor.phoneColor,
-        backgroundImage: "NONE",
-        borderWidth: 0,
-        borderRadius: 0,
-        color: this.baseColor.barColor,
-        font: {
-          fontSize: '36dip',
-          fontFamily: 'fontawesome-webfont'
-        },
-        title: String.fromCharCode("0xf095")
-      });
-      this.phoneLabel = Ti.UI.createLabel({
-        text: "電話する",
-        textAlign: 'left',
-        left: 100,
-        top: 10,
-        width: '150dip',
-        color: this.baseColor.textColor,
-        font: {
-          fontSize: '18dip',
-          fontWeight: 'bold'
-        }
-      });
       wantToGoRow = Ti.UI.createTableViewRow({
         width: 'auto',
         height: '40dip',
@@ -72,7 +37,7 @@
       });
       this.tableView = Ti.UI.createTableView({
         width: Ti.UI.FULL,
-        top: "300dp",
+        top: 0,
         left: 0,
         data: shopData,
         backgroundColor: this.baseColor.backgroundColor,
@@ -83,46 +48,83 @@
         return function(e) {};
       })(this));
       if (typeof data.shopInfo !== "undefined") {
-        shopInfoRow = Ti.UI.createTableViewRow({
-          width: 'auto',
-          height: 'auto',
-          selectedColor: 'transparent'
-        });
-        shopInfoIcon = Ti.UI.createLabel({
-          top: 10,
-          left: 10,
-          width: "40dip",
-          height: "40dip",
-          color: "#ccc",
-          font: {
-            fontSize: "36dip",
-            fontFamily: 'LigatureSymbols'
-          },
-          text: String.fromCharCode("0xe075"),
-          textAlign: 'center'
-        });
-        shopInfoLabel = Ti.UI.createLabel({
-          text: "" + data.shopInfo,
-          textAlign: 'left',
-          width: "250dip",
-          height: 'auto',
-          color: this.baseColor.textColor,
-          left: 100,
-          top: 10,
-          font: {
-            fontSize: "18dip",
-            fontWeight: 'bold'
-          }
-        });
-        shopInfoRow.add(shopInfoLabel);
-        shopInfoRow.add(shopInfoIcon);
-        shopData.push(this.section);
-        if (typeof shopInfoRow !== 'undefined') {
-          shopData.push(shopInfoRow);
+        shopInfo = data.shopInfo;
+      } else {
+        shopInfo = "現在調査中";
+      }
+      shopInfoRow = Ti.UI.createTableViewRow({
+        width: 'auto',
+        height: 'auto'
+      });
+      shopInfoIcon = Ti.UI.createLabel({
+        top: 10,
+        left: 10,
+        width: "40dip",
+        height: "40dip",
+        color: "#ccc",
+        font: {
+          fontSize: "36dip",
+          fontFamily: 'LigatureSymbols'
+        },
+        text: String.fromCharCode("0xe075"),
+        textAlign: 'center'
+      });
+      shopInfoLabel = Ti.UI.createLabel({
+        text: shopInfo,
+        textAlign: 'left',
+        width: "250dip",
+        height: 'auto',
+        color: this.baseColor.textColor,
+        left: 100,
+        top: 10,
+        font: {
+          fontSize: "18dip",
+          fontWeight: 'bold'
+        }
+      });
+      shopInfoRow.add(shopInfoLabel);
+      shopInfoRow.add(shopInfoIcon);
+      if (typeof shopInfoRow !== 'undefined') {
+        shopData.push(shopInfoRow);
+      }
+      if (data.statuses.length !== 0) {
+        Ti.API.info("create statuses data.statuses is " + data.statuses);
+        statusesRows = this._createStatusesRows(data.statuses);
+        for (_i = 0, _len = statusesRows.length; _i < _len; _i++) {
+          row = statusesRows[_i];
+          shopData.push(row);
         }
       }
       this.tableView.setData(shopData);
       return this.shopDataDetailWindow.add(this.tableView);
+    };
+
+    shopDataDetailWindow.prototype._createStatusesRows = function(statuses) {
+      var obj, rows, statusLabel, statusRow, _i, _len;
+      rows = [];
+      for (_i = 0, _len = statuses.length; _i < _len; _i++) {
+        obj = statuses[_i];
+        statusRow = Ti.UI.createTableViewRow({
+          width: Ti.UI.FULL,
+          height: 'auto',
+          backgroundColor: this.baseColor.backgroundColor
+        });
+        statusLabel = Ti.UI.createLabel({
+          text: obj.message,
+          textAlign: 'left',
+          width: "300dip",
+          height: 'auto',
+          color: this.baseColor.textColor,
+          left: "10dp",
+          top: "10dp",
+          font: {
+            fontSize: "16dip"
+          }
+        });
+        statusRow.add(statusLabel);
+        rows.push(statusRow);
+      }
+      return rows;
     };
 
     return shopDataDetailWindow;
