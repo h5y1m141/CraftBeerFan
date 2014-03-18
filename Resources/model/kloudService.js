@@ -31,6 +31,7 @@
             place = e.places[i];
             Ti.API.info(place.name);
             data = {
+              id: place.id,
               latitude: place.latitude,
               longitude: place.longitude,
               shopName: place.name,
@@ -279,6 +280,25 @@
         currentUserId: currentUserId
       }, function(result) {
         return callback(result);
+      });
+    };
+
+    kloudService.prototype.statusesQuery = function(placeID, callback) {
+      return this.Cloud.Statuses.query({
+        page: 1,
+        per_page: 20,
+        where: {
+          place_id: placeID
+        }
+      }, function(e) {
+        var noData;
+        Ti.API.info(e);
+        if (e.success) {
+          return callback(e.statuses);
+        } else {
+          noData = [];
+          return callback(noData);
+        }
       });
     };
 

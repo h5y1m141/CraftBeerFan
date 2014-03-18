@@ -22,6 +22,7 @@ class kloudService
           place = e.places[i]
           Ti.API.info place.name
           data =
+            id:place.id
             latitude: place.latitude
             longitude: place.longitude
             shopName:place.name
@@ -260,7 +261,22 @@ class kloudService
       currentUserId:currentUserId
     , (result) ->
       return callback(result)
-  
+      
+  statusesQuery:(placeID,callback) ->
+    @Cloud.Statuses.query
+      page: 1
+      per_page: 20
+      where:
+        place_id:placeID
+    , (e) ->
+      Ti.API.info e
+      if e.success
+
+        callback e.statuses
+      else
+        noData = []
+        callback noData
+    
   _getAppID:() ->
     # Facebook appidを取得
     config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json")
