@@ -149,6 +149,22 @@
       });
     };
 
+    mapWindow.prototype._selectIcon = function(shopFlg) {
+      var imagePath, value;
+      Ti.API.info("height: " + Ti.Platform.displayCaps.platformHeight);
+      if (Ti.Platform.displayCaps.platformHeight > 889) {
+        value = "high";
+      } else {
+        value = "middle";
+      }
+      if (shopFlg === "true") {
+        imagePath = "ui/image/android/" + value + "Resolution/bottle.png";
+      } else {
+        imagePath = "ui/image/android/" + value + "Resolution/tmublrWithOnTapInfo.png";
+      }
+      return imagePath;
+    };
+
     mapWindow.prototype.addAnnotations = function(array) {
       var annotation, data, image, informationBtn, phoneBtn, _i, _len, _results;
       this.activityIndicator.hide();
@@ -177,11 +193,7 @@
           },
           title: String.fromCharCode("0xE075")
         });
-        if (data.shopFlg === "true") {
-          image = "ui/image/bottle@2x.png";
-        } else {
-          image = "ui/image/tumblrIconForMap.png";
-        }
+        image = this._selectIcon(data.shopFlg);
         annotation = this.MapModule.createAnnotation({
           latitude: data.latitude,
           longitude: data.longitude,

@@ -162,8 +162,20 @@ class mapWindow
       that.addAnnotations(data)
     )
     
-
-  
+  # デバイス解像度に合わせて適切なサイズのアイコンを準備する必要あるので
+  # そのためのメソッド
+  _selectIcon:(shopFlg) ->
+    Ti.API.info "height: #{Ti.Platform.displayCaps.platformHeight}"
+    if Ti.Platform.displayCaps.platformHeight > 889
+      value = "high"
+    else
+      value = "middle"
+    
+    if shopFlg is "true"
+      imagePath = "ui/image/android/#{value}Resolution/bottle.png"
+    else
+      imagePath = "ui/image/android/#{value}Resolution/tmublrWithOnTapInfo.png"
+    return imagePath  
   addAnnotations:(array) =>
     @activityIndicator.hide()
     for data in array
@@ -185,11 +197,7 @@ class mapWindow
           fontSize:'36dip'
           fontFamily:'ligaturesymbols'
         title:String.fromCharCode("0xE075")        
-      if data.shopFlg is "true"
-        image = "ui/image/bottle@2x.png"
-      else
-        image = "ui/image/tumblrIconForMap.png"
-        
+      image = @_selectIcon(data.shopFlg)
       annotation = @MapModule.createAnnotation
         latitude: data.latitude
         longitude: data.longitude
