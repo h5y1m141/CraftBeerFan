@@ -183,7 +183,7 @@
           title: String.fromCharCode("0xf095")
         });
         informationBtn = Ti.UI.createButton({
-          color: "#333",
+          color: "#FF5E00",
           backgroundColor: "#f9f9f9",
           width: "30dip",
           height: "30dip",
