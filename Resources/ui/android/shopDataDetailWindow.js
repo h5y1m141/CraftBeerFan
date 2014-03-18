@@ -30,7 +30,7 @@
     }
 
     shopDataDetailWindow.prototype._createTableView = function(data) {
-      var shopData, shopInfo, shopInfoIcon, shopInfoLabel, shopInfoRow, statusesRows, wantToGoRow;
+      var shopData, shopInfo, shopInfoLabel, shopInfoRow, shopSection, statusesRows, wantToGoRow;
       shopData = [];
       wantToGoRow = Ti.UI.createTableViewRow({
         width: 'auto',
@@ -60,37 +60,27 @@
         width: 'auto',
         height: 'auto'
       });
-      shopInfoIcon = Ti.UI.createLabel({
-        top: 10,
-        left: 10,
-        width: "40dip",
-        height: "40dip",
-        color: "#ccc",
-        font: {
-          fontSize: "36dip",
-          fontFamily: 'LigatureSymbols'
-        },
-        text: String.fromCharCode("0xe075"),
-        textAlign: 'center'
-      });
       shopInfoLabel = Ti.UI.createLabel({
         text: shopInfo,
         textAlign: 'left',
-        width: "250dip",
+        width: "90%",
         height: 'auto',
         color: this.baseColor.textColor,
-        left: 100,
-        top: 10,
+        left: "10dp",
+        top: "10dp",
         font: {
           fontSize: "18dip",
           fontWeight: 'bold'
         }
       });
+      shopSection = Ti.UI.createTableViewSection({
+        headerTitle: "お店について"
+      });
       shopInfoRow.add(shopInfoLabel);
-      shopInfoRow.add(shopInfoIcon);
       if (typeof shopInfoRow !== 'undefined') {
-        shopData.push(shopInfoRow);
+        shopSection.add(shopInfoRow);
       }
+      shopData.push(shopSection);
       if (data.statuses.length !== 0) {
         Ti.API.info("create statuses data.statuses is " + data.statuses);
         statusesRows = this._createStatusesRows(data.statuses);
@@ -101,7 +91,9 @@
     };
 
     shopDataDetailWindow.prototype._createStatusesRows = function(statuses) {
-      var obj, statusLabel, statusRow, statusSection, _i, _len;
+      var infoIcon, moment, momentja, obj, postedDateLabel, statusLabel, statusRow, statusSection, _i, _len;
+      moment = require('lib/moment.min');
+      momentja = require('lib/momentja');
       statusSection = Ti.UI.createTableViewSection({
         headerTitle: "開栓情報一覧"
       });
@@ -112,19 +104,47 @@
           height: 'auto',
           backgroundColor: this.baseColor.backgroundColor
         });
+        infoIcon = Ti.UI.createLabel({
+          top: 10,
+          left: 10,
+          width: "30dip",
+          height: "30dip",
+          color: "#ccc",
+          font: {
+            fontSize: "28dip",
+            fontFamily: 'LigatureSymbols'
+          },
+          text: String.fromCharCode("0xe075"),
+          textAlign: 'center'
+        });
         statusLabel = Ti.UI.createLabel({
           text: obj.message,
           textAlign: 'left',
-          width: "300dip",
+          width: "75%",
           height: 'auto',
           color: this.baseColor.textColor,
-          left: "10dp",
+          left: "50dp",
           top: "10dp",
           font: {
-            fontSize: "16dip"
+            fontSize: "16dip",
+            fontWeight: "bold"
           }
         });
+        postedDateLabel = Ti.UI.createLabel({
+          text: moment(obj.created_at).fromNow(),
+          textAlign: 'right',
+          width: "10%",
+          height: 'auto',
+          color: this.baseColor.textColor,
+          right: "5dp",
+          bottom: "5dp",
+          font: {
+            fontSize: "14dip"
+          }
+        });
+        statusRow.add(infoIcon);
         statusRow.add(statusLabel);
+        statusRow.add(postedDateLabel);
         statusSection.add(statusRow);
       }
       return statusSection;

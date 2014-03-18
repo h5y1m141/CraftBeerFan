@@ -63,33 +63,24 @@ class shopDataDetailWindow
       width:'auto'
       height:'auto'
       
-    shopInfoIcon = Ti.UI.createLabel
-      top:10
-      left:10
-      width:"40dip"
-      height:"40dip"
-      color:"#ccc"
-      font:
-        fontSize:"36dip"
-        fontFamily:'LigatureSymbols'
-      text:String.fromCharCode("0xe075")
-      textAlign:'center'
       
     shopInfoLabel = Ti.UI.createLabel
       text:shopInfo
       textAlign:'left'      
-      width:"250dip"
+      width:"90%"
       height:'auto'
       color:@baseColor.textColor
-      left:100
-      top:10
+      left:"10dp"
+      top:"10dp"
       font:
         fontSize:"18dip"
         fontWeight:'bold'          
-        
+    shopSection = Ti.UI.createTableViewSection
+      headerTitle:"お店について"
+      
     shopInfoRow.add shopInfoLabel
-    shopInfoRow.add shopInfoIcon
-    shopData.push shopInfoRow unless typeof shopInfoRow is 'undefined'
+    shopSection.add shopInfoRow unless typeof shopInfoRow is 'undefined'
+    shopData.push shopSection
     
     if data.statuses.length isnt 0
       Ti.API.info "create statuses data.statuses is #{data.statuses}"
@@ -101,28 +92,57 @@ class shopDataDetailWindow
 
             
   _createStatusesRows:(statuses) ->
+    moment = require('lib/moment.min')
+    momentja = require('lib/momentja')
+
     statusSection = Ti.UI.createTableViewSection
       headerTitle:"開栓情報一覧"
       
-    # rows = []
+
     for obj in statuses
       statusRow = Ti.UI.createTableViewRow
         width:Ti.UI.FULL
         height:'auto'
         backgroundColor:@baseColor.backgroundColor
         
+      infoIcon = Ti.UI.createLabel
+        top:10
+        left:10
+        width:"30dip"
+        height:"30dip"
+        color:"#ccc"
+        font:
+          fontSize:"28dip"
+          fontFamily:'LigatureSymbols'
+        text:String.fromCharCode("0xe075")
+        textAlign:'center'
+        
       statusLabel = Ti.UI.createLabel
         text:obj.message
         textAlign:'left'      
-        width:"300dip"
+        width:"75%"
         height:'auto'
         color:@baseColor.textColor
-        left:"10dp"
+        left:"50dp"
         top:"10dp"
         font:
           fontSize:"16dip"
+          fontWeight:"bold"
           
+      postedDateLabel = Ti.UI.createLabel
+        text:moment(obj.created_at).fromNow()
+        textAlign:'right'      
+        width:"10%"
+        height:'auto'
+        color:@baseColor.textColor
+        right:"5dp"
+        bottom:"5dp"
+        font:
+          fontSize:"14dip"
+          
+      statusRow.add infoIcon
       statusRow.add statusLabel
+      statusRow.add postedDateLabel
       statusSection.add statusRow
     return statusSection
       
