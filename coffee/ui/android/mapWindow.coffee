@@ -4,31 +4,18 @@ class mapWindow
     @baseColor =
       barColor:keyColor
       backgroundColor:keyColor
-    @LANDSCAPE = 0  
-    @PORTRAIT = 1
-    @displayHeight = Ti.Platform.displayCaps.platformHeight 
-    @displayWidth = Ti.Platform.displayCaps.platformWidth
-    if (@displayHeight > 1000)
-    	@barHeight = 144
-    else
-    	@barHeight = 72
       
-    @currentDeviceStatus = Ti.Gesture.orientation
-    @mapViewHight = 0    
+
     @tiGeoHash = require("/lib/TiGeoHash")
     @precision = 5 # GeoHashの計算結果で得られる桁数を指定
     @geoHashResult = []
-    
+    KloudService = require("model/kloudService")
+    @kloudService = new KloudService()
     @MapModule = require('ti.map')
 
 
     @currentLatitude = 35.674819
     @currentLongitude = 139.765084
-    @container = Ti.UI.createView
-      width:"100%"
-      height:"100%"
-      top:0
-      left:0
       
     @mapView = @MapModule.createView
       mapType: @MapModule.NORMAL_TYPE
@@ -47,19 +34,28 @@ class mapWindow
 
     
     
-    @mapView.addEventListener('click',(e)=>
+    @mapView.addEventListener('click',(e) =>
+      actInd = @activityIndicator
+      
       if e.clicksource is "rightPane"
-        data =
-          shopName:e.annotation.shopName
-          imagePath:e.annotation.imagePath
-          phoneNumber:e.annotation.phoneNumber
-          latitude: e.annotation.latitude
-          longitude: e.annotation.longitude
-          shopInfo: e.annotation.shopInfo
-
-        ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
-        shopDataDetailWindow = new ShopDataDetailWindow(data)
-        shopDataDetailWindow.open()
+        actInd.show()
+        Ti.API.info "placeID is #{e.annotation.placeID}"
+        @kloudService.statusesQuery(e.annotation.placeID,(statuses) ->
+          actInd.hide()
+          Ti.API.info "statuses is #{statuses}"
+          data =
+            shopName:e.annotation.shopName
+            phoneNumber:e.annotation.phoneNumber
+            latitude: e.annotation.latitude
+            longitude: e.annotation.longitude
+            shopInfo: e.annotation.shopInfo
+            statuses:statuses
+          ShopDataDetailWindow = require("ui/android/shopDataDetailWindow")
+          shopDataDetailWindow = new ShopDataDetailWindow(data)
+          shopDataDetailWindow.open()
+          
+        )
+      
       else if e.clicksource is "leftPane"
         Ti.Platform.openURL("tel:#{e.annotation.phoneNumber}")
         
@@ -130,109 +126,10 @@ class mapWindow
         
     )
 
-    Ti.Gesture.addEventListener 'orientationchange',(e) =>
-      
-      if (Ti.Platform.displayCaps.platformHeight > 1080)
-        @height = 144
-      else
-        @height = 72
-
-      
-      if @currentDeviceStatus is @PORTRAIT and e.orientation is @PORTRAIT
-
-        @mapViewHight = Ti.Platform.displayCaps.platformHeight/2 - @height
-      else if @currentDeviceStatus is @PORTRAIT and e.orientation is @LANDSCAPE        
-        @mapViewHight = (Ti.Platform.displayCaps.platformHeight / 2) - (@height/2)
-      else if @currentDeviceStatus is @LANDSCAPE and e.orientation is @PORTRAIT
-        @mapViewHight = Ti.Platform.displayCaps.platformHeight/2 - @height
-      else if @currentDeviceStatus is @LANDSCAPE and e.orientation is @LANDSCAPE
-        @mapViewHight = (Ti.Platform.displayCaps.platformHeight / 2) - (@height/2)
-      else
-        Ti.API.info "cant' set width"
-        
-
     
     ActivityIndicator = require('ui/android/activitiIndicator')
     @activityIndicator = new ActivityIndicator()
     @activityIndicator.hide()
-    @shopInfoView = Ti.UI.createView
-      width:"400dp"
-      height:@barHeight * 2
-      # top:@displayHeight + 30
-      top:100
-      annotationData:null
-      left:50
-      backgroundColor:"#f3f3f3"
-      opacity:0.9
-      zIndex:10
-      visible:false
-      
-    @shopInfoView.addEventListener 'click',(e) =>
-      @_showshopInfoDetail()
-
-    @shopName = Ti.UI.createLabel
-      color:"#333"
-      font:
-        fontSize:"18dp"
-        weight:"bold"
-      top:10
-      left:10
-      width:"200dp"
-      
-    @icon = Ti.UI.createImageView
-      top:"10dp"
-      left:"10dp"
-      width:"20dp"
-      height:"40dp"
-    
-    # @shopCategory = Ti.UI.createLabel
-    #   color:"#333"
-    #   font:
-    #     fontSize:"14dp"
-    #   top:10
-    #   left:100
-    phoneIcon = String.fromCharCode("0xe06e")        
-    @phoneNumber = Ti.UI.createLabel
-      color:"#333"
-      font:
-        fontSize:"32dp"
-        fontFamily:'fontawesome-webfont'
-      top:10
-      right:10
-      text:String.fromCharCode("0xf095")
-      phoneNumber:null
-    phoneBtn = Ti.UI.createButton
-      color:"#3261AB"
-      backgroundColor:"#f9f9f9"
-      width:"30dip"
-      height:"30dip"
-      top:10
-      right:10
-      font:
-        fontSize:"32dp"
-        fontFamily:'fontawesome-webfont'
-      title:String.fromCharCode("0xf095")      
-    @phoneNumber.addEventListener 'click',(e) ->
-      alert e
-      # Ti.Platform.openURL("tel:#{e.annotation.phoneNumber}")          
-    @shopInfo = Ti.UI.createLabel
-      color:"#333"
-      font:
-        fontSize:"12dp"
-      top:200
-      left:50
-      width:@displayWidth * 0.9
-      height:40
-      geo:
-        latitude:0
-        longitude:0
-      
-    @shopInfoView.add  @shopName
-    # @shopInfoView.add  @shopCategory    
-    # @shopInfoView.add  @phoneNumber
-    @shopInfoView.add  phoneBtn
-    @shopInfoView.add  @shopInfo
-    # @shopInfoView.add  @icon
       
     mapWindowTitle = Ti.UI.createLabel
       textAlign: 'center'
@@ -251,11 +148,8 @@ class mapWindow
       tabBarHidden:false
       
   
-
-    @container.add @mapView
-    @mapWindow.add @container
+    @mapWindow.add @mapView
     @mapWindow.add @activityIndicator
-    @mapWindow.add @shopInfoView
 
     
     return @mapWindow
@@ -264,88 +158,10 @@ class mapWindow
     that = @
     KloudService = require("model/kloudService")
     kloudService = new KloudService()
-    kloudService.placesQuery(latitude,longitude,(data) ->
+    @kloudService.placesQuery(latitude,longitude,(data) ->
       that.addAnnotations(data)
     )
     
-  _showshopInfoDetail:() ->
-    # 最初にshopInfoViewの高さを画面高さいっぱいに引き伸ばした上で
-    # 少しづつアニメーションさせることで下からすりあがるような状態を表現する
-    
-    t1 = Titanium.UI.create2DMatrix()
-    animation = Titanium.UI.createAnimation()
-    animationSpeed = 300
-    animation.transform = t1
-    animation.duration = animationSpeed
-    animation.top = 0
-
-    @shopInfoView.height = @displayHeight
-    t2 = Titanium.UI.create2DMatrix()
-
-    animation1 = Titanium.UI.createAnimation
-      transform: t2
-      duration: animationSpeed
-      top: @displayHeight/2
-      left:0
-
-
-    mapView = @mapView
-    latitude = @shopInfo.geo.latitude
-    longitude =@shopInfo.geo.longitude
-    annotationData = @shopInfo.annotationData
-    that = @
-    mapViewHeightafterAnimation = @displayHeight/2
-    @shopInfoView.animate(animation1, () ->
-      # mapView.region =
-      #   latitude:latitude
-      #   longitude:longitude          
-      #   latitudeDelta:0.01
-      #   longitudeDelta:0.01
-      
-      mapView.height = mapViewHeightafterAnimation
-      mapView.removeAllAnnotations()
-      that.addAnnotations([annotationData])
-      return
-    )
-    
-  _showShopInfo:(data) ->
-    Ti.API.info "#imagePath is #{data.imagePath} and Name is #{data.shopName}"    
-    # if data.imagePath is "ui/image/tumblrIcon.png" or data.imagePath is "ui/image/tumblrIconForMap.png"
-    #   @shopCategory.text = "飲めるお店"
-    # else
-    #   @shopCategory.text = "買えるお店"
-    @phoneNumber.phoneNumber = data.phoneNumber
-    @shopInfo.text = data.shopInfo
-    @shopInfo.geo.latitude = data.latitude
-    @shopInfo.geo.longitude = data.longitude
-    @shopInfo.annotationData = data
-
-    @shopName.text = data.shopName
-    
-    @icon.setImage Ti.Filesystem.resourcesDirectory + data.imagePath
-    @shopInfoView.visible = true
-
-    # t1 = Titanium.UI.create2DMatrix()
-    # animation = Titanium.UI.createAnimation()
-    # animation.transform = t1
-    # animation.duration = 500
-    # animation.top = 100
-
-    # return @shopInfoView.animate(animation ,() =>
-    #   Ti.API.info "done"
-    #   @phoneNumber.phoneNumber = data.phoneNumber
-    #   @shopInfo.text = data.shopInfo
-    #   @shopInfo.geo.latitude = data.latitude
-    #   @shopInfo.geo.longitude = data.longitude
-    #   @shopInfo.annotationData = data
-
-    #   @shopName.text = data.shopName
-    #   @shopName.top = "1dp"
-      
-    #   @icon.setImage Ti.Filesystem.resourcesDirectory + data.imagePath
-    #   @shopInfoView.show()      
-    # )      
-
 
   
   addAnnotations:(array) =>
@@ -370,37 +186,24 @@ class mapWindow
           fontFamily:'ligaturesymbols'
         title:String.fromCharCode("0xE075")        
       if data.shopFlg is "true"
-        annotation = @MapModule.createAnnotation
-          latitude: data.latitude
-          longitude: data.longitude
-          shopName:data.shopName
-          phoneNumber: data.phoneNumber
-          shopAddress: data.shopAddress
-          shopInfo:data.shopInfo
-          shopFlg:data.shopFlg
-          image:"ui/image/bottle@2x.png"
-          imagePath:"ui/image/bottle@2x.png"
-          title:data.shopName
-          leftView:phoneBtn
-          rightView:informationBtn
-
-
-        @mapView.addAnnotation annotation
+        image = "ui/image/bottle@2x.png"
       else
-        annotation = @MapModule.createAnnotation
-          latitude: data.latitude
-          longitude: data.longitude
-          shopName:data.shopName          
-          phoneNumber: data.phoneNumber
-          shopAddress: data.shopAddress
-          shopInfo:data.shopInfo
-          shopFlg:data.shopFlg
-          image:"ui/image/tumblrIconForMap.png"
-          imagePath:"ui/image/tumblrIconForMap.png"
-          leftView:phoneBtn
-          rightView:informationBtn
-          title:data.shopName          
-        @mapView.addAnnotation annotation
+        image = "ui/image/tumblrIconForMap.png"
+        
+      annotation = @MapModule.createAnnotation
+        latitude: data.latitude
+        longitude: data.longitude
+        shopName:data.shopName
+        phoneNumber: data.phoneNumber
+        shopAddress: data.shopAddress
+        shopInfo:data.shopInfo
+        shopFlg:data.shopFlg
+        image:image
+        placeID:data.id
+        title:data.shopName
+        leftView:phoneBtn
+        rightView:informationBtn
+      @mapView.addAnnotation annotation
 
 
 module.exports = mapWindow  
