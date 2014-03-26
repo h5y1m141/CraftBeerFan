@@ -38,6 +38,7 @@ class mapWindow
       actInd = @activityIndicator
       
       if e.clicksource is "rightPane"
+        @_checkNetworkConnection()
         actInd.show()
         Ti.API.info "placeID is #{e.annotation.placeID}"
         @kloudService.statusesQuery(e.annotation.placeID,(statuses) ->
@@ -63,34 +64,35 @@ class mapWindow
       
 
     )
-    
 
     @mapView.addEventListener('regionchanged',(e)=>
-      
       # ちょっとしたスクロールに反応してしまうため、緯度経度から
       # GeoHashの値を得て蓄積していく
       # そして、前回得たGeoHashの値から変更されていた場合に
       # お店情報を取得する
 
-      lastGeoHashValue = @geoHashResult[@geoHashResult.length-1]
-      Ti.API.info "lastGeoHashValue is #{lastGeoHashValue}"
-      latitude = e.latitude
-      longitude = e.longitude
-
-      geoHashResult = @tiGeoHash.encodeGeoHash(latitude,longitude,@precision)
-      Ti.API.info "Hash is #{geoHashResult.geohash}"
-      Ti.API.info "#{geoHashResult.geohash} #{lastGeoHashValue}"
-      
-      if geoHashResult.geohash is lastGeoHashValue
-        Ti.API.info "regionchanged doesn't fire"
-        @geoHashResult.push(geoHashResult.geohash)
+      if Ti.Network.online is false
+        alert "利用されてるスマートフォンからインターネットに接続できないためお店の情報が検索できません"
       else
-        Ti.API.info "regionchanged fire"
-        Ti.App.Analytics.trackEvent('@mapWindow','regionchanged','regionchanged',1)
-        @geoHashResult.push(geoHashResult.geohash)
-        @activityIndicator.show()            
+        lastGeoHashValue = @geoHashResult[@geoHashResult.length-1]
+        Ti.API.info "lastGeoHashValue is #{lastGeoHashValue}"
+        latitude = e.latitude
+        longitude = e.longitude
+
+        geoHashResult = @tiGeoHash.encodeGeoHash(latitude,longitude,@precision)
+        Ti.API.info "Hash is #{geoHashResult.geohash}"
+        Ti.API.info "#{geoHashResult.geohash} #{lastGeoHashValue}"
         
-        @_nearBy(latitude,longitude)
+        if geoHashResult.geohash is lastGeoHashValue
+          Ti.API.info "regionchanged doesn't fire"
+          @geoHashResult.push(geoHashResult.geohash)
+        else
+          Ti.API.info "regionchanged fire"
+          Ti.App.Analytics.trackEvent('@mapWindow','regionchanged','regionchanged',1)
+          @geoHashResult.push(geoHashResult.geohash)
+          @activityIndicator.show()            
+          
+          @_nearBy(latitude,longitude)
     )
       
 
@@ -102,10 +104,8 @@ class mapWindow
       minAge: 10000
     )
     Ti.Geolocation.Android.addLocationRule gpsRule    
-    Ti.Geolocation.addEventListener('location',(e)=>
-      @activityIndicator.show()
+    Ti.Geolocation.addEventListener('location',(e) =>
       if e.success
-
         latitude = e.coords.latitude
         longitude = e.coords.longitude
         geoHashResult = @tiGeoHash.encodeGeoHash(latitude,longitude,@precision)
@@ -122,7 +122,6 @@ class mapWindow
         
       else
         Ti.API.info e.error
-        @activityIndicator.hide()
         
     )
 
@@ -130,16 +129,6 @@ class mapWindow
     ActivityIndicator = require('ui/android/activitiIndicator')
     @activityIndicator = new ActivityIndicator()
     @activityIndicator.hide()
-      
-    mapWindowTitle = Ti.UI.createLabel
-      textAlign: 'center'
-      color:"#333"
-      font:
-        fontSize:'18dp'
-        fontFamily : 'Rounded M+ 1p'
-        fontWeight:'bold'
-      text:"近くのお店"
-    
     @mapWindow = Ti.UI.createWindow
       title:"近くのお店"
       barColor:@baseColor.barColor
@@ -154,12 +143,16 @@ class mapWindow
     
     return @mapWindow
     
-  _nearBy:(latitude,longitude) ->
-    that = @
-    @kloudService.placesQuery(latitude,longitude,(data) ->
+  _nearBy:(latitude,longitude) =>
+    # alert "Network Status is : #{Ti.Network.online}"
+    if Ti.Network.online is false
+      alert "利用されてるスマートフォンからインターネットに接続できないためお店の情報が検索できません"
+    else
+      @activityIndicator.show()
+      @kloudService.placesQuery(latitude,longitude,(data) =>
+        @addAnnotations(data)
+      )
       
-      that.addAnnotations(data)
-    )
     
   # デバイス解像度に合わせて適切なサイズのアイコンを準備する必要あるので
   # そのためのメソッド
@@ -241,5 +234,11 @@ class mapWindow
 
       @mapView.addAnnotation annotation
 
+  _checkNetworkConnection:() ->
+    timerId = setInterval(->
+      Ti.API.info "Network Connection is #{Ti.Network.online}"
+      clearInterval timerId  if Ti.Network.online is false
+      return
+    , 1000)    
 
 module.exports = mapWindow  

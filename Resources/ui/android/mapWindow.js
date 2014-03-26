@@ -5,7 +5,8 @@
   mapWindow = (function() {
     function mapWindow() {
       this.addAnnotations = __bind(this.addAnnotations, this);
-      var ActivityIndicator, KloudService, gpsRule, keyColor, mapWindowTitle;
+      this._nearBy = __bind(this._nearBy, this);
+      var ActivityIndicator, KloudService, gpsRule, keyColor;
       keyColor = "#f9f9f9";
       this.baseColor = {
         barColor: keyColor,
@@ -40,6 +41,7 @@
           var actInd;
           actInd = _this.activityIndicator;
           if (e.clicksource === "rightPane") {
+            _this._checkNetworkConnection();
             actInd.show();
             Ti.API.info("placeID is " + e.annotation.placeID);
             return _this.kloudService.statusesQuery(e.annotation.placeID, function(statuses) {
@@ -66,22 +68,26 @@
       this.mapView.addEventListener('regionchanged', (function(_this) {
         return function(e) {
           var geoHashResult, lastGeoHashValue, latitude, longitude;
-          lastGeoHashValue = _this.geoHashResult[_this.geoHashResult.length - 1];
-          Ti.API.info("lastGeoHashValue is " + lastGeoHashValue);
-          latitude = e.latitude;
-          longitude = e.longitude;
-          geoHashResult = _this.tiGeoHash.encodeGeoHash(latitude, longitude, _this.precision);
-          Ti.API.info("Hash is " + geoHashResult.geohash);
-          Ti.API.info("" + geoHashResult.geohash + " " + lastGeoHashValue);
-          if (geoHashResult.geohash === lastGeoHashValue) {
-            Ti.API.info("regionchanged doesn't fire");
-            return _this.geoHashResult.push(geoHashResult.geohash);
+          if (Ti.Network.online === false) {
+            return alert("利用されてるスマートフォンからインターネットに接続できないためお店の情報が検索できません");
           } else {
-            Ti.API.info("regionchanged fire");
-            Ti.App.Analytics.trackEvent('@mapWindow', 'regionchanged', 'regionchanged', 1);
-            _this.geoHashResult.push(geoHashResult.geohash);
-            _this.activityIndicator.show();
-            return _this._nearBy(latitude, longitude);
+            lastGeoHashValue = _this.geoHashResult[_this.geoHashResult.length - 1];
+            Ti.API.info("lastGeoHashValue is " + lastGeoHashValue);
+            latitude = e.latitude;
+            longitude = e.longitude;
+            geoHashResult = _this.tiGeoHash.encodeGeoHash(latitude, longitude, _this.precision);
+            Ti.API.info("Hash is " + geoHashResult.geohash);
+            Ti.API.info("" + geoHashResult.geohash + " " + lastGeoHashValue);
+            if (geoHashResult.geohash === lastGeoHashValue) {
+              Ti.API.info("regionchanged doesn't fire");
+              return _this.geoHashResult.push(geoHashResult.geohash);
+            } else {
+              Ti.API.info("regionchanged fire");
+              Ti.App.Analytics.trackEvent('@mapWindow', 'regionchanged', 'regionchanged', 1);
+              _this.geoHashResult.push(geoHashResult.geohash);
+              _this.activityIndicator.show();
+              return _this._nearBy(latitude, longitude);
+            }
           }
         };
       })(this));
@@ -95,7 +101,6 @@
       Ti.Geolocation.addEventListener('location', (function(_this) {
         return function(e) {
           var geoHashResult, latitude, longitude;
-          _this.activityIndicator.show();
           if (e.success) {
             latitude = e.coords.latitude;
             longitude = e.coords.longitude;
@@ -109,24 +114,13 @@
             });
             return _this._nearBy(latitude, longitude);
           } else {
-            Ti.API.info(e.error);
-            return _this.activityIndicator.hide();
+            return Ti.API.info(e.error);
           }
         };
       })(this));
       ActivityIndicator = require('ui/android/activitiIndicator');
       this.activityIndicator = new ActivityIndicator();
       this.activityIndicator.hide();
-      mapWindowTitle = Ti.UI.createLabel({
-        textAlign: 'center',
-        color: "#333",
-        font: {
-          fontSize: '18dp',
-          fontFamily: 'Rounded M+ 1p',
-          fontWeight: 'bold'
-        },
-        text: "近くのお店"
-      });
       this.mapWindow = Ti.UI.createWindow({
         title: "近くのお店",
         barColor: this.baseColor.barColor,
@@ -140,11 +134,16 @@
     }
 
     mapWindow.prototype._nearBy = function(latitude, longitude) {
-      var that;
-      that = this;
-      return this.kloudService.placesQuery(latitude, longitude, function(data) {
-        return that.addAnnotations(data);
-      });
+      if (Ti.Network.online === false) {
+        return alert("利用されてるスマートフォンからインターネットに接続できないためお店の情報が検索できません");
+      } else {
+        this.activityIndicator.show();
+        return this.kloudService.placesQuery(latitude, longitude, (function(_this) {
+          return function(data) {
+            return _this.addAnnotations(data);
+          };
+        })(this));
+      }
     };
 
     mapWindow.prototype._selectIcon = function(shopFlg, statusesUpdateFlg) {
@@ -227,6 +226,16 @@
         _results.push(this.mapView.addAnnotation(annotation));
       }
       return _results;
+    };
+
+    mapWindow.prototype._checkNetworkConnection = function() {
+      var timerId;
+      return timerId = setInterval(function() {
+        Ti.API.info("Network Connection is " + Ti.Network.online);
+        if (Ti.Network.online === false) {
+          clearInterval(timerId);
+        }
+      }, 1000);
     };
 
     return mapWindow;
