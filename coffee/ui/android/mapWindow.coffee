@@ -156,17 +156,38 @@ class mapWindow
     
   _nearBy:(latitude,longitude) ->
     that = @
-    KloudService = require("model/kloudService")
-    kloudService = new KloudService()
     @kloudService.placesQuery(latitude,longitude,(data) ->
+      
       that.addAnnotations(data)
     )
     
-
-  
+  # デバイス解像度に合わせて適切なサイズのアイコンを準備する必要あるので
+  # そのためのメソッド
+  _selectIcon:(shopFlg,statusesUpdateFlg) ->
+    
+    Ti.API.info "height: #{Ti.Platform.displayCaps.platformHeight}"
+    if Ti.Platform.displayCaps.platformHeight > 889
+      value = "high"
+    else
+      value = "middle"
+    
+    if shopFlg is true
+      imagePath = "ui/image/android/#{value}Resolution/bottle.png"
+    else if shopFlg is false and statusesUpdateFlg is true
+      imagePath = "ui/image/android/#{value}Resolution/tmublrWithOnTapInfo.png"
+    else if shopFlg is false and statusesUpdateFlg is false
+      imagePath = "ui/image/android/#{value}Resolution/tmulblr.png"
+    else
+      imagePath = null
+      
+    return imagePath
+    
   addAnnotations:(array) =>
+
     @activityIndicator.hide()
+
     for data in array
+
       phoneBtn = Ti.UI.createButton
         color:"#3261AB"
         backgroundColor:"#f9f9f9"
@@ -177,19 +198,32 @@ class mapWindow
           fontFamily:'fontawesome-webfont'
         title:String.fromCharCode("0xf095")
       informationBtn = Ti.UI.createButton
-        color:"#333"
+        color:"#FF5E00"
         backgroundColor:"#f9f9f9"
         width:"30dip"
         height:"30dip"
         font:
           fontSize:'36dip'
           fontFamily:'ligaturesymbols'
-        title:String.fromCharCode("0xE075")        
-      if data.shopFlg is "true"
-        image = "ui/image/bottle@2x.png"
-      else
-        image = "ui/image/tumblrIconForMap.png"
+        title:String.fromCharCode("0xE075")
         
+      moment = require("lib/moment.min")
+      currentTime = moment()
+
+      if data.statusesUpdate is false or typeof data.statusesUpdate is "undefined"
+        statusesUpdateFlg = false
+      else if currentTime.diff(data.statusesUpdate) < 80000
+        statusesUpdateFlg = false
+      else  
+        statusesUpdateFlg = true
+        
+      if data.shopFlg is "false"
+        shopFlg = false
+      else
+        shopFlg = true
+        
+      image = @_selectIcon(shopFlg,statusesUpdateFlg)
+
       annotation = @MapModule.createAnnotation
         latitude: data.latitude
         longitude: data.longitude
@@ -198,11 +232,13 @@ class mapWindow
         shopAddress: data.shopAddress
         shopInfo:data.shopInfo
         shopFlg:data.shopFlg
-        image:image
         placeID:data.id
         title:data.shopName
         leftView:phoneBtn
         rightView:informationBtn
+        image:image        
+        
+
       @mapView.addAnnotation annotation
 
 

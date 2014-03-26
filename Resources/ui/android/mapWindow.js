@@ -140,17 +140,35 @@
     }
 
     mapWindow.prototype._nearBy = function(latitude, longitude) {
-      var KloudService, kloudService, that;
+      var that;
       that = this;
-      KloudService = require("model/kloudService");
-      kloudService = new KloudService();
       return this.kloudService.placesQuery(latitude, longitude, function(data) {
         return that.addAnnotations(data);
       });
     };
 
+    mapWindow.prototype._selectIcon = function(shopFlg, statusesUpdateFlg) {
+      var imagePath, value;
+      Ti.API.info("height: " + Ti.Platform.displayCaps.platformHeight);
+      if (Ti.Platform.displayCaps.platformHeight > 889) {
+        value = "high";
+      } else {
+        value = "middle";
+      }
+      if (shopFlg === true) {
+        imagePath = "ui/image/android/" + value + "Resolution/bottle.png";
+      } else if (shopFlg === false && statusesUpdateFlg === true) {
+        imagePath = "ui/image/android/" + value + "Resolution/tmublrWithOnTapInfo.png";
+      } else if (shopFlg === false && statusesUpdateFlg === false) {
+        imagePath = "ui/image/android/" + value + "Resolution/tmulblr.png";
+      } else {
+        imagePath = null;
+      }
+      return imagePath;
+    };
+
     mapWindow.prototype.addAnnotations = function(array) {
-      var annotation, data, image, informationBtn, phoneBtn, _i, _len, _results;
+      var annotation, currentTime, data, image, informationBtn, moment, phoneBtn, shopFlg, statusesUpdateFlg, _i, _len, _results;
       this.activityIndicator.hide();
       _results = [];
       for (_i = 0, _len = array.length; _i < _len; _i++) {
@@ -167,7 +185,7 @@
           title: String.fromCharCode("0xf095")
         });
         informationBtn = Ti.UI.createButton({
-          color: "#333",
+          color: "#FF5E00",
           backgroundColor: "#f9f9f9",
           width: "30dip",
           height: "30dip",
@@ -177,11 +195,21 @@
           },
           title: String.fromCharCode("0xE075")
         });
-        if (data.shopFlg === "true") {
-          image = "ui/image/bottle@2x.png";
+        moment = require("lib/moment.min");
+        currentTime = moment();
+        if (data.statusesUpdate === false || typeof data.statusesUpdate === "undefined") {
+          statusesUpdateFlg = false;
+        } else if (currentTime.diff(data.statusesUpdate) < 80000) {
+          statusesUpdateFlg = false;
         } else {
-          image = "ui/image/tumblrIconForMap.png";
+          statusesUpdateFlg = true;
         }
+        if (data.shopFlg === "false") {
+          shopFlg = false;
+        } else {
+          shopFlg = true;
+        }
+        image = this._selectIcon(shopFlg, statusesUpdateFlg);
         annotation = this.MapModule.createAnnotation({
           latitude: data.latitude,
           longitude: data.longitude,
@@ -190,11 +218,11 @@
           shopAddress: data.shopAddress,
           shopInfo: data.shopInfo,
           shopFlg: data.shopFlg,
-          image: image,
           placeID: data.id,
           title: data.shopName,
           leftView: phoneBtn,
-          rightView: informationBtn
+          rightView: informationBtn,
+          image: image
         });
         _results.push(this.mapView.addAnnotation(annotation));
       }

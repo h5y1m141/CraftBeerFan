@@ -20,19 +20,34 @@ class kloudService
         i = 0
         while i < e.places.length
           place = e.places[i]
-          Ti.API.info place.name
-          data =
-            id:place.id
-            latitude: place.latitude
-            longitude: place.longitude
-            shopName:place.name
-            shopAddress: place.address
-            phoneNumber: place.phone_number
-            shopFlg:place.custom_fields.shopFlg
-            shopInfo:place.custom_fields.shopInfo
+          # Ti.API.info place.name + place.custom_fields.statusesUpdate
+          if typeof place.custom_fields.statusesUpdate isnt "undefined"
+            data =
+              id:place.id
+              latitude: place.latitude
+              longitude: place.longitude
+              shopName:place.name
+              shopAddress: place.address
+              phoneNumber: place.phone_number
+              shopFlg:place.custom_fields.shopFlg
+              shopInfo:place.custom_fields.shopInfo
+              statusesUpdate:place.custom_fields.statusesUpdate
             
+          else
+            data =
+              id:place.id
+              latitude: place.latitude
+              longitude: place.longitude
+              shopName:place.name
+              shopAddress: place.address
+              phoneNumber: place.phone_number
+              shopFlg:place.custom_fields.shopFlg
+              shopInfo:place.custom_fields.shopInfo
+              statusesUpdate: false
+
           result.push(data)
           i++
+
         return callback(result)
       else
         Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
