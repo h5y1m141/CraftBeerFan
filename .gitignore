@@ -11,3 +11,4 @@ CraftBeerFan.keystore
 my-release-key.keystore
 release
 release.keystore
+dist/

@@ -6,7 +6,7 @@
     function mapWindow() {
       this.addAnnotations = __bind(this.addAnnotations, this);
       this._nearBy = __bind(this._nearBy, this);
-      var ActivityIndicator, KloudService, gpsRule, keyColor;
+      var ActivityIndicator, KloudService, gpsProvider, gpsRule, keyColor, num;
       keyColor = "#f9f9f9";
       this.baseColor = {
         barColor: keyColor,
@@ -18,24 +18,55 @@
       KloudService = require("model/kloudService");
       this.kloudService = new KloudService();
       this.MapModule = require('ti.map');
-      this.currentLatitude = 35.674819;
-      this.currentLongitude = 139.765084;
-      this.mapView = this.MapModule.createView({
-        mapType: this.MapModule.NORMAL_TYPE,
-        region: {
-          latitude: 35.676564,
-          longitude: 139.765076,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05
-        },
-        animate: true,
-        userLocation: false,
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        zIndex: 1
-      });
+      ActivityIndicator = require('ui/android/activitiIndicator');
+      this.activityIndicator = new ActivityIndicator();
+      this.activityIndicator.hide();
+      Ti.Geolocation.getCurrentPosition((function(_this) {
+        return function(e) {
+          var latitude, longitude;
+          if (e.success) {
+            latitude = e.coords.latitude;
+            longitude = e.coords.longitude;
+            _this.mapView = _this.MapModule.createView({
+              mapType: _this.MapModule.NORMAL_TYPE,
+              region: {
+                latitude: latitude,
+                longitude: longitude,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05
+              },
+              animate: true,
+              userLocation: false,
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              zIndex: 1
+            });
+            _this.activityIndicator.show();
+            return _this._nearBy(latitude, longitude);
+          } else {
+            _this.mapView = _this.MapModule.createView({
+              mapType: _this.MapModule.NORMAL_TYPE,
+              region: {
+                latitude: 35.676564,
+                longitude: 139.765076,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05
+              },
+              animate: true,
+              userLocation: false,
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              zIndex: 1
+            });
+            _this.activityIndicator.show();
+            return _this._nearBy(latitude, longitude);
+          }
+        };
+      })(this));
       this.mapView.addEventListener('click', (function(_this) {
         return function(e) {
           var actInd;
@@ -91,36 +122,44 @@
           }
         };
       })(this));
+      gpsProvider = Ti.Geolocation.Android.createLocationProvider({
+        name: Ti.Geolocation.PROVIDER_GPS,
+        minUpdateTime: 60,
+        minUpdateDistance: 100
+      });
       gpsRule = Ti.Geolocation.Android.createLocationRule({
         provider: Ti.Geolocation.PROVIDER_GPS,
         accuracy: 100,
         maxAge: 300000,
         minAge: 10000
       });
+      Ti.Geolocation.Android.addLocationProvider(gpsProvider);
       Ti.Geolocation.Android.addLocationRule(gpsRule);
-      Ti.Geolocation.addEventListener('location', (function(_this) {
-        return function(e) {
-          var geoHashResult, latitude, longitude;
-          if (e.success) {
-            latitude = e.coords.latitude;
-            longitude = e.coords.longitude;
-            geoHashResult = _this.tiGeoHash.encodeGeoHash(latitude, longitude, _this.precision);
-            _this.geoHashResult.push(geoHashResult.geohash);
-            _this.mapView.setLocation({
-              latitude: latitude,
-              longitude: longitude,
-              latitudeDelta: 0.025,
-              longitudeDelta: 0.025
-            });
-            return _this._nearBy(latitude, longitude);
-          } else {
-            return Ti.API.info(e.error);
-          }
-        };
-      })(this));
-      ActivityIndicator = require('ui/android/activitiIndicator');
-      this.activityIndicator = new ActivityIndicator();
-      this.activityIndicator.hide();
+      if (Ti.Geolocation.locationServicesEnabled) {
+        num = 0;
+        Ti.Geolocation.addEventListener("location", (function(_this) {
+          return function(e) {
+            var geoHashResult, latitude, longitude;
+            if (num === 0 || num % 10 === 0) {
+              latitude = e.coords.latitude;
+              longitude = e.coords.longitude;
+              geoHashResult = _this.tiGeoHash.encodeGeoHash(latitude, longitude, _this.precision);
+              _this.geoHashResult.push(geoHashResult.geohash);
+              _this.mapView.setLocation({
+                latitude: latitude,
+                longitude: longitude,
+                latitudeDelta: 0.025,
+                longitudeDelta: 0.025
+              });
+              _this._nearBy(latitude, longitude);
+              num++;
+              if (num >= 100) {
+                return num = 1;
+              }
+            }
+          };
+        })(this));
+      }
       this.mapWindow = Ti.UI.createWindow({
         title: "近くのお店",
         barColor: this.baseColor.barColor,

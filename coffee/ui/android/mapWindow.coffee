@@ -12,27 +12,48 @@ class mapWindow
     KloudService = require("model/kloudService")
     @kloudService = new KloudService()
     @MapModule = require('ti.map')
+    ActivityIndicator = require('ui/android/activitiIndicator')
+    @activityIndicator = new ActivityIndicator()
+    @activityIndicator.hide()
 
-
-    @currentLatitude = 35.674819
-    @currentLongitude = 139.765084
+    Ti.Geolocation.getCurrentPosition (e) =>
+      if e.success
+        latitude = e.coords.latitude
+        longitude = e.coords.longitude
+        @mapView = @MapModule.createView
+          mapType: @MapModule.NORMAL_TYPE
+          region:
+            latitude: latitude
+            longitude:longitude
+            latitudeDelta: 0.05
+            longitudeDelta: 0.05
+          animate: true
+          userLocation:false
+          top:0
+          left:0
+          width:"100%"
+          height:"100%"
+          zIndex:1
+        @activityIndicator.show()
+        @_nearBy(latitude,longitude)
+      else
+        @mapView = @MapModule.createView
+          mapType: @MapModule.NORMAL_TYPE
+          region:
+            latitude: 35.676564
+            longitude:139.765076 
+            latitudeDelta: 0.05
+            longitudeDelta: 0.05
+          animate: true
+          userLocation:false
+          top:0
+          left:0
+          width:"100%"
+          height:"100%"
+          zIndex:1
+        @activityIndicator.show()
+        @_nearBy(latitude,longitude)
       
-    @mapView = @MapModule.createView
-      mapType: @MapModule.NORMAL_TYPE
-      region:
-        latitude: 35.676564
-        longitude:139.765076 
-        latitudeDelta: 0.05
-        longitudeDelta: 0.05
-      animate: true
-      userLocation:false
-      top:0
-      left:0
-      width:"100%"
-      height:"100%"
-      zIndex:1
-
-    
     
     @mapView.addEventListener('click',(e) =>
       actInd = @activityIndicator
@@ -66,11 +87,6 @@ class mapWindow
     )
 
     @mapView.addEventListener('regionchanged',(e)=>
-      # ちょっとしたスクロールに反応してしまうため、緯度経度から
-      # GeoHashの値を得て蓄積していく
-      # そして、前回得たGeoHashの値から変更されていた場合に
-      # お店情報を取得する
-
       if Ti.Network.online is false
         alert "利用されてるスマートフォンからインターネットに接続できないためお店の情報が検索できません"
       else
@@ -78,6 +94,12 @@ class mapWindow
         Ti.API.info "lastGeoHashValue is #{lastGeoHashValue}"
         latitude = e.latitude
         longitude = e.longitude
+        
+        # ちょっとしたスクロールに反応してしまうため、緯度経度から
+        # GeoHashの値を得て蓄積していく
+        # そして、前回得たGeoHashの値から変更されていた場合に
+        # お店情報を取得する
+
 
         geoHashResult = @tiGeoHash.encodeGeoHash(latitude,longitude,@precision)
         Ti.API.info "Hash is #{geoHashResult.geohash}"
@@ -94,41 +116,51 @@ class mapWindow
           
           @_nearBy(latitude,longitude)
     )
+         
+    # 以下の公式ドキュメントをベースに設定
+    # http://docs.appcelerator.com/titanium/latest/#!/api/Titanium.Geolocation.Android
+    gpsProvider = Ti.Geolocation.Android.createLocationProvider
+      name: Ti.Geolocation.PROVIDER_GPS
+      minUpdateTime: 60
+      minUpdateDistance: 100
       
-
-  
-    gpsRule = Ti.Geolocation.Android.createLocationRule(
+    gpsRule = Ti.Geolocation.Android.createLocationRule
       provider: Ti.Geolocation.PROVIDER_GPS
       accuracy: 100
       maxAge: 300000
       minAge: 10000
-    )
-    Ti.Geolocation.Android.addLocationRule gpsRule    
-    Ti.Geolocation.addEventListener('location',(e) =>
-      if e.success
-        latitude = e.coords.latitude
-        longitude = e.coords.longitude
-        geoHashResult = @tiGeoHash.encodeGeoHash(latitude,longitude,@precision)
-        @geoHashResult.push(geoHashResult.geohash)
-        
-        @mapView.setLocation(
-          latitude: latitude
-          longitude: longitude
-          latitudeDelta:0.025
-          longitudeDelta:0.025
-        )
+      
+    Ti.Geolocation.Android.addLocationProvider gpsProvider
+    Ti.Geolocation.Android.addLocationRule gpsRule
+    # location イベントが意図せず頻発するようなので
+    # yagi_さんが書かれてる以下を参考に対策
+    # http://support.titanium-mobile.jp/questions/558
 
-        @_nearBy(latitude,longitude)
+    if Ti.Geolocation.locationServicesEnabled
+      num = 0
+      Ti.Geolocation.addEventListener "location", (e) =>
+
+        if num is 0 or num % 10 is 0
+          
+          latitude = e.coords.latitude
+          longitude = e.coords.longitude
+
+          geoHashResult = @tiGeoHash.encodeGeoHash(latitude,longitude,@precision)
+          @geoHashResult.push(geoHashResult.geohash)
+          @mapView.setLocation(
+            latitude: latitude
+            longitude: longitude
+            latitudeDelta:0.025
+            longitudeDelta:0.025
+          )
+          @_nearBy(latitude,longitude)
+          num++
+          num = 1  if num >= 100
+          
         
-      else
-        Ti.API.info e.error
-        
-    )
+
 
     
-    ActivityIndicator = require('ui/android/activitiIndicator')
-    @activityIndicator = new ActivityIndicator()
-    @activityIndicator.hide()
     @mapWindow = Ti.UI.createWindow
       title:"近くのお店"
       barColor:@baseColor.barColor
