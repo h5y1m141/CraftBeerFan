@@ -1,5 +1,5 @@
 (function() {
-  var Config, Map, analytics, config, configurationWizard, gaKey, gaModule, mapWindow, osname;
+  var Config, MainController, Map, StartupWindow, analytics, config, configurationWizard, gaKey, gaModule, mainController, mapWindow, osname, startupWindow;
 
   configurationWizard = Ti.App.Properties.getBool("configurationWizard");
 
@@ -45,10 +45,24 @@
 
   osname = Ti.Platform.osname;
 
-  Map = require("/ui/" + osname + "/mapWindow");
-
-  mapWindow = new Map();
-
-  mapWindow.open();
+  if (osname === "android") {
+    Map = require("/ui/android/mapWindow");
+    mapWindow = new Map();
+    mapWindow.open();
+  } else if (osname === "iphone") {
+    if (configurationWizard === null || typeof configurationWizard === "undefined" || configurationWizard === false) {
+      StartupWindow = require("ui/" + osname + "/startupWindow");
+      startupWindow = new StartupWindow();
+      startupWindow.open();
+    } else {
+      MainController = require("controller/mainController");
+      mainController = new MainController();
+      mainController.createTabGroup();
+    }
+  } else {
+    MainController = require("controller/mainController");
+    mainController = new MainController();
+    mainController.createTabGroup();
+  }
 
 }).call(this);

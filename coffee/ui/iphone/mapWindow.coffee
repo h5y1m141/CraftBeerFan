@@ -14,84 +14,9 @@ class mapWindow
     ActivityIndicator = require('ui/activityIndicator')
     @activityIndicator = new ActivityIndicator()
     @activityIndicator.hide()
-    @shopInfoView = Ti.UI.createView
-      width:Ti.UI.FULL
-      height:"20%"
-      bottom:-30
-      left:0
-      backgroundColor:"#f3f3f3"
-      opacity:0.9
-      zIndex:10
-      visible:false
-      
-    @shopInfoView.addEventListener 'click',(e) =>
-      t1 = Titanium.UI.create2DMatrix()
-      animation = Titanium.UI.createAnimation()
-      animation.transform = t1
-      animation.duration = 400
-      animation.height = "50%"
-      @shopInfoView.animate(animation,() =>
-        Ti.API.info "done"
-      )
-      t2 = Titanium.UI.create2DMatrix()
-      animation1 = Titanium.UI.createAnimation()
-      animation1.transform = t2
-      animation1.duration = 500
-      animation1.height = "50%"
-      
-      @mapView.animate(animation1,() ->
-        Ti.API.info "done"
-      )
-      
-      # @shopInfoView.height = "50%"
-      # @mapView.height      = "50%"
-      
-      # if e.source.visible is true
-      #   @_changeStatusShopInfoView("hide")
-      # else
-      #   @_changeStatusShopInfoView("show")      
-
-        
-    @shopName = Ti.UI.createLabel
-      color:"#333"
-      font:
-        fontSize:18
-        weight:"bold"
-      top:5
-      left:50
-      width:"80%"
-      height:20
-      
-    @icon = Ti.UI.createImageView
-      top:10
-      left:10
-    @shopCategory = Ti.UI.createLabel
-      color:"#333"
-      font:
-        fontSize:14
-      top:30
-      left:50      
-    @phoneNumber = Ti.UI.createLabel
-      color:"#333"
-      font:
-        fontSize:14
-      top:30
-      left:200
+    KloudService =require("model/kloudService")
+    @kloudService = new KloudService()
     
-    @shopInfo = Ti.UI.createLabel
-      color:"#333"
-      font:
-        fontSize:12
-      top:55
-      left:10
-      width:"90%"
-      height:30
-      
-    @shopInfoView.add  @shopName
-    @shopInfoView.add  @shopCategory    
-    @shopInfoView.add  @phoneNumber
-    @shopInfoView.add  @shopInfo
-    @shopInfoView.add  @icon
     mapWindow = Ti.UI.createWindow
       title:"近くのお店"
       barColor:@baseColor.barColor
@@ -119,19 +44,23 @@ class mapWindow
       width:"100%"
       height:"100%"
     @mapView.addEventListener('click',(e)=>
-      Ti.API.info "mapView event fire e.annotation.imagePath is #{e.annotation.imagePath} and title is #{e.title}"
-      data =
-        shopName:e.annotation.shopName
-        imagePath:e.annotation.imagePath
-        phoneNumber:e.annotation.phoneNumber
-        latitude: e.annotation.latitude
-        longitude: e.annotation.longitude
-        shopInfo: e.annotation.shopInfo
-        
-      @_showShopInfo data
-      
-    )
-      
+      if e.clicksource is 'rightButton'
+        @kloudService.statusesQuery(e.annotation.placeID,(statuses) ->
+          data =
+            shopName:e.annotation.shopName
+            phoneNumber:e.annotation.phoneNumber
+            latitude: e.annotation.latitude
+            longitude: e.annotation.longitude
+            shopInfo: e.annotation.shopInfo
+            statuses:statuses
+            
+          ShopDataDetailWindow = require("ui/iphone/shopDataDetailWindow")
+          new ShopDataDetailWindow(data)
+          # shopDataDetailWindow = new ShopDataDetailWindow(data)
+          
+          # shopDataDetailWindow.open()
+        )
+    )  
     @mapView.addEventListener('regionchanged',(e)=>
       
       # ちょっとしたスクロールに反応してしまうため、緯度経度から
@@ -205,21 +134,21 @@ class mapWindow
     
     mapWindow.add @mapView
     mapWindow.add @activityIndicator
-    mapWindow.add @shopInfoView
 
     # init時に現在位置を取得する
     @_getGeoCurrentPosition()
     return mapWindow
     
   _nearBy:(latitude,longitude) ->
-    that = @
-    KloudService =require("model/kloudService")
-    kloudService = new KloudService()
-    kloudService.placesQuery(latitude,longitude,(data) ->
-      Ti.API.info "data is #{data}"
+    if Ti.Network.online is false
+      alert "利用されてるスマートフォンからインターネットに接続できないためお店の情報が検索できません"
+    else    
 
-      that.addAnnotations(data)
-    )
+      @kloudService.placesQuery(latitude,longitude,(data) =>
+        Ti.API.info "data is #{data}"
+
+        @addAnnotations(data)
+      )
     
   _getGeoCurrentPosition:() ->
     that = @
@@ -262,83 +191,57 @@ class mapWindow
     
     return
     
-  _showShopInfo:(data) ->
-    Ti.API.info "#imagePath is #{data.imagePath} and Name is #{data.shopName}"    
-    if data.imagePath is "ui/image/tumblrIcon.png"
-      @shopCategory.text = "飲めるお店"
+  _selectIcon:(shopFlg,statusesUpdateFlg) ->
+    
+    if shopFlg is true
+      imagePath = "ui/image/bottle.png"
+    else if shopFlg is false and statusesUpdateFlg is true
+      imagePath = "ui/image/tmublrWithOnTapInfo.png"
+    else if shopFlg is false and statusesUpdateFlg is false
+      imagePath = "ui/image/tmulblr.png"
     else
-      @shopCategory.text = "買えるお店"
-    @phoneNumber.text = data.phoneNumber
-    @shopInfo.text = data.shopInfo
-    @shopName.text = data.shopName
-    @icon.setImage data.imagePath
-    t1 = Titanium.UI.create2DMatrix()
-    animation = Titanium.UI.createAnimation()
-    animation.transform = t1
-    animation.duration = 1000
-    animation.bottom = 30
+      imagePath = null
+      
+    return imagePath
 
-    return @shopInfoView.animate(animation ,() =>
-      @shopInfoView.show()
-    )  
-    # return @shopInfoView.show()
-  _changeStatusShopInfoView:(status) ->
-    if status is "hide"
-      t1 = Titanium.UI.create2DMatrix()
-      animation = Titanium.UI.createAnimation()
-      animation.transform = t1
-      animation.duration = 500
-      animation.bottom = 30
-
-      return @shopInfoView.animate(animation ,() =>
-        @shopInfoView.show()
-      )        
-    else
-      t1 = Titanium.UI.create2DMatrix()
-      animation = Titanium.UI.createAnimation()
-      animation.transform = t1
-      animation.duration = 500
-      animation.bottom = -30
-
-      return @shopInfoView.animate(animation ,() =>
-        @shopInfoView.hide()
-      )            
   addAnnotations:(array) ->
     Ti.API.info "addAnnotations start mapView is #{@mapView}"
     @activityIndicator.hide()
     for data in array
       Ti.API.info data.shopName
-      if data.shopFlg is "true"
-        annotation = @MapModule.createAnnotation
-          latitude: data.latitude
-          longitude: data.longitude
-          shopName: data.shopName
-          title:data.shopName
-          phoneNumber: data.phoneNumber
-          shopAddress: data.shopAddress
-          shopInfo:data.shopInfo
-          subtitle: ""
-          imagePath:"ui/image/bottle.png"
-          animate: false
-          leftButton: ""
-          rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
-        @mapView.addAnnotation annotation
-        Ti.API.info annotation
+      moment = require("lib/moment.min")
+      currentTime = moment()
+      if data.statusesUpdate is false or typeof data.statusesUpdate is "undefined"
+        statusesUpdateFlg = false
+      else if currentTime.diff(data.statusesUpdate) < 80000
+        statusesUpdateFlg = false
+      else  
+        statusesUpdateFlg = true
+        
+      if data.shopFlg is "false"
+        shopFlg = false
       else
-        annotation = @MapModule.createAnnotation
-          latitude: data.latitude
-          longitude: data.longitude
-          shopName: data.shopName
-          title:data.shopName          
-          phoneNumber: data.phoneNumber
-          shopAddress: data.shopAddress
-          shopInfo:data.shopInfo
-          subtitle: ""
-          imagePath:"ui/image/tumblrIcon.png"
-          animate: false
-          leftButton: ""
-          rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
-        @mapView.addAnnotation annotation
+        shopFlg = true
+        
+      image = @_selectIcon(shopFlg,statusesUpdateFlg)
+      annotation = @MapModule.createAnnotation
+        latitude: data.latitude
+        longitude: data.longitude
+        shopName: data.shopName
+        title:data.shopName
+        phoneNumber: data.phoneNumber
+        shopAddress: data.shopAddress
+        shopInfo:data.shopInfo
+        shopFlg:data.shopFlg
+        placeID:data.id        
+        subtitle: ""
+        image:image
+        leftButton: ""
+        rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
+      @mapView.addAnnotation annotation
+      Ti.API.info annotation
+
+      @mapView.addAnnotation annotation
       
 
 
