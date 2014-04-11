@@ -1,0 +1,43 @@
+"#mainWindow":{
+    /* navTintColor:'#99cc66', */
+    statusBarStyle:0,
+    tabBarHidden:true
+}
+"mapview":{
+    slideState:false,
+    zIndex:4
+}
+
+"#subMenu":{
+    top:2,
+    left:0,
+    zIndex:0,
+    width:120,
+    height:40,
+    backgroundColor:"#66cc99"
+}
+".container": {
+	backgroundColor:"#f9f9f9"
+}
+
+".main":{
+    width:Ti.UI.FULL,
+    height:40,
+    backgroundColor:"#f9f9f9"
+}
+".sub":{
+    width:120,
+    height:60,
+    backgroundColor:"#66cc99"    
+}
+".menu":{
+    color:"#222",
+    width:100,
+    height:40,
+    top:5,
+    left:10,
+    color:"#dddddd",
+    font:{
+        fontSize: 14
+    }
+}

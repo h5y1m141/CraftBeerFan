@@ -1,0 +1,1 @@
+<Alloy><TabGroup><Tab id="tabOne"><Window id="mainWindow" title="main" class="container"><RightNavButton id="add" platform="ios"><Button title="Add"></Button></RightNavButton><LeftNavButton id="showBtn" platform="ios"><Button title="="></Button></LeftNavButton><View id="mapview" ns="Alloy.Globals.Map"></View></Window></Tab></TabGroup></Alloy>
