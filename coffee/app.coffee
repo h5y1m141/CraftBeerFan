@@ -37,31 +37,24 @@ analytics.start 10, true
 
 osname = Ti.Platform.osname
 
-Map = require("/ui/#{osname}/mapWindow")
-mapWindow = new Map()
-mapWindow.open()
 
-# if osname is "android"
-#   # TopWindow = require("ui/android/topWindow")
-#   # topWindow = new TopWindow()
-#   # topWindow.open()
+if osname is "android"
+  Map = require("/ui/android/mapWindow")
+  mapWindow = new Map()
+  mapWindow.open()
 
-#   Map = require("/ui/android/mapWindow")
-#   mapWindow = new Map()
-#   mapWindow.open()
+else if osname is "iphone"
 
-# else if osname is "iphone"
+  if configurationWizard is null or typeof configurationWizard is "undefined" or configurationWizard is false
 
-#   if configurationWizard is null or typeof configurationWizard is "undefined" or configurationWizard is false
-
-#     StartupWindow = require("ui/#{osname}/startupWindow")
-#     startupWindow = new StartupWindow()  
-#     startupWindow.open()
-#   else
-#     MainController = require("controller/mainController")
-#     mainController = new MainController()
-#     mainController.createTabGroup()
-# else
-#     MainController = require("controller/mainController")
-#     mainController = new MainController()
-#     mainController.createTabGroup()
+    StartupWindow = require("ui/#{osname}/startupWindow")
+    startupWindow = new StartupWindow()  
+    startupWindow.open()
+  else
+    MainController = require("controller/mainController")
+    mainController = new MainController()
+    mainController.createTabGroup()
+else
+    MainController = require("controller/mainController")
+    mainController = new MainController()
+    mainController.createTabGroup()
