@@ -1,10 +1,12 @@
 Alloy
   TabGroup
     Tab#tabOne
-      Window#mainWindow.container(title="main")
-        RightNavButton#add(platform="ios")
-          Button(title="Add")
-        LeftNavButton#showBtn(platform="ios")
-          Button(title="=")
+      Window#mainWindow.container(title="近くのお店")
+        LeftNavButton#LeftNavButton(platform="ios")
+          Label#showBtn
+        TableView.sub
+          TableViewRow(title='リストを見る')
+          TableViewRow(title='設定')
+          TableViewRow(title='その他')
         View#mapview(ns="Alloy.Globals.Map")
-    
+            

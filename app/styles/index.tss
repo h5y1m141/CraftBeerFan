@@ -1,11 +1,22 @@
+"#tabOne":{
+    backgroundColor:"#f9f9f9"
+}
 "#mainWindow":{
     /* navTintColor:'#99cc66', */
     statusBarStyle:0,
+    translucent:false,
+    navTintColor:"#0066ff",
+    backgroundColor:"#f9f9f9",
     tabBarHidden:true
 }
-"mapview":{
+"#mapview":{
+    zIndex:4,
+    animate:true,
+    regionFit:true,
+    userLocation:true,
     slideState:false,
-    zIndex:4
+    width:Ti.UI.FULL,
+    height:Ti.UI.FULL
 }
 
 "#subMenu":{
@@ -16,6 +27,18 @@
     height:40,
     backgroundColor:"#66cc99"
 }
+
+"#showBtn":{
+    font:{
+        fontSize:36,
+        fontFamily:'LigatureSymbols'
+    },
+    color:"#007aff",
+    width:44,
+    height:44
+
+}
+
 ".container": {
 	backgroundColor:"#f9f9f9"
 }
@@ -27,8 +50,12 @@
 }
 ".sub":{
     width:120,
-    height:60,
-    backgroundColor:"#66cc99"    
+    height:Ti.UI.FULL,
+    top:0,
+    left:0,
+    zIndex:0,
+    backgroundColor:"#f9f9f9",
+    separatorColor:"#eeeeee"
 }
 ".menu":{
     color:"#222",
@@ -41,3 +68,4 @@
         fontSize: 14
     }
 }
+
