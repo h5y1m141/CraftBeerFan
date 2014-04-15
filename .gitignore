@@ -4,4 +4,8 @@ build
 npm-debug.log
 tmp
 .map
-Resources
+Resources/
+Resources/iphone/*.*
+Resources/**/*
+Resources/**/**/*
+Resources/**/**/**/*
