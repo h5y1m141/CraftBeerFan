@@ -4,10 +4,27 @@ $.index.open()
 # ligature_symbolsのフォントを使ってshowBtnのアイコン
 # 設定。対応する文字コードは以下を参照
 # http://kudakurage.com/ligature_symbols/
+$.userLogin.text = String.fromCharCode("0xe137")
+$.searchBtn.text = String.fromCharCode("0xe116")
+$.applicationBtn.text = String.fromCharCode("0xe075")
 $.showBtn.text = String.fromCharCode("0xe084")
 $.showBtn.addEventListener 'click', (e) ->
   slide()
-
+  
+$.tableview.addEventListener 'click', (e) ->
+  # alert "tableview e.index is #{e.index}"
+  if e.index is 0
+    userController = Alloy.createController('user')
+    userController.move($.tabOne)
+  else if e.index is 1
+    searchController = Alloy.createController('search')
+    searchController.move($.tabOne)
+  else if e.index is 2
+    applicationInfoController = Alloy.createController('applicationInfo')
+    applicationInfoController.move($.tabOne)
+    
+  else
+    Ti.API.info 'no action'
 
 KloudService = require("kloudService")
 kloudService = new KloudService()
@@ -93,7 +110,7 @@ slide = (e) ->
   #   id:"submenu"
     
   if $.mapview.slideState is false
-    leftPosition = 120
+    leftPosition = 150
     $.mapview.slideState = true
   else
     leftPosition = 0
