@@ -60,9 +60,9 @@ $.mapview.addEventListener 'click', (e) ->
 addAnnotations = (array) ->
   for data in array
     if data.shopFlg is "true"
-      imagePath = "iphone/bottle.png"
+      imagePath = "bottle.png"
     else
-      imagePath = "iphone/tumblrIcon.png"
+      imagePath = "tmulblr.png"
       
     annotation = Alloy.Globals.Map.createAnnotation
       latitude: data.latitude
@@ -104,7 +104,7 @@ slide = (e) ->
   animation = Titanium.UI.createAnimation()
   animation.left = leftPosition
   animation.transform = transform
-  animation.duration = 500
+  animation.duration = 250
   $.mapview.animate(animation)
   
 
