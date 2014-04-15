@@ -1,0 +1,21 @@
+"#mapWindow":{
+    /* navTintColor:'#99cc66', */
+    statusBarStyle:0,
+    tabBarHidden:true
+}
+"mapview":{
+    slideState:false,
+    zIndex:4
+}
+
+"#subMenu":{
+    top:2,
+    left:0,
+    zIndex:0,
+    width:120,
+    height:40,
+    backgroundColor:"#66cc99"
+}
+".container": {
+	backgroundColor:"#f9f9f9"
+}
