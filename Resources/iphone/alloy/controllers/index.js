@@ -27,6 +27,20 @@ function Controller() {
         id: "showBtn"
     });
     $.__views.mainWindow.leftNavButton = $.__views.showBtn;
+    $.__views.activityIndicator = Ti.UI.createActivityIndicator({
+        top: 240,
+        left: 120,
+        textAlign: "center",
+        backgroundColor: "#222",
+        font: {
+            fontSize: 18
+        },
+        color: "#fff",
+        zIndex: 10,
+        id: "activityIndicator",
+        message: "Loading..."
+    });
+    $.__views.mainWindow.add($.__views.activityIndicator);
     var __alloyId4 = [];
     $.__views.__alloyId5 = Ti.UI.createTableViewRow({
         id: "__alloyId5"
@@ -152,8 +166,10 @@ function Controller() {
     $.__views.index && $.addTopLevelView($.__views.index);
     exports.destroy = function() {};
     _.extend($, $.__views);
-    var KloudService, addAnnotations, checkNetworkConnection, kloudService, slide;
+    var KloudService, addAnnotations, checkNetworkConnection, geoHashResult, kloudService, lastGeoHashValue, precision, slide, style, tiGeoHash;
     $.index.open();
+    style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK;
+    $.activityIndicator.style = style;
     $.userLogin.text = String.fromCharCode("0xe137");
     $.searchBtn.text = String.fromCharCode("0xe116");
     $.applicationBtn.text = String.fromCharCode("0xe075");
@@ -179,8 +195,10 @@ function Controller() {
     });
     KloudService = require("kloudService");
     kloudService = new KloudService();
+    tiGeoHash = require("TiGeoHash");
     Ti.Geolocation.getCurrentPosition(function(e) {
         var latitude, longitude;
+        $.activityIndicator.show();
         if (e.success) {
             latitude = e.coords.latitude;
             longitude = e.coords.longitude;
@@ -191,10 +209,11 @@ function Controller() {
         $.mapview.region = {
             latitude: latitude,
             longitude: longitude,
-            latitudeDelta: .025,
-            longitudeDelta: .025
+            latitudeDelta: .05,
+            longitudeDelta: .05
         };
         return kloudService.placesQuery(latitude, longitude, function(data) {
+            $.activityIndicator.hide();
             return addAnnotations(data);
         });
     });
@@ -212,6 +231,31 @@ function Controller() {
             };
             shopDataDetailController = Alloy.createController("shopDataDetail");
             return shopDataDetailController.move($.tabOne, shopData);
+        });
+    });
+    geoHashResult = null;
+    lastGeoHashValue = null;
+    precision = 6;
+    $.mapview.addEventListener("regionchanged", function() {
+        var latitude, longitude, regionData;
+        regionData = $.mapview.getRegion();
+        latitude = regionData.latitude;
+        longitude = regionData.longitude;
+        geoHashResult = tiGeoHash.encodeGeoHash(latitude, longitude, precision);
+        Ti.API.info("lastGeoHashValue:" + lastGeoHashValue + " and geoHashResult:" + geoHashResult.geohash);
+        if (null === lastGeoHashValue || lastGeoHashValue === geoHashResult.geohash) {
+            Ti.API.info("regionchanged doesn't fire");
+            return lastGeoHashValue = geoHashResult.geohash;
+        }
+        Ti.API.info("regionchanged fire");
+        Ti.API.info(geoHashResult.geohash + " and " + lastGeoHashValue);
+        lastGeoHashValue = geoHashResult.geohash;
+        if (false === Ti.Network.online) return alert("利用されてるスマートフォンからインターネットに接続できないためお店の情報が検索できません");
+        Ti.API.info("start placesQuery latitude is " + latitude);
+        $.activityIndicator.show();
+        return kloudService.placesQuery(latitude, longitude, function(data) {
+            addAnnotations(data);
+            return $.activityIndicator.hide();
         });
     });
     addAnnotations = function(array) {

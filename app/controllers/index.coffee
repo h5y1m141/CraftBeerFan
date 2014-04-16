@@ -1,5 +1,11 @@
 # 起動時に行う処理
 $.index.open()
+if Ti.Platform.name is 'iPhone OS'
+  style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK
+else
+  style = Ti.UI.ActivityIndicatorStyle.DARK  
+
+$.activityIndicator.style = style
 
 # ligature_symbolsのフォントを使ってshowBtnのアイコン
 # 設定。対応する文字コードは以下を参照
@@ -29,9 +35,14 @@ $.tableview.addEventListener 'click', (e) ->
 KloudService = require("kloudService")
 kloudService = new KloudService()
 
+## 以下は regionchanged イベントで利用する項目
+tiGeoHash = require("TiGeoHash")
+
 # 各種イベントリスナーの設定
 ## 起動時に現在位置を取得して周辺のお店検索実施
 Ti.Geolocation.getCurrentPosition (e) ->
+
+  $.activityIndicator.show()
   if e.success
     latitude = e.coords.latitude
     longitude = e.coords.longitude
@@ -42,10 +53,11 @@ Ti.Geolocation.getCurrentPosition (e) ->
   $.mapview.region =
     latitude:latitude
     longitude:longitude
-    latitudeDelta:0.025
-    longitudeDelta:0.025
+    latitudeDelta:0.05
+    longitudeDelta:0.05
     
   kloudService.placesQuery latitude,longitude,(data) ->
+    $.activityIndicator.hide()
     # Ti.API.info data
     addAnnotations data
   
@@ -68,7 +80,33 @@ $.mapview.addEventListener 'click', (e) ->
       shopDataDetailController.move($.tabOne,shopData)
       
     )
-
+geoHashResult = null
+lastGeoHashValue = null
+precision = 6 # GeoHashの計算結果で得られる桁数を指定
+## 地図スクロールでお店検索できる処理を以下にて実装
+$.mapview.addEventListener 'regionchanged', (e) ->
+  regionData = $.mapview.getRegion()
+  latitude = regionData.latitude
+  longitude = regionData.longitude
+  geoHashResult = tiGeoHash.encodeGeoHash(latitude,longitude,precision)
+  Ti.API.info "lastGeoHashValue:#{lastGeoHashValue} and geoHashResult:#{geoHashResult.geohash}" 
+  if lastGeoHashValue is null or lastGeoHashValue is geoHashResult.geohash
+    Ti.API.info "regionchanged doesn't fire"
+    lastGeoHashValue = geoHashResult.geohash
+  else
+    Ti.API.info "regionchanged fire"
+    Ti.API.info geoHashResult.geohash + " and " + lastGeoHashValue
+    # Ti.App.Analytics.trackEvent('mapWindow','regionchanged','regionchanged',1)
+    lastGeoHashValue = geoHashResult.geohash
+    
+    if Ti.Network.online is false
+      alert "利用されてるスマートフォンからインターネットに接続できないためお店の情報が検索できません"
+    else
+      Ti.API.info "start placesQuery latitude is #{latitude}" 
+      $.activityIndicator.show()
+      kloudService.placesQuery latitude,longitude,(data) ->
+        addAnnotations data 
+        $.activityIndicator.hide()
         
   
 # このコントローラー内で利用するメソッドの定義

@@ -10,7 +10,7 @@
     // Class definition
     function TiGeoHash() {
         this.name = "TiGeoHash";
-        this.gh = require("lib/geohash");
+        this.gh = require("geohash");
     }
 
     // Method definition
