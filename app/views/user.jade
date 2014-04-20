@@ -1,8 +1,18 @@
 Alloy
   Window#userWindow.container(title="ユーザ詳細画面")
-    View#loginForm
-      View#accountSignUpView
-        TextField#userIDField
-        TextField#passwordField
-        Label#registBtn
-    
+    ActivityIndicator#activityIndicator(message="Loading...")
+    TableView#loginForm
+      TableViewSection#desctiption(headerTitle="アカウント設定について")
+        TableViewRow.formRow
+          Label.description アカウント設定すると気になるお店を「お気に入り」として登録出来るようになります。
+        TableViewRow.formRow
+          Label.description アカウント設定はCraftBeerFanにアカウントを登録する方法とFacebookのアカウントを設定する方法と２つあります。
+      TableViewSection#acsLoginSection(headerTitle="CraftBeerFanのアカウントを利用する")
+        TableViewRow.formRow
+          TextField#userIDField
+        TableViewRow.formRow
+          TextField#passwordField
+        TableViewRow.formRow
+          Label#registBtn
+      TableViewSection#fbLoginSection(headerTitle="Facebookのアカウントを利用する")
+        TableViewRow#fbLogin.formRow
