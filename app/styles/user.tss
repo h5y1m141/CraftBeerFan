@@ -43,6 +43,7 @@
 "#userInfoTable":{
     backgroundColor:"#f3f3f3",
     separatorColor:'#cccccc',
+    style:Ti.UI.iPhone.TableViewStyle.GROUPED,
     width:Ti.UI.FULL,
     width:Ti.UI.FULL,
     left:0,
