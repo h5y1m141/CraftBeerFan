@@ -1,0 +1,77 @@
+"#shopDataDetail":{
+    /* navTintColor:'#99cc66', */
+    statusBarStyle:0,
+    translucent:false,
+    navTintColor:"#0066ff",
+    backgroundColor:"#f9f9f9",
+    tabBarHidden:true
+}
+"#tableview":{
+    top:0,
+    left:0,
+    width:Ti.UI.FULL,
+    height:Ti.UI.FULL
+}
+
+".shopInfoRow":{
+    width:Ti.UI.FULL,
+    width:80
+}
+
+".shopInfoLabel":{
+    textAlign:'left',      
+    width:"90%",
+    height:'auto',
+    left:10,
+    top:10,
+    font:{
+        fontSize:18,
+        fontWeight:'bold'
+    }
+}
+
+".statusesRows":{
+    width:Ti.UI.FULL,
+    height:80,
+    backgroundColor:"#f9f9f9"
+
+}
+
+".infoIcon":{
+    top:10,
+    left:10,
+    width:30,
+    height:30,
+    color:"#ccc",
+    font:{
+        fontSize:28,
+        fontFamily:'LigatureSymbols'
+    },
+    textAlign:'center'
+
+}
+
+".statusLabel":{
+    textAlign:'left',      
+    width:"70%",
+    height:'auto',
+    color:"#444",
+    left:50,
+    top:10,
+    font:{
+        fontSize:16,
+        fontWeight:"bold"
+    }
+}
+
+".postedDateLabel":{
+    textAlign:'right',      
+    width:"10%",
+    height:'auto',
+    color:"#007aff",
+    right:5,
+    bottom:5,
+    font:{
+        fontSize:10
+    }
+}

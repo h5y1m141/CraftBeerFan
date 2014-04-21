@@ -1,7 +1,9 @@
 exports.move = (_tab,shopData) ->
   _tab.open $.shopDataDetail
   _createTableView shopData
-  
+
+
+
 _createTableView = (data) ->
   shopData = []
     
@@ -10,21 +12,13 @@ _createTableView = (data) ->
   else
     shopInfo = "現在調査中"
     
-  shopInfoRow = Ti.UI.createTableViewRow
-    width:'auto'
-    height:'auto'
+  shopInfoRow = $.UI.create 'TableViewRow',
+    classes:"shopInfoRow"
     
-    
-  shopInfoLabel = Ti.UI.createLabel
+  shopInfoLabel = $.UI.create 'Label',
+    classes:"shopInfoLabel"
     text:shopInfo
-    textAlign:'left'      
-    width:"90%"
-    height:'auto'
-    left:"10dp"
-    top:"10dp"
-    font:
-      fontSize:"18dip"
-      fontWeight:'bold'          
+          
   shopSection = Ti.UI.createTableViewSection
     headerTitle:"お店について"
     
@@ -34,7 +28,38 @@ _createTableView = (data) ->
   
   if data.statuses.length isnt 0
     Ti.API.info "create statuses data.statuses is #{data.statuses}"
-    statusesRows = @_createStatusesRows(data.statuses)
+    statusesRows = createStatusesRows(data.statuses)
     shopData.push statusesRows
     
   $.tableview.setData shopData
+
+
+createStatusesRows = (statuses) ->
+  
+  moment = require('momentmin')
+  momentja = require('momentja')
+
+  statusSection = Ti.UI.createTableViewSection
+    headerTitle:"開栓情報一覧"
+    
+  for obj in statuses
+    statusRow = $.UI.create 'TableViewRow',
+      classes:"statusRow"
+    infoIconText = String.fromCharCode("0xe075")  
+    infoIcon = $.UI.create 'Label',
+      classes:'infoIcon'
+      text: infoIconText
+      
+    statusLabel = $.UI.create 'Label',
+      text:obj.message
+      classes:"statusLabel"
+    postedDateLabel = $.UI.create 'Label',
+      text:moment(obj.created_at).fromNow()
+      classes:"postedDateLabel"
+        
+    statusRow.add infoIcon
+    statusRow.add statusLabel
+    statusRow.add postedDateLabel
+    statusSection.add statusRow
+  return statusSection
+  

@@ -1,0 +1,8 @@
+"#applicationInfoWindow":{
+    /* navTintColor:'#99cc66', */
+    statusBarStyle:0,
+    translucent:false,
+    navTintColor:"#0066ff",
+    backgroundColor:"#f9f9f9",
+    tabBarHidden:true
+}

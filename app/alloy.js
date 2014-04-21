@@ -10,3 +10,4 @@
 //
 // Alloy.Globals.someGlobalFunction = function(){};
 Alloy.Globals.Map = require('ti.map');
+Alloy.Globals.Facebook = require('facebook');

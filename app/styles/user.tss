@@ -1,0 +1,165 @@
+"#userWindow":{
+    /* navTintColor:'#99cc66', */
+    statusBarStyle:0,
+    translucent:false,
+    navTintColor:"#0066ff",
+    backgroundColor:"#f9f9f9",
+    tabBarHidden:true
+}
+"#activityIndicator":{
+    top:240,
+    left:120,
+    textAlign:'center',
+    backgroundColor:"#222",
+    font:{
+        fontSize:18
+    },
+    color:'#fff',
+    zIndex:10
+}
+"#logiFormTitle":{
+    top:5,
+    left:10,
+    width:300,
+    height:20,
+    color:'#000',
+    font:{
+        fontSize:16
+    },
+    textAlign:'left'
+}
+".description":{
+    top:5,
+    left:10,
+    width:300,
+    height:50,
+    color:'#333',
+    font:{
+        fontSize:12
+    },
+    textAlign:'left'
+}
+
+"#userInfoTable":{
+    backgroundColor:"#f3f3f3",
+    separatorColor:'#cccccc',
+    style:Ti.UI.iPhone.TableViewStyle.GROUPED,
+    width:Ti.UI.FULL,
+    width:Ti.UI.FULL,
+    left:0,
+    top:0  
+}
+"#loginForm":{
+    width:Ti.UI.FULL,
+    height:Ti.UI.FULL,
+    top:0,
+    left:0,
+    backgroundColor:"#f9f9f9",
+    separatorColor:'#f9f9f9',
+    zIndex:0
+}
+"#userIDField":{
+    top:20,
+    left:10,
+    width:200,
+    height:30,
+    hintText:"メールアドレスを入力",
+    font:{
+        fontSize:14
+    },
+    keyboardType:Ti.UI.KEYBOARD_EMAIL_ADDRESS,
+    returnKeyType:Ti.UI.RETURNKEY_DEFAULT,
+    borderStyle:Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
+    autocorrect:false,
+    autocapitalization: Ti.UI.TEXT_AUTOCAPITALIZATION_NONE,
+}
+
+"#passwordField":{
+    top:20,
+    left:10,
+    width:200,
+    height:30,
+    hintText:"パスワードを設定",
+    font:{
+        fontSize:14
+    },
+    keyboardType:Ti.UI.KEYBOARD_ASCII,
+    returnKeyType:Ti.UI.RETURNKEY_DEFAULT,
+    borderStyle:Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
+    enableReturnKey:true,
+    passwordMask:true,
+    autocorrect:false
+}
+
+"#registBtn":{
+    width:150,
+    height:30,
+    top:10,
+    left:10,
+    borderRadius:5,
+    color:"#f9f9f9",
+    backgroundColor:"#4cda64",
+    font:{
+        fontSize:14
+    },
+    text:"登録/ログインする",
+    textAlign:'center'
+
+}
+
+
+"#nameTitle":{
+    left:10,
+    top:5,
+    width:100,
+    height:20,      
+    color:"#007aff",
+    font:{
+      fontSize:12,
+    }
+}
+
+"#nameLabel":{
+    width:Ti.UI.FULL,
+    height:20,
+    color:"#333",
+    left:10,
+    top:25,
+    font:{
+      fontSize:18
+    }
+}
+"#loginTypeTitle":{
+    width:160,
+    height:20,      
+    left:10,
+    top:5,      
+    color:"#007aff",
+    font:{
+      fontSize:12
+    }
+}
+
+"#loginTypeLabel":{
+    width:160,
+    height:20,
+    left:10,
+    top:25,
+    color:"#333",
+    font:{
+      fontSize:18
+    }
+}
+
+
+".row":{
+    backgroundColor:"#f3f3f3",
+    height:60
+
+}
+
+".formRow":{
+    backgroundColor:"#f9f9f9",
+    separatorColor:'#f9f9f9',
+    height:60
+}

@@ -23,7 +23,7 @@
     top:2,
     left:0,
     zIndex:0,
-    width:120,
+    width:150,
     height:40,
     backgroundColor:"#66cc99"
 }
@@ -38,7 +38,54 @@
     height:44
 
 }
+"#userInfo":{
+    top:10,
+    left:50,
+    width:80,
+    font:{
+        fontSize:14
+    }
+}
+"#searchInfo":{
+    top:5,
+    left:50,
+    width:100,
+    font:{
+        fontSize:14
+    }
+}
+"#applicationInfo":{
+    top:5,
+    left:50,
+    width:100,
+    font:{
+        fontSize:14
+    }
+}
+"#activityIndicator":{
+    top:240,
+    left:120,
+    textAlign:'center',
+    backgroundColor:"#222",
+    font:{
+        fontSize:18
+    },
+    color:'#fff',
+    zIndex:10
+}
+".icon":{
+    font:{
+        fontSize:36,
+        fontFamily:'LigatureSymbols'
+    },
+    color:"#007aff",
+    top:0,
+    left:0,
+    width:40,
+    height:40,
+    textAlign:'center'
 
+}
 ".container": {
 	backgroundColor:"#f9f9f9"
 }
@@ -49,7 +96,7 @@
     backgroundColor:"#f9f9f9"
 }
 ".sub":{
-    width:120,
+    width:150,
     height:Ti.UI.FULL,
     top:0,
     left:0,
