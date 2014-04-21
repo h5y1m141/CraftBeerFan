@@ -1,21 +1,18 @@
 exports.move = (_tab) ->
-  facebook = new Facebook()
+  facebook = new Facebook($.userWindow)
 
   if facebook.isUserLogin() is false
     $.fbLogin.add facebook.fbLoginBtn
   else
     # ユーザ情報取得出来てるのでログインフォームは非表示にする
     $.loginForm.hide()
-    return facebook.createUserInfo()
-
-  description = $.UI.create 'Label',
-    text:"※アカウント設定すると気になるお店を「お気に入り」として登録出来るようになります"
-    id:"description"
+    facebook.createUserInfo()
                 
   return _tab.open $.userWindow
   
 class Facebook
-  constructor: (args) ->
+  constructor: (window) ->
+    @userWindow = window
     @Cloud = require('ti.cloud')
     @userID = null
     @password = null
@@ -89,8 +86,8 @@ class Facebook
     userInfoTable = $.UI.create 'TableView',
       id:"userInfoTable"
       data:rows
-
-    return $.userWindow.add userInfoTable
+      
+    return @userWindow.add userInfoTable
     
 
   createFacebookLoginBtn:() ->
