@@ -1,4 +1,5 @@
-<?xml version="1.1" encoding="UTF-8"?><ti:app xmlns:ti="http://ti.appcelerator.org">
+<?xml version="1.1" encoding="UTF-8"?>
+<ti:app xmlns:ti="http://ti.appcelerator.org">
     <property name="acs-oauth-secret-development" type="string">ypGVl3wsllJ3cm1JS3NlTMe0LbZDsBbR</property>
     <property name="acs-oauth-key-development" type="string">VFRGqUQGc39U8XsmG19p9770u954M7wb</property>
     <property name="acs-api-key-development" type="string">kx4Bbuh4jiCk6AMrSk4HG8jo2LKJ8zQD</property>
@@ -55,13 +56,14 @@
         </plist>
     </ios>
     <android xmlns:android="http://schemas.android.com/apk/res/android">
-	    <tool-api-level>16</tool-api-level>
-	    <abi>armeabi</abi>
-        <manifest android:versionCode="3" android:versionName="1.1.1" package="info.h5y1m141.CraftBeerFan" xmlns:android="http://schemas.android.com/apk/res/android">
+        <tool-api-level>16</tool-api-level>
+        <abi>armeabi</abi>
+        <manifest android:versionCode="3" android:versionName="1.1.1"
+            package="info.h5y1m141.CraftBeerFan" xmlns:android="http://schemas.android.com/apk/res/android">
             <uses-sdk android:targetSdkVersion="16"/>
             <application android:theme="@style/Theme.Craftbeerfan"/>
             <!-- other manifest entries -->
-	    <!-- Allows the API to download data from Google Map servers -->
+            <!-- Allows the API to download data from Google Map servers -->
             <uses-permission android:name="android.permission.INTERNET"/>
             <!-- Allows the API to cache data -->
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -73,13 +75,14 @@
             <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
             <!-- Specify OpenGL ES 2.0 as a requirement -->
             <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
-	    <!-- Replace <com.domain.appid> with your application ID -->
+            <!-- Replace <com.domain.appid> with your application ID -->
             <uses-permission android:name="info.h5y1m141.CraftBeerFan.permission.MAPS_RECEIVE"/>
-            <permission android:name="info.h5y1m141.CraftBeerFan.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
+            <permission
+                android:name="info.h5y1m141.CraftBeerFan.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
             <application>
-	            <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyAZ9ZuTTovhUnZ6JZH-rG8owN3axlLmLkk"/>
+                <meta-data
+                    android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyAZ9ZuTTovhUnZ6JZH-rG8owN3axlLmLkk"/>
             </application>
-            
         </manifest>
     </android>
     <mobileweb>
@@ -99,6 +102,7 @@
         <module platform="android" version="2.1.3">ti.map</module>
         <module platform="android" version="1.0.0">net.nend</module>
         <module platform="iphone" version="1.0.0">net.uchidak.tigfview</module>
+        <module platform="android">ti.cloudpush</module>
     </modules>
     <deployment-targets>
         <target device="tizen">false</target>
@@ -110,6 +114,7 @@
     </deployment-targets>
     <sdk-version>3.2.0.GA</sdk-version>
     <property name="ti.deploytype">production</property>
-<plugins><plugin version="1.0">ti.alloy</plugin>
-</plugins>
+    <plugins>
+        <plugin version="1.0">ti.alloy</plugin>
+    </plugins>
 </ti:app>

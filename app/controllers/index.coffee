@@ -1,5 +1,82 @@
 # 起動時に行う処理
 $.index.open()
+
+# Push Notification
+Cloud = require("ti.cloud")
+deviceToken = null
+Ti.Network.registerForPushNotifications
+  types: [
+    Ti.Network.NOTIFICATION_TYPE_BADGE
+    Ti.Network.NOTIFICATION_TYPE_ALERT
+    Ti.Network.NOTIFICATION_TYPE_SOUND
+  ]
+  success:(e) ->
+    alert "success:" + JSON.stringify(e)
+    deviceToken = e.deviceToken
+  error:(e)->
+    alert "error: " + JSON.stringify(e)
+  callback: (e)->
+    alert "callback: " + JSON.stringify(e)
+
+receivePush = (e) ->
+  alert "Received push: " + JSON.stringify(e)
+  return
+
+deviceTokenSuccess = (e) ->
+  alert e.deviceToken
+  deviceToken = e.deviceToken
+  Ti.API.info "deviceToken is #{deviceToken} "
+  return
+deviceTokenError = (e) ->
+  alert "Failed to register for push notifications! " + e.error
+  return
+  
+subscribeToChannel = ->
+  Ti.API.info "deviceToken is #{deviceToken}"
+  Cloud.PushNotifications.subscribeToken
+    device_token: deviceToken
+    channel: "test"
+    type: "ios"
+  , (e) ->
+    if e.success
+      alert "Subscribed"
+    else
+      alert "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
+    return
+
+  return
+sendTestNotification = ->
+  
+  # Sends an 'This is a test.' alert to specified device if its subscribed to the 'test' channel.
+  Cloud.PushNotifications.notifyTokens
+    to_tokens: deviceToken
+    channel: "test"
+    payload: "This is a test."
+  , (e) ->
+    if e.success
+      alert "Push notification sent"
+    else
+      alert "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
+    return
+
+  return
+unsubscribeToChannel = ->
+  
+  # Unsubscribes the device from the 'test' channel
+  Cloud.PushNotifications.unsubscribeToken
+    device_token: deviceToken
+    channel: "test"
+  , (e) ->
+    if e.success
+      alert "Unsubscribed"
+    else
+      alert "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
+    return
+
+  return
+
+
+  
 if Ti.Platform.name is 'iPhone OS'
   style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK
 else
@@ -107,10 +184,11 @@ $.mapview.addEventListener 'regionchanged', (e) ->
       kloudService.placesQuery latitude,longitude,(data) ->
         addAnnotations data 
         $.activityIndicator.hide()
-        
+
+$.pushNotifiy.addEventListener 'click', (e) ->
+  return subscribeToChannel()
   
 # このコントローラー内で利用するメソッドの定義
-
 
 addAnnotations = (array) ->
   for data in array
