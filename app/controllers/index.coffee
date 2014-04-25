@@ -11,12 +11,25 @@ Ti.Network.registerForPushNotifications
     Ti.Network.NOTIFICATION_TYPE_SOUND
   ]
   success:(e) ->
-    alert "success:" + JSON.stringify(e)
+    Ti.API.info "success:" + JSON.stringify(e)
     deviceToken = e.deviceToken
+    Ti.API.info "deviceToken is #{deviceToken}"
+    
+    Cloud.PushNotifications.subscribeToken
+      device_token: deviceToken
+      channel: "test"
+      type: "ios"
+    , (e) ->
+      if e.success
+        Ti.API.info "Subscribed"
+      else
+        Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
+      return
+
   error:(e)->
-    alert "error: " + JSON.stringify(e)
+    Ti.API.info "error: " + JSON.stringify(e)
   callback: (e)->
-    alert "callback: " + JSON.stringify(e)
+    Ti.API.info "callback: " + JSON.stringify(e)
 
 receivePush = (e) ->
   alert "Received push: " + JSON.stringify(e)
@@ -31,50 +44,6 @@ deviceTokenError = (e) ->
   alert "Failed to register for push notifications! " + e.error
   return
   
-subscribeToChannel = ->
-  Ti.API.info "deviceToken is #{deviceToken}"
-  Cloud.PushNotifications.subscribeToken
-    device_token: deviceToken
-    channel: "test"
-    type: "ios"
-  , (e) ->
-    if e.success
-      alert "Subscribed"
-    else
-      alert "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
-    return
-
-  return
-sendTestNotification = ->
-  
-  # Sends an 'This is a test.' alert to specified device if its subscribed to the 'test' channel.
-  Cloud.PushNotifications.notifyTokens
-    to_tokens: deviceToken
-    channel: "test"
-    payload: "This is a test."
-  , (e) ->
-    if e.success
-      alert "Push notification sent"
-    else
-      alert "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
-    return
-
-  return
-unsubscribeToChannel = ->
-  
-  # Unsubscribes the device from the 'test' channel
-  Cloud.PushNotifications.unsubscribeToken
-    device_token: deviceToken
-    channel: "test"
-  , (e) ->
-    if e.success
-      alert "Unsubscribed"
-    else
-      alert "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
-    return
-
-  return
-
 
   
 if Ti.Platform.name is 'iPhone OS'
@@ -185,17 +154,26 @@ $.mapview.addEventListener 'regionchanged', (e) ->
         addAnnotations data 
         $.activityIndicator.hide()
 
-$.pushNotifiy.addEventListener 'click', (e) ->
-  return subscribeToChannel()
   
 # このコントローラー内で利用するメソッドの定義
 
 addAnnotations = (array) ->
   for data in array
-    if data.shopFlg is "true"
-      imagePath = "bottle.png"
+    moment = require("alloy/moment")
+    currentTime = moment()
+    if data.statusesUpdate is false or typeof data.statusesUpdate is "undefined"
+      statusesUpdateFlg = false
+    else if currentTime.diff(data.statusesUpdate) < 80000
+      statusesUpdateFlg = false
+    else  
+      statusesUpdateFlg = true
+      
+    if data.shopFlg is "false"
+      shopFlg = false
     else
-      imagePath = "tmulblr.png"
+      shopFlg = true
+    
+    imagePath = selectIcon(shopFlg,statusesUpdateFlg)
       
     annotation = Alloy.Globals.Map.createAnnotation
       latitude: data.latitude
@@ -212,6 +190,20 @@ addAnnotations = (array) ->
       rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
       
     $.mapview.addAnnotation annotation
+    
+
+selectIcon = (shopFlg,statusesUpdateFlg) ->
+  
+  if shopFlg is true
+    imagePath = "bottle.png"
+  else if shopFlg is false and statusesUpdateFlg is true
+    imagePath = "tmublrWithOnTapInfo.png"
+  else if shopFlg is false and statusesUpdateFlg is false
+    imagePath = "tmulblr.png"
+  else
+    imagePath = null
+    
+  return imagePath
 
 checkNetworkConnection =() ->
   timerId = setInterval(->

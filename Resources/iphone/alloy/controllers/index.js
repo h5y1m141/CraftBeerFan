@@ -129,15 +129,6 @@ function Controller() {
         id: "applicationInfo"
     });
     $.__views.__alloyId7.add($.__views.applicationInfo);
-    $.__views.__alloyId8 = Ti.UI.createTableViewRow({
-        id: "__alloyId8"
-    });
-    __alloyId4.push($.__views.__alloyId8);
-    $.__views.pushNotifiy = Ti.UI.createLabel({
-        text: "PushNotification",
-        id: "pushNotifiy"
-    });
-    $.__views.__alloyId8.add($.__views.pushNotifiy);
     $.__views.tableview = Ti.UI.createTableView({
         width: 150,
         height: Ti.UI.FULL,
@@ -175,21 +166,29 @@ function Controller() {
     $.__views.index && $.addTopLevelView($.__views.index);
     exports.destroy = function() {};
     _.extend($, $.__views);
-    var Cloud, KloudService, addAnnotations, checkNetworkConnection, deviceToken, deviceTokenError, deviceTokenSuccess, geoHashResult, kloudService, lastGeoHashValue, precision, receivePush, sendTestNotification, slide, style, subscribeToChannel, tiGeoHash, unsubscribeToChannel;
+    var Cloud, KloudService, addAnnotations, checkNetworkConnection, deviceToken, deviceTokenError, deviceTokenSuccess, geoHashResult, kloudService, lastGeoHashValue, precision, receivePush, selectIcon, slide, style, tiGeoHash;
     $.index.open();
     Cloud = require("ti.cloud");
     deviceToken = null;
     Ti.Network.registerForPushNotifications({
         types: [ Ti.Network.NOTIFICATION_TYPE_BADGE, Ti.Network.NOTIFICATION_TYPE_ALERT, Ti.Network.NOTIFICATION_TYPE_SOUND ],
         success: function(e) {
-            alert("success:" + JSON.stringify(e));
-            return deviceToken = e.deviceToken;
+            Ti.API.info("success:" + JSON.stringify(e));
+            deviceToken = e.deviceToken;
+            Ti.API.info("deviceToken is " + deviceToken);
+            return Cloud.PushNotifications.subscribeToken({
+                device_token: deviceToken,
+                channel: "test",
+                type: "ios"
+            }, function(e) {
+                e.success ? Ti.API.info("Subscribed") : Ti.API.info("Error:\n" + (e.error && e.message || JSON.stringify(e)));
+            });
         },
         error: function(e) {
-            return alert("error: " + JSON.stringify(e));
+            return Ti.API.info("error: " + JSON.stringify(e));
         },
         callback: function(e) {
-            return alert("callback: " + JSON.stringify(e));
+            return Ti.API.info("callback: " + JSON.stringify(e));
         }
     });
     receivePush = function(e) {
@@ -202,33 +201,6 @@ function Controller() {
     };
     deviceTokenError = function(e) {
         alert("Failed to register for push notifications! " + e.error);
-    };
-    subscribeToChannel = function() {
-        Ti.API.info("deviceToken is " + deviceToken);
-        Cloud.PushNotifications.subscribeToken({
-            device_token: deviceToken,
-            channel: "test",
-            type: "ios"
-        }, function(e) {
-            e.success ? alert("Subscribed") : alert("Error:\n" + (e.error && e.message || JSON.stringify(e)));
-        });
-    };
-    sendTestNotification = function() {
-        Cloud.PushNotifications.notifyTokens({
-            to_tokens: deviceToken,
-            channel: "test",
-            payload: "This is a test."
-        }, function(e) {
-            e.success ? alert("Push notification sent") : alert("Error:\n" + (e.error && e.message || JSON.stringify(e)));
-        });
-    };
-    unsubscribeToChannel = function() {
-        Cloud.PushNotifications.unsubscribeToken({
-            device_token: deviceToken,
-            channel: "test"
-        }, function(e) {
-            e.success ? alert("Unsubscribed") : alert("Error:\n" + (e.error && e.message || JSON.stringify(e)));
-        });
     };
     style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK;
     $.activityIndicator.style = style;
@@ -320,15 +292,16 @@ function Controller() {
             return $.activityIndicator.hide();
         });
     });
-    $.pushNotifiy.addEventListener("click", function() {
-        return subscribeToChannel();
-    });
     addAnnotations = function(array) {
-        var annotation, data, imagePath, _i, _len, _results;
+        var annotation, currentTime, data, imagePath, moment, shopFlg, statusesUpdateFlg, _i, _len, _results;
         _results = [];
         for (_i = 0, _len = array.length; _len > _i; _i++) {
             data = array[_i];
-            imagePath = "true" === data.shopFlg ? "bottle.png" : "tmulblr.png";
+            moment = require("alloy/moment");
+            currentTime = moment();
+            statusesUpdateFlg = false === data.statusesUpdate || "undefined" == typeof data.statusesUpdate ? false : 8e4 > currentTime.diff(data.statusesUpdate) ? false : true;
+            shopFlg = "false" === data.shopFlg ? false : true;
+            imagePath = selectIcon(shopFlg, statusesUpdateFlg);
             annotation = Alloy.Globals.Map.createAnnotation({
                 latitude: data.latitude,
                 longitude: data.longitude,
@@ -346,6 +319,11 @@ function Controller() {
             _results.push($.mapview.addAnnotation(annotation));
         }
         return _results;
+    };
+    selectIcon = function(shopFlg, statusesUpdateFlg) {
+        var imagePath;
+        imagePath = true === shopFlg ? "bottle.png" : false === shopFlg && true === statusesUpdateFlg ? "tmublrWithOnTapInfo.png" : false === shopFlg && false === statusesUpdateFlg ? "tmulblr.png" : null;
+        return imagePath;
     };
     checkNetworkConnection = function() {
         var timerId;
