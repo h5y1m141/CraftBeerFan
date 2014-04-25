@@ -1,5 +1,51 @@
 # 起動時に行う処理
 $.index.open()
+
+# Push Notification
+Cloud = require("ti.cloud")
+deviceToken = null
+Ti.Network.registerForPushNotifications
+  types: [
+    Ti.Network.NOTIFICATION_TYPE_BADGE
+    Ti.Network.NOTIFICATION_TYPE_ALERT
+    Ti.Network.NOTIFICATION_TYPE_SOUND
+  ]
+  success:(e) ->
+    Ti.API.info "success:" + JSON.stringify(e)
+    deviceToken = e.deviceToken
+    Ti.API.info "deviceToken is #{deviceToken}"
+    
+    Cloud.PushNotifications.subscribeToken
+      device_token: deviceToken
+      channel: "test"
+      type: "ios"
+    , (e) ->
+      if e.success
+        Ti.API.info "Subscribed"
+      else
+        Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
+      return
+
+  error:(e)->
+    Ti.API.info "error: " + JSON.stringify(e)
+  callback: (e)->
+    Ti.API.info "callback: " + JSON.stringify(e)
+
+receivePush = (e) ->
+  alert "Received push: " + JSON.stringify(e)
+  return
+
+deviceTokenSuccess = (e) ->
+  alert e.deviceToken
+  deviceToken = e.deviceToken
+  Ti.API.info "deviceToken is #{deviceToken} "
+  return
+deviceTokenError = (e) ->
+  alert "Failed to register for push notifications! " + e.error
+  return
+  
+
+  
 if Ti.Platform.name is 'iPhone OS'
   style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK
 else
@@ -107,17 +153,27 @@ $.mapview.addEventListener 'regionchanged', (e) ->
       kloudService.placesQuery latitude,longitude,(data) ->
         addAnnotations data 
         $.activityIndicator.hide()
-        
+
   
 # このコントローラー内で利用するメソッドの定義
 
-
 addAnnotations = (array) ->
   for data in array
-    if data.shopFlg is "true"
-      imagePath = "bottle.png"
+    moment = require("alloy/moment")
+    currentTime = moment()
+    if data.statusesUpdate is false or typeof data.statusesUpdate is "undefined"
+      statusesUpdateFlg = false
+    else if currentTime.diff(data.statusesUpdate) < 80000
+      statusesUpdateFlg = false
+    else  
+      statusesUpdateFlg = true
+      
+    if data.shopFlg is "false"
+      shopFlg = false
     else
-      imagePath = "tmulblr.png"
+      shopFlg = true
+    
+    imagePath = selectIcon(shopFlg,statusesUpdateFlg)
       
     annotation = Alloy.Globals.Map.createAnnotation
       latitude: data.latitude
@@ -134,6 +190,20 @@ addAnnotations = (array) ->
       rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
       
     $.mapview.addAnnotation annotation
+    
+
+selectIcon = (shopFlg,statusesUpdateFlg) ->
+  
+  if shopFlg is true
+    imagePath = "bottle.png"
+  else if shopFlg is false and statusesUpdateFlg is true
+    imagePath = "tmublrWithOnTapInfo.png"
+  else if shopFlg is false and statusesUpdateFlg is false
+    imagePath = "tmulblr.png"
+  else
+    imagePath = null
+    
+  return imagePath
 
 checkNetworkConnection =() ->
   timerId = setInterval(->

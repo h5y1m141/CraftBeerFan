@@ -166,8 +166,42 @@ function Controller() {
     $.__views.index && $.addTopLevelView($.__views.index);
     exports.destroy = function() {};
     _.extend($, $.__views);
-    var KloudService, addAnnotations, checkNetworkConnection, geoHashResult, kloudService, lastGeoHashValue, precision, slide, style, tiGeoHash;
+    var Cloud, KloudService, addAnnotations, checkNetworkConnection, deviceToken, deviceTokenError, deviceTokenSuccess, geoHashResult, kloudService, lastGeoHashValue, precision, receivePush, selectIcon, slide, style, tiGeoHash;
     $.index.open();
+    Cloud = require("ti.cloud");
+    deviceToken = null;
+    Ti.Network.registerForPushNotifications({
+        types: [ Ti.Network.NOTIFICATION_TYPE_BADGE, Ti.Network.NOTIFICATION_TYPE_ALERT, Ti.Network.NOTIFICATION_TYPE_SOUND ],
+        success: function(e) {
+            Ti.API.info("success:" + JSON.stringify(e));
+            deviceToken = e.deviceToken;
+            Ti.API.info("deviceToken is " + deviceToken);
+            return Cloud.PushNotifications.subscribeToken({
+                device_token: deviceToken,
+                channel: "test",
+                type: "ios"
+            }, function(e) {
+                e.success ? Ti.API.info("Subscribed") : Ti.API.info("Error:\n" + (e.error && e.message || JSON.stringify(e)));
+            });
+        },
+        error: function(e) {
+            return Ti.API.info("error: " + JSON.stringify(e));
+        },
+        callback: function(e) {
+            return Ti.API.info("callback: " + JSON.stringify(e));
+        }
+    });
+    receivePush = function(e) {
+        alert("Received push: " + JSON.stringify(e));
+    };
+    deviceTokenSuccess = function(e) {
+        alert(e.deviceToken);
+        deviceToken = e.deviceToken;
+        Ti.API.info("deviceToken is " + deviceToken + " ");
+    };
+    deviceTokenError = function(e) {
+        alert("Failed to register for push notifications! " + e.error);
+    };
     style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK;
     $.activityIndicator.style = style;
     $.userLogin.text = String.fromCharCode("0xe137");
@@ -259,11 +293,15 @@ function Controller() {
         });
     });
     addAnnotations = function(array) {
-        var annotation, data, imagePath, _i, _len, _results;
+        var annotation, currentTime, data, imagePath, moment, shopFlg, statusesUpdateFlg, _i, _len, _results;
         _results = [];
         for (_i = 0, _len = array.length; _len > _i; _i++) {
             data = array[_i];
-            imagePath = "true" === data.shopFlg ? "bottle.png" : "tmulblr.png";
+            moment = require("alloy/moment");
+            currentTime = moment();
+            statusesUpdateFlg = false === data.statusesUpdate || "undefined" == typeof data.statusesUpdate ? false : 8e4 > currentTime.diff(data.statusesUpdate) ? false : true;
+            shopFlg = "false" === data.shopFlg ? false : true;
+            imagePath = selectIcon(shopFlg, statusesUpdateFlg);
             annotation = Alloy.Globals.Map.createAnnotation({
                 latitude: data.latitude,
                 longitude: data.longitude,
@@ -281,6 +319,11 @@ function Controller() {
             _results.push($.mapview.addAnnotation(annotation));
         }
         return _results;
+    };
+    selectIcon = function(shopFlg, statusesUpdateFlg) {
+        var imagePath;
+        imagePath = true === shopFlg ? "bottle.png" : false === shopFlg && true === statusesUpdateFlg ? "tmublrWithOnTapInfo.png" : false === shopFlg && false === statusesUpdateFlg ? "tmulblr.png" : null;
+        return imagePath;
     };
     checkNetworkConnection = function() {
         var timerId;
