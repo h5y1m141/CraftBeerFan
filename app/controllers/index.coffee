@@ -59,6 +59,7 @@ $.activityIndicator.style = style
 $.userLogin.text = String.fromCharCode("0xe137")
 $.searchBtn.text = String.fromCharCode("0xe116")
 $.applicationBtn.text = String.fromCharCode("0xe075")
+$.tapBtn.text = String.fromCharCode("0xe075")
 $.showBtn.text = String.fromCharCode("0xe084")
 $.showBtn.addEventListener 'click', (e) ->
   slide()
@@ -72,6 +73,9 @@ $.tableview.addEventListener 'click', (e) ->
     searchController = Alloy.createController('search')
     searchController.move($.tabOne)
   else if e.index is 2
+    onTapInfoController = Alloy.createController('onTapInfo')
+    onTapInfoController.move($.tabOne)
+  else if e.index is 3
     applicationInfoController = Alloy.createController('applicationInfo')
     applicationInfoController.move($.tabOne)
     

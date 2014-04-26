@@ -46,22 +46,16 @@
         fontSize:14
     }
 }
-"#searchInfo":{
-    top:5,
+".infoLabel":{
+    top:10,
     left:50,
     width:100,
+    textAlign:'left',
     font:{
-        fontSize:14
+        fontSize:12
     }
 }
-"#applicationInfo":{
-    top:5,
-    left:50,
-    width:100,
-    font:{
-        fontSize:14
-    }
-}
+
 "#activityIndicator":{
     top:240,
     left:120,
