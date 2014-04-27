@@ -1,4 +1,7 @@
 Alloy
-  Window#onTapWindow.container(title="開栓情報から検索")
-    TableView#tableview
-      TableViewSection(headerTitle="開栓情報一覧")
+  TabGroup
+    Tab#tabOne
+      Window#onTapWindow.container(title="開栓情報から検索")
+        ActivityIndicator#activityIndicator(message="Loading...")
+        TableView#tableview
+          TableViewSection(headerTitle="開栓情報一覧")
