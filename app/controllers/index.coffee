@@ -116,6 +116,7 @@ $.mapview.addEventListener 'click', (e) ->
   
   if e.clicksource is "rightButton"
     # checkNetworkConnection()
+    $.activityIndicator.show()
     kloudService.statusesQuery(e.annotation.placeID,(statuses) ->
       Ti.API.info "statuses is #{statuses}"
       shopData =
@@ -125,7 +126,7 @@ $.mapview.addEventListener 'click', (e) ->
         longitude: e.annotation.longitude
         shopInfo: e.annotation.shopInfo
         statuses:statuses
-
+      $.activityIndicator.hide()
       shopDataDetailController = Alloy.createController('shopDataDetail')
       shopDataDetailController.move($.tabOne,shopData)
       

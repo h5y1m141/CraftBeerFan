@@ -290,20 +290,24 @@ function Controller() {
         });
     });
     $.mapview.addEventListener("click", function(e) {
-        if ("rightButton" === e.clicksource) return kloudService.statusesQuery(e.annotation.placeID, function(statuses) {
-            var shopData, shopDataDetailController;
-            Ti.API.info("statuses is " + statuses);
-            shopData = {
-                shopName: e.annotation.shopName,
-                phoneNumber: e.annotation.phoneNumber,
-                latitude: e.annotation.latitude,
-                longitude: e.annotation.longitude,
-                shopInfo: e.annotation.shopInfo,
-                statuses: statuses
-            };
-            shopDataDetailController = Alloy.createController("shopDataDetail");
-            return shopDataDetailController.move($.tabOne, shopData);
-        });
+        if ("rightButton" === e.clicksource) {
+            $.activityIndicator.show();
+            return kloudService.statusesQuery(e.annotation.placeID, function(statuses) {
+                var shopData, shopDataDetailController;
+                Ti.API.info("statuses is " + statuses);
+                shopData = {
+                    shopName: e.annotation.shopName,
+                    phoneNumber: e.annotation.phoneNumber,
+                    latitude: e.annotation.latitude,
+                    longitude: e.annotation.longitude,
+                    shopInfo: e.annotation.shopInfo,
+                    statuses: statuses
+                };
+                $.activityIndicator.hide();
+                shopDataDetailController = Alloy.createController("shopDataDetail");
+                return shopDataDetailController.move($.tabOne, shopData);
+            });
+        }
     });
     geoHashResult = null;
     lastGeoHashValue = null;
