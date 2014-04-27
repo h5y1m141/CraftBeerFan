@@ -26,6 +26,9 @@ $.tableview.addEventListener 'click', (e) ->
 
 createOnTapInfo = (statuses) ->
   rows = []
+  moment = require('momentmin')
+  momentja = require('momentja')
+  
   for status in statuses
     shopData =
       shopName:status.place.shopName
@@ -41,13 +44,18 @@ createOnTapInfo = (statuses) ->
       
     shopName = $.UI.create 'Label',
       classes:"shopName"
-      text:status.place.name
+      text:"#{status.place.name}（#{status.place.state}）"
     label = $.UI.create 'Label',
       classes:"onTapLabel"
       text:status.message
       
+    postedDateLabel = $.UI.create 'Label',
+      text:moment(status.created_at).fromNow()
+      classes:"postedDateLabel"
+      
     row.add shopName
     row.add label
+    row.add postedDateLabel
     rows.push row
 
   return $.tableview.setData rows
