@@ -1,9 +1,27 @@
 exports.move = (_tab,shopData) ->
   _tab.open $.shopDataDetail
+  _createMapView shopData
   _createTableView shopData
 
 
+_createMapView = (data) ->
+  $.mapview.setLocation({
+    latitude:data.latitude
+    longitude:data.longitude
+    latitudeDelta:0.005
+    longitudeDelta:0.005
+  })
+    
+  annotation = Alloy.Globals.Map.createAnnotation
+    latitude: data.latitude
+    longitude: data.longitude
+    animate: false
+    userLocation:false
+    pincolor:Alloy.Globals.Map.ANNOTATION_RED
+    
 
+  return $.mapview.addAnnotation annotation
+  
 _createTableView = (data) ->
   shopData = []
     
