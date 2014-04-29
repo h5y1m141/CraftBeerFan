@@ -1,0 +1,55 @@
+"#onTapWindow":{
+    /* navTintColor:'#99cc66', */
+    statusBarStyle:0,
+    translucent:false,
+    navTintColor:"#0066ff",
+    backgroundColor:"#f9f9f9",
+    tabBarHidden:true
+}
+"#activityIndicator":{
+    top:240,
+    left:120,
+    textAlign:'center',
+    backgroundColor:"#222",
+    font:{
+        fontSize:18
+    },
+    color:'#fff',
+    zIndex:10
+}
+
+".onTapRow":{
+    with:"100%",
+    height:'auto',
+    backgroundColor:"#f9f9f9"
+    
+}
+".onTapLabel":{
+    top:30,
+    left:20,
+    width:"80%",
+    font:{
+        fontSize:10
+    }
+}
+
+".shopName":{
+    top:5,
+    left:10,
+    width:"90%",
+    font:{
+        fontSize:16,
+        fontWeight:"bold"
+    }
+}
+".postedDateLabel":{
+    textAlign:'right',      
+    width:"10%",
+    height:'auto',
+    color:"#007aff",
+    right:5,
+    bottom:5,
+    font:{
+        fontSize:10
+    }
+}

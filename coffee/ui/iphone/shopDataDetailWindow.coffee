@@ -1,16 +1,5 @@
 class shopDataDetailWindow
   constructor:(data)->
-
-    # 引数に渡されるdataの構造は以下のとおり
-    # favoriteButtonEnableは、お気に入り登録するボタンを表示するか
-    # どうか決める
-    # data =
-    #   name:"お店の名前"
-    #   shopAddress:"お店の住所"
-    #   phoneNumber:"お店の電話番号"
-    #   latitude:
-    #   longitude:
-    #   favoriteButtonEnable:true/false
     filterView = require("net.uchidak.tigfview")
     keyColor = "#f9f9f9"
     @baseColor =
@@ -22,8 +11,9 @@ class shopDataDetailWindow
       favoriteColor:"#DA5019"
       feedbackColor:"#DA5019"
       separatorColor:'#cccccc'
-    @mapView = Titanium.Map.createView
-      mapType: Titanium.Map.STANDARD_TYPE
+    @MapModule = require('ti.map')    
+    @mapView = @MapModule.createView
+      mapType: @MapModule.NORMAL_TYPE
       region: 
         latitude:data.latitude
         longitude:data.longitude
@@ -35,8 +25,8 @@ class shopDataDetailWindow
       zIndex:0
       top:0
       left:0
-      height:200
-      width:'auto'
+      height:150
+      width:Ti.UI.FULL
 
       
     @shopDataDetailWindow = Ti.UI.createWindow
@@ -62,9 +52,10 @@ class shopDataDetailWindow
     
   _createNavbarElement:() ->
     backButton = Titanium.UI.createButton
-      backgroundImage:"ui/image/backButton.png"
-      width:44
-      height:44
+      title:'戻る'
+      # backgroundImage:"ui/image/backButton.png"
+      # width:44
+      # height:44
       
     backButton.addEventListener('click',(e) =>
       return @shopDataDetailWindow.close({animated:true})
@@ -87,8 +78,8 @@ class shopDataDetailWindow
     return
   _createMapView:(data) ->
 
-    annotation = Titanium.Map.createAnnotation
-      pincolor:Titanium.Map.ANNOTATION_PURPLE
+    annotation = @MapModule.createAnnotation
+      pincolor:@MapModule.ANNOTATION_PURPLE
       animate: false
       latitude:data.latitude
       longitude:data.longitude
@@ -98,23 +89,6 @@ class shopDataDetailWindow
     
   _createTableView:(data) ->
     shopData = []
-    
-    addressRow = Ti.UI.createTableViewRow
-      width:'auto'
-      height:40
-      selectedColor:'transparent'
-      
-    @addressLabel = Ti.UI.createLabel
-      text:"#{data.shopAddress}"
-      textAlign:'left'      
-      width:280
-      color:@baseColor.textColor
-      left:20
-      top:10
-      font:
-        fontSize:18
-        fontFamily :'Rounded M+ 1p'
-        fontWeight:'bold'
     
     phoneRow = Ti.UI.createTableViewRow
       width:'auto'
@@ -233,9 +207,9 @@ class shopDataDetailWindow
     @shopDataDetailWindow.add feedBackDialog
 
     @tableView = Ti.UI.createTableView
-      width:'auto'
+      width:Ti.UI.FULL
       height:'auto'
-      top:200
+      top:150
       left:0
       data:shopData
       backgroundColor:@baseColor.backgroundColor
@@ -295,7 +269,6 @@ class shopDataDetailWindow
     # 非表示にしたいので、favoriteButtonEnableの値をチェックする
     if data.favoriteButtonEnable is true
       # rowをタッチした際にダイアログを表示するための処理
-      addressRow.add @addressLabel
       
       phoneRow.add @phoneIcon
       phoneRow.add @phoneLabel
@@ -307,15 +280,14 @@ class shopDataDetailWindow
       feedbackRow.add feedbackIcon
       
       shopData.push @section  
-      shopData.push addressRow
       shopData.push phoneRow
       shopData.push wantToGoRow
       shopData.push feedbackRow
       shopData.push shopInfoRow unless typeof shopInfoRow is 'undefined'
+
+      shopData.push @_createStatusesRows(data.statuses) if data.statuses.length isnt 0
       
     else
-      addressRow.add @addressLabel
-
       phoneRow.add @phoneIcon
       phoneRow.add @phoneLabel
       
@@ -324,10 +296,10 @@ class shopDataDetailWindow
       
       
       shopData.push @section  
-      shopData.push addressRow
       shopData.push phoneRow
       shopData.push feedbackRow
       shopData.push shopInfoRow unless typeof shopInfoRow is 'undefined'
+      shopData.push @_createStatusesRows(data.statuses) if data.statuses.length isnt 0
     @tableView.setData shopData
     return @shopDataDetailWindow.add @tableView
             
@@ -651,6 +623,60 @@ class shopDataDetailWindow
     _view.add cancelleBtn
     
     return _view
+    
+  _createStatusesRows:(statuses) ->
+    moment = require('lib/moment.min')
+    momentja = require('lib/momentja')
+
+    statusSection = Ti.UI.createTableViewSection
+      headerTitle:"開栓情報一覧"
+      
+
+    for obj in statuses
+      statusRow = Ti.UI.createTableViewRow
+        width:Ti.UI.FULL
+        height:'auto'
+        backgroundColor:@baseColor.backgroundColor
+        
+      infoIcon = Ti.UI.createLabel
+        top:10
+        left:10
+        width:30
+        height:30
+        color:"#ccc"
+        font:
+          fontSize:28
+          fontFamily:'LigatureSymbols'
+        text:String.fromCharCode("0xe075")
+        textAlign:'center'
+        
+      statusLabel = Ti.UI.createLabel
+        text:obj.message
+        textAlign:'left'      
+        width:"70%"
+        height:'auto'
+        color:@baseColor.textColor
+        left:50
+        top:10
+        font:
+          fontSize:16
+          
+      postedDateLabel = Ti.UI.createLabel
+        text:moment(obj.created_at).fromNow()
+        textAlign:'right'      
+        width:"10%"
+        height:'auto'
+        color:@baseColor.textColor
+        right:5
+        bottom:5
+        font:
+          fontSize:12
+          
+      statusRow.add infoIcon
+      statusRow.add statusLabel
+      statusRow.add postedDateLabel
+      statusSection.add statusRow
+    return statusSection
 
   # ダイアログ表示する際に、背景部分となるmapViewに対して
   # フィルタを掛けることで奥行きある状態を表現する

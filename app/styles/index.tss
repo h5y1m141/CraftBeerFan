@@ -1,0 +1,112 @@
+"#tabOne":{
+    backgroundColor:"#f9f9f9"
+}
+"#mainWindow":{
+    /* navTintColor:'#99cc66', */
+    statusBarStyle:0,
+    translucent:false,
+    navTintColor:"#0066ff",
+    backgroundColor:"#f9f9f9",
+    tabBarHidden:true
+}
+"#mapview":{
+    zIndex:4,
+    animate:true,
+    regionFit:true,
+    userLocation:true,
+    slideState:false,
+    width:Ti.UI.FULL,
+    height:Ti.UI.FULL
+}
+
+"#subMenu":{
+    top:2,
+    left:0,
+    zIndex:0,
+    width:150,
+    height:40,
+    backgroundColor:"#66cc99"
+}
+
+"#showBtn":{
+    font:{
+        fontSize:36,
+        fontFamily:'LigatureSymbols'
+    },
+    color:"#007aff",
+    width:44,
+    height:44
+
+}
+"#userInfo":{
+    top:10,
+    left:50,
+    width:80,
+    font:{
+        fontSize:14
+    }
+}
+".infoLabel":{
+    top:10,
+    left:50,
+    width:100,
+    textAlign:'left',
+    font:{
+        fontSize:12
+    }
+}
+
+"#activityIndicator":{
+    top:240,
+    left:120,
+    textAlign:'center',
+    backgroundColor:"#222",
+    font:{
+        fontSize:18
+    },
+    color:'#fff',
+    zIndex:10
+}
+".icon":{
+    font:{
+        fontSize:36,
+        fontFamily:'LigatureSymbols'
+    },
+    color:"#007aff",
+    top:0,
+    left:0,
+    width:40,
+    height:40,
+    textAlign:'center'
+
+}
+".container": {
+	backgroundColor:"#f9f9f9"
+}
+
+".main":{
+    width:Ti.UI.FULL,
+    height:40,
+    backgroundColor:"#f9f9f9"
+}
+".sub":{
+    width:150,
+    height:Ti.UI.FULL,
+    top:0,
+    left:0,
+    zIndex:0,
+    backgroundColor:"#f9f9f9",
+    separatorColor:"#eeeeee"
+}
+".menu":{
+    color:"#222",
+    width:100,
+    height:40,
+    top:5,
+    left:10,
+    color:"#dddddd",
+    font:{
+        fontSize: 14
+    }
+}
+

@@ -1,0 +1,22 @@
+Alloy
+  TabGroup
+    Tab#tabOne
+      Window#mainWindow.container(title="近くのお店")
+        LeftNavButton#LeftNavButton(platform="ios")
+          Label#showBtn
+        ActivityIndicator#activityIndicator(message="Loading...")
+        TableView#tableview.sub
+          TableViewRow
+            Label#userLogin.icon
+            Label.infoLabel ユーザ情報
+          TableViewRow
+            Label#searchBtn.icon
+            Label.infoLabel リストから検索
+          TableViewRow
+            Label#tapBtn.icon
+            Label.infoLabel 開栓情報から検索
+          TableViewRow
+            Label#applicationBtn.icon
+            Label.infoLabel このアプリケーションについて
+        View#mapview(ns="Alloy.Globals.Map")
+            

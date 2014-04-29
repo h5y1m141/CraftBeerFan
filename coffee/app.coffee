@@ -2,14 +2,15 @@ configurationWizard = Ti.App.Properties.getBool "configurationWizard"
 
 # GoogleAnalyticsによるトラッキングのための処理
 
-Config = require("model/loadConfig")
+Config = require("/model/loadConfig")
 config = new Config()
 gaKey = config.getGoogleAnalyticsKey()
 
-gaModule = require('lib/Ti.Google.Analytics')
+gaModule = require('/lib/Ti.Google.Analytics')
+
 analytics = new gaModule(gaKey)
 
-
+Ti.API.info "gaModule is #{gaModule}"
 
 
 Ti.App.addEventListener "analytics_trackPageview", (e) ->
@@ -36,11 +37,9 @@ analytics.start 10, true
 
 osname = Ti.Platform.osname
 
+
 if osname is "android"
-  # TopWindow = require("ui/android/topWindow")
-  # topWindow = new TopWindow()
-  # topWindow.open()
-  Map = require("ui/android/mapWindow")
+  Map = require("/ui/android/mapWindow")
   mapWindow = new Map()
   mapWindow.open()
 

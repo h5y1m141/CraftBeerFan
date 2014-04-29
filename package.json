@@ -1,0 +1,27 @@
+{
+  "name": "craftBeerFan",
+  "version": "0.0.0",
+  "description": "## What's this?",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/h5y1m141/CraftBeerFan.git"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/h5y1m141/CraftBeerFan/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-coffee": "~0.9.0",
+    "grunt-notify": "~0.2.17",
+    "grunt-exec": "~0.4.5",
+    "grunt-contrib-jasmine": "~0.6.1"
+  },
+  "homepage": "https://github.com/h5y1m141/CraftBeerFan"
+}

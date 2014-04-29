@@ -10,31 +10,12 @@ class mapWindow
     @precision = 6 # GeoHashの計算結果で得られる桁数を指定
     @geoHashResult = []
     
-    ad = require('net.nend')
-    Config = require("model/loadConfig")
-    config = new Config()
-    nend = config.getNendData()
     
     ActivityIndicator = require('ui/activityIndicator')
     @activityIndicator = new ActivityIndicator()
     @activityIndicator.hide()
-    
-    adView = ad.createView
-      spotId:nend.spotId
-      apiKey:nend.apiKey
-      width:320
-      height:50
-      bottom: 0
-      left:0
-      
-    mapWindowTitle = Ti.UI.createLabel
-      textAlign: 'center'
-      color:"#333"
-      font:
-        fontSize:18
-        fontFamily : 'Rounded M+ 1p'
-        fontWeight:'bold'
-      text:"近くのお店"
+    KloudService =require("model/kloudService")
+    @kloudService = new KloudService()
     
     mapWindow = Ti.UI.createWindow
       title:"近くのお店"
@@ -46,55 +27,40 @@ class mapWindow
   
     # 1.0から0.001の間で縮尺尺度を示している。
     # 数値が大きい方が広域な地図になる。donayamaさんの書籍P.179の解説がわかりやすい
-    
-    @mapView = Titanium.Map.createView
-      mapType: Titanium.Map.STANDARD_TYPE
+    @MapModule = require('ti.map')    
+    @mapView = @MapModule.createView
+      mapType: @MapModule.NORMAL_TYPE
       region: 
         latitude:35.676564
         longitude:139.765076
-        latitudeDelta:0.025
-        longitudeDelta:0.025
+        latitudeDelta:1
+        longitudeDelta:1  
       animate:true
       regionFit:true
       userLocation:true
       zIndex:0
       top:0
       left:0
-    # プラットフォームを判定しながらスクリーンサイズ取得して
-    # iPhone4sとiPhone5とそれぞれに最適なmapViewの大きさにする
-    if Ti.Platform.osname is 'iphone' and Ti.Platform.displayCaps.platformHeight is 480
-      platform = 'iPhone4s'
-      @mapView.height = 364
-    else
-      platform = 'iPhone5'
-      @mapView.height = 452
-    
+      width:"100%"
+      height:"100%"
     @mapView.addEventListener('click',(e)=>
-      Ti.API.info "map view click event"
-      if e.clicksource is "rightButton"
-        # アカウント登録をスキップして利用する人がいるため、
-        # currentUserIdの値をチェックして、存在しない場合にはお気に入り
-        # を非表示にする
-        currentUserId = Ti.App.Properties.getString "currentUserId"
-        if typeof currentUserId is "undefined" or currentUserId is null
-          favoriteButtonEnable = false
-        else
-          favoriteButtonEnable = true
-
-        data =
-          shopName:e.title
-          shopAddress:e.annotation.shopAddress
-          phoneNumber:e.annotation.phoneNumber
-          latitude: e.annotation.latitude
-          longitude: e.annotation.longitude
-          shopInfo: e.annotation.shopInfo
-          favoriteButtonEnable:favoriteButtonEnable
+      if e.clicksource is 'rightButton'
+        @kloudService.statusesQuery(e.annotation.placeID,(statuses) ->
+          data =
+            shopName:e.annotation.shopName
+            phoneNumber:e.annotation.phoneNumber
+            latitude: e.annotation.latitude
+            longitude: e.annotation.longitude
+            shopInfo: e.annotation.shopInfo
+            statuses:statuses
+            
+          ShopDataDetailWindow = require("ui/iphone/shopDataDetailWindow")
+          new ShopDataDetailWindow(data)
+          # shopDataDetailWindow = new ShopDataDetailWindow(data)
           
-        ShopDataDetailWindow = require("ui/iphone/shopDataDetailWindow")
-        shopDataDetailWindow = new ShopDataDetailWindow(data)
-      
-    )
-        
+          # shopDataDetailWindow.open()
+        )
+    )  
     @mapView.addEventListener('regionchanged',(e)=>
       
       # ちょっとしたスクロールに反応してしまうため、緯度経度から
@@ -151,8 +117,8 @@ class mapWindow
         that.mapView.setLocation(
           latitude: latitude
           longitude: longitude
-          latitudeDelta:0.025
-          longitudeDelta:0.025
+          latitudeDelta:0.5
+          longitudeDelta:0.5
         )
         that._nearBy(latitude,longitude)
 
@@ -160,10 +126,6 @@ class mapWindow
     )
 
 
-    mapWindow.rightNavButton = refreshLabel
-    
-    if Ti.Platform.osname is 'iphone'  
-      mapWindow.setTitleControl mapWindowTitle
     
     Ti.Geolocation.purpose = 'クラフトビールのお店情報表示のため'
     Ti.Geolocation.accuracy = Ti.Geolocation.ACCURACY_NEAREST_TEN_METERS
@@ -171,7 +133,6 @@ class mapWindow
     Ti.Geolocation.distanceFilter = 5
     
     mapWindow.add @mapView
-    mapWindow.add adView
     mapWindow.add @activityIndicator
 
     # init時に現在位置を取得する
@@ -179,13 +140,15 @@ class mapWindow
     return mapWindow
     
   _nearBy:(latitude,longitude) ->
-    that = @
-    KloudService =require("model/kloudService")
-    kloudService = new KloudService()
-    kloudService.placesQuery(latitude,longitude,(data) ->
+    if Ti.Network.online is false
+      alert "利用されてるスマートフォンからインターネットに接続できないためお店の情報が検索できません"
+    else    
 
-      that.addAnnotations(data)
-    )
+      @kloudService.placesQuery(latitude,longitude,(data) =>
+        Ti.API.info "data is #{data}"
+
+        @addAnnotations(data)
+      )
     
   _getGeoCurrentPosition:() ->
     that = @
@@ -206,8 +169,8 @@ class mapWindow
       that.mapView.setLocation(
         latitude: latitude
         longitude: longitude
-        latitudeDelta:0.025
-        longitudeDelta:0.025
+        latitudeDelta:0.05
+        longitudeDelta:0.05
       )
 
       that._nearBy(latitude,longitude)
@@ -227,40 +190,58 @@ class mapWindow
     lon: (xPixels - widthInPixels / 2) * widthDegPerPixel + region.longitude
     
     return
-     
+    
+  _selectIcon:(shopFlg,statusesUpdateFlg) ->
+    
+    if shopFlg is true
+      imagePath = "ui/image/bottle.png"
+    else if shopFlg is false and statusesUpdateFlg is true
+      imagePath = "ui/image/tmublrWithOnTapInfo.png"
+    else if shopFlg is false and statusesUpdateFlg is false
+      imagePath = "ui/image/tmulblr.png"
+    else
+      imagePath = null
+      
+    return imagePath
+
   addAnnotations:(array) ->
     Ti.API.info "addAnnotations start mapView is #{@mapView}"
     @activityIndicator.hide()
     for data in array
-
-      if data.shopFlg is "true"
-        annotation = Titanium.Map.createAnnotation
-          latitude: data.latitude
-          longitude: data.longitude
-          title: data.shopName
-          phoneNumber: data.phoneNumber
-          shopAddress: data.shopAddress
-          shopInfo:data.shopInfo
-          subtitle: ""
-          image:"ui/image/bottle.png"
-          animate: false
-          leftButton: ""
-          rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
-        @mapView.addAnnotation annotation
+      Ti.API.info data.shopName
+      moment = require("lib/moment.min")
+      currentTime = moment()
+      if data.statusesUpdate is false or typeof data.statusesUpdate is "undefined"
+        statusesUpdateFlg = false
+      else if currentTime.diff(data.statusesUpdate) < 80000
+        statusesUpdateFlg = false
+      else  
+        statusesUpdateFlg = true
+        
+      if data.shopFlg is "false"
+        shopFlg = false
       else
-        annotation = Titanium.Map.createAnnotation
-          latitude: data.latitude
-          longitude: data.longitude
-          title: data.shopName
-          phoneNumber: data.phoneNumber
-          shopAddress: data.shopAddress
-          shopInfo:data.shopInfo
-          subtitle: ""
-          image:"ui/image/tumblrIcon.png"
-          animate: false
-          leftButton: ""
-          rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
-        @mapView.addAnnotation annotation
+        shopFlg = true
+        
+      image = @_selectIcon(shopFlg,statusesUpdateFlg)
+      annotation = @MapModule.createAnnotation
+        latitude: data.latitude
+        longitude: data.longitude
+        shopName: data.shopName
+        title:data.shopName
+        phoneNumber: data.phoneNumber
+        shopAddress: data.shopAddress
+        shopInfo:data.shopInfo
+        shopFlg:data.shopFlg
+        placeID:data.id        
+        subtitle: ""
+        image:image
+        leftButton: ""
+        rightButton:Titanium.UI.iPhone.SystemButton.DISCLOSURE
+      @mapView.addAnnotation annotation
+      Ti.API.info annotation
+
+      @mapView.addAnnotation annotation
       
 
 

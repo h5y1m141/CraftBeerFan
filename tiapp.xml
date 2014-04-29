@@ -1,0 +1,120 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<ti:app xmlns:ti="http://ti.appcelerator.org">
+    <property name="acs-oauth-secret-development" type="string">ypGVl3wsllJ3cm1JS3NlTMe0LbZDsBbR</property>
+    <property name="acs-oauth-key-development" type="string">VFRGqUQGc39U8XsmG19p9770u954M7wb</property>
+    <property name="acs-api-key-development" type="string">kx4Bbuh4jiCk6AMrSk4HG8jo2LKJ8zQD</property>
+    <property name="acs-oauth-secret-production" type="string">dvpzYbClF1Lw47QmPIxd9WLzN4xJ06TG</property>
+    <property name="acs-oauth-key-production" type="string">xEnCk30iqgqItXDteDiWw3PhN9OBf3uF</property>
+    <property name="acs-api-key-production" type="string">1CLgMNt8m6Fw2K96BnU80rlfXSoxllAU</property>
+    <id>info.h5y1m141.CraftBeerFan</id>
+    <name>CraftBeerFan</name>
+    <version>1.0.1</version>
+    <publisher>hoyamada</publisher>
+    <url>http://craftbeer-fan.info</url>
+    <description>not specified</description>
+    <copyright>2013 by hoyamada</copyright>
+    <icon>appicon.png</icon>
+    <persistent-wifi>false</persistent-wifi>
+    <prerendered-icon>true</prerendered-icon>
+    <statusbar-style>default</statusbar-style>
+    <statusbar-hidden>false</statusbar-hidden>
+    <fullscreen>false</fullscreen>
+    <navbar-hidden>false</navbar-hidden>
+    <analytics>true</analytics>
+    <guid>5253f00c-4204-4a1e-8300-0c397a8b8dda</guid>
+    <property name="ti.ui.defaultunit" type="string">system</property>
+    <property name="ti.facebook.appid">181948098632770</property>
+    <ios>
+        <plist>
+            <dict>
+                <key>UISupportedInterfaceOrientations~iphone</key>
+                <array>
+                    <string>UIInterfaceOrientationPortrait</string>
+                </array>
+                <key>UISupportedInterfaceOrientations~ipad</key>
+                <array>
+                    <string>UIInterfaceOrientationPortrait</string>
+                    <string>UIInterfaceOrientationPortraitUpsideDown</string>
+                    <string>UIInterfaceOrientationLandscapeLeft</string>
+                    <string>UIInterfaceOrientationLandscapeRight</string>
+                </array>
+                <key>UIRequiresPersistentWiFi</key>
+                <false/>
+                <key>UIPrerenderedIcon</key>
+                <false/>
+                <key>UIStatusBarHidden</key>
+                <false/>
+                <key>UIStatusBarStyle</key>
+                <string>UIStatusBarStyleDefault</string>
+                <key>UIAppFonts</key>
+                <array>
+                    <string>fonts/fontawesome-webfont.ttf</string>
+                    <string>fonts/Lato-Light.ttf</string>
+                    <string>fonts/LigatureSymbols.ttf</string>
+                </array>
+            </dict>
+        </plist>
+    </ios>
+    <android xmlns:android="http://schemas.android.com/apk/res/android">
+        <tool-api-level>16</tool-api-level>
+        <abi>armeabi</abi>
+        <manifest android:versionCode="3" android:versionName="1.1.1"
+            package="info.h5y1m141.CraftBeerFan" xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-sdk android:targetSdkVersion="16"/>
+            <application android:theme="@style/Theme.Craftbeerfan"/>
+            <!-- other manifest entries -->
+            <!-- Allows the API to download data from Google Map servers -->
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <!-- Allows the API to cache data -->
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+            <!-- Use GPS for device location -->
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+            <!-- Use Wi-Fi or mobile connection for device location -->
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+            <!-- Allows the API to access Google web-based services -->
+            <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+            <!-- Specify OpenGL ES 2.0 as a requirement -->
+            <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
+            <!-- Replace <com.domain.appid> with your application ID -->
+            <uses-permission android:name="info.h5y1m141.CraftBeerFan.permission.MAPS_RECEIVE"/>
+            <permission
+                android:name="info.h5y1m141.CraftBeerFan.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
+            <application>
+                <meta-data
+                    android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyAZ9ZuTTovhUnZ6JZH-rG8owN3axlLmLkk"/>
+            </application>
+        </manifest>
+    </android>
+    <mobileweb>
+        <precache/>
+        <splash>
+            <enabled>true</enabled>
+            <inline-css-images>true</inline-css-images>
+        </splash>
+        <theme>default</theme>
+    </mobileweb>
+    <modules>
+        <module platform="commonjs">ti.cloud</module>
+        <module platform="iphone">facebook</module>
+        <module platform="iphone" version="1.0.1">net.nend</module>
+        <module platform="iphone" version="2.0.0">ti.map</module>
+        <module platform="android">facebook</module>
+        <module platform="android" version="2.1.3">ti.map</module>
+        <module platform="android" version="1.0.0">net.nend</module>
+        <module platform="iphone" version="1.0.0">net.uchidak.tigfview</module>
+        <module platform="android">ti.cloudpush</module>
+    </modules>
+    <deployment-targets>
+        <target device="tizen">false</target>
+        <target device="blackberry">false</target>
+        <target device="android">true</target>
+        <target device="ipad">false</target>
+        <target device="iphone">true</target>
+        <target device="mobileweb">false</target>
+    </deployment-targets>
+    <sdk-version>3.2.0.GA</sdk-version>
+    <property name="ti.deploytype">production</property>
+    <plugins>
+        <plugin version="1.0">ti.alloy</plugin>
+    </plugins>
+</ti:app>

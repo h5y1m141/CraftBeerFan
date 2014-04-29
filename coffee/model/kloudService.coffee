@@ -1,9 +1,10 @@
 class kloudService
   constructor:() ->
     @Cloud = require('ti.cloud')
-  
+    Ti.API.debug " @Cloud #{@Cloud.Places.query}"
+
   placesQuery:(latitude,longitude,callback) ->
-    Ti.API.info "startplacesQuery"
+    Ti.API.info "startplacesQuery latitude is #{latitude} and longitude is #{longitude}"
     @Cloud.Places.query
       page: 1
       per_page: 20
@@ -12,22 +13,41 @@ class kloudService
           $nearSphere:[longitude,latitude] 
           $maxDistance: 0.01
     , (e) ->
+      Ti.API.info "event is #{e.success} and #{e.places.length}"      
       if e.success
+
         result = []
         i = 0
         while i < e.places.length
           place = e.places[i]
-          data =
-            latitude: place.latitude
-            longitude: place.longitude
-            shopName:place.name
-            shopAddress: place.address
-            phoneNumber: place.phone_number
-            shopFlg:place.custom_fields.shopFlg
-            shopInfo:place.custom_fields.shopInfo
+          # Ti.API.info place.name + place.custom_fields.statusesUpdate
+          if typeof place.custom_fields.statusesUpdate isnt "undefined"
+            data =
+              id:place.id
+              latitude: place.latitude
+              longitude: place.longitude
+              shopName:place.name
+              shopAddress: place.address
+              phoneNumber: place.phone_number
+              shopFlg:place.custom_fields.shopFlg
+              shopInfo:place.custom_fields.shopInfo
+              statusesUpdate:place.custom_fields.statusesUpdate
             
+          else
+            data =
+              id:place.id
+              latitude: place.latitude
+              longitude: place.longitude
+              shopName:place.name
+              shopAddress: place.address
+              phoneNumber: place.phone_number
+              shopFlg:place.custom_fields.shopFlg
+              shopInfo:place.custom_fields.shopInfo
+              statusesUpdate: false
+
           result.push(data)
           i++
+
         return callback(result)
       else
         Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
@@ -256,7 +276,22 @@ class kloudService
       currentUserId:currentUserId
     , (result) ->
       return callback(result)
-  
+      
+  statusesQuery:(placeID,callback) ->
+    @Cloud.Statuses.query
+      page: 1
+      per_page: 20
+      where:
+        place_id:placeID
+    , (e) ->
+      Ti.API.info e
+      if e.success
+
+        callback e.statuses
+      else
+        noData = []
+        callback noData
+    
   _getAppID:() ->
     # Facebook appidを取得
     config = Titanium.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, "model/config.json")
