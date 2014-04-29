@@ -6,8 +6,16 @@
     backgroundColor:"#f9f9f9",
     tabBarHidden:true
 }
-"#tableview":{
+"#mapview":{
+    width:Ti.UI.FULL,
+    height:150,
     top:0,
+    left:0,
+    userLocation:true
+    
+}
+"#tableview":{
+    top:150,
     left:0,
     width:Ti.UI.FULL,
     height:Ti.UI.FULL
