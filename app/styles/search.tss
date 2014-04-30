@@ -3,11 +3,11 @@
     statusBarStyle:0,
     translucent:false,
     navTintColor:"#0066ff",
-    backgroundColor:"#f9f9f9",
+    backgroundColor:"#fcfcfc",
     tabBarHidden:true
 }
 "#mainMenu":{
-    backgroundColor:"#f3f3f3",
+    backgroundColor:"#fcfcfc",
     separatorColor: '#cccccc',
     width:Ti.UI.FULL,
     height:Ti.UI.FULL,
@@ -17,16 +17,26 @@
     
 }
 "#subMenu":{
-    backgroundColor:"#f3f3f3",
+    backgroundColor:"#fcfcfc",
     separatorStyle: Ti.UI.iPhone.TableViewSeparatorStyle.NONE,
     width:160,
     height:Ti.UI.FULL,
     left:150,
     top:0,
-    borderColor:"#f3f3f3",
+    borderColor:"#fcfcfc",
+    zIndex:2
+}
+"#activityIndicator":{
+    top:240,
+    left:120,
+    textAlign:'center',
+    backgroundColor:"#222",
+    font:{
+        fontSize:18
+    },
+    color:'#fff',
     zIndex:10
 }
-
 ".headerPoint":{
     width:10,
     height:"80%",
@@ -46,7 +56,7 @@
 ".mainMenuRow":{
     width:Ti.UI.FULL,
     height:"15%",
-    backgroundColor:"f3f3f3"
+    backgroundColor:"#fcfcfc"
 }
 ".prefectureRow":{
     width:Ti.UI.FULL,

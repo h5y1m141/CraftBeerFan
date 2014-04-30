@@ -17,11 +17,10 @@ prefectureSubColorSet = "name":
 prefectures = Ti.Filesystem.getFile("prefectures.json")
 
 $.mainMenu.addEventListener 'click', (e) ->
-  Ti.API.info "都道府県のカテゴリ名は#{categoryName}"  
   categoryName = e.row.categoryName
-
+  Ti.API.info "都道府県のカテゴリ名は#{categoryName}"  
   selectedColor = prefectureColorSet.name[categoryName]
-  selectedSubColor = "#FFF"
+  selectedSubColor = "#fcfcfc"
   curretRowIndex　= e.index
   t1 = Titanium.UI.create2DMatrix().scale(0.0)
   a = Titanium.UI.createAnimation()
@@ -41,7 +40,20 @@ $.mainMenu.addEventListener 'click', (e) ->
 $.subMenu.addEventListener 'click', (e) ->
   prefectureName = e.row.prefectureName
   Ti.API.info prefectureName
-  
+  KloudService = require("kloudService")
+  kloudService = new KloudService()
+  $.activityIndicator.show()
+  kloudService.findShopDataBy prefectureName,(items) ->
+    $.activityIndicator.hide()
+    if items.length is 0
+      alert "選択した地域のお店がみつかりません"
+    else
+      Ti.API.info "kloudService success"
+      items.sort( (a, b) ->
+        (if a.shopAddress > b.shopAddress then -1 else 1)
+      )
+      shopAreaDataController = Alloy.createController("shopAreaData")
+      shopAreaDataController.move($.tabOne,items)
 
 
 makePrefectureCategory = () ->
