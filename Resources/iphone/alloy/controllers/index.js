@@ -98,7 +98,7 @@ function Controller() {
         font: {
             fontSize: 12
         },
-        text: "リストから検索",
+        text: "都道府県から検索",
         id: "__alloyId8"
     });
     $.__views.__alloyId7.add($.__views.__alloyId8);

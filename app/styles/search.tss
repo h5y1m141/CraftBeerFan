@@ -3,6 +3,88 @@
     statusBarStyle:0,
     translucent:false,
     navTintColor:"#0066ff",
-    backgroundColor:"#f9f9f9",
+    backgroundColor:"#fcfcfc",
     tabBarHidden:true
+}
+"#mainMenu":{
+    backgroundColor:"#fcfcfc",
+    separatorColor: '#cccccc',
+    width:Ti.UI.FULL,
+    height:Ti.UI.FULL,
+    left:0,
+    top:0,
+    zIndex:1
+    
+}
+"#subMenu":{
+    backgroundColor:"#fcfcfc",
+    separatorStyle: Ti.UI.iPhone.TableViewSeparatorStyle.NONE,
+    width:160,
+    height:Ti.UI.FULL,
+    left:150,
+    top:0,
+    borderColor:"#fcfcfc",
+    zIndex:2
+}
+"#activityIndicator":{
+    top:240,
+    left:120,
+    textAlign:'center',
+    backgroundColor:"#222",
+    font:{
+        fontSize:18
+    },
+    color:'#fff',
+    zIndex:10
+}
+".headerPoint":{
+    width:10,
+    height:"80%",
+    top:5,
+    left:10
+}
+".headerLabel":{
+    top:"40%",
+    left:30,
+    width:"90%",
+    textAlign:'left',
+    color:"#222",
+    font:{
+      fontSize:16
+    }
+}
+".mainMenuRow":{
+    width:Ti.UI.FULL,
+    height:"15%",
+    backgroundColor:"#fcfcfc"
+}
+".prefectureRow":{
+    width:Ti.UI.FULL,
+    height:60,
+    hasChild:true,
+}
+
+".prefectureLabel":{
+    width:240,
+    height:30,
+    top:15,
+    left:10,
+    textAlign:'left',
+    color:'#333',
+    font:{
+        fontSize:16
+    }
+
+}
+".numberOfshopData":{
+    width:240,
+    height:30,
+    top:35,
+    left:30,
+    textAlign:'left',
+    color:'#333',
+    font:{
+        fontSize:12
+    }
+
 }
