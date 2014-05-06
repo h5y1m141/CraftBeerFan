@@ -14,7 +14,9 @@ prefectureSubColorSet = "name":
   "中国・四国":"#FEF7D5"
   "九州・沖縄":"#F9DFD5"
   
-prefectures = Ti.Filesystem.getFile("prefectures.json")
+prefectureData = null
+
+Cloud = require("ti.cloud")    
 
 $.mainMenu.addEventListener 'click', (e) ->
   categoryName = e.row.categoryName
@@ -39,7 +41,7 @@ $.mainMenu.addEventListener 'click', (e) ->
        
 $.subMenu.addEventListener 'click', (e) ->
   prefectureName = e.row.prefectureName
-  Ti.API.info prefectureName
+
   KloudService = require("kloudService")
   kloudService = new KloudService()
   $.activityIndicator.show()
@@ -56,15 +58,18 @@ $.subMenu.addEventListener 'click', (e) ->
       shopAreaDataController.move($.tabOne,items)
 
 
-makePrefectureCategory = () ->
-  
+makePrefectureCategory = (callback) ->
   _ = require("alloy/underscore")._
-  file = prefectures.read().toString();
-  data = JSON.parse(file);
-  
-  result = _.groupBy(data,(row) ->
-    return row.area
-  )
+  Cloud.Objects.query
+    classname:"shopDataByPrefecture"
+    page: 1
+    per_page:1
+  , (items) ->
+    shopData = items.shopDataByPrefecture[0].shopData
+    result = _.groupBy(shopData	,(row) ->
+      return row.area
+    )
+    callback result
   
   
 createMainMenuRow =(categoryName) ->
@@ -86,8 +91,8 @@ createMainMenuRow =(categoryName) ->
   
 refreshTableData = (categoryName,selectedColor,selectedSubColor) =>        
   rows = []
-  PrefectureCategory = makePrefectureCategory(prefectures)
-  prefectureNameList = PrefectureCategory[categoryName]
+
+  prefectureNameList = prefectureData[categoryName]
     
   # 都道府県のエリア毎に都道府県のrowを生成
   for _items in prefectureNameList
@@ -96,9 +101,14 @@ refreshTableData = (categoryName,selectedColor,selectedSubColor) =>
       prefectureName:"#{_items.name}"
 
     prefectureLabel = $.UI.create 'Label',
-      text:"#{_items.name}"
+      text:"#{_items.name}：#{_items.numberOfshopData}軒"
       classes:"prefectureLabel"
       
+    numberOfshopData = $.UI.create 'Label',
+      text:"登録数：#{_items.numberOfshopData}店"
+      classes:"numberOfshopData"
+
+    # prefectureRow.add numberOfshopData            
     prefectureRow.add prefectureLabel
     rows.push prefectureRow
           
@@ -107,16 +117,19 @@ refreshTableData = (categoryName,selectedColor,selectedSubColor) =>
   $.subMenu.setData rows
   
 exports.move = (_tab) ->
-  PrefectureCategory = makePrefectureCategory()
-  mainMenuRows = []
-  # 起動時にはエリアに紐づく都道府県名を見せたくないのと
-  # 後でanimationで表示・非表示を切り替えるために以下の処理を実施
-  t = Titanium.UI.create2DMatrix().scale(0)
-  $.subMenu.transform = t
-  for categoryName of PrefectureCategory
-    row = createMainMenuRow(categoryName)
-    mainMenuRows.push row
-    $.mainMenu.setData mainMenuRows
 
-  _tab.open $.searchWindow
+  makePrefectureCategory (PrefectureCategory) ->
+    prefectureData = PrefectureCategory
+    mainMenuRows = []
+
+    # 起動時にはエリアに紐づく都道府県名を見せたくないのと
+    # 後でanimationで表示・非表示を切り替えるために以下の処理を実施
+    t = Titanium.UI.create2DMatrix().scale(0)
+    $.subMenu.transform = t
+    for categoryName of PrefectureCategory
+      row = createMainMenuRow(categoryName)
+      mainMenuRows.push row
+      $.mainMenu.setData mainMenuRows
+
+    _tab.open $.searchWindow
 

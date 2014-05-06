@@ -66,13 +66,25 @@
 
 ".prefectureLabel":{
     width:240,
-    height:40,
-    top:5,
-    left:30,
+    height:30,
+    top:15,
+    left:10,
     textAlign:'left',
     color:'#333',
     font:{
         fontSize:16
+    }
+
+}
+".numberOfshopData":{
+    width:240,
+    height:30,
+    top:35,
+    left:30,
+    textAlign:'left',
+    color:'#333',
+    font:{
+        fontSize:12
     }
 
 }
