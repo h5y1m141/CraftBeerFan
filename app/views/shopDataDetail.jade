@@ -1,5 +1,26 @@
 Alloy
   Window#shopDataDetail.container
     View#mapview(ns="Alloy.Globals.Map")
+    View#shopInfoView
+      Button#phoneIcon
+      Button#wantToGoIcon
+      Button#feedBackIcon
+      Button#webSiteIcon
+      Button#shopInfoIcon
+    View#phoneDialog
+      Label#callBtn
+      Label#cancelleBtn
+      Label#confirmLabel
+    View#favoriteDialog
+      Label
+      Label
+      Label
+    View#feedBackDialog
+      Label#feedBackDialogTitle(text="登録情報のフィードバック")
+      Label#titleForMemo(text="お店の情報に間違いありましたら入力してください")
+      TextArea#textArea
+      Label#registMemoBtn(text="報告する")
+      Label#feedBackCancelleBtn(text="中止する")
     TableView#tableview
+      TableViewRow.row
 

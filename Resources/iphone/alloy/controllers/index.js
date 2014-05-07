@@ -296,7 +296,7 @@ function Controller() {
                 var shopData, shopDataDetailController;
                 Ti.API.info("statuses is " + statuses);
                 shopData = {
-                    shopName: e.annotation.shopName,
+                    shopName: e.annotation.title,
                     phoneNumber: e.annotation.phoneNumber,
                     latitude: e.annotation.latitude,
                     longitude: e.annotation.longitude,

@@ -14,8 +14,151 @@
     userLocation:true
     
 }
-"#tableview":{
+"#shopInfoView":{
     top:150,
+    left:0,
+    width:Ti.UI.FULL,
+    height:50,
+    backgroundColor:"#fcfcfc",
+    borderColor:"#fcfcfc"
+}
+"#phoneDialog":{
+  width:300,
+  height:240,
+  top:"10%",
+  left:10,
+  borderRadius:10,
+  borderRadius:10,
+  borderColor:"#ccc",
+  borderWidth:1,
+  backgroundColor:"#fff",
+  zIndex:20
+}
+"#callBtn":{
+  width:120,
+  height:40,
+  right:20,
+  bottom:40,
+  borderRadius:5,      
+
+  color:"#fcfcfc",
+  backgroundColor:"#4cda64",
+  font:{
+    fontSize:18
+  },
+  text:'はい',
+  textAlign:"center"
+
+}
+"#cancelleBtn":{
+  width:120,
+  height:40,
+  left:20,
+  bottom:40,
+  borderRadius:5,
+  backgroundColor:"#d8514b",
+  color:"#fcfcfc",
+  font:{
+    fontSize:18
+  },
+  text:'いいえ',
+  textAlign:"center"
+  
+}
+"#confirmLabel":{
+    top:20,
+    left:10,
+    textAlign:'center',
+    width:300,
+    height:150,
+    color:"#393939",
+    font:{
+      fontSize:16
+    }
+}
+"#feedBackDialog":{
+  width:300,
+  height:280,
+  top:"10%",
+  left:10,
+  borderRadius:10,
+  borderColor:"#ccc",
+  borderWidth:1,
+  backgroundColor:"#fff",
+  zIndex:20
+}
+"#feedBackDialogTitle":{
+  width:300,
+  height:20,
+  color:"#007aff",
+  left:10,
+  top:5,
+  font:{
+    fontSize:14,
+    fontWeight:'bold'
+  }  
+}
+"#titleForMemo":{
+  width:300,
+  height:20,
+  color:"#333",
+  // color:"#fcfcfc",
+  left:10,
+  top:30,
+  font:{
+    fontSize:12
+  }  
+}
+"#textArea":{
+  height:120,
+  width:280,
+  top:60,
+  left:10,
+  font:{
+    fontSize:12,
+    fontFamily :'Rounded M+ 1p',
+    fontWeight:'bold'
+  },
+  color:"#333",
+  textAlign:'left',
+  borderWidth:1,
+  borderColor:"#dfdfdf",
+  borderRadius:5,
+  keyboardType:Titanium.UI.KEYBOARD_DEFAULT
+}
+
+"#registMemoBtn":{
+  bottom:30,
+  right:20,
+  width:120,
+  height:40,
+  backgroundImage:"NONE",
+  borderWidth:0,
+  borderRadius:5,
+  color:"#fcfcfc",
+  backgroundColor:"#4cda64",
+  font:{
+    fontSize:18,
+    fontFamily :'Rounded M+ 1p'
+  },
+  textAlign:'center'
+}
+"#feedBackCancelleBtn":{
+  width:120,
+  height:40,
+  left:20,
+  bottom:30,      
+  borderRadius:5,
+  backgroundColor:"#d8514b",
+  color:"#fcfcfc",
+  font:{
+    fontSize:18,
+    fontFamily :'Rounded M+ 1p'
+  },
+  textAlign:"center"
+}
+"#tableview":{
+    top:200,
     left:0,
     width:Ti.UI.FULL,
     height:Ti.UI.FULL,
@@ -43,7 +186,7 @@
     width:40,
     height:40,
     borderRadius:5,
-    backgroundColor:"#FFEE55",
+    backgroundColor:"#FFCC00",
     backgroundImage:"NONE",
     color:"#fcfcfc",
     font:{
@@ -145,18 +288,17 @@
     top:10,
     font:{
         fontSize:16,
-        fontWeight:"bold"
     }
 }
 
 ".postedDateLabel":{
-    textAlign:'right',      
-    width:"10%",
-    height:'auto',
-    color:"#007aff",
-    right:5,
-    bottom:5,
-    font:{
-        fontSize:10
-    }
+  textAlign:'right',      
+  width:"10%",
+  height:'auto',
+  color:"#007aff",
+  right:5,
+  top:"10%",
+  font:{
+    fontSize:10
+  }
 }
