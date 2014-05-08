@@ -1,5 +1,6 @@
 Alloy
   Window#shopDataDetail.container
+    ActivityIndicator#activityIndicator(message="Loading...")    
     View#mapview(ns="Alloy.Globals.Map")
     View#shopInfoView
       Button#phoneIcon
@@ -22,7 +23,7 @@ Alloy
       Label#titleForMemo(text="お店の情報に間違いありましたら入力してください")
       TextArea#feedBackDialogTextArea.textArea
       Label#registMemoBtn(text="報告する").regist
-      Label#feedBackCancelleBtn(text="中止する").cancelle
+      Label#feedBackCancell(text="中止する").cancelle
     View#shopInfoDialog.dialog
       Label#shopInfoDialogTitle(text="お店について").titleLabel
       Label#shopInfo

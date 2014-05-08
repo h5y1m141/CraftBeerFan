@@ -28,11 +28,6 @@ _createTableView = (data) ->
   shopData = []
     
     
-  if typeof data.shopInfo isnt "undefined"
-    shopInfo = data.shopInfo
-  else
-    shopInfo = "お店の詳細情報は調査中"
-    
   # shopInfoRow = $.UI.create 'TableViewRow',
   #   classes:"row"
     
@@ -96,15 +91,17 @@ initUIElements = (data) ->
   $.feedBackDialog.transform = t
   $.favoriteDialog.transform = t
   $.shopInfoDialog.transform = t
-  
+
+  initPhoneDialog(data)
+  initFavoriteDialog()
+  initFeedBackDialog()
+    
+  initShopInfoDialog(data)  
+
+
+initPhoneDialog = (data) ->
   $.phoneIcon.addEventListener 'click', (e) ->
     animateDialog($.phoneDialog,"show",Ti.API.info "done")
-    
-  $.wantToGoIcon.addEventListener 'click', (e) ->
-    animateDialog($.favoriteDialog,"show",Ti.API.info "done")    
-    
-  $.feedBackIcon.addEventListener 'click', (e) ->
-    animateDialog($.feedBackDialog,"show",Ti.API.info "done")        
     
   $.callBtn.addEventListener 'click',(e) ->
     animateDialog($.phoneDialog,"hide",Titanium.Platform.openURL("tel:#{data.phoneNumber}"))
@@ -114,27 +111,44 @@ initUIElements = (data) ->
 
   $.titleForPhone.text = "#{data.shopName}の電話番号"
   $.confirmLabel.text = "番号は\n#{data.phoneNumber}です。\n電話しますか？"
-  contents = null
+  
+initFavoriteDialog = () ->
+  $.wantToGoIcon.addEventListener 'click', (e) ->
+    animateDialog($.favoriteDialog,"show",Ti.API.info "done")
+    
+  $.favoriteCancelleBtn.addEventListener 'click',(e) ->
+    animateDialog($.favoriteDialog, "hide","favoriteDialog cancell done")
+    
+  $.favoriteRegistMemoBtn.addEventListener 'click',(e) ->
+    animateDialog($.favoriteDialog, "hide",Ti.API.info "done")
+    
+initFeedBackDialog = () ->
+  contents = null  
+  $.feedBackIcon.addEventListener 'click', (e) ->
+    animateDialog($.feedBackDialog,"show",Ti.API.info "done")        
   
   $.feedBackDialogTextArea.addEventListener 'return',(e)->
     contents = e.value
     Ti.API.info "登録しようとしてる情報は is #{contents}です"
     textArea.blur()
-
   
   $.feedBackDialogTextArea.addEventListener 'blur',(e)->
     contents = e.value
     Ti.API.info "blur event fire.content is #{contents}です"
-
-  $.registMemoBtn.addEventListener 'click',(e) =>
-    $.activityIndicator.show()
+    
+  $.feedBackCancell.addEventListener 'click',(e) ->
+    animateDialog($.feedBackDialog, "hide",Ti.API.info "done")
+    
+  $.registMemoBtn.addEventListener 'click',(e) ->
+    animateDialog($.feedBackDialog, "hide",Ti.API.info "done")
+    # $.activityIndicator.show()
     # ACSにメモを登録
     # 次のCloud.Places.queryからはaddNewIconの外側にある
     # 変数参照できないはずなのでここでローカル変数として格納しておく
     
-    contents = contents
-    currentUserId = Ti.App.Properties.getString "currentUserId"
-    Ti.API.info "contents is #{contents} and shopName is #{shopName}"
+    # contents = contents
+    # currentUserId = Ti.App.Properties.getString "currentUserId"
+    # Ti.API.info "contents is #{contents} and shopName is #{shopName}"
     # sendFeedBack(contents,shopName,currentUserId,(result) =>
     #   that.activityIndicator.hide()
     #   if result.success
@@ -144,31 +158,23 @@ initUIElements = (data) ->
     #   that._hideDialog(_view,Ti.API.info "done")
 
     # )
-
-  $.feedBackCancelleBtn.addEventListener 'click',(e) =>
-    t1 = Titanium.UI.create2DMatrix()
-    t1 = t1.scale(0.0)
-    animation = Titanium.UI.createAnimation()
-    animation.transform = t1
-    animation.duration = 250
-    $.feedBackDialog.animate(animation)
-    animation.addEventListener('complete',(e) ->
-      Ti.API.info "feedBackCancelleBtn done"
-    )    
     
 
+        
+initShopInfoDialog = (data) ->
+  # お店情報のダイアログ処理
+  if typeof data.shopInfo isnt "undefined"
+    $.shopInfo.text = data.shopInfo
+  else
+    $.shopInfo.text = "お店の詳細情報は調査中"
 
-  $.favoriteCancelleBtn.addEventListener 'click',(e) =>
-    t1 = Titanium.UI.create2DMatrix()
-    t1 = t1.scale(0.0)
-    animation = Titanium.UI.createAnimation()
-    animation.transform = t1
-    animation.duration = 250
-    $.favoriteDialog.animate(animation)
-    animation.addEventListener('complete',(e) ->
-      Ti.API.info "favoriteDialog cancell done"
-    )    
+  $.shopInfoIcon.addEventListener 'click', (e) ->
+    animateDialog($.shopInfoDialog, "show", Ti.API.info "animation done")
+    
+  $.feedBackCancelleBtn.addEventListener 'click', (e) ->
+    animateDialog($.shopInfoDialog, "hide",Ti.API.info "animation hide")     
 
+  
 animateDialog = (dialog,flg,callback) ->        
   t1 = Titanium.UI.create2DMatrix()
   if flg is "show"
