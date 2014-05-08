@@ -125,6 +125,7 @@ $.mapview.addEventListener 'click', (e) ->
         latitude: e.annotation.latitude
         longitude: e.annotation.longitude
         shopInfo: e.annotation.shopInfo
+        webSite: e.annotation.webSite
         statuses:statuses
       $.activityIndicator.hide()
       shopDataDetailController = Alloy.createController('shopDataDetail')
@@ -177,7 +178,12 @@ addAnnotations = (array) ->
       shopFlg = false
     else
       shopFlg = true
-    
+
+    if data.website is false or typeof data.website is "undefined"
+      webSite = ''
+    else
+      webSite = data.website
+    Ti.API.info "#{data.website}"  
     imagePath = selectIcon(shopFlg,statusesUpdateFlg)
       
     annotation = Alloy.Globals.Map.createAnnotation
@@ -187,6 +193,7 @@ addAnnotations = (array) ->
       phoneNumber: data.phoneNumber
       shopAddress: data.shopAddress
       shopInfo:data.shopInfo
+      webSite:webSite
       placeID:data.id      
       subtitle: ""
       image:imagePath

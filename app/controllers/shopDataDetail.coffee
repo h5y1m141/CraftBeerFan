@@ -90,12 +90,13 @@ initUIElements = (data) ->
   $.phoneDialog.transform = t
   $.feedBackDialog.transform = t
   $.favoriteDialog.transform = t
+  $.webSiteDialog.transform = t
   $.shopInfoDialog.transform = t
 
   initPhoneDialog(data)
   initFavoriteDialog()
   initFeedBackDialog()
-    
+  initWebSiteDialog(data)    
   initShopInfoDialog(data)  
 
 
@@ -160,7 +161,18 @@ initFeedBackDialog = () ->
     # )
     
 
-        
+initWebSiteDialog = (data) ->
+
+  if typeof data.webSite isnt "undefined"
+    $.webSiteInfo.text = data.webSite
+  else  
+    $.webSiteInfo.text = "Webサイト調査中"
+    
+  $.webSiteIcon.addEventListener 'click', (e) ->
+    animateDialog($.webSiteDialog, "show", Ti.API.info "animation done")
+  $.webSiteInfoCloseBtn.addEventListener 'click', (e) ->
+    animateDialog($.webSiteDialog, "hide", Ti.API.info "animation done")
+    
 initShopInfoDialog = (data) ->
   # お店情報のダイアログ処理
   if typeof data.shopInfo isnt "undefined"
