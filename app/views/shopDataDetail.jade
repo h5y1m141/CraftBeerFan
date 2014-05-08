@@ -7,20 +7,22 @@ Alloy
       Button#feedBackIcon
       Button#webSiteIcon
       Button#shopInfoIcon
-    View#phoneDialog
-      Label#callBtn
-      Label#cancelleBtn
+    View#phoneDialog.dialog
+      Label#titleForPhone.titleLabel
+      Label#callBtn(text="はい").regist
+      Label#cancelleBtn(text="いいえ").cancelle
       Label#confirmLabel
-    View#favoriteDialog
-      Label
-      Label
-      Label
-    View#feedBackDialog
-      Label#feedBackDialogTitle(text="登録情報のフィードバック")
+    View#favoriteDialog.dialog
+      Label#titleForFavorite(text="お気に入り登録する").titleLabel
+      TextArea#favoriteTextArea.textArea       
+      Label#favoriteRegistMemoBtn(text="報告する").regist
+      Label#favoriteCancelleBtn(text="中止する").cancelle
+    View#feedBackDialog.dialog
+      Label#feedBackDialogTitle(text="登録情報のフィードバック").titleLabel
       Label#titleForMemo(text="お店の情報に間違いありましたら入力してください")
-      TextArea#textArea
-      Label#registMemoBtn(text="報告する")
-      Label#feedBackCancelleBtn(text="中止する")
+      TextArea#feedBackDialogTextArea.textArea
+      Label#registMemoBtn(text="報告する").regist
+      Label#feedBackCancelleBtn(text="中止する").cancelle
     TableView#tableview
       TableViewRow.row
 

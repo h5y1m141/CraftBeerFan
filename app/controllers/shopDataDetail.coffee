@@ -95,13 +95,21 @@ initUIElements = (data) ->
   $.phoneDialog.transform = t
   $.feedBackDialog.transform = t
   $.favoriteDialog.transform = t
-  $.phoneIcon.addEventListener 'click', (e) =>
+  $.phoneIcon.addEventListener 'click', (e) ->
     t1 = Titanium.UI.create2DMatrix()
     t1 = t1.scale(1.0)
     animation = Titanium.UI.createAnimation()
     animation.transform = t1
     animation.duration = 250
     return $.phoneDialog.animate(animation)
+    
+  $.wantToGoIcon.addEventListener 'click', (e) ->
+    t1 = Titanium.UI.create2DMatrix()
+    t1 = t1.scale(1.0)
+    animation = Titanium.UI.createAnimation()
+    animation.transform = t1
+    animation.duration = 250
+    return $.favoriteDialog.animate(animation)
     
   $.feedBackIcon.addEventListener 'click', (e) ->
     t1 = Titanium.UI.create2DMatrix()
@@ -112,7 +120,7 @@ initUIElements = (data) ->
     return $.feedBackDialog.animate(animation)    
     
     
-  $.callBtn.addEventListener('click',(e) ->
+  $.callBtn.addEventListener 'click',(e) ->
     t1 = Titanium.UI.create2DMatrix()
     t1 = t1.scale(0.0)
     animation = Titanium.UI.createAnimation()
@@ -123,10 +131,8 @@ initUIElements = (data) ->
     animation.addEventListener('complete',(e) ->
       Titanium.Platform.openURL("tel:#{data.phoneNumber}")
     )    
-  )
-  
     
-  $.cancelleBtn.addEventListener('click',(e) ->
+  $.cancelleBtn.addEventListener 'click',(e) ->
     t1 = Titanium.UI.create2DMatrix()
     t1 = t1.scale(0.0)
     animation = Titanium.UI.createAnimation()
@@ -136,17 +142,17 @@ initUIElements = (data) ->
     animation.addEventListener('complete',(e) ->
       Ti.API.info "cancelleBtn hide"
     )    
-  ) 
-  $.confirmLabel.text = "#{data.shopName}の電話番号は\n#{data.phoneNumber}です。\n電話しますか？"
+  $.titleForPhone.text = "#{data.shopName}の電話番号"
+  $.confirmLabel.text = "番号は\n#{data.phoneNumber}です。\n電話しますか？"
   contents = null
   
-  $.textArea.addEventListener 'return',(e)->
+  $.feedBackDialogTextArea.addEventListener 'return',(e)->
     contents = e.value
     Ti.API.info "登録しようとしてる情報は is #{contents}です"
     textArea.blur()
 
   
-  $.textArea.addEventListener 'blur',(e)->
+  $.feedBackDialogTextArea.addEventListener 'blur',(e)->
     contents = e.value
     Ti.API.info "blur event fire.content is #{contents}です"
 
@@ -178,5 +184,18 @@ initUIElements = (data) ->
     $.feedBackDialog.animate(animation)
     animation.addEventListener('complete',(e) ->
       Ti.API.info "feedBackCancelleBtn done"
+    )    
+    
+
+
+  $.favoriteCancelleBtn.addEventListener 'click',(e) =>
+    t1 = Titanium.UI.create2DMatrix()
+    t1 = t1.scale(0.0)
+    animation = Titanium.UI.createAnimation()
+    animation.transform = t1
+    animation.duration = 250
+    $.favoriteDialog.animate(animation)
+    animation.addEventListener('complete',(e) ->
+      Ti.API.info "favoriteDialog cancell done"
     )    
     

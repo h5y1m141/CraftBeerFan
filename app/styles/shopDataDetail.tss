@@ -22,82 +22,20 @@
     backgroundColor:"#fcfcfc",
     borderColor:"#fcfcfc"
 }
-"#phoneDialog":{
-  width:300,
-  height:240,
-  top:"10%",
-  left:10,
-  borderRadius:10,
-  borderRadius:10,
-  borderColor:"#ccc",
-  borderWidth:1,
-  backgroundColor:"#fff",
-  zIndex:20
-}
-"#callBtn":{
-  width:120,
-  height:40,
-  right:20,
-  bottom:40,
-  borderRadius:5,      
 
-  color:"#fcfcfc",
-  backgroundColor:"#4cda64",
-  font:{
-    fontSize:18
-  },
-  text:'はい',
-  textAlign:"center"
-
-}
-"#cancelleBtn":{
-  width:120,
-  height:40,
-  left:20,
-  bottom:40,
-  borderRadius:5,
-  backgroundColor:"#d8514b",
-  color:"#fcfcfc",
-  font:{
-    fontSize:18
-  },
-  text:'いいえ',
-  textAlign:"center"
-  
-}
 "#confirmLabel":{
-    top:20,
+    top:30,
     left:10,
-    textAlign:'center',
+    textAlign:'left',
     width:300,
-    height:150,
+    height:80,
     color:"#393939",
     font:{
-      fontSize:16
+      fontSize:18
     }
 }
-"#feedBackDialog":{
-  width:300,
-  height:280,
-  top:"10%",
-  left:10,
-  borderRadius:10,
-  borderColor:"#ccc",
-  borderWidth:1,
-  backgroundColor:"#fff",
-  zIndex:20
-}
-"#feedBackDialogTitle":{
-  width:300,
-  height:20,
-  color:"#007aff",
-  left:10,
-  top:5,
-  font:{
-    fontSize:14,
-    fontWeight:'bold'
-  }  
-}
+
+
 "#titleForMemo":{
   width:300,
   height:20,
@@ -109,7 +47,7 @@
     fontSize:12
   }  
 }
-"#textArea":{
+".textArea":{
   height:120,
   width:280,
   top:60,
@@ -127,22 +65,7 @@
   keyboardType:Titanium.UI.KEYBOARD_DEFAULT
 }
 
-"#registMemoBtn":{
-  bottom:30,
-  right:20,
-  width:120,
-  height:40,
-  backgroundImage:"NONE",
-  borderWidth:0,
-  borderRadius:5,
-  color:"#fcfcfc",
-  backgroundColor:"#4cda64",
-  font:{
-    fontSize:18,
-    fontFamily :'Rounded M+ 1p'
-  },
-  textAlign:'center'
-}
+
 "#feedBackCancelleBtn":{
   width:120,
   height:40,
@@ -301,4 +224,56 @@
   font:{
     fontSize:10
   }
+}
+".dialog":{
+  width:300,
+  height:280,
+  top:"10%",
+  left:10,
+  borderRadius:10,
+  borderColor:"#ccc",
+  borderWidth:1,
+  backgroundColor:"#fff",
+  zIndex:20
+}
+".cancelle":{
+  width:120,
+  height:40,
+  left:20,
+  bottom:30,
+  borderRadius:5,
+  backgroundColor:"#d8514b",
+  color:"#fcfcfc",
+  font:{
+    fontSize:18
+  },
+  textAlign:"center"
+  
+}
+".regist":{
+  width:120,
+  height:40,
+  bottom:30,
+  right:20,
+  backgroundImage:"NONE",
+  borderWidth:0,
+  borderRadius:5,
+  color:"#fcfcfc",
+  backgroundColor:"#4cda64",
+  font:{
+    fontSize:18,
+    fontFamily :'Rounded M+ 1p'
+  },
+  textAlign:'center'
+}
+".titleLabel":{
+  width:300,
+  height:20,
+  color:"#007aff",
+  left:10,
+  top:5,
+  font:{
+    fontSize:14,
+    fontWeight:'bold'
+  }  
 }
