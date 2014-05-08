@@ -95,53 +95,23 @@ initUIElements = (data) ->
   $.phoneDialog.transform = t
   $.feedBackDialog.transform = t
   $.favoriteDialog.transform = t
+  $.shopInfoDialog.transform = t
+  
   $.phoneIcon.addEventListener 'click', (e) ->
-    t1 = Titanium.UI.create2DMatrix()
-    t1 = t1.scale(1.0)
-    animation = Titanium.UI.createAnimation()
-    animation.transform = t1
-    animation.duration = 250
-    return $.phoneDialog.animate(animation)
+    animateDialog($.phoneDialog,"show",Ti.API.info "done")
     
   $.wantToGoIcon.addEventListener 'click', (e) ->
-    t1 = Titanium.UI.create2DMatrix()
-    t1 = t1.scale(1.0)
-    animation = Titanium.UI.createAnimation()
-    animation.transform = t1
-    animation.duration = 250
-    return $.favoriteDialog.animate(animation)
+    animateDialog($.favoriteDialog,"show",Ti.API.info "done")    
     
   $.feedBackIcon.addEventListener 'click', (e) ->
-    t1 = Titanium.UI.create2DMatrix()
-    t1 = t1.scale(1.0)
-    animation = Titanium.UI.createAnimation()
-    animation.transform = t1
-    animation.duration = 250
-    return $.feedBackDialog.animate(animation)    
-    
+    animateDialog($.feedBackDialog,"show",Ti.API.info "done")        
     
   $.callBtn.addEventListener 'click',(e) ->
-    t1 = Titanium.UI.create2DMatrix()
-    t1 = t1.scale(0.0)
-    animation = Titanium.UI.createAnimation()
-    animation.transform = t1
-    animation.duration = 250
-    $.phoneDialog.animate(animation)
-    
-    animation.addEventListener('complete',(e) ->
-      Titanium.Platform.openURL("tel:#{data.phoneNumber}")
-    )    
+    animateDialog($.phoneDialog,"hide",Titanium.Platform.openURL("tel:#{data.phoneNumber}"))
     
   $.cancelleBtn.addEventListener 'click',(e) ->
-    t1 = Titanium.UI.create2DMatrix()
-    t1 = t1.scale(0.0)
-    animation = Titanium.UI.createAnimation()
-    animation.transform = t1
-    animation.duration = 250
-    $.phoneDialog.animate(animation)
-    animation.addEventListener('complete',(e) ->
-      Ti.API.info "cancelleBtn hide"
-    )    
+    animateDialog($.phoneDialog,"hide",Ti.API.info "cancelleBtn hide")    
+
   $.titleForPhone.text = "#{data.shopName}の電話番号"
   $.confirmLabel.text = "番号は\n#{data.phoneNumber}です。\n電話しますか？"
   contents = null
@@ -198,4 +168,18 @@ initUIElements = (data) ->
     animation.addEventListener('complete',(e) ->
       Ti.API.info "favoriteDialog cancell done"
     )    
+
+animateDialog = (dialog,flg,callback) ->        
+  t1 = Titanium.UI.create2DMatrix()
+  if flg is "show"
+    t1 = t1.scale(1.0)    
+  else  
+    t1 = t1.scale(0.0)
     
+  animation = Titanium.UI.createAnimation()
+  animation.transform = t1
+  animation.duration = 250
+  dialog.animate(animation)    
+  animation.addEventListener 'complete',(e) ->
+    return callback
+
