@@ -1,4 +1,4 @@
-
+Cloud = require("ti.cloud")    
 exports.move = (_tab,shopData) ->
   initUIElements shopData
   _tab.open $.shopDataDetail
@@ -81,8 +81,8 @@ initUIElements = (data) ->
   $.shopInfoDialog.transform = t
 
   initPhoneDialog(data)
-  initFavoriteDialog()
-  initFeedBackDialog()
+  initFavoriteDialog(data.placeID)
+  initFeedBackDialog(data.shopName)
   initWebSiteDialog(data)    
   initShopInfoDialog(data)  
 
@@ -100,17 +100,50 @@ initPhoneDialog = (data) ->
   $.titleForPhone.text = "#{data.shopName}の電話番号"
   $.confirmLabel.text = "番号は\n#{data.phoneNumber}です。\n電話しますか？"
   
-initFavoriteDialog = () ->
+initFavoriteDialog = (placeID) ->
+  contents = null  
   $.wantToGoIcon.addEventListener 'click', (e) ->
     animateDialog($.favoriteDialog,"show",Ti.API.info "done")
+    
+  $.favoriteTextArea.addEventListener 'return',(e)->
+    contents = e.value
+    Ti.API.info "登録しようとしてるメモの内容は is #{contents}です"
+    $.favoriteTextArea.blur()
+
+  $.favoriteTextArea.addEventListener 'blur',(e)->
+    contents = e.value
+    Ti.API.info "blur event fire.content is #{contents}です"
+
     
   $.favoriteCancelleBtn.addEventListener 'click',(e) ->
     animateDialog($.favoriteDialog, "hide","favoriteDialog cancell done")
     
   $.favoriteRegistMemoBtn.addEventListener 'click',(e) ->
-    animateDialog($.favoriteDialog, "hide",Ti.API.info "done")
-    
-initFeedBackDialog = () ->
+    currentUserId = Ti.App.Properties.getString "currentUserId"
+    $.activityIndicator.show()
+    _login( (loginResult) ->
+      if loginResult.success
+        Cloud.Reviews.create
+          rating:1
+          content:contents              
+          place_id:placeID
+          user_id:currentUserId
+          custom_fields:
+            place_id:placeID
+        , (result) ->
+          $.activityIndicator.hide()
+          if e.success
+            alert "登録しました"
+          else
+            "すでに登録されているか\nサーバーがダウンしているために登録することができませんでした"
+          animateDialog($.favoriteDialog, "hide",Ti.API.info "done")
+          
+      else
+        alert "CraftBeerFanのサイトにログイン出来ませんでした"
+        $.activityIndicator.hide()
+        animateDialog($.favoriteDialog, "hide",Ti.API.info "done")
+    )
+initFeedBackDialog = (shopName) ->
   contents = null  
   $.feedBackIcon.addEventListener 'click', (e) ->
     animateDialog($.feedBackDialog,"show",Ti.API.info "done")        
@@ -118,7 +151,7 @@ initFeedBackDialog = () ->
   $.feedBackDialogTextArea.addEventListener 'return',(e)->
     contents = e.value
     Ti.API.info "登録しようとしてる情報は is #{contents}です"
-    textArea.blur()
+    $.feedBackDialogTextArea.blur()
   
   $.feedBackDialogTextArea.addEventListener 'blur',(e)->
     contents = e.value
@@ -128,25 +161,23 @@ initFeedBackDialog = () ->
     animateDialog($.feedBackDialog, "hide",Ti.API.info "done")
     
   $.registMemoBtn.addEventListener 'click',(e) ->
-    animateDialog($.feedBackDialog, "hide",Ti.API.info "done")
-    # $.activityIndicator.show()
+    
+    $.activityIndicator.show()
     # ACSにメモを登録
     # 次のCloud.Places.queryからはaddNewIconの外側にある
     # 変数参照できないはずなのでここでローカル変数として格納しておく
     
-    # contents = contents
-    # currentUserId = Ti.App.Properties.getString "currentUserId"
-    # Ti.API.info "contents is #{contents} and shopName is #{shopName}"
-    # sendFeedBack(contents,shopName,currentUserId,(result) =>
-    #   that.activityIndicator.hide()
-    #   if result.success
-    #     alert "報告完了しました"
-    #   else
-    #     alert "サーバーがダウンしているために登録することができませんでした"
-    #   that._hideDialog(_view,Ti.API.info "done")
-
-    # )
-    
+    contents = contents
+    currentUserId = Ti.App.Properties.getString "currentUserId"
+    Ti.API.info "contents is #{contents} and shopName is #{shopName}"
+    sendFeedBack contents,shopName,currentUserId,(result) ->
+      $.activityIndicator.hide()
+      if result.success
+        alert "報告完了しました"
+      else
+        alert "サーバーがダウンしているために登録することができませんでした"
+        
+      animateDialog($.feedBackDialog, "hide",Ti.API.info "done")
 
 initWebSiteDialog = (data) ->
 
@@ -187,4 +218,39 @@ animateDialog = (dialog,flg,callback) ->
   dialog.animate(animation)    
   animation.addEventListener 'complete',(e) ->
     return callback
+
+sendFeedBack = (contents,shopName,currentUserId,callback) ->
+  Cloud.Emails.send
+    template:'feedbackAboutShopData'
+    recipients:'h5y1m141@gmail.com'
+    contents:contents
+    shopName:shopName
+    currentUserId:currentUserId
+  , (result) ->
+    return callback(result)
+
+_login = (callback) ->
+  # 現在のログインIDを収得した上でユーザ情報取得する
+  currentUserId = Ti.App.Properties.getString "currentUserId"
+  userName = Ti.App.Properties.getString "userName"
+  password = Ti.App.Properties.getString "currentUserPassword"
+  loginType = Ti.App.Properties.getString "loginType"
+  Ti.API.info "loginType is #{loginType}"
+  if loginType is "facebook"
+    fb = Alloy.Globals.Facebook
+    Cloud.SocialIntegrations.externalAccountLogin
+      type: "facebook"
+      token:Ti.Facebook.accessToken
+    , (result) ->
+      return callback result
+    
+  else
+    Cloud.Users.login
+      login:userName
+      password:password
+    , (result) ->
+      if result.success
+        user = result.users[0]
+        Ti.App.Properties.setString "userName","#{user.username}"
+        return callback result          
 

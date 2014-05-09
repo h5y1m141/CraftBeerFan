@@ -47,6 +47,17 @@
     fontSize:12
   }  
 }
+"#activityIndicator":{
+    top:240,
+    left:120,
+    textAlign:'center',
+    backgroundColor:"#222",
+    font:{
+        fontSize:18
+    },
+    color:'#fff',
+    zIndex:3
+}
 ".textArea":{
   height:120,
   width:280,
@@ -236,7 +247,7 @@
   borderColor:"#ccc",
   borderWidth:1,
   backgroundColor:"#fff",
-  zIndex:20
+  zIndex:2
 }
 ".cancelle":{
   width:120,

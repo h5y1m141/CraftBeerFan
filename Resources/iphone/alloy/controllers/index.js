@@ -302,7 +302,8 @@ function Controller() {
                     longitude: e.annotation.longitude,
                     shopInfo: e.annotation.shopInfo,
                     webSite: e.annotation.webSite,
-                    statuses: statuses
+                    statuses: statuses,
+                    placeID: e.annotation.placeID
                 };
                 $.activityIndicator.hide();
                 shopDataDetailController = Alloy.createController("shopDataDetail");

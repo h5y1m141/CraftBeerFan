@@ -127,6 +127,7 @@ $.mapview.addEventListener 'click', (e) ->
         shopInfo: e.annotation.shopInfo
         webSite: e.annotation.webSite
         statuses:statuses
+        placeID:e.annotation.placeID
       $.activityIndicator.hide()
       shopDataDetailController = Alloy.createController('shopDataDetail')
       shopDataDetailController.move($.tabOne,shopData)
