@@ -120,12 +120,14 @@ $.mapview.addEventListener 'click', (e) ->
     kloudService.statusesQuery(e.annotation.placeID,(statuses) ->
       Ti.API.info "statuses is #{statuses}"
       shopData =
-        shopName:e.annotation.shopName
+        shopName:e.annotation.title
         phoneNumber:e.annotation.phoneNumber
         latitude: e.annotation.latitude
         longitude: e.annotation.longitude
         shopInfo: e.annotation.shopInfo
+        webSite: e.annotation.webSite
         statuses:statuses
+        placeID:e.annotation.placeID
       $.activityIndicator.hide()
       shopDataDetailController = Alloy.createController('shopDataDetail')
       shopDataDetailController.move($.tabOne,shopData)
@@ -177,7 +179,12 @@ addAnnotations = (array) ->
       shopFlg = false
     else
       shopFlg = true
-    
+
+    if data.website is false or typeof data.website is "undefined"
+      webSite = ''
+    else
+      webSite = data.website
+    Ti.API.info "#{data.website}"  
     imagePath = selectIcon(shopFlg,statusesUpdateFlg)
       
     annotation = Alloy.Globals.Map.createAnnotation
@@ -187,6 +194,7 @@ addAnnotations = (array) ->
       phoneNumber: data.phoneNumber
       shopAddress: data.shopAddress
       shopInfo:data.shopInfo
+      webSite:webSite
       placeID:data.id      
       subtitle: ""
       image:imagePath

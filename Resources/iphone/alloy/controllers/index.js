@@ -296,12 +296,14 @@ function Controller() {
                 var shopData, shopDataDetailController;
                 Ti.API.info("statuses is " + statuses);
                 shopData = {
-                    shopName: e.annotation.shopName,
+                    shopName: e.annotation.title,
                     phoneNumber: e.annotation.phoneNumber,
                     latitude: e.annotation.latitude,
                     longitude: e.annotation.longitude,
                     shopInfo: e.annotation.shopInfo,
-                    statuses: statuses
+                    webSite: e.annotation.webSite,
+                    statuses: statuses,
+                    placeID: e.annotation.placeID
                 };
                 $.activityIndicator.hide();
                 shopDataDetailController = Alloy.createController("shopDataDetail");
@@ -335,7 +337,7 @@ function Controller() {
         });
     });
     addAnnotations = function(array) {
-        var annotation, currentTime, data, imagePath, moment, shopFlg, statusesUpdateFlg, _i, _len, _results;
+        var annotation, currentTime, data, imagePath, moment, shopFlg, statusesUpdateFlg, webSite, _i, _len, _results;
         _results = [];
         for (_i = 0, _len = array.length; _len > _i; _i++) {
             data = array[_i];
@@ -343,6 +345,8 @@ function Controller() {
             currentTime = moment();
             statusesUpdateFlg = false === data.statusesUpdate || "undefined" == typeof data.statusesUpdate ? false : 8e4 > currentTime.diff(data.statusesUpdate) ? false : true;
             shopFlg = "false" === data.shopFlg ? false : true;
+            webSite = false === data.website || "undefined" == typeof data.website ? "" : data.website;
+            Ti.API.info("" + data.website);
             imagePath = selectIcon(shopFlg, statusesUpdateFlg);
             annotation = Alloy.Globals.Map.createAnnotation({
                 latitude: data.latitude,
@@ -351,6 +355,7 @@ function Controller() {
                 phoneNumber: data.phoneNumber,
                 shopAddress: data.shopAddress,
                 shopInfo: data.shopInfo,
+                webSite: webSite,
                 placeID: data.id,
                 subtitle: "",
                 image: imagePath,

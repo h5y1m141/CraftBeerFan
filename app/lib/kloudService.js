@@ -38,6 +38,7 @@ kloudService = (function() {
               phoneNumber: place.phone_number,
               shopFlg: place.custom_fields.shopFlg,
               shopInfo: place.custom_fields.shopInfo,
+              website:place.website,
               statusesUpdate: place.custom_fields.statusesUpdate
             };
           } else {
@@ -50,6 +51,7 @@ kloudService = (function() {
               phoneNumber: place.phone_number,
               shopFlg: place.custom_fields.shopFlg,
               shopInfo: place.custom_fields.shopInfo,
+              website:place.website,
               statusesUpdate: false
             };
           }
