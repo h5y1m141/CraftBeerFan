@@ -109,33 +109,20 @@
     width:40,
     height:40,
     borderRadius:5,
-    backgroundColor:"#FFCC00",
+    backgroundColor:"#DA5019",
     backgroundImage:"NONE",
     color:"#fcfcfc",
     font:{
-        fontSize:28,
+        fontSize:32,
         fontFamily:'LigatureSymbols'
     },
     textAlign:'center'
 
 }
-"#feedBackIcon":{
-    top:5,
-    left:140,
-    width:40,
-    height:40,
-    backgroundColor:"#DA5019",
-    backgroundImage:"NONE",
-    borderRadius:5,
-    color:"#fcfcfc",
-    font:{
-        fontSize: 36,
-        fontFamily:'LigatureSymbols'
-    }
-}
+
 "#webSiteIcon":{
     top:5,
-    left:200,
+    left:140,
     width:40,
     height:40,
     backgroundColor:"#23AC0E",
@@ -147,7 +134,22 @@
         fontFamily:'LigatureSymbols'
     }
 }
+
 "#shopInfoIcon":{
+    top:5,
+    left:200,
+    width:40,
+    height:40,
+    backgroundColor:"#FFCC00",
+    backgroundImage:"NONE",
+    borderRadius:5,
+    color:"#fcfcfc",
+    font:{
+        fontSize: 36,
+        fontFamily:'LigatureSymbols'
+    }
+}
+"#feedBackIcon":{
     top:5,
     left:260,
     width:40,

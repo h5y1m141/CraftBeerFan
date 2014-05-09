@@ -26,19 +26,6 @@ _createMapView = (data) ->
   
 _createTableView = (data) ->
   shopData = []
-    
-    
-  # shopInfoRow = $.UI.create 'TableViewRow',
-  #   classes:"row"
-    
-  # shopInfoLabel = $.UI.create 'Label',
-  #   classes:"shopInfoLabel"
-  #   text:shopInfo
-          
-  # shopInfoRow.add shopInfoLabel
-  # iconSection.add shopInfoRow unless typeof shopInfoRow is 'undefined'
-  # shopData.push iconSection
-
   
   if data.statuses.length isnt 0
     Ti.API.info "create statuses data.statuses is #{data.statuses}"
