@@ -3,7 +3,7 @@
     statusBarStyle:0,
     translucent:false,
     navTintColor:"#0066ff",
-    backgroundColor:"#f9f9f9",
+    backgroundColor:"#fcfcfc",
     tabBarHidden:true
 }
 "#mapview":{
@@ -14,16 +14,172 @@
     userLocation:true
     
 }
-"#tableview":{
+"#shopInfoView":{
     top:150,
     left:0,
     width:Ti.UI.FULL,
-    height:Ti.UI.FULL
+    height:50,
+    backgroundColor:"#fcfcfc",
+    borderColor:"#fcfcfc"
 }
 
-".shopInfoRow":{
+"#confirmLabel":{
+    top:30,
+    left:10,
+    textAlign:'left',
+    width:300,
+    height:80,
+    color:"#393939",
+    font:{
+      fontSize:18
+    }
+}
+
+
+".description":{
+  width:300,
+  height:20,
+  color:"#333",
+  // color:"#fcfcfc",
+  left:10,
+  top:30,
+  font:{
+    fontSize:12
+  }  
+}
+"#activityIndicator":{
+    top:240,
+    left:120,
+    textAlign:'center',
+    backgroundColor:"#222",
+    font:{
+        fontSize:18
+    },
+    color:'#fff',
+    zIndex:3
+}
+".textArea":{
+  height:120,
+  width:280,
+  top:60,
+  left:10,
+  font:{
+    fontSize:12,
+    fontFamily :'Rounded M+ 1p',
+    fontWeight:'bold'
+  },
+  color:"#333",
+  textAlign:'left',
+  borderWidth:1,
+  borderColor:"#dfdfdf",
+  borderRadius:5,
+  keyboardType:Titanium.UI.KEYBOARD_DEFAULT
+}
+
+
+"#feedBackCancelleBtn":{
+  width:120,
+  height:40,
+  left:20,
+  bottom:30,      
+  borderRadius:5,
+  backgroundColor:"#d8514b",
+  color:"#fcfcfc",
+  font:{
+    fontSize:18,
+    fontFamily :'Rounded M+ 1p'
+  },
+  textAlign:"center"
+}
+"#tableview":{
+    top:200,
+    left:0,
     width:Ti.UI.FULL,
-    width:80
+    height:Ti.UI.FULL,
+    separatorStyle: Ti.UI.iPhone.TableViewSeparatorStyle.NONE,
+    backgroundColor:"#fcfcfc",
+    borderColor:"#fcfcfc"
+}
+"#phoneIcon":{
+    top:5,
+    left:20,
+    width:40,
+    height:40,
+    borderRadius:5,
+    backgroundColor:"#3261AB",
+    backgroundImage:"NONE",
+    color:"#fcfcfc",
+    font:{
+      fontSize: 32,
+      fontFamily:'FontAwesome'
+    }
+}
+"#wantToGoIcon":{
+    top:5,
+    left:80,
+    width:40,
+    height:40,
+    borderRadius:5,
+    backgroundColor:"#DA5019",
+    backgroundImage:"NONE",
+    color:"#fcfcfc",
+    font:{
+        fontSize:32,
+        fontFamily:'LigatureSymbols'
+    },
+    textAlign:'center'
+
+}
+
+"#webSiteIcon":{
+    top:5,
+    left:140,
+    width:40,
+    height:40,
+    backgroundColor:"#23AC0E",
+    backgroundImage:"NONE",
+    borderRadius:5,
+    color:"#fcfcfc",
+    font:{
+        fontSize: 36,
+        fontFamily:'LigatureSymbols'
+    }
+}
+
+"#shopInfoIcon":{
+    top:5,
+    left:200,
+    width:40,
+    height:40,
+    backgroundColor:"#FFCC00",
+    backgroundImage:"NONE",
+    borderRadius:5,
+    color:"#fcfcfc",
+    font:{
+        fontSize: 36,
+        fontFamily:'LigatureSymbols'
+    }
+}
+"#feedBackIcon":{
+    top:5,
+    left:260,
+    width:40,
+    height:40,
+    backgroundColor:"#cdcdcd",
+    backgroundImage:"NONE",
+    borderRadius:5,
+    color:"#fcfcfc",
+    font:{
+        fontSize: 36,
+        fontFamily:'LigatureSymbols'
+    }
+}
+".row":{
+    width:Ti.UI.FULL,
+    width:120,
+    
+    backgroundColor:"#fcfcfc",
+    separatorColor:"#fcfcfc"
 }
 
 ".shopInfoLabel":{
@@ -41,7 +197,7 @@
 ".statusesRows":{
     width:Ti.UI.FULL,
     height:80,
-    backgroundColor:"#f9f9f9"
+    backgroundColor:"#fcfcfc"
 
 }
 
@@ -68,18 +224,68 @@
     top:10,
     font:{
         fontSize:16,
-        fontWeight:"bold"
     }
 }
 
 ".postedDateLabel":{
-    textAlign:'right',      
-    width:"10%",
-    height:'auto',
-    color:"#007aff",
-    right:5,
-    bottom:5,
-    font:{
-        fontSize:10
-    }
+  textAlign:'right',      
+  width:"10%",
+  height:'auto',
+  color:"#007aff",
+  right:5,
+  top:"10%",
+  font:{
+    fontSize:10
+  }
+}
+".dialog":{
+  width:300,
+  height:280,
+  top:"10%",
+  left:10,
+  borderRadius:10,
+  borderColor:"#ccc",
+  borderWidth:1,
+  backgroundColor:"#fff",
+  zIndex:2
+}
+".cancelle":{
+  width:120,
+  height:40,
+  left:20,
+  bottom:30,
+  borderRadius:5,
+  backgroundColor:"#d8514b",
+  color:"#fcfcfc",
+  font:{
+    fontSize:18
+  },
+  textAlign:"center"
+  
+}
+".regist":{
+  width:120,
+  height:40,
+  bottom:30,
+  right:20,
+  backgroundImage:"NONE",
+  borderWidth:0,
+  borderRadius:5,
+  color:"#fcfcfc",
+  backgroundColor:"#4cda64",
+  font:{
+    fontSize:18,
+  },
+  textAlign:'center'
+}
+".titleLabel":{
+  width:300,
+  height:20,
+  color:"#007aff",
+  left:10,
+  top:5,
+  font:{
+    fontSize:14,
+    fontWeight:'bold'
+  }  
 }

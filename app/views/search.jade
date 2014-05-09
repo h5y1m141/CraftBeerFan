@@ -1,3 +1,8 @@
 Alloy
-  Window#searchWindow.container(title="リストから検索")
-    Label "都道府県から検索"
+  TabGroup
+    Tab#tabOne
+      Window#searchWindow.container(title="都道府県から検索")
+        LeftNavButton#LeftNavButton(platform="ios")
+        ActivityIndicator#activityIndicator(message="Loading...")
+        TableView#mainMenu
+        TableView#subMenu

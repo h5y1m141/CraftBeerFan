@@ -1,0 +1,56 @@
+"#shopAreaDataWindow":{
+    /* navTintColor:'#99cc66', */
+    statusBarStyle:0,
+    translucent:false,
+    navTintColor:"#0066ff",
+    backgroundColor:"#fcfcfc",
+    tabBarHidden:true
+}
+"#shopArea":{
+    width:Ti.UI.FULL,
+    height:Ti.UI.FULL,
+    backgroundColor:"#fcfcfc"
+
+}
+".container": {
+	backgroundColor:"#fcfcfc"
+}
+
+".iconImage":{
+    left:5,
+    width:20,
+    height:30,
+    top:5      
+
+}
+
+".titleLabel":{
+    width:"80%",
+    height:30,
+    top:5,
+    left:40,
+    color:'#333',
+    font:{
+        fontSize:18,
+        fontWeight:'bold'
+    }
+}
+
+".addressLabel":{
+    width:"80%",
+    height:30,
+    top:30,
+    left:40,
+    color:'#444',
+    font:{
+        fontSize:14
+    }
+}
+
+".shopDataRow":{
+    width:Ti.UI.FULL,
+    height:60,
+    borderWidth:0,
+    hasChild:true,
+    backgroundColor:"#fcfcfc"
+}
