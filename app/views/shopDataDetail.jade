@@ -15,12 +15,13 @@ Alloy
       Label#confirmLabel
     View#favoriteDialog.dialog
       Label#titleForFavorite(text="お気に入り登録する").titleLabel
+      Label#favoriteDescription(text="ユーザ登録されている方のみ利用できます。").description
       TextArea#favoriteTextArea.textArea       
-      Label#favoriteRegistMemoBtn(text="お気に入り登録").regist
+      Label#favoriteRegistMemoBtn(text="登録する").regist
       Label#favoriteCancelleBtn(text="中止する").cancelle
     View#feedBackDialog.dialog
       Label#feedBackDialogTitle(text="登録情報のフィードバック").titleLabel
-      Label#titleForMemo(text="お店の情報に間違いありましたら入力してください")
+      Label#titleForMemo(text="お店の情報に間違いありましたら入力してください").description
       TextArea#feedBackDialogTextArea.textArea
       Label#registMemoBtn(text="報告する").regist
       Label#feedBackCancell(text="中止する").cancelle

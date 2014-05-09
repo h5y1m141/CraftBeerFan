@@ -36,7 +36,7 @@
 }
 
 
-"#titleForMemo":{
+".description":{
   width:300,
   height:20,
   color:"#333",
@@ -275,7 +275,6 @@
   backgroundColor:"#4cda64",
   font:{
     fontSize:18,
-    fontFamily :'Rounded M+ 1p'
   },
   textAlign:'center'
 }

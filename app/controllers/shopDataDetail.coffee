@@ -35,10 +35,7 @@ _createTableView = (data) ->
   $.tableview.setData shopData
 
 
-    
-
 createStatusesRows = (statuses) ->
-  
   moment = require('momentmin')
   momentja = require('momentja')
 
@@ -120,29 +117,31 @@ initFavoriteDialog = (placeID) ->
     
   $.favoriteRegistMemoBtn.addEventListener 'click',(e) ->
     currentUserId = Ti.App.Properties.getString "currentUserId"
-    $.activityIndicator.show()
-    _login( (loginResult) ->
-      if loginResult.success
-        Cloud.Reviews.create
-          rating:1
-          content:contents              
-          place_id:placeID
-          user_id:currentUserId
-          custom_fields:
+    if currentUserId is null or typeof currentUserId is "undefined"
+      alert "ユーザ登録が完了していないようなのでこの機能は利用できません"
+    else  
+      $.activityIndicator.show()
+      _login (loginResult) ->
+        if loginResult.success
+          Cloud.Reviews.create
+            rating:1
+            content:contents              
             place_id:placeID
-        , (result) ->
+            user_id:currentUserId
+            custom_fields:
+              place_id:placeID
+          , (result) ->
+            $.activityIndicator.hide()
+            if result.success
+              alert "登録しました"
+            else
+              "すでに登録されているか\nサーバーがダウンしているために登録することができませんでした"
+            animateDialog($.favoriteDialog, "hide",Ti.API.info "done")
+        else
+          alert "CraftBeerFanのサイトにログイン出来ませんでした"
           $.activityIndicator.hide()
-          if e.success
-            alert "登録しました"
-          else
-            "すでに登録されているか\nサーバーがダウンしているために登録することができませんでした"
           animateDialog($.favoriteDialog, "hide",Ti.API.info "done")
-          
-      else
-        alert "CraftBeerFanのサイトにログイン出来ませんでした"
-        $.activityIndicator.hide()
-        animateDialog($.favoriteDialog, "hide",Ti.API.info "done")
-    )
+
 initFeedBackDialog = (shopName) ->
   contents = null  
   $.feedBackIcon.addEventListener 'click', (e) ->
