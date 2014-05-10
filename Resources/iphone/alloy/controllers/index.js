@@ -238,9 +238,9 @@ function Controller() {
     style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK;
     $.activityIndicator.style = style;
     $.userLogin.text = String.fromCharCode("0xe137");
-    $.searchBtn.text = String.fromCharCode("0xe116");
+    $.searchBtn.text = String.fromCharCode("0xe129");
     $.applicationBtn.text = String.fromCharCode("0xe075");
-    $.tapBtn.text = String.fromCharCode("0xe075");
+    $.tapBtn.text = String.fromCharCode("0xe116");
     $.showBtn.text = String.fromCharCode("0xe084");
     $.showBtn.addEventListener("click", function() {
         return slide();
