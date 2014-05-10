@@ -41,7 +41,6 @@ $.mainMenu.addEventListener 'click', (e) ->
        
 $.subMenu.addEventListener 'click', (e) ->
   prefectureName = e.row.prefectureName
-  alert prefectureName
   $.activityIndicator.show()
   Cloud.Places.query
     page: 1
