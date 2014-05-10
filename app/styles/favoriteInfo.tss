@@ -1,0 +1,37 @@
+"#tabOne":{
+    backgroundColor:"#f9f9f9"
+}
+"#mainWindow":{
+    /* navTintColor:'#99cc66', */
+    statusBarStyle:0,
+    translucent:false,
+    navTintColor:"#0066ff",
+    backgroundColor:"#f9f9f9",
+    tabBarHidden:true
+}
+"#mainMenu":{
+    backgroundColor:"#fcfcfc",
+    separatorColor: '#cccccc',
+    width:Ti.UI.FULL,
+    height:Ti.UI.FULL,
+    left:0,
+    top:0,
+    zIndex:1
+    
+}
+"#activityIndicator":{
+    top:240,
+    left:120,
+    textAlign:'center',
+    backgroundColor:"#222",
+    font:{
+        fontSize:18
+    },
+    color:'#fff',
+    zIndex:10
+}
+".main":{
+    width:Ti.UI.FULL,
+    height:Ti.UI.FULL,
+    backgroundColor:"#fcfcfc"
+}
