@@ -1,3 +1,4 @@
+Cloud = require("ti.cloud")   
 exports.move = (_tab,items) ->
 
   Ti.API.info "お店の件数は#{items.length}"
@@ -11,7 +12,24 @@ exports.move = (_tab,items) ->
   $.shopArea.setData shopDataRows
   return _tab.open $.shopAreaDataWindow  
 
-
+$.shopArea.addEventListener 'click',(e) ->
+  $.activityIndicator.show()
+  placeData = e.row.placeData
+  Cloud.Statuses.query
+      page: 1
+      per_page: 20
+      where:
+        place_id:placeData.placeID
+    , (e) ->
+      $.activityIndicator.hide()
+      if e.success
+        placeData.statuses = e.statuses
+      else
+        placeData.statuses = []
+      
+      shopDataDetailController = Alloy.createController('shopDataDetail')
+      shopDataDetailController.move($.tabOne,placeData)
+      
 createShopDataRow = (placeData) ->
     if placeData.shopFlg is "true"
       imagePath = "bottle.png"
@@ -40,8 +58,4 @@ createShopDataRow = (placeData) ->
     shopDataRow.add iconImage
 
     return shopDataRow
-  
-
-
-
   

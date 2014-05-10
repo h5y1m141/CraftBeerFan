@@ -57,9 +57,10 @@ $.activityIndicator.style = style
 # 設定。対応する文字コードは以下を参照
 # http://kudakurage.com/ligature_symbols/
 $.userLogin.text = String.fromCharCode("0xe137")
-$.searchBtn.text = String.fromCharCode("0xe116")
+# $.searchBtn.text = String.fromCharCode("0xe116")
+$.searchBtn.text = String.fromCharCode("0xe129")
 $.applicationBtn.text = String.fromCharCode("0xe075")
-$.tapBtn.text = String.fromCharCode("0xe075")
+$.tapBtn.text = String.fromCharCode("0xe116")
 $.showBtn.text = String.fromCharCode("0xe084")
 $.showBtn.addEventListener 'click', (e) ->
   slide()
