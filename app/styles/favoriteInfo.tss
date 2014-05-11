@@ -35,3 +35,33 @@
     height:Ti.UI.FULL,
     backgroundColor:"#fcfcfc"
 }
+".shopName":{
+    top:5,
+    left:10,
+    width:"90%",
+    font:{
+        fontSize:16,
+        fontWeight:"bold"
+    }
+}
+".reviewContent":{
+    top:5,
+    left:10,
+    width:"90%",
+    font:{
+        fontSize:16,
+        fontWeight:"bold"
+    }  
+}
+
+".postedDateLabel":{
+    textAlign:'right',      
+    width:"10%",
+    height:'auto',
+    color:"#007aff",
+    right:5,
+    bottom:5,
+    font:{
+        fontSize:10
+    }
+}
