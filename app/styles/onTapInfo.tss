@@ -20,14 +20,16 @@
 
 ".onTapRow":{
     with:"100%",
-    height:'auto',
-    backgroundColor:"#f9f9f9"
+    height:80,
+    hasChild:true,
+    backgroundColor:"#fcfcfc"
     
 }
 ".onTapLabel":{
     top:30,
     left:20,
     width:"80%",
+    color:"#444",
     font:{
         fontSize:10
     }

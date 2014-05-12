@@ -6,7 +6,7 @@ function Controller() {
     arguments[0] ? arguments[0]["__itemTemplate"] : null;
     var $ = this;
     var exports = {};
-    var __alloyId7 = [];
+    var __alloyId6 = [];
     $.__views.mainWindow = Ti.UI.createWindow({
         backgroundColor: "#f9f9f9",
         statusBarStyle: 0,
@@ -41,11 +41,11 @@ function Controller() {
         message: "Loading..."
     });
     $.__views.mainWindow.add($.__views.activityIndicator);
-    var __alloyId8 = [];
-    $.__views.__alloyId9 = Ti.UI.createTableViewRow({
-        id: "__alloyId9"
+    var __alloyId7 = [];
+    $.__views.__alloyId8 = Ti.UI.createTableViewRow({
+        id: "__alloyId8"
     });
-    __alloyId8.push($.__views.__alloyId9);
+    __alloyId7.push($.__views.__alloyId8);
     $.__views.userLogin = Ti.UI.createLabel({
         font: {
             fontSize: 36,
@@ -59,8 +59,8 @@ function Controller() {
         textAlign: "center",
         id: "userLogin"
     });
-    $.__views.__alloyId9.add($.__views.userLogin);
-    $.__views.__alloyId10 = Ti.UI.createLabel({
+    $.__views.__alloyId8.add($.__views.userLogin);
+    $.__views.__alloyId9 = Ti.UI.createLabel({
         top: 10,
         left: 50,
         width: 100,
@@ -69,13 +69,13 @@ function Controller() {
             fontSize: 12
         },
         text: "ユーザ情報",
+        id: "__alloyId9"
+    });
+    $.__views.__alloyId8.add($.__views.__alloyId9);
+    $.__views.__alloyId10 = Ti.UI.createTableViewRow({
         id: "__alloyId10"
     });
-    $.__views.__alloyId9.add($.__views.__alloyId10);
-    $.__views.__alloyId11 = Ti.UI.createTableViewRow({
-        id: "__alloyId11"
-    });
-    __alloyId8.push($.__views.__alloyId11);
+    __alloyId7.push($.__views.__alloyId10);
     $.__views.searchBtn = Ti.UI.createLabel({
         font: {
             fontSize: 36,
@@ -89,8 +89,8 @@ function Controller() {
         textAlign: "center",
         id: "searchBtn"
     });
-    $.__views.__alloyId11.add($.__views.searchBtn);
-    $.__views.__alloyId12 = Ti.UI.createLabel({
+    $.__views.__alloyId10.add($.__views.searchBtn);
+    $.__views.__alloyId11 = Ti.UI.createLabel({
         top: 10,
         left: 50,
         width: 100,
@@ -99,13 +99,13 @@ function Controller() {
             fontSize: 12
         },
         text: "都道府県から検索",
+        id: "__alloyId11"
+    });
+    $.__views.__alloyId10.add($.__views.__alloyId11);
+    $.__views.__alloyId12 = Ti.UI.createTableViewRow({
         id: "__alloyId12"
     });
-    $.__views.__alloyId11.add($.__views.__alloyId12);
-    $.__views.__alloyId13 = Ti.UI.createTableViewRow({
-        id: "__alloyId13"
-    });
-    __alloyId8.push($.__views.__alloyId13);
+    __alloyId7.push($.__views.__alloyId12);
     $.__views.tapBtn = Ti.UI.createLabel({
         font: {
             fontSize: 36,
@@ -119,8 +119,8 @@ function Controller() {
         textAlign: "center",
         id: "tapBtn"
     });
-    $.__views.__alloyId13.add($.__views.tapBtn);
-    $.__views.__alloyId14 = Ti.UI.createLabel({
+    $.__views.__alloyId12.add($.__views.tapBtn);
+    $.__views.__alloyId13 = Ti.UI.createLabel({
         top: 10,
         left: 50,
         width: 100,
@@ -129,13 +129,13 @@ function Controller() {
             fontSize: 12
         },
         text: "開栓情報から検索",
+        id: "__alloyId13"
+    });
+    $.__views.__alloyId12.add($.__views.__alloyId13);
+    $.__views.__alloyId14 = Ti.UI.createTableViewRow({
         id: "__alloyId14"
     });
-    $.__views.__alloyId13.add($.__views.__alloyId14);
-    $.__views.__alloyId15 = Ti.UI.createTableViewRow({
-        id: "__alloyId15"
-    });
-    __alloyId8.push($.__views.__alloyId15);
+    __alloyId7.push($.__views.__alloyId14);
     $.__views.favoriteBtn = Ti.UI.createLabel({
         font: {
             fontSize: 36,
@@ -149,8 +149,8 @@ function Controller() {
         textAlign: "center",
         id: "favoriteBtn"
     });
-    $.__views.__alloyId15.add($.__views.favoriteBtn);
-    $.__views.__alloyId16 = Ti.UI.createLabel({
+    $.__views.__alloyId14.add($.__views.favoriteBtn);
+    $.__views.__alloyId15 = Ti.UI.createLabel({
         top: 10,
         left: 50,
         width: 100,
@@ -159,13 +159,13 @@ function Controller() {
             fontSize: 12
         },
         text: "お気に入りから検索",
+        id: "__alloyId15"
+    });
+    $.__views.__alloyId14.add($.__views.__alloyId15);
+    $.__views.__alloyId16 = Ti.UI.createTableViewRow({
         id: "__alloyId16"
     });
-    $.__views.__alloyId15.add($.__views.__alloyId16);
-    $.__views.__alloyId17 = Ti.UI.createTableViewRow({
-        id: "__alloyId17"
-    });
-    __alloyId8.push($.__views.__alloyId17);
+    __alloyId7.push($.__views.__alloyId16);
     $.__views.applicationBtn = Ti.UI.createLabel({
         font: {
             fontSize: 36,
@@ -179,8 +179,8 @@ function Controller() {
         textAlign: "center",
         id: "applicationBtn"
     });
-    $.__views.__alloyId17.add($.__views.applicationBtn);
-    $.__views.__alloyId18 = Ti.UI.createLabel({
+    $.__views.__alloyId16.add($.__views.applicationBtn);
+    $.__views.__alloyId17 = Ti.UI.createLabel({
         top: 10,
         left: 50,
         width: 100,
@@ -189,9 +189,9 @@ function Controller() {
             fontSize: 12
         },
         text: "このアプリケーションについて",
-        id: "__alloyId18"
+        id: "__alloyId17"
     });
-    $.__views.__alloyId17.add($.__views.__alloyId18);
+    $.__views.__alloyId16.add($.__views.__alloyId17);
     $.__views.tableview = Ti.UI.createTableView({
         width: 150,
         height: Ti.UI.FULL,
@@ -200,7 +200,7 @@ function Controller() {
         zIndex: 0,
         backgroundColor: "#f9f9f9",
         separatorColor: "#eeeeee",
-        data: __alloyId8,
+        data: __alloyId7,
         id: "tableview"
     });
     $.__views.mainWindow.add($.__views.tableview);
@@ -221,9 +221,9 @@ function Controller() {
         window: $.__views.mainWindow,
         id: "tabOne"
     });
-    __alloyId7.push($.__views.tabOne);
+    __alloyId6.push($.__views.tabOne);
     $.__views.index = Ti.UI.createTabGroup({
-        tabs: __alloyId7,
+        tabs: __alloyId6,
         id: "index"
     });
     $.__views.index && $.addTopLevelView($.__views.index);

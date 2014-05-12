@@ -28,10 +28,49 @@
         fontSize:18
     },
     color:'#fff',
-    zIndex:10
+    zIndex:20
 }
 ".main":{
     width:Ti.UI.FULL,
     height:Ti.UI.FULL,
-    backgroundColor:"#fcfcfc"
+    backgroundColor:"#fcfcfc",
+
+  
+}
+
+".favoriteRow":{
+    with:"100%",
+    height:80,
+    hasChild:true,
+    backgroundColor:"#fcfcfc"  
+}
+".shopName":{
+    top:5,
+    left:10,
+    width:"85%",
+    font:{
+        fontSize:16,
+        fontWeight:"bold"
+    }
+}
+".reviewContent":{
+    top:45,
+    left:10,
+    width:"90%",
+    color:"#444",
+    font:{
+        fontSize:10,
+    }  
+}
+
+".postedDateLabel":{
+    textAlign:'right',      
+    width:"15%",
+    height:'auto',
+    color:"#007aff",
+    right:0,
+    top:5,
+    font:{
+        fontSize:9
+    }
 }
