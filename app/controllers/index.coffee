@@ -58,7 +58,7 @@ $.activityIndicator.style = style
 # http://kudakurage.com/ligature_symbols/
 $.userLogin.text = String.fromCharCode("0xe137")
 $.searchBtn.text = String.fromCharCode("0xe129")
-$.tapBtn.text = String.fromCharCode("0xe075")
+$.tapBtn.text = String.fromCharCode("0xe116")
 $.favoriteBtn.text = String.fromCharCode("0xe030")
 $.applicationBtn.text = String.fromCharCode("0xe075")
 $.showBtn.text = String.fromCharCode("0xe084")
