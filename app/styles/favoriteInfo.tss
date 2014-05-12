@@ -28,12 +28,18 @@
         fontSize:18
     },
     color:'#fff',
-    zIndex:10
+    zIndex:20
 }
 ".main":{
     width:Ti.UI.FULL,
     height:Ti.UI.FULL,
     backgroundColor:"#fcfcfc"
+}
+
+".favoriteRow":{
+  with:"100%",
+  height:80,
+    backgroundColor:"#fcfcfc"  
 }
 ".shopName":{
     top:5,
@@ -45,7 +51,7 @@
     }
 }
 ".reviewContent":{
-    top:5,
+    top:40,
     left:10,
     width:"90%",
     font:{
