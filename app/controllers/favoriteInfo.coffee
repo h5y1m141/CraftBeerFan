@@ -1,6 +1,23 @@
 Cloud = require("ti.cloud")
 $.tableview.addEventListener 'click', (e) ->
   $.activityIndicator.show()
+  shopData = e.row.shopData
+  Cloud.Statuses.query
+    page: 1
+    per_page: 20
+    where:
+      place_id:e.row.placeID
+  , (e) ->
+    if e.success
+      shopData.statuses = e.statuses
+    else
+      shopData.statuses = [
+        message:"開栓情報がありません"
+      ]
+      
+    shopDataDetailController = Alloy.createController('shopDataDetail')
+    $.activityIndicator.hide()
+    return shopDataDetailController.move($.tabOne,shopData)  
 
 exports.move = (_tab) ->
   _tab.open $.favoriteWindow
@@ -34,12 +51,28 @@ createShopDataList = (idList,result,callback) ->
       shopData = []
       for place in places
         _data = _.where(result,{placeID:place.id})
+        if place.website is false or typeof place.website is "undefined"
+          webSite = ''
+        else
+          webSite = place.website
+          
+        if place.shopFlg is "false"
+          shopFlg = false
+        else
+          shopFlg = true
+
         shopData.push({
           placeID:place.id
-          reviewContent:_data[0].reviewContent
           state:place.state
-          name:place.name
+          shopName:place.name
+          latitude: place.latitude
+          longitude: place.longitude
+          phoneNumber: place.phone_number
+          webSite:webSite
+          shopInfo:place.shopInfo
           updated_at:_data[0].updated_at
+          reviewContent:_data[0].reviewContent          
+          
         })
       _items = _.sortBy shopData, (_d) ->
         return _d.updated_at
@@ -82,7 +115,8 @@ createFavoriteInfo = (places) ->
     Ti.API.info place
     row = $.UI.create 'TableViewRow',
       classes:'favoriteRow'
-      shopID:place.id
+      placeID:place.id
+      shopData:place
       
     reviewContent = $.UI.create 'Label',
       classes:"reviewContent"
@@ -90,7 +124,7 @@ createFavoriteInfo = (places) ->
       
     shopName = $.UI.create 'Label',
       classes:"shopName"
-      text:"#{place.name}（#{place.state}）"
+      text:"#{place.shopName}（#{place.state}）"
       
     postedDateLabel = $.UI.create 'Label',
       text:moment(place.created_at).fromNow()
