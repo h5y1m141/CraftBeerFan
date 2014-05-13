@@ -27,7 +27,7 @@
 	backgroundColor:"#fcfcfc"
 }
 
-".iconImage":{
+".shopIcon":{
     left:5,
     width:20,
     height:30,

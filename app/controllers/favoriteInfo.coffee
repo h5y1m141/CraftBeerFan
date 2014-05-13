@@ -69,10 +69,10 @@ createShopDataList = (idList,result,callback) ->
           longitude: place.longitude
           phoneNumber: place.phone_number
           webSite:webSite
-          shopInfo:place.shopInfo
+          shopInfo:place.custom_fields.shopInfo          
           updated_at:_data[0].updated_at
           reviewContent:_data[0].reviewContent          
-          
+
         })
       _items = _.sortBy shopData, (_d) ->
         return _d.updated_at

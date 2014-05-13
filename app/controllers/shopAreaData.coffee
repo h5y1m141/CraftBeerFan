@@ -1,16 +1,14 @@
 Cloud = require("ti.cloud")   
 exports.move = (_tab,items) ->
-
-  Ti.API.info "お店の件数は#{items.length}"
+  _tab.open $.shopAreaDataWindow  
   shopDataRows = []      
   for item in items
     shopDataRow = createShopDataRow(item)
     shopDataRows.push(shopDataRow)
     
-  Ti.API.info "お店の件数は#{shopDataRows.length}"
   Ti.API.info $.shopAreaDataWindow
   $.shopArea.setData shopDataRows
-  return _tab.open $.shopAreaDataWindow  
+  return 
 
 $.shopArea.addEventListener 'click',(e) ->
   $.activityIndicator.show()
@@ -31,31 +29,35 @@ $.shopArea.addEventListener 'click',(e) ->
       shopDataDetailController.move($.tabOne,placeData)
       
 createShopDataRow = (placeData) ->
-    if placeData.shopFlg is "true"
-      imagePath = "bottle.png"
-    else  
-      imagePath = "tumblrIcon.png"
+  
+  if placeData.shopFlg is "true"
+    imagePath = Ti.Filesystem.resourcesDirectory + "bottle.png"
+  else  
+    imagePath = Ti.Filesystem.resourcesDirectory + "tmulblr.png"
+
+
+  titleLabel = $.UI.create 'Label',
+    text:"#{placeData.shopName}"  
+    classes:"titleLabel"
     
-    iconImage = $.UI.create 'ImageView',
-      image:imagePath
-      classes:"iconImage"
+  addressLabel = $.UI.create 'Label',
+    text:"#{placeData.shopAddress}"
+    classes:"addressLabel"
 
-    titleLabel = $.UI.create 'Label',
-      classes:"titleLabel"
-      text:"#{placeData.shopName}"
-      
-    addressLabel = $.UI.create 'Label',
-      text:"#{placeData.shopAddress}"
-      classes:"addressLabel"
+  shopDataRow = $.UI.create 'TableViewRow',
+    placeData:placeData
+    classes:'shopData'
+    
+  shopIcon = Ti.UI.createImageView
+    left:5
+    top: 5    
+    width:20
+    height:30
+    image:imagePath
 
-    shopDataRow = $.UI.create 'TableViewRow',
-      placeData:placeData
-      shopAddress:placeData.shopAddress
-      classes:'shopData'
-      
-    shopDataRow.add titleLabel
-    shopDataRow.add addressLabel
-    shopDataRow.add iconImage
+  shopDataRow.add titleLabel
+  shopDataRow.add addressLabel
+  shopDataRow.add shopIcon
 
-    return shopDataRow
+  return shopDataRow
   
