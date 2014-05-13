@@ -12,11 +12,22 @@
     backgroundColor:"#fcfcfc"
 
 }
+"#activityIndicator":{
+    top:240,
+    left:120,
+    textAlign:'center',
+    backgroundColor:"#222",
+    font:{
+        fontSize:18
+    },
+    color:'#fff',
+    zIndex:10
+}
 ".container": {
 	backgroundColor:"#fcfcfc"
 }
 
-".iconImage":{
+".shopIcon":{
     left:5,
     width:20,
     height:30,

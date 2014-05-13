@@ -57,9 +57,10 @@ $.activityIndicator.style = style
 # 設定。対応する文字コードは以下を参照
 # http://kudakurage.com/ligature_symbols/
 $.userLogin.text = String.fromCharCode("0xe137")
-$.searchBtn.text = String.fromCharCode("0xe116")
+$.searchBtn.text = String.fromCharCode("0xe129")
+$.tapBtn.text = String.fromCharCode("0xe116")
+$.favoriteBtn.text = String.fromCharCode("0xe030")
 $.applicationBtn.text = String.fromCharCode("0xe075")
-$.tapBtn.text = String.fromCharCode("0xe075")
 $.showBtn.text = String.fromCharCode("0xe084")
 $.showBtn.addEventListener 'click', (e) ->
   slide()
@@ -76,6 +77,9 @@ $.tableview.addEventListener 'click', (e) ->
     onTapInfoController = Alloy.createController('onTapInfo')
     onTapInfoController.move($.tabOne)
   else if e.index is 3
+    favoriteInfoController = Alloy.createController('favoriteInfo')
+    favoriteInfoController.move($.tabOne)
+  else if e.index is 4
     applicationInfoController = Alloy.createController('applicationInfo')
     applicationInfoController.move($.tabOne)
     
