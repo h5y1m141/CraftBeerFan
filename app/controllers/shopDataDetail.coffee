@@ -92,11 +92,11 @@ initUIElements = (data) ->
   $.webSiteDialog.transform = t
   $.shopInfoDialog.transform = t
 
-  # initPhoneDialog(data)
-  # initFavoriteDialog(data.placeID)
-  # initFeedBackDialog(data.shopName)
-  # initWebSiteDialog(data)    
-  # initShopInfoDialog(data)  
+  initPhoneDialog(data)
+  initFavoriteDialog(data.placeID)
+  initFeedBackDialog(data.shopName)
+  initWebSiteDialog(data)    
+  initShopInfoDialog(data)  
 
 
 initPhoneDialog = (data) ->

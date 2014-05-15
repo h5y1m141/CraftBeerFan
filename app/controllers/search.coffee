@@ -41,39 +41,41 @@ $.mainMenu.addEventListener 'click', (e) ->
        
 $.subMenu.addEventListener 'click', (e) ->
   prefectureName = e.row.prefectureName
-  $.activityIndicator.show()
-  Cloud.Places.query
-    page: 1
-    per_page:300
-    where:
-      state:prefectureName
-  , (e) ->
-    places = e.places
-    $.activityIndicator.hide()
+  shopAreaDataController = Alloy.createController("shopAreaData")
+  shopAreaDataController.move($.tabOne,prefectureName)
 
-    if e.success
-      if e.meta.total_pages is 0
-        alert "選択した地域のお店がみつかりません"
-      else
-        result = []
-        places.sort( (a, b) ->
-          (if a.shopAddress > b.shopAddress then -1 else 1)
-        )
-        for place in places
-          result.push({
-            placeID:place.id
-            latitude: place.latitude
-            longitude: place.longitude
-            shopName:place.name
-            webSite: place.webSite
-            shopAddress: place.address
-            phoneNumber: place.phone_number
-            shopFlg:place.custom_fields.shopFlg
-            shopInfo:place.custom_fields.shopInfo
-          })
+  # Cloud.Places.query
+  #   page: 1
+  #   per_page:300
+  #   where:
+  #     state:prefectureName
+  # , (e) ->
+  #   places = e.places
+
+
+  #   if e.success
+  #     if e.meta.total_pages is 0
+  #       alert "選択した地域のお店がみつかりません"
+  #     else
+  #       result = []
+  #       places.sort( (a, b) ->
+  #         (if a.shopAddress > b.shopAddress then -1 else 1)
+  #       )
+  #       for place in places
+  #         result.push({
+  #           placeID:place.id
+  #           latitude: place.latitude
+  #           longitude: place.longitude
+  #           shopName:place.name
+  #           webSite: place.webSite
+  #           shopAddress: place.address
+  #           phoneNumber: place.phone_number
+  #           shopFlg:place.custom_fields.shopFlg
+  #           shopInfo:place.custom_fields.shopInfo
+  #         })
           
-        shopAreaDataController = Alloy.createController("shopAreaData")
-        shopAreaDataController.move($.tabOne,result)
+  #       shopAreaDataController = Alloy.createController("shopAreaData")
+  #       shopAreaDataController.move($.tabOne,result)
 
 
 makePrefectureCategory = (callback) ->
