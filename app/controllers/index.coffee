@@ -66,6 +66,7 @@ $.showBtn.addEventListener 'click', (e) ->
   slide()
   
 $.tableview.addEventListener 'click', (e) ->
+  slide()
   # alert "tableview e.index is #{e.index}"
   if e.index is 0
     userController = Alloy.createController('user')
@@ -130,6 +131,9 @@ $.mapview.addEventListener 'click', (e) ->
     shopDataDetailController = Alloy.createController('shopDataDetail')
     shopDataDetailController.move($.tabOne,shopData)
 
+
+
+  
 geoHashResult = null
 lastGeoHashValue = null
 precision = 6 # GeoHashの計算結果で得られる桁数を指定

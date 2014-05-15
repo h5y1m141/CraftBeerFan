@@ -4,9 +4,6 @@ exports.move = (_tab,shopData) ->
   _createTableView shopData
   initUIElements shopData
   _tab.open $.shopDataDetail
-  
-  
-
 
 _createMapView = (data) ->
   $.mapview.setLocation({
@@ -29,6 +26,12 @@ _createMapView = (data) ->
 _createTableView = (data) ->
   shopData = []
   $.activityIndicator.show()
+  initPhoneDialog(data)
+  initFavoriteDialog(data.placeID)
+  initFeedBackDialog(data.shopName)
+  initWebSiteDialog(data)    
+  initShopInfoDialog(data)  
+  
   Cloud.Statuses.query
     page: 1
     per_page: 10
@@ -89,11 +92,11 @@ initUIElements = (data) ->
   $.webSiteDialog.transform = t
   $.shopInfoDialog.transform = t
 
-  initPhoneDialog(data)
-  initFavoriteDialog(data.placeID)
-  initFeedBackDialog(data.shopName)
-  initWebSiteDialog(data)    
-  initShopInfoDialog(data)  
+  # initPhoneDialog(data)
+  # initFavoriteDialog(data.placeID)
+  # initFeedBackDialog(data.shopName)
+  # initWebSiteDialog(data)    
+  # initShopInfoDialog(data)  
 
 
 initPhoneDialog = (data) ->

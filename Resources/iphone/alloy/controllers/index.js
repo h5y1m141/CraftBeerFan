@@ -278,6 +278,7 @@ function Controller() {
     });
     $.tableview.addEventListener("click", function(e) {
         var applicationInfoController, favoriteInfoController, onTapInfoController, searchController, userController;
+        slide();
         if (0 === e.index) {
             userController = Alloy.createController("user");
             return userController.move($.tabOne);
