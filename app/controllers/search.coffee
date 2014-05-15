@@ -135,7 +135,8 @@ refreshTableData = (categoryName,selectedColor,selectedSubColor) =>
   $.subMenu.setData rows
   
 exports.move = (_tab) ->
-
+  _tab.open $.searchWindow
+  $.activityIndicator.show()
   makePrefectureCategory (PrefectureCategory) ->
     prefectureData = PrefectureCategory
     mainMenuRows = []
@@ -148,6 +149,7 @@ exports.move = (_tab) ->
       row = createMainMenuRow(categoryName)
       mainMenuRows.push row
       $.mainMenu.setData mainMenuRows
-
-    _tab.open $.searchWindow
+      
+    $.activityIndicator.hide()
+    
 
