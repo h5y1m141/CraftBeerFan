@@ -1,6 +1,9 @@
 # 起動時に行う処理
 $.index.open()
 
+# tracking w/ newrelic module
+
+
 # Push Notification
 Cloud = require("ti.cloud")
 deviceToken = null
@@ -68,6 +71,7 @@ $.showBtn.addEventListener 'click', (e) ->
 $.tableview.addEventListener 'click', (e) ->
   slide()
   # alert "tableview e.index is #{e.index}"
+  
   if e.index is 0
     userController = Alloy.createController('user')
     userController.move($.tabOne)
@@ -246,4 +250,4 @@ slide = (e) ->
   animation.duration = 250
   $.mapview.animate(animation)
   
-
+  
