@@ -278,6 +278,7 @@ function Controller() {
     });
     $.tableview.addEventListener("click", function(e) {
         var applicationInfoController, favoriteInfoController, onTapInfoController, searchController, userController;
+        slide();
         if (0 === e.index) {
             userController = Alloy.createController("user");
             return userController.move($.tabOne);
@@ -325,25 +326,19 @@ function Controller() {
         });
     });
     $.mapview.addEventListener("click", function(e) {
+        var shopData, shopDataDetailController;
         if ("rightButton" === e.clicksource) {
-            $.activityIndicator.show();
-            return kloudService.statusesQuery(e.annotation.placeID, function(statuses) {
-                var shopData, shopDataDetailController;
-                Ti.API.info("statuses is " + statuses);
-                shopData = {
-                    shopName: e.annotation.title,
-                    phoneNumber: e.annotation.phoneNumber,
-                    latitude: e.annotation.latitude,
-                    longitude: e.annotation.longitude,
-                    shopInfo: e.annotation.shopInfo,
-                    webSite: e.annotation.webSite,
-                    statuses: statuses,
-                    placeID: e.annotation.placeID
-                };
-                $.activityIndicator.hide();
-                shopDataDetailController = Alloy.createController("shopDataDetail");
-                return shopDataDetailController.move($.tabOne, shopData);
-            });
+            shopData = {
+                shopName: e.annotation.title,
+                phoneNumber: e.annotation.phoneNumber,
+                latitude: e.annotation.latitude,
+                longitude: e.annotation.longitude,
+                shopInfo: e.annotation.shopInfo,
+                webSite: e.annotation.webSite,
+                placeID: e.annotation.placeID
+            };
+            shopDataDetailController = Alloy.createController("shopDataDetail");
+            return shopDataDetailController.move($.tabOne, shopData);
         }
     });
     geoHashResult = null;

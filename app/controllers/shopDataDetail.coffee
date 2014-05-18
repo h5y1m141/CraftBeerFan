@@ -1,10 +1,9 @@
 Cloud = require("ti.cloud")    
 exports.move = (_tab,shopData) ->
-  initUIElements shopData
-  _tab.open $.shopDataDetail
   _createMapView shopData
   _createTableView shopData
-
+  initUIElements shopData
+  _tab.open $.shopDataDetail
 
 _createMapView = (data) ->
   $.mapview.setLocation({
@@ -26,13 +25,29 @@ _createMapView = (data) ->
   
 _createTableView = (data) ->
   shopData = []
+  $.activityIndicator.show()
+  initPhoneDialog(data)
+  initFavoriteDialog(data.placeID)
+  initFeedBackDialog(data.shopName)
+  initWebSiteDialog(data)    
+  initShopInfoDialog(data)  
   
-  if data.statuses.length isnt 0
-    Ti.API.info "create statuses data.statuses is #{data.statuses}"
-    statusesRows = createStatusesRows(data.statuses)
+  Cloud.Statuses.query
+    page: 1
+    per_page: 10
+    where: 
+      place_id: data.placeID
+  , (e) ->
+    $.activityIndicator.hide()
+    if e.success and e.total_pages isnt 0
+      statusesRows = createStatusesRows(e.statuses)
+    else
+      moment = require('momentmin')
+      noData = []
+      noData.push({message:"開栓情報はありません",created_at:moment()})
+      statusesRows = createStatusesRows(noData)
     shopData.push statusesRows
-    
-  $.tableview.setData shopData
+    $.tableview.setData shopData
 
 
 createStatusesRows = (statuses) ->

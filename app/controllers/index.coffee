@@ -66,6 +66,7 @@ $.showBtn.addEventListener 'click', (e) ->
   slide()
   
 $.tableview.addEventListener 'click', (e) ->
+  slide()
   # alert "tableview e.index is #{e.index}"
   if e.index is 0
     userController = Alloy.createController('user')
@@ -117,26 +118,22 @@ Ti.Geolocation.getCurrentPosition (e) ->
   
 ## 地図上のピンをタッチした時の動作 
 $.mapview.addEventListener 'click', (e) ->
-  
   if e.clicksource is "rightButton"
-    # checkNetworkConnection()
-    $.activityIndicator.show()
-    kloudService.statusesQuery(e.annotation.placeID,(statuses) ->
-      Ti.API.info "statuses is #{statuses}"
-      shopData =
-        shopName:e.annotation.title
-        phoneNumber:e.annotation.phoneNumber
-        latitude: e.annotation.latitude
-        longitude: e.annotation.longitude
-        shopInfo: e.annotation.shopInfo
-        webSite: e.annotation.webSite
-        statuses:statuses
-        placeID:e.annotation.placeID
-      $.activityIndicator.hide()
-      shopDataDetailController = Alloy.createController('shopDataDetail')
-      shopDataDetailController.move($.tabOne,shopData)
+    shopData =  
+      shopName    : e.annotation.title
+      phoneNumber : e.annotation.phoneNumber
+      latitude    : e.annotation.latitude
+      longitude   : e.annotation.longitude
+      shopInfo    : e.annotation.shopInfo
+      webSite     : e.annotation.webSite
+      placeID     : e.annotation.placeID
       
-    )
+    shopDataDetailController = Alloy.createController('shopDataDetail')
+    shopDataDetailController.move($.tabOne,shopData)
+
+
+
+  
 geoHashResult = null
 lastGeoHashValue = null
 precision = 6 # GeoHashの計算結果で得られる桁数を指定
