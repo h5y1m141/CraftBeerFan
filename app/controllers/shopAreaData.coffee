@@ -13,22 +13,24 @@ exports.move = (_tab,prefectureName) ->
   
 
 $.shopArea.addEventListener 'click',(e) ->
-  $.activityIndicator.show()
   placeData = e.row.placeData
-  Cloud.Statuses.query
-      page: 1
-      per_page: 20
-      where:
-        place_id:placeData.placeID
-    , (e) ->
-      $.activityIndicator.hide()
-      if e.success
-        placeData.statuses = e.statuses
-      else
-        placeData.statuses = []
+  shopDataDetailController = Alloy.createController('shopDataDetail')
+  shopDataDetailController.move($.tabOne,placeData)
+  
+  # Cloud.Statuses.query
+  #     page: 1
+  #     per_page: 20
+  #     where:
+  #       place_id:placeData.placeID
+  #   , (e) ->
+
+  #     if e.success
+  #       placeData.statuses = e.statuses
+  #     else
+  #       placeData.statuses = []
       
-      shopDataDetailController = Alloy.createController('shopDataDetail')
-      shopDataDetailController.move($.tabOne,placeData)
+  #     shopDataDetailController = Alloy.createController('shopDataDetail')
+  #     shopDataDetailController.move($.tabOne,placeData)
       
 createShopDataRow = (placeData) ->
   
