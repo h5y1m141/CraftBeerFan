@@ -6,23 +6,9 @@ else
 
 $.activityIndicator.style = style
 $.tableview.addEventListener 'click', (e) ->
-  $.activityIndicator.show()
   shopData = e.row.shopData
-  Cloud.Statuses.query
-    page: 1
-    per_page: 20
-    where:
-      place_id:e.row.shopID
-  , (e) ->
-    if e.success
-      shopData.statuses = e.statuses
-    else
-      shopData.statuses = [
-        message:"開栓情報がありません"
-        ]
-    $.activityIndicator.hide()
-    shopDataDetailController = Alloy.createController('shopDataDetail')
-    return shopDataDetailController.move($.tabOne,shopData)  
+  shopDataDetailController = Alloy.createController('shopDataDetail')
+  return shopDataDetailController.move($.tabOne,shopData)    
 
 createOnTapInfo = (statuses) ->
   rows = []
@@ -31,11 +17,13 @@ createOnTapInfo = (statuses) ->
   
   for status in statuses
     shopData =
-      shopName:status.place.shopName
-      phoneNumber:status.place.phoneNumber
+      placeID:status.place.id
+      shopName:status.place.name
+      phoneNumber:status.place.phone_number
       latitude: status.place.latitude
       longitude: status.place.longitude
-      shopInfo: status.place.shopInfo
+      shopInfo:status.place.custom_fields.shopInfo
+      webSite: status.place.webSite
 
     row = $.UI.create 'TableViewRow',
       classes:'onTapRow'

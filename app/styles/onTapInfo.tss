@@ -26,9 +26,9 @@
     
 }
 ".onTapLabel":{
-    top:30,
-    left:20,
-    width:"80%",
+    top:50,
+    left:10,
+    width:"90%",
     color:"#444",
     font:{
         fontSize:10
@@ -38,7 +38,7 @@
 ".shopName":{
     top:5,
     left:10,
-    width:"90%",
+    width:"80%",
     font:{
         fontSize:16,
         fontWeight:"bold"
@@ -50,7 +50,7 @@
     height:'auto',
     color:"#007aff",
     right:5,
-    bottom:5,
+    top:5,
     font:{
         fontSize:10
     }
