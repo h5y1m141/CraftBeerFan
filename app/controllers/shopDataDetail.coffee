@@ -195,9 +195,13 @@ initFeedBackDialog = (shopName) ->
 
 initWebSiteDialog = (data) ->
 
-  if typeof data.webSite isnt "undefined"
+  if typeof data.webSite isnt "undefined" and data.webSite isnt ""
     $.webSiteInfo.text = data.webSite
-  else  
+    $.webSiteInfoOpenBtn.addEventListener 'click', (e) ->
+      return Ti.Platform.openURL data.webSite
+    
+  else
+    $.webSiteIcon.opacity = 0.1
     $.webSiteInfo.text = "Webサイト調査中"
     
   $.webSiteIcon.addEventListener 'click', (e) ->
