@@ -6,6 +6,15 @@ else
 
 $.activityIndicator.style = style
 $.RightNavButton.text = String.fromCharCode("0xe10e")
+$.RightNavButton.addEventListener 'click', (e) ->
+  dummyRow = $.UI.create 'TableViewRow',
+    classes:'dummyRow'
+  $.tableview.setData [dummyRow]
+  
+  statusesQuery (statuses) ->
+    createOnTapInfo statuses
+  
+  
 $.tableview.addEventListener 'click', (e) ->
   shopData = e.row.shopData
   shopDataDetailController = Alloy.createController('shopDataDetail')
@@ -49,16 +58,23 @@ createOnTapInfo = (statuses) ->
 
   return $.tableview.setData rows
 
-exports.move = (_tab) ->
+
+statusesQuery = (callback)->
   $.activityIndicator.show()
-  
   Cloud.Statuses.query
     page: 1
     per_page: 20
   , (e) ->
     $.activityIndicator.hide()
     if e.success
-      createOnTapInfo e.statuses
-      
+      callback e.statuses
+    else
+      alert "開栓情報が取得できませんでした"
+  
+exports.move = (_tab) ->
   _tab.open $.onTapWindow
+  statusesQuery (statuses) ->
+    createOnTapInfo statuses
+    
+  
 
