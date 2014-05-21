@@ -1,5 +1,4 @@
 "#onTapWindow":{
-    /* navTintColor:'#99cc66', */
     statusBarStyle:0,
     translucent:false,
     navTintColor:"#0066ff",
@@ -16,6 +15,13 @@
     },
     color:'#fff',
     zIndex:10
+}
+"#RightNavButton":{
+    font:{
+        fontSize:36,
+        fontFamily:'LigatureSymbols'
+    },
+    color:"#007aff"
 }
 
 ".onTapRow":{

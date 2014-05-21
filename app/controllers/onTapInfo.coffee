@@ -5,6 +5,7 @@ else
   style = Ti.UI.ActivityIndicatorStyle.DARK  
 
 $.activityIndicator.style = style
+$.RightNavButton.text = String.fromCharCode("0xe10e")
 $.tableview.addEventListener 'click', (e) ->
   shopData = e.row.shopData
   shopDataDetailController = Alloy.createController('shopDataDetail')
