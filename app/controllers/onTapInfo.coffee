@@ -24,8 +24,12 @@ $.tableview.addEventListener 'scrollEnd', (e) ->
   $.tableview.scrollable = false
   $.tableview.opacity = 0.3
   statusesQuery pageNumber,(statuses) ->
-    createOnTapInfo statuses
-  
+    newSection = createOnTapInfo(statuses)
+    $.tableview.insertSectionAfter(pageSection,newSection)
+    $.tableview.scrollable = true
+    $.tableview.opacity = 1.0
+    pageNumber++
+    pageSection++
   
 $.tableview.addEventListener 'click', (e) ->
   shopData = e.row.shopData
