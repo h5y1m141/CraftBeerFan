@@ -197,17 +197,17 @@ initWebSiteDialog = (data) ->
 
   if typeof data.webSite isnt "undefined" and data.webSite isnt ""
     $.webSiteInfo.text = data.webSite
+    $.webSiteIcon.addEventListener 'click', (e) ->
+      animateDialog($.webSiteDialog, "show", Ti.API.info "animation done")
+    $.webSiteInfoCloseBtn.addEventListener 'click', (e) ->
+      animateDialog($.webSiteDialog, "hide", Ti.API.info "animation done")
     $.webSiteInfoOpenBtn.addEventListener 'click', (e) ->
-      return Ti.Platform.openURL data.webSite
+      Ti.Platform.openURL data.webSite
     
   else
     $.webSiteIcon.opacity = 0.1
     $.webSiteInfo.text = "Webサイト調査中"
     
-  $.webSiteIcon.addEventListener 'click', (e) ->
-    animateDialog($.webSiteDialog, "show", Ti.API.info "animation done")
-  $.webSiteInfoCloseBtn.addEventListener 'click', (e) ->
-    animateDialog($.webSiteDialog, "hide", Ti.API.info "animation done")
     
 initShopInfoDialog = (data) ->
   # お店情報のダイアログ処理
