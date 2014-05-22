@@ -1,6 +1,13 @@
 Cloud = require("ti.cloud")
 pageNumber  = 1
 pageSection = 0
+# 以下はスクロール時のイベント処理で必要になる変数
+updating = false
+numberOfRows = 575+1
+showRows = 50
+rowNumer = 1
+lastDistance = 0
+
 if Ti.Platform.name is 'iPhone OS'
   style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK
 else
@@ -20,17 +27,6 @@ $.RightNavButton.addEventListener 'click', (e) ->
     $.tableview.setData [section]
 
   
-$.tableview.addEventListener 'scrollEnd', (e) ->
-  $.tableview.scrollable = false
-  $.tableview.opacity = 0.3
-  statusesQuery pageNumber,(statuses) ->
-    newSection = createOnTapInfo(statuses)
-    $.tableview.insertSectionAfter(pageSection,newSection)
-    $.tableview.scrollable = true
-    $.tableview.opacity = 1.0
-    pageNumber++
-    pageSection++
-  
 $.tableview.addEventListener 'click', (e) ->
   shopData = e.row.shopData
   shopDataDetailController = Alloy.createController('shopDataDetail')
@@ -40,7 +36,6 @@ createOnTapInfo = (statuses) ->
   moment = require('momentmin')
   momentja = require('momentja')
   section = $.UI.create 'TableViewSection',
-    title:'dumy'
     classes:'onTapSection'
   
   for status in statuses
@@ -92,7 +87,43 @@ statusesQuery = (page,callback)->
       callback e.statuses
     else
       alert "開栓情報が取得できませんでした"
+
+beginUpdate = () ->
+  updating = true
+  $.activityIndicator.show()
+  setTimeout(endUpdate,2000)
+
   
+endUpdate = () ->
+  updating = false
+  $.tableview.deleteRow(showRows,{})
+  statusesQuery(pageNumber,(statuses) ->
+    newSection = createOnTapInfo(statuses)
+    $.tableview.insertSectionAfter(pageSection,newSection)
+    pageNumber++
+    pageSection++
+
+  )   
+  
+
+$.tableview.addEventListener 'scroll', (e) ->
+  if Ti.Platform.osname is "iphone"
+    offset = e.contentOffset.y
+    height = e.size.height
+    total = offset + height
+    theEnd = e.contentSize.height
+    distance = theEnd - total
+    Ti.API.info "#{distance} #{lastDistance}"
+    if distance < lastDistance
+      nearEnd = theEnd * .75
+      Ti.API.info "nearEnd is #{nearEnd}"
+      if not updating and (total >= nearEnd)
+        beginUpdate()
+        
+    lastDistance = distance
+
+      
+
 exports.move = (_tab) ->
   _tab.open $.onTapWindow
   statusesQuery pageNumber,(statuses) ->
