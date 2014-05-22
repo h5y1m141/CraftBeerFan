@@ -265,7 +265,6 @@ function Controller() {
     deviceTokenError = function(e) {
         alert("Failed to register for push notifications! " + e.error);
     };
-    newrelic.recordMetric("TimeBetweenTaps", "UI", 500);
     style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK;
     $.activityIndicator.style = style;
     $.userLogin.text = String.fromCharCode("0xe137");
@@ -281,7 +280,6 @@ function Controller() {
         var applicationInfoController, favoriteInfoController, onTapInfoController, searchController, userController;
         slide();
         if (0 === e.index) {
-            newrelic;
             userController = Alloy.createController("user");
             return userController.move($.tabOne);
         }
@@ -323,7 +321,6 @@ function Controller() {
             longitudeDelta: .05
         };
         return kloudService.placesQuery(latitude, longitude, function(data) {
-            newrelic.recordMetric("placesQuery", "JSON");
             $.activityIndicator.hide();
             return addAnnotations(data);
         });

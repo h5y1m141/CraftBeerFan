@@ -1,8 +1,6 @@
 # 起動時に行う処理
 $.index.open()
 
-# tracking w/ newrelic module
-
 
 # Push Notification
 Cloud = require("ti.cloud")
@@ -47,8 +45,6 @@ deviceTokenError = (e) ->
   alert "Failed to register for push notifications! " + e.error
   return
   
-
-newrelic.recordMetric("TimeBetweenTaps", "UI", 500.0);
   
 if Ti.Platform.name is 'iPhone OS'
   style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK
@@ -74,7 +70,6 @@ $.tableview.addEventListener 'click', (e) ->
   # alert "tableview e.index is #{e.index}"
   
   if e.index is 0
-    newrelic
     userController = Alloy.createController('user')
     userController.move($.tabOne)
   else if e.index is 1
@@ -118,7 +113,6 @@ Ti.Geolocation.getCurrentPosition (e) ->
     longitudeDelta:0.05
     
   kloudService.placesQuery latitude,longitude,(data) ->
-    newrelic.recordMetric("placesQuery", "JSON")
     $.activityIndicator.hide()
     # Ti.API.info data
     addAnnotations data
