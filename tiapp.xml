@@ -8,7 +8,7 @@
     <property name="acs-api-key-production" type="string">1CLgMNt8m6Fw2K96BnU80rlfXSoxllAU</property>
     <id>info.h5y1m141.CraftBeerFan</id>
     <name>CraftBeerFan</name>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <publisher>hoyamada</publisher>
     <url>http://craftbeer-fan.info</url>
     <description>not specified</description>
