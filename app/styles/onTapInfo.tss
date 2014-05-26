@@ -26,7 +26,7 @@
 
 ".onTapRow":{
     with:"100%",
-    height:80,
+    height:'auto',
     hasChild:true,
     backgroundColor:"#fcfcfc"
     
