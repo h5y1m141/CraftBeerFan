@@ -1,7 +1,20 @@
 Alloy
-  Window#applicationInfoWindow.container(title="アプリケーションについて")
+  Window#applicationInfoWindow.container(title="このアプリケーションについて")
     TableView#tableview.sub
-      TableViewRow(title="このアプリケーションについて")
-      TableViewRow(title="version 1.1")
-
+      TableViewSection(headerTitle="開発者情報")            
+      TableViewRow#developerSite.infoRow
+        Label.info 詳しくはWebサイトをご覧ください\nhttp://craftbeer-fan.info/
+      TableViewSection(headerTitle="バージョン情報")            
+      TableViewRow.infoRow
+        Label.info 1.0.2
+      TableViewSection(headerTitle="アイコンについて")            
+      TableViewRow.row
+        ImageView#tmublrWithOnTapInfo.icon
+        Label.description(text="そのお店がFacebook、Twitterなどで本日飲めるクラフトビールの情報を提供してる場合にこのアイコンを利用してます")
+      TableViewRow.row
+        ImageView#tmulblr.icon
+        Label.description(text="そのお店でクラフトビールが飲める場合にこのアイコンを利用してます")
+      TableViewRow.row
+        ImageView#bottle.icon
+        Label.description(text="そのお店でクラフトビールが買える場合にこのアイコンを利用してます")
 

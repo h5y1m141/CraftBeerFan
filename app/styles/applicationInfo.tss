@@ -1,8 +1,43 @@
 "#applicationInfoWindow":{
-    /* navTintColor:'#99cc66', */
     statusBarStyle:0,
     translucent:false,
     navTintColor:"#0066ff",
     backgroundColor:"#f9f9f9",
     tabBarHidden:true
 }
+
+
+".icon":{
+    top:5,
+    left:5,
+    width:40,
+    height:60
+}
+".description":{
+    width:"80%",
+    left:55,
+    color:'#444',
+    font:{
+        fontSize:14
+    }    
+}
+".info":{
+    width:"90%",
+    left:20,
+    top:5,
+    color:'#222',
+    font:{
+        fontSize:18
+    }    
+}
+".row":{
+    width:Ti.UI.FULL,
+    height:100
+}
+
+
+".infoRow":{
+    width:Ti.UI.FULL,
+    height:60
+}
+

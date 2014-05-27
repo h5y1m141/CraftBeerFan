@@ -8,7 +8,7 @@
     <property name="acs-api-key-production" type="string">1CLgMNt8m6Fw2K96BnU80rlfXSoxllAU</property>
     <id>info.h5y1m141.CraftBeerFan</id>
     <name>CraftBeerFan</name>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <publisher>hoyamada</publisher>
     <url>http://craftbeer-fan.info</url>
     <description>not specified</description>
@@ -98,10 +98,12 @@
         <module platform="iphone">facebook</module>
         <module platform="iphone" version="1.0.1">net.nend</module>
         <module platform="iphone" version="2.0.0">ti.map</module>
+        <module platform="iphone" version="3.1">ti.newrelic</module>
+        <module platform="iphone" version="1.0.0">net.uchidak.tigfview</module>
         <module platform="android">facebook</module>
         <module platform="android" version="2.1.3">ti.map</module>
         <module platform="android" version="1.0.0">net.nend</module>
-        <module platform="iphone" version="1.0.0">net.uchidak.tigfview</module>
+        <module platform="android" version="3.1">ti.newrelic</module>
         <module platform="android">ti.cloudpush</module>
     </modules>
     <deployment-targets>

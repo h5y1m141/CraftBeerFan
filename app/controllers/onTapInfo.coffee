@@ -1,42 +1,54 @@
 Cloud = require("ti.cloud")
+pageNumber  = 1
+pageSection = 0
+# 以下はスクロール時のイベント処理で必要になる変数
+updating = false
+numberOfRows = 575+1
+showRows = 50
+rowNumer = 1
+lastDistance = 0
+
 if Ti.Platform.name is 'iPhone OS'
   style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK
 else
   style = Ti.UI.ActivityIndicatorStyle.DARK  
 
 $.activityIndicator.style = style
+$.RightNavButton.text = String.fromCharCode("0xe10e")
+$.RightNavButton.addEventListener 'click', (e) ->
+  # 一度初期状態に戻してからリフレッシュする
+  pageNumber  = 1
+  dummyRow = $.UI.create 'TableViewRow',
+    classes:'dummyRow'
+  $.tableview.setData [dummyRow]
+  
+  statusesQuery pageNumber,(statuses) ->
+    section = createOnTapInfo(statuses)
+    $.tableview.setData [section]
+
+  
 $.tableview.addEventListener 'click', (e) ->
-  $.activityIndicator.show()
   shopData = e.row.shopData
-  Cloud.Statuses.query
-    page: 1
-    per_page: 20
-    where:
-      place_id:e.row.shopID
-  , (e) ->
-    if e.success
-      shopData.statuses = e.statuses
-    else
-      shopData.statuses = [
-        message:"開栓情報がありません"
-        ]
-    $.activityIndicator.hide()
-    shopDataDetailController = Alloy.createController('shopDataDetail')
-    return shopDataDetailController.move($.tabOne,shopData)  
+  shopDataDetailController = Alloy.createController('shopDataDetail')
+  return shopDataDetailController.move($.tabOne,shopData)    
 
 createOnTapInfo = (statuses) ->
-  rows = []
   moment = require('momentmin')
   momentja = require('momentja')
+  section = $.UI.create 'TableViewSection',
+    classes:'onTapSection'
   
   for status in statuses
     shopData =
-      shopName:status.place.shopName
-      phoneNumber:status.place.phoneNumber
+      placeID:status.place.id
+      shopName:status.place.name
+      phoneNumber:status.place.phone_number
       latitude: status.place.latitude
       longitude: status.place.longitude
-      shopInfo: status.place.shopInfo
-
+      shopInfo:status.place.custom_fields.shopInfo
+      webSite: status.place.webSite
+      
+    
     row = $.UI.create 'TableViewRow',
       classes:'onTapRow'
       shopData:shopData
@@ -56,20 +68,66 @@ createOnTapInfo = (statuses) ->
     row.add shopName
     row.add label
     row.add postedDateLabel
-    rows.push row
+    section.add row
+  return section
 
-  return $.tableview.setData rows
 
-exports.move = (_tab) ->
+
+
+statusesQuery = (page,callback)->
   $.activityIndicator.show()
-  
   Cloud.Statuses.query
-    page: 1
+    page: page
     per_page: 20
   , (e) ->
     $.activityIndicator.hide()
     if e.success
-      createOnTapInfo e.statuses
+      pageNumber++
+
+      callback e.statuses
+    else
+      alert "開栓情報が取得できませんでした"
+
+beginUpdate = () ->
+  updating = true
+  $.activityIndicator.show()
+  setTimeout(endUpdate,2000)
+
+  
+endUpdate = () ->
+  updating = false
+  $.tableview.deleteRow(showRows,{})
+  statusesQuery(pageNumber,(statuses) ->
+    newSection = createOnTapInfo(statuses)
+    $.tableview.insertSectionAfter(pageSection,newSection)
+    pageNumber++
+    pageSection++
+
+  )   
+  
+
+$.tableview.addEventListener 'scroll', (e) ->
+  if Ti.Platform.osname is "iphone"
+    offset = e.contentOffset.y
+    height = e.size.height
+    total = offset + height
+    theEnd = e.contentSize.height
+    distance = theEnd - total
+    Ti.API.info "#{distance} #{lastDistance}"
+    if distance < lastDistance
+      nearEnd = theEnd * .75
+      Ti.API.info "nearEnd is #{nearEnd}"
+      if not updating and (total >= nearEnd)
+        beginUpdate()
+        
+    lastDistance = distance
+
       
+
+exports.move = (_tab) ->
   _tab.open $.onTapWindow
+  statusesQuery pageNumber,(statuses) ->
+    section = createOnTapInfo(statuses)
+    $.tableview.setData [section]
+  
 

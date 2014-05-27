@@ -1,6 +1,7 @@
 # 起動時に行う処理
 $.index.open()
 
+
 # Push Notification
 Cloud = require("ti.cloud")
 deviceToken = null
@@ -44,7 +45,6 @@ deviceTokenError = (e) ->
   alert "Failed to register for push notifications! " + e.error
   return
   
-
   
 if Ti.Platform.name is 'iPhone OS'
   style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK
@@ -66,7 +66,9 @@ $.showBtn.addEventListener 'click', (e) ->
   slide()
   
 $.tableview.addEventListener 'click', (e) ->
+  slide()
   # alert "tableview e.index is #{e.index}"
+  
   if e.index is 0
     userController = Alloy.createController('user')
     userController.move($.tabOne)
@@ -117,26 +119,22 @@ Ti.Geolocation.getCurrentPosition (e) ->
   
 ## 地図上のピンをタッチした時の動作 
 $.mapview.addEventListener 'click', (e) ->
-  
   if e.clicksource is "rightButton"
-    # checkNetworkConnection()
-    $.activityIndicator.show()
-    kloudService.statusesQuery(e.annotation.placeID,(statuses) ->
-      Ti.API.info "statuses is #{statuses}"
-      shopData =
-        shopName:e.annotation.title
-        phoneNumber:e.annotation.phoneNumber
-        latitude: e.annotation.latitude
-        longitude: e.annotation.longitude
-        shopInfo: e.annotation.shopInfo
-        webSite: e.annotation.webSite
-        statuses:statuses
-        placeID:e.annotation.placeID
-      $.activityIndicator.hide()
-      shopDataDetailController = Alloy.createController('shopDataDetail')
-      shopDataDetailController.move($.tabOne,shopData)
+    shopData =  
+      shopName    : e.annotation.title
+      phoneNumber : e.annotation.phoneNumber
+      latitude    : e.annotation.latitude
+      longitude   : e.annotation.longitude
+      shopInfo    : e.annotation.shopInfo
+      webSite     : e.annotation.webSite
+      placeID     : e.annotation.placeID
       
-    )
+    shopDataDetailController = Alloy.createController('shopDataDetail')
+    shopDataDetailController.move($.tabOne,shopData)
+
+
+
+  
 geoHashResult = null
 lastGeoHashValue = null
 precision = 6 # GeoHashの計算結果で得られる桁数を指定
@@ -249,4 +247,4 @@ slide = (e) ->
   animation.duration = 250
   $.mapview.animate(animation)
   
-
+  

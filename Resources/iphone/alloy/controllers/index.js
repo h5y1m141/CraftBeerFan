@@ -6,7 +6,7 @@ function Controller() {
     arguments[0] ? arguments[0]["__itemTemplate"] : null;
     var $ = this;
     var exports = {};
-    var __alloyId6 = [];
+    var __alloyId16 = [];
     $.__views.mainWindow = Ti.UI.createWindow({
         backgroundColor: "#f9f9f9",
         statusBarStyle: 0,
@@ -41,11 +41,11 @@ function Controller() {
         message: "Loading..."
     });
     $.__views.mainWindow.add($.__views.activityIndicator);
-    var __alloyId7 = [];
-    $.__views.__alloyId8 = Ti.UI.createTableViewRow({
-        id: "__alloyId8"
+    var __alloyId17 = [];
+    $.__views.__alloyId18 = Ti.UI.createTableViewRow({
+        id: "__alloyId18"
     });
-    __alloyId7.push($.__views.__alloyId8);
+    __alloyId17.push($.__views.__alloyId18);
     $.__views.userLogin = Ti.UI.createLabel({
         font: {
             fontSize: 36,
@@ -59,8 +59,8 @@ function Controller() {
         textAlign: "center",
         id: "userLogin"
     });
-    $.__views.__alloyId8.add($.__views.userLogin);
-    $.__views.__alloyId9 = Ti.UI.createLabel({
+    $.__views.__alloyId18.add($.__views.userLogin);
+    $.__views.__alloyId19 = Ti.UI.createLabel({
         top: 10,
         left: 50,
         width: 100,
@@ -69,13 +69,13 @@ function Controller() {
             fontSize: 12
         },
         text: "ユーザ情報",
-        id: "__alloyId9"
+        id: "__alloyId19"
     });
-    $.__views.__alloyId8.add($.__views.__alloyId9);
-    $.__views.__alloyId10 = Ti.UI.createTableViewRow({
-        id: "__alloyId10"
+    $.__views.__alloyId18.add($.__views.__alloyId19);
+    $.__views.__alloyId20 = Ti.UI.createTableViewRow({
+        id: "__alloyId20"
     });
-    __alloyId7.push($.__views.__alloyId10);
+    __alloyId17.push($.__views.__alloyId20);
     $.__views.searchBtn = Ti.UI.createLabel({
         font: {
             fontSize: 36,
@@ -89,8 +89,8 @@ function Controller() {
         textAlign: "center",
         id: "searchBtn"
     });
-    $.__views.__alloyId10.add($.__views.searchBtn);
-    $.__views.__alloyId11 = Ti.UI.createLabel({
+    $.__views.__alloyId20.add($.__views.searchBtn);
+    $.__views.__alloyId21 = Ti.UI.createLabel({
         top: 10,
         left: 50,
         width: 100,
@@ -99,13 +99,13 @@ function Controller() {
             fontSize: 12
         },
         text: "都道府県から検索",
-        id: "__alloyId11"
+        id: "__alloyId21"
     });
-    $.__views.__alloyId10.add($.__views.__alloyId11);
-    $.__views.__alloyId12 = Ti.UI.createTableViewRow({
-        id: "__alloyId12"
+    $.__views.__alloyId20.add($.__views.__alloyId21);
+    $.__views.__alloyId22 = Ti.UI.createTableViewRow({
+        id: "__alloyId22"
     });
-    __alloyId7.push($.__views.__alloyId12);
+    __alloyId17.push($.__views.__alloyId22);
     $.__views.tapBtn = Ti.UI.createLabel({
         font: {
             fontSize: 36,
@@ -119,8 +119,8 @@ function Controller() {
         textAlign: "center",
         id: "tapBtn"
     });
-    $.__views.__alloyId12.add($.__views.tapBtn);
-    $.__views.__alloyId13 = Ti.UI.createLabel({
+    $.__views.__alloyId22.add($.__views.tapBtn);
+    $.__views.__alloyId23 = Ti.UI.createLabel({
         top: 10,
         left: 50,
         width: 100,
@@ -129,13 +129,13 @@ function Controller() {
             fontSize: 12
         },
         text: "開栓情報から検索",
-        id: "__alloyId13"
+        id: "__alloyId23"
     });
-    $.__views.__alloyId12.add($.__views.__alloyId13);
-    $.__views.__alloyId14 = Ti.UI.createTableViewRow({
-        id: "__alloyId14"
+    $.__views.__alloyId22.add($.__views.__alloyId23);
+    $.__views.__alloyId24 = Ti.UI.createTableViewRow({
+        id: "__alloyId24"
     });
-    __alloyId7.push($.__views.__alloyId14);
+    __alloyId17.push($.__views.__alloyId24);
     $.__views.favoriteBtn = Ti.UI.createLabel({
         font: {
             fontSize: 36,
@@ -149,8 +149,8 @@ function Controller() {
         textAlign: "center",
         id: "favoriteBtn"
     });
-    $.__views.__alloyId14.add($.__views.favoriteBtn);
-    $.__views.__alloyId15 = Ti.UI.createLabel({
+    $.__views.__alloyId24.add($.__views.favoriteBtn);
+    $.__views.__alloyId25 = Ti.UI.createLabel({
         top: 10,
         left: 50,
         width: 100,
@@ -159,13 +159,13 @@ function Controller() {
             fontSize: 12
         },
         text: "お気に入りから検索",
-        id: "__alloyId15"
+        id: "__alloyId25"
     });
-    $.__views.__alloyId14.add($.__views.__alloyId15);
-    $.__views.__alloyId16 = Ti.UI.createTableViewRow({
-        id: "__alloyId16"
+    $.__views.__alloyId24.add($.__views.__alloyId25);
+    $.__views.__alloyId26 = Ti.UI.createTableViewRow({
+        id: "__alloyId26"
     });
-    __alloyId7.push($.__views.__alloyId16);
+    __alloyId17.push($.__views.__alloyId26);
     $.__views.applicationBtn = Ti.UI.createLabel({
         font: {
             fontSize: 36,
@@ -179,8 +179,8 @@ function Controller() {
         textAlign: "center",
         id: "applicationBtn"
     });
-    $.__views.__alloyId16.add($.__views.applicationBtn);
-    $.__views.__alloyId17 = Ti.UI.createLabel({
+    $.__views.__alloyId26.add($.__views.applicationBtn);
+    $.__views.__alloyId27 = Ti.UI.createLabel({
         top: 10,
         left: 50,
         width: 100,
@@ -189,9 +189,9 @@ function Controller() {
             fontSize: 12
         },
         text: "このアプリケーションについて",
-        id: "__alloyId17"
+        id: "__alloyId27"
     });
-    $.__views.__alloyId16.add($.__views.__alloyId17);
+    $.__views.__alloyId26.add($.__views.__alloyId27);
     $.__views.tableview = Ti.UI.createTableView({
         width: 150,
         height: Ti.UI.FULL,
@@ -200,7 +200,7 @@ function Controller() {
         zIndex: 0,
         backgroundColor: "#f9f9f9",
         separatorColor: "#eeeeee",
-        data: __alloyId7,
+        data: __alloyId17,
         id: "tableview"
     });
     $.__views.mainWindow.add($.__views.tableview);
@@ -221,9 +221,9 @@ function Controller() {
         window: $.__views.mainWindow,
         id: "tabOne"
     });
-    __alloyId6.push($.__views.tabOne);
+    __alloyId16.push($.__views.tabOne);
     $.__views.index = Ti.UI.createTabGroup({
-        tabs: __alloyId6,
+        tabs: __alloyId16,
         id: "index"
     });
     $.__views.index && $.addTopLevelView($.__views.index);
@@ -278,6 +278,7 @@ function Controller() {
     });
     $.tableview.addEventListener("click", function(e) {
         var applicationInfoController, favoriteInfoController, onTapInfoController, searchController, userController;
+        slide();
         if (0 === e.index) {
             userController = Alloy.createController("user");
             return userController.move($.tabOne);
@@ -325,25 +326,19 @@ function Controller() {
         });
     });
     $.mapview.addEventListener("click", function(e) {
+        var shopData, shopDataDetailController;
         if ("rightButton" === e.clicksource) {
-            $.activityIndicator.show();
-            return kloudService.statusesQuery(e.annotation.placeID, function(statuses) {
-                var shopData, shopDataDetailController;
-                Ti.API.info("statuses is " + statuses);
-                shopData = {
-                    shopName: e.annotation.title,
-                    phoneNumber: e.annotation.phoneNumber,
-                    latitude: e.annotation.latitude,
-                    longitude: e.annotation.longitude,
-                    shopInfo: e.annotation.shopInfo,
-                    webSite: e.annotation.webSite,
-                    statuses: statuses,
-                    placeID: e.annotation.placeID
-                };
-                $.activityIndicator.hide();
-                shopDataDetailController = Alloy.createController("shopDataDetail");
-                return shopDataDetailController.move($.tabOne, shopData);
-            });
+            shopData = {
+                shopName: e.annotation.title,
+                phoneNumber: e.annotation.phoneNumber,
+                latitude: e.annotation.latitude,
+                longitude: e.annotation.longitude,
+                shopInfo: e.annotation.shopInfo,
+                webSite: e.annotation.webSite,
+                placeID: e.annotation.placeID
+            };
+            shopDataDetailController = Alloy.createController("shopDataDetail");
+            return shopDataDetailController.move($.tabOne, shopData);
         }
     });
     geoHashResult = null;
