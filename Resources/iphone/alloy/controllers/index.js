@@ -229,42 +229,10 @@ function Controller() {
     $.__views.index && $.addTopLevelView($.__views.index);
     exports.destroy = function() {};
     _.extend($, $.__views);
-    var Cloud, KloudService, addAnnotations, checkNetworkConnection, deviceToken, deviceTokenError, deviceTokenSuccess, geoHashResult, kloudService, lastGeoHashValue, precision, receivePush, selectIcon, slide, style, tiGeoHash;
+    var Cloud, KloudService, addAnnotations, checkNetworkConnection, geoHashResult, kloudService, lastGeoHashValue, precision, selectIcon, slide, style, tiGeoHash;
     $.index.open();
+    newrelic.recordMetric("TimeBetweenTaps", "UI", 500);
     Cloud = require("ti.cloud");
-    deviceToken = null;
-    Ti.Network.registerForPushNotifications({
-        types: [ Ti.Network.NOTIFICATION_TYPE_BADGE, Ti.Network.NOTIFICATION_TYPE_ALERT, Ti.Network.NOTIFICATION_TYPE_SOUND ],
-        success: function(e) {
-            Ti.API.info("success:" + JSON.stringify(e));
-            deviceToken = e.deviceToken;
-            Ti.API.info("deviceToken is " + deviceToken);
-            return Cloud.PushNotifications.subscribeToken({
-                device_token: deviceToken,
-                channel: "test",
-                type: "ios"
-            }, function(e) {
-                e.success ? Ti.API.info("Subscribed") : Ti.API.info("Error:\n" + (e.error && e.message || JSON.stringify(e)));
-            });
-        },
-        error: function(e) {
-            return Ti.API.info("error: " + JSON.stringify(e));
-        },
-        callback: function(e) {
-            return Ti.API.info("callback: " + JSON.stringify(e));
-        }
-    });
-    receivePush = function(e) {
-        alert("Received push: " + JSON.stringify(e));
-    };
-    deviceTokenSuccess = function(e) {
-        alert(e.deviceToken);
-        deviceToken = e.deviceToken;
-        Ti.API.info("deviceToken is " + deviceToken + " ");
-    };
-    deviceTokenError = function(e) {
-        alert("Failed to register for push notifications! " + e.error);
-    };
     style = Ti.UI.iPhone.ActivityIndicatorStyle.DARK;
     $.activityIndicator.style = style;
     $.userLogin.text = String.fromCharCode("0xe137");

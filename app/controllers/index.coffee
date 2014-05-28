@@ -1,49 +1,9 @@
 # 起動時に行う処理
 $.index.open()
-
-
+# new relic tracking
+newrelic.recordMetric("TimeBetweenTaps", "UI", 500.0)
 # Push Notification
 Cloud = require("ti.cloud")
-deviceToken = null
-Ti.Network.registerForPushNotifications
-  types: [
-    Ti.Network.NOTIFICATION_TYPE_BADGE
-    Ti.Network.NOTIFICATION_TYPE_ALERT
-    Ti.Network.NOTIFICATION_TYPE_SOUND
-  ]
-  success:(e) ->
-    Ti.API.info "success:" + JSON.stringify(e)
-    deviceToken = e.deviceToken
-    Ti.API.info "deviceToken is #{deviceToken}"
-    
-    Cloud.PushNotifications.subscribeToken
-      device_token: deviceToken
-      channel: "test"
-      type: "ios"
-    , (e) ->
-      if e.success
-        Ti.API.info "Subscribed"
-      else
-        Ti.API.info "Error:\n" + ((e.error and e.message) or JSON.stringify(e))
-      return
-
-  error:(e)->
-    Ti.API.info "error: " + JSON.stringify(e)
-  callback: (e)->
-    Ti.API.info "callback: " + JSON.stringify(e)
-
-receivePush = (e) ->
-  alert "Received push: " + JSON.stringify(e)
-  return
-
-deviceTokenSuccess = (e) ->
-  alert e.deviceToken
-  deviceToken = e.deviceToken
-  Ti.API.info "deviceToken is #{deviceToken} "
-  return
-deviceTokenError = (e) ->
-  alert "Failed to register for push notifications! " + e.error
-  return
   
   
 if Ti.Platform.name is 'iPhone OS'
